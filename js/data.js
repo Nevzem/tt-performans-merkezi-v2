@@ -29,7 +29,7 @@ let trendScope = "pers";
 let trendProd = "Toplam Mobil";
 
 /* ───── SABİT DİZİLER / NESNELER ───── */
-const SECTIONS = [ { key: "pers", label: "👤 Personel" }, { key: "bayi", label: "🏢 Bayi (TTM)" }, { key: "matrix", label: "📋 Konsolide Matris" }, { key: "sy", label: "👔 Satış Yöneticisi" }, { key: "kupa", label: "🏆 Kupa Bende" }, { key: "detay", label: "🔍 Bayi Detayı" }, { key: "trend", label: "📈 Trend" }, { key: "risk", label: "🚨 Risk Radarı" }, { key: "gecmis", label: "📅 Geçmiş Veri" } ];
+const SECTIONS = [ { key: "pers", label: "👤 Personel" }, { key: "bayi", label: "🏢 Bayi (TTM)" }, { key: "matrix", label: "📋 Konsolide Matris" }, { key: "sy", label: "👔 Satış Yöneticisi" }, { key: "kupa", label: "🏆 Kupa Bende" }, { key: "detay", label: "🔍 Bayi Detayı" }, { key: "trend", label: "📈 Trend" }, { key: "risk", label: "🚨 Risk Radarı" } ];
 const STAR_PRODS = [ { key: "Toplam Mobil", icon: "📱" }, { key: "Faturalı", icon: "📄" }, { key: "Faturasız", icon: "📲" }, { key: "DSL", icon: "🌐" }, { key: "IPTV", icon: "📺" }, { key: "Uydu", icon: "📡" }, { key: "Cihaz", icon: "📦" } ];
 const PRODS = {
   pers: [ { key: "Toplam Mobil", icon: "📱" }, { key: "DSL", icon: "🌐" }, { key: "Toplam TV", icon: "📺" } ],
