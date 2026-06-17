@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<title>TT Kuzey Anadolu · Performans Merkezi</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <!-- ÜST BAR -->
+  <div class="topbar">
+    <div class="mark">TT</div>
+    <div>
+      <h1>Kuzey Anadolu Performans Merkezi</h1>
+      <div class="sub">Bayi Satış Kanalı Yönetimi</div>
+    </div>
+    <div class="status" id="status">Örnek veri yüklü</div>
+  </div>
+
+  <!-- SOL PANEL -->
+  <div class="sidebar">
+    <div class="card-box">
+      <h3>📁 Rapor Yükle</h3>
+      <div class="dropbox" id="drop-today" onclick="document.getElementById('f-today').click()">
+        <div class="ic">📂</div>
+        <div class="t1">Güncel Rapor</div>
+        <div class="t2">Anadolu GM Satış Raporu (.xlsx)</div>
+      </div>
+      <div class="dropbox" id="drop-prev" onclick="document.getElementById('f-prev').click()">
+        <div class="ic">🔄</div>
+        <div class="t1">Önceki Rapor (opsiyonel)</div>
+        <div class="t2">Değişim okları (▲▼) için</div>
+      </div>
+      <input type="file" id="f-today" accept=".xlsx,.xls">
+      <input type="file" id="f-prev" accept=".xlsx,.xls">
+      <div class="pmsg" id="pmsg"></div>
+    </div>
+
+    <div class="card-box">
+      <h3>🎯 Sıralama Seçenekleri</h3>
+      <div class="lbl">Sıralama Tipi</div>
+      <div class="tabs" id="sec-tabs"></div>
+      <div class="lbl">Ürün</div>
+      <div class="tabs" id="prod-tabs"></div>
+      <div class="lbl">Satış Yöneticisi</div>
+      <div class="tabs" id="sy-tabs"></div>
+      <div class="lbl" id="view-label">Görünüm</div>
+      <div class="tabs" id="view-tabs"></div>
+      <div class="lbl">Liste Boyu</div>
+      <select class="nsel" id="nsel" onchange="render()">
+        <option value="10">İlk/Son 10</option>
+        <option value="15" selected>İlk/Son 15</option>
+        <option value="20">İlk/Son 20</option>
+        <option value="999">Tam liste</option>
+      </select>
+    </div>
+
+    <div class="card-box">
+      <h3>📅 Forecast (manuel)</h3>
+      <div class="day-row">
+        <label>Geçen gün:</label><input type="number" class="day-inp" id="day-now" min="1" max="31" placeholder="—" oninput="render()">
+        <label>Ay toplam:</label><input type="number" class="day-inp" id="day-total" min="28" max="31" placeholder="—" oninput="render()">
+      </div>
+      <div class="day-hint">İkisi de girilirse bayi kartlarında ay sonu Forecast HGO görünür. %100+ olanlar yeşil.</div>
+    </div>
+
+    <div class="card-box">
+      <h3>📤 Dışa Aktar</h3>
+      <button class="abtn abtn-png" id="btn-png" onclick="downloadPNG()">⬇️ Görüntülenen Kartı PNG İndir</button>
+      <button class="abtn abtn-txt" onclick="copyText()">📋 WhatsApp Metni Kopyala</button>
+      <button class="abtn abtn-grid" id="btn-all" onclick="downloadAll()">📦 Tüm Ürünleri PNG İndir</button>
+    </div>
+  </div>
+
+  <!-- SAĞ ALAN -->
+  <div class="stage">
+    <div class="stage-head">
+      <div class="layout-toggle">
+        <button id="lay-single" class="on" onclick="setLayout('single')">▢ Tek</button>
+        <button id="lay-grid" onclick="setLayout('grid')">▦ Tümü</button>
+      </div>
+      <div class="hint-foot" style="text-align:right;padding:0;font-size:9px">📲 PNG İndir → görsele uzun bas → paylaş</div>
+    </div>
+    <div class="cards single" id="cards"></div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/parser.js"></script>
+<script src="js/render.js"></script>
+<script src="js/export.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
