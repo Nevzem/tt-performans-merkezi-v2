@@ -213,7 +213,9 @@ function wire(boxId, inputId, isPrev) {
           if (el) el.textContent = "✅ " + name;
         };
         if (isPrev) {
-          PREV = parsed.data; if (parsed.syData && Object.keys(parsed.syData.sy).length) SYPREV = parsed.syData; box.classList.add("loaded");
+          PREV = parsed.data;
+          if (typeof PREV_DETAY !== "undefined") PREV_DETAY = parsed.detay || null;
+          if (parsed.syData && Object.keys(parsed.syData.sy).length) SYPREV = parsed.syData; box.classList.add("loaded");
           _setBoxLabel(box, f.name);
           msg.className = "pmsg ok show"; msg.textContent = "✅ Karşılaştırma yüklendi (" + parsed.donem + ")";
         } else {

@@ -982,76 +982,92 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
    McKinsey Executive · Bloomberg Terminal
    ═══════════════════════════════════════════════════════════════════ */
 
-.pl-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
+/* ─── ÜRÜN LİDER KARTI GRİD ───────────────────────────────────────── */
+.pl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-/* ─── KART KAPSAYICI ──────────────────────────────────────────────── */
+/* ─── KART — kompakt ──────────────────────────────────────────────── */
 .pl-card {
   background: var(--card-bg);
   border: 1px solid var(--hairline);
   border-left: 3px solid var(--line);
   border-radius: 12px;
-  padding: 11px 11px 9px;
-  display: flex; flex-direction: column; gap: 4px;
-  box-shadow: 0 1px 4px rgba(10,31,92,0.05);
-  min-height: 172px;
+  padding: 9px 10px 8px;
+  display: flex; flex-direction: column; gap: 2px;
+  box-shadow: 0 1px 3px rgba(10,31,92,0.05);
 }
-.pl-leader { border-left-color: var(--green); }
-.pl-risk   { border-left-color: var(--crimson); }
-.pl-empty  { justify-content: center; align-items: center; min-height: 100px; }
-.pl-empty-txt { font-size: 11px; color: var(--muted); }
+.pl-leader   { border-left-color: var(--green); }
+.pl-risk     { border-left-color: var(--crimson); }
+.pl-empty    { justify-content: center; align-items: center; min-height: 80px; }
+.pl-empty-txt { font-size: 10px; color: var(--muted); }
 
-/* ─── BAŞLIK SATIRI (ikon + ürün + rozet) ─────────────────────────── */
 .pl-head {
-  display: flex; align-items: center; gap: 5px; margin-bottom: 2px;
+  display: flex; align-items: center; gap: 4px; margin-bottom: 3px;
 }
-.pl-icon { font-size: 13px; flex-shrink: 0; }
-.pl-prod {
-  flex: 1;
-  font-size: 8px; font-weight: 800; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 1.4px;
-}
-.pl-badge { font-size: 13px; flex-shrink: 0; }
+.pl-icon  { font-size: 12px; flex-shrink: 0; }
+.pl-prod  { flex: 1; font-size: 7.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; }
+.pl-badge { font-size: 12px; flex-shrink: 0; }
 
-/* ─── BAYİ ADI & KONUM ─────────────────────────────────────────────── */
 .pl-name {
-  font-size: 11.5px; font-weight: 800; color: var(--navy);
-  line-height: 1.3; margin-top: 1px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.pl-loc {
-  font-size: 8.5px; color: var(--muted); font-weight: 600;
+  font-size: 10.5px; font-weight: 800; color: var(--navy); line-height: 1.25;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-
-/* ─── HGO (büyük rakam) ────────────────────────────────────────────── */
-.pl-hgo-wrap {
-  flex: 1; display: flex; flex-direction: column;
-  justify-content: center; margin: 4px 0 2px;
+.pl-loc {
+  font-size: 8px; color: var(--muted); font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px;
 }
 .pl-hgo {
-  font-size: 27px; font-weight: 900;
-  letter-spacing: -1px; line-height: 1;
-  font-variant-numeric: tabular-nums;
+  font-size: 21px; font-weight: 900; letter-spacing: -0.5px; line-height: 1;
+  font-variant-numeric: tabular-nums; margin: 3px 0 2px;
 }
-.pl-hgo-lbl {
-  font-size: 7.5px; font-weight: 800; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 1.8px;
-  margin-top: 3px;
-}
-
-/* ─── FOOTER (Forecast · Hedef/Aktiv) ─────────────────────────────── */
 .pl-foot {
-  display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
-  border-top: 1px solid var(--hairline);
-  padding-top: 7px; margin-top: 2px;
+  display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+  border-top: 1px solid var(--hairline); padding-top: 5px; margin-top: 2px;
+  font-size: 8.5px; font-weight: 700; color: var(--muted);
 }
-.pl-fc   { font-size: 10px; font-weight: 800; }
-.pl-sep  { font-size: 8px; color: var(--line); }
-.pl-acts { font-size: 9px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pl-sep { font-size: 7px; color: var(--line); }
+.pl-na  { color: var(--muted); }
+
+/* ─── HOME PAGE ÜRÜN FİLTRE SEKMELERİ ────────────────────────────── */
+.hd-sec-head {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 6px;
+}
+.hp-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.hp-tab {
+  padding: 4px 9px; border-radius: 7px;
+  font-size: 10px; font-weight: 700;
+  border: 1.5px solid var(--line); background: var(--card-bg);
+  color: var(--slate); cursor: pointer; font-family: inherit;
+  transition: all 0.12s;
+}
+.hp-tab:hover { border-color: var(--navy); color: var(--navy); }
+.hp-tab.hp-tab-on { background: var(--navy); border-color: var(--navy); color: #fff; }
+.hp-tab.hp-tab-sm { font-size: 8.5px; padding: 3px 7px; }
+
+/* ─── RİSKLİ & YÜKSEK ADET LİSTE SATIRLARI ──────────────────────── */
+.hrl-card {
+  background: var(--card-bg); border-radius: 12px;
+  border: 1px solid var(--hairline); overflow: hidden;
+  box-shadow: 0 1px 4px rgba(10,31,92,0.05);
+}
+.hrl-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-bottom: 1px solid var(--hairline);
+}
+.hrl-row:last-child { border-bottom: none; }
+.hrl-rank  { font-size: 10px; font-weight: 700; color: var(--muted); width: 18px; flex-shrink: 0; text-align: center; }
+.hrl-info  { flex: 1; min-width: 0; }
+.hrl-name  { font-size: 11px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hrl-loc   { font-size: 8.5px; color: var(--muted); font-weight: 600; }
+.hrl-vals  { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
+.hrl-fc    { font-size: 9px; font-weight: 800; color: var(--slate); }
+.hrl-hgo   { font-size: 12px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.hrl-gain  { font-size: 12px; font-weight: 900; }
+.hrl-prev  { font-size: 8.5px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.hrl-empty { padding: 14px 12px; font-size: 10.5px; color: var(--muted); font-style: italic; text-align: center; }
+
+/* ─── RİSK MERKEZİ — tabs'lı başlık ─────────────────────────────── */
+.hd-rc-head-tabs {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 6px;
+}

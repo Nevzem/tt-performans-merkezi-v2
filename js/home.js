@@ -4,6 +4,24 @@
    DATA / MATRIX / DETAY / PREV / SYDATA okur.
    ════════════════════════════════════════════ */
 
+/* Önceki raporun DETAY verisi (parser.js tarafından set edilir) */
+var PREV_DETAY = null;
+
+/* Ana Sayfa içi ürün filtresi state'leri */
+var _homeRiskProd = 'Toplam Mobil';   /* Riskli ürün bayileri */
+var _homeAdetProd = 'Toplam Mobil';   /* Yüksek adet */
+
+/* Ana Sayfa ürün listesi */
+var _HP_PRODS = [
+  { label: 'Mobil',  key: 'Toplam Mobil', detayKey: 'Toplam Mobil' },
+  { label: 'DSL',    key: 'DSL',           detayKey: 'DSL'          },
+  { label: 'Tivibu', key: 'Toplam TV',     detayKey: 'Toplam TV'    },
+  { label: 'Cihaz',  key: 'Akıllı Cihaz',  detayKey: 'Akıllı Cihaz' },
+];
+
+function setHomeRiskProd(k) { _homeRiskProd = k; renderHome(); }
+function setHomeAdetProd(k) { _homeAdetProd = k; renderHome(); }
+
 /* ─── ANA RENDER ─────────────────────────── */
 function renderHome() {
   var el = document.getElementById('home-dashboard');
@@ -15,7 +33,7 @@ function renderHome() {
     _hdScorecard(kpis),
     _hdAutoSummary(kpis),
     _hdLeaders(),
-    _hdRisks(),
+    _hdRiskList(),
     _hdRiskCenter(kpis),
   ].join('');
 }
@@ -304,62 +322,43 @@ function _detayProd(rec, detayKey) {
   return bayi ? (bayi.prods[detayKey] || null) : null;
 }
 
-/* Tek kart HTML'i (lider veya riskli) */
+/* Tek kart HTML'i — kompakt (lider kartları için) */
 function _plCard(pm, rec, isLeader, f) {
   if (!rec) {
     return '<div class="pl-card pl-empty"><span class="pl-empty-txt">Veri yok</span></div>';
   }
+  var hgoCls = rec.g >= 100 ? 'hd-g' : rec.g >= 70 ? 'hd-y' : 'hd-r';
+  var dp     = _detayProd(rec, pm.detayKey);
+  var fcHgo  = (f && rec.g !== null) ? rec.g * f.k : null;
+  var fcCls  = fcHgo === null ? '' : fcHgo >= 100 ? 'hd-g' : fcHgo >= 70 ? 'hd-y' : 'hd-r';
 
-  var hgoClass = rec.g >= 100 ? 'hd-g' : rec.g >= 70 ? 'hd-y' : 'hd-r';
-  var dp       = _detayProd(rec, pm.detayKey);
-  var fcHgo    = (f && rec.g !== null) ? rec.g * f.k : null;
-  var fcClass  = fcHgo === null ? 'hd-navy' : fcHgo >= 100 ? 'hd-g' : fcHgo >= 70 ? 'hd-y' : 'hd-r';
-
-  var badge    = isLeader
-    ? '<span class="pl-badge">🏆</span>'
-    : '<span class="pl-badge">⚠️</span>';
-
-  /* Footer: Forecast + Hedef/Aktiv */
-  var footItems = [];
-  if (fcHgo !== null) {
-    footItems.push('<span class="pl-fc ' + fcClass + '">F %' + Math.round(fcHgo) + '</span>');
-  }
-  if (dp && dp.h > 0) {
-    footItems.push(
-      '<span class="pl-acts">' +
-        dp.a.toLocaleString('tr-TR') + '&thinsp;/&thinsp;' + dp.h.toLocaleString('tr-TR') +
-      '</span>'
-    );
-  }
+  var meta = [];
+  meta.push('F&thinsp;<span class="' + fcCls + '">' + (fcHgo !== null ? '%' + Math.round(fcHgo) : '—') + '</span>');
+  if (dp && dp.h > 0)
+    meta.push('<span class="pl-na">' + dp.a.toLocaleString('tr-TR') + '/' + dp.h.toLocaleString('tr-TR') + '</span>');
 
   return (
     '<div class="pl-card ' + (isLeader ? 'pl-leader' : 'pl-risk') + '">' +
       '<div class="pl-head">' +
         '<span class="pl-icon">' + pm.icon + '</span>' +
         '<span class="pl-prod">' + pm.short + '</span>' +
-        badge +
+        '<span class="pl-badge">' + (isLeader ? '🏆' : '⚠️') + '</span>' +
       '</div>' +
       '<div class="pl-name">' + rec.p + '</div>' +
       '<div class="pl-loc">' + rec.b + '</div>' +
-      '<div class="pl-hgo-wrap">' +
-        '<div class="pl-hgo ' + hgoClass + '">%' + rec.g.toFixed(1) + '</div>' +
-        '<div class="pl-hgo-lbl">HGO</div>' +
-      '</div>' +
-      (footItems.length
-        ? '<div class="pl-foot">' + footItems.join('<span class="pl-sep">·</span>') + '</div>'
-        : '') +
+      '<div class="pl-hgo ' + hgoCls + '">%' + rec.g.toFixed(1) + '</div>' +
+      '<div class="pl-foot">' + meta.join('<span class="pl-sep">·</span>') + '</div>' +
     '</div>'
   );
 }
 
-/* Bölüm: Ürün Liderleri */
+/* Bölüm: Ürün Liderleri (2×2 kompakt grid) */
 function _hdLeaders() {
   var f     = fc();
   var cards = _CARD_PRODS.map(function(pm) {
     var recs = (DATA.bayi && DATA.bayi[pm.dataKey]) || [];
     return _plCard(pm, recs[0] || null, true, f);
   }).join('');
-
   return (
     '<div class="hd-section">' +
       '<div class="hd-sec-title">Ürün Liderleri</div>' +
@@ -368,34 +367,89 @@ function _hdLeaders() {
   );
 }
 
-/* Bölüm: Riskli Ürün Bayileri (en düşük HGO) */
-function _hdRisks() {
-  var f     = fc();
-  var cards = _CARD_PRODS.map(function(pm) {
-    var recs  = (DATA.bayi && DATA.bayi[pm.dataKey]) || [];
-    var worst = recs.length ? recs[recs.length - 1] : null;
-    return _plCard(pm, worst, false, f);
-  }).join('');
+/* ── Yardımcı: ürün filtresi sekme HTML'i ── */
+function _hpTabs(activeKey, setter, small) {
+  var cls = 'hp-tab' + (small ? ' hp-tab-sm' : '');
+  return '<div class="hp-tabs">' +
+    _HP_PRODS.map(function(p) {
+      var on = activeKey === p.key;
+      return '<button class="' + cls + (on ? ' hp-tab-on' : '') + '" ' +
+        'onclick="' + setter + '(\'' + p.key + '\')">' + p.label + '</button>';
+    }).join('') +
+  '</div>';
+}
+
+/* Bölüm: Riskli Ürün Bayileri (filtrelenebilir liste) */
+function _hdRiskList() {
+  var f      = fc();
+  var recs   = (DATA.bayi && DATA.bayi[_homeRiskProd]) || [];
+  var worst5 = recs.slice(-5).slice().reverse(); // en düşük HGO önce
+
+  var rows = worst5.length
+    ? worst5.map(function(r, i) {
+        var rank   = recs.length - i;
+        var hgoCls = r.g >= 100 ? 'hd-g' : r.g >= 70 ? 'hd-y' : 'hd-r';
+        var fcHgo  = (f && r.g !== null) ? r.g * f.k : null;
+        var fcCls  = fcHgo === null ? '' : fcHgo >= 100 ? 'hd-g' : fcHgo >= 70 ? 'hd-y' : 'hd-r';
+        return (
+          '<div class="hrl-row">' +
+            '<span class="hrl-rank">' + rank + '</span>' +
+            '<div class="hrl-info">' +
+              '<div class="hrl-name">' + r.p + '</div>' +
+              '<div class="hrl-loc">' + r.b + '</div>' +
+            '</div>' +
+            '<div class="hrl-vals">' +
+              '<div class="hrl-fc ' + fcCls + '">F&thinsp;' + (fcHgo !== null ? '%' + Math.round(fcHgo) : '—') + '</div>' +
+              '<div class="hrl-hgo ' + hgoCls + '">%' + r.g.toFixed(1) + '</div>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join('')
+    : '<div class="hrl-empty">Veri yok</div>';
 
   return (
     '<div class="hd-section">' +
-      '<div class="hd-sec-title">Riskli Ürün Bayileri</div>' +
-      '<div class="pl-grid">' + cards + '</div>' +
+      '<div class="hd-sec-head">' +
+        '<div class="hd-sec-title">Riskli Ürün Bayileri</div>' +
+        _hpTabs(_homeRiskProd, 'setHomeRiskProd', false) +
+      '</div>' +
+      '<div class="hrl-card">' + rows + '</div>' +
     '</div>'
   );
 }
 
 /* ══════════════════════════════════════════
-   6. RİSK MERKEZİ
+   7. RİSK MERKEZİ
    ══════════════════════════════════════════ */
+
+/* Önceki raporla adet büyümesi hesaplama */
+function _hdAdetGrowth() {
+  var hasPrev = (typeof PREV_DETAY !== "undefined" && PREV_DETAY && DETAY);
+  if (!hasPrev) return null; // null = önceki rapor yok
+
+  var items = [];
+  for (var kod in DETAY.bayiler) {
+    var curr = DETAY.bayiler[kod];
+    var prev = PREV_DETAY.bayiler[kod];
+    if (!prev) continue;
+    var cProd = curr.prods[_homeAdetProd];
+    var pProd = prev.prods[_homeAdetProd];
+    if (!cProd || !pProd) continue;
+    var delta = cProd.a - pProd.a;
+    if (delta > 0) {
+      items.push({
+        name: curr.b,
+        loc: (curr.kod || '') + (curr.il ? ' · ' + curr.il : ''),
+        delta: delta, prevA: pProd.a, currA: cProd.a,
+      });
+    }
+  }
+  items.sort(function(a, b) { return b.delta - a.delta; });
+  return items.slice(0, 5);
+}
+
 function _hdRiskCenter(kpis) {
   var f        = fc();
-  var _gA      = (SYDATA && SYDATA.calismaGun)  || 0;
-  var _gB      = (SYDATA && SYDATA.calisilanGun) || 0;
-  var ayGun    = Math.max(_gA, _gB);
-  var gecenGun = Math.min(_gA, _gB);
-  var kalanGun = (ayGun > 0 && gecenGun > 0 && ayGun > gecenGun) ? ayGun - gecenGun : null;
-
   var recs     = (DATA.bayi && DATA.bayi['Toplam Mobil']) || [];
   var prevRecs = (PREV && PREV.bayi && PREV.bayi['Toplam Mobil']) || null;
 
@@ -415,38 +469,31 @@ function _hdRiskCenter(kpis) {
   var fcRisk = [];
   if (f) fcRisk = recs.filter(function(r) { return r.g * f.k < 85; }).slice(0, 5);
 
-  /* 4. Günlük yükü yüksek (≥ 5 adet/gün) */
-  var gunlukYuksek = [];
-  if (kalanGun && DETAY && Object.keys(DETAY.bayiler).length) {
-    var items = [];
-    for (var kod in DETAY.bayiler) {
-      var b  = DETAY.bayiler[kod];
-      var pm = b.prods['Toplam Mobil'];
-      if (!pm || pm.h === 0) continue;
-      var kalan  = Math.max(pm.h - pm.a, 0);
-      var gunluk = Math.ceil(kalan / kalanGun);
-      if (gunluk >= 5) items.push({ name: b.b, gunluk: gunluk });
-    }
-    items.sort(function(a, b) { return b.gunluk - a.gunluk; });
-    gunlukYuksek = items.slice(0, 5);
-  }
+  /* 4. Yüksek Adet — adetsel büyüme */
+  var adetGrowth = _hdAdetGrowth(); /* null = önceki rapor yok */
 
-  var hasAny = kritik.length || dususte.length || fcRisk.length || gunlukYuksek.length;
-  if (!hasAny) return '';
-
-  function rCard(accentCls, icon, title, cnt, rows) {
+  /* ─ Kart üretici ─ */
+  function rCard(accentCls, icon, title, cnt, rows, extraHead) {
     return (
       '<div class="hd-rc-card ' + accentCls + '">' +
-        '<div class="hd-rc-head">' +
+        '<div class="hd-rc-head' + (extraHead ? ' hd-rc-head-tabs' : '') + '">' +
           '<span>' + icon + '&nbsp;' + title + '</span>' +
-          '<span class="hd-rc-cnt">' + cnt + '</span>' +
+          (extraHead || ('<span class="hd-rc-cnt">' + cnt + '</span>')) +
         '</div>' +
         rows +
       '</div>'
     );
   }
-  function rRow(name, valHTML) {
-    return '<div class="hd-rc-row"><span class="hd-rc-name">' + name + '</span>' + valHTML + '</div>';
+  function rRow(name, loc, valHTML) {
+    return (
+      '<div class="hrl-row">' +
+        '<div class="hrl-info">' +
+          '<div class="hrl-name">' + name + '</div>' +
+          (loc ? '<div class="hrl-loc">' + loc + '</div>' : '') +
+        '</div>' +
+        valHTML +
+      '</div>'
+    );
   }
 
   var html = '<div class="hd-section"><div class="hd-sec-title">Risk Merkezi</div><div class="hd-rc-list">';
@@ -455,29 +502,48 @@ function _hdRiskCenter(kpis) {
     html += rCard('hd-rc-hi', '🔴', 'Kritik Bayiler',
       kritik.length + ' bayi · HGO %60 altı',
       kritik.slice(0, 5).map(function(r) {
-        return rRow(r.p, '<span class="hd-rc-val hd-r">%' + r.g.toFixed(1) + '</span>');
+        return rRow(r.p, r.b, '<span class="hd-rc-val hd-r">%' + r.g.toFixed(1) + '</span>');
       }).join(''));
 
   if (dususte.length)
     html += rCard('hd-rc-md', '🟡', 'Sıra Kaybeden',
-      dususte.length + ' bayi · önceki güne göre',
+      dususte.length + ' bayi',
       dususte.map(function(r) {
-        return rRow(r.p, '<span class="hd-rc-val hd-y">%' + r.g.toFixed(1) + '&nbsp;▼</span>');
+        return rRow(r.p, r.b, '<span class="hd-rc-val hd-y">%' + r.g.toFixed(1) + '&thinsp;▼</span>');
       }).join(''));
 
   if (fcRisk.length)
     html += rCard('hd-rc-fc', '⚠️', 'Forecast Riski',
-      fcRisk.length + ' bayi · ay sonu %85 altı',
+      fcRisk.length + ' bayi',
       fcRisk.map(function(r) {
-        return rRow(r.p, '<span class="hd-rc-val hd-y">F&nbsp;%' + Math.round(r.g * f.k) + '</span>');
+        return rRow(r.p, r.b, '<span class="hd-rc-val hd-y">F&thinsp;%' + Math.round(r.g * f.k) + '</span>');
       }).join(''));
 
-  if (gunlukYuksek.length)
-    html += rCard('hd-rc-gn', '📌', 'Günlük Yük Yüksek',
-      gunlukYuksek.length + ' bayi · ≥5 adet/gün',
-      gunlukYuksek.map(function(r) {
-        return rRow(r.name, '<span class="hd-rc-val hd-navy">' + r.gunluk.toLocaleString('tr-TR') + '&nbsp;adet/gün</span>');
-      }).join(''));
+  /* Yüksek Adet — filtreli */
+  var adetTabs = _hpTabs(_homeAdetProd, 'setHomeAdetProd', true);
+  var adetRows = '';
+  if (adetGrowth === null) {
+    adetRows = '<div class="hrl-empty">Önceki rapor yüklenince adetsel büyüme analizi gösterilir.</div>';
+  } else if (!adetGrowth.length) {
+    adetRows = '<div class="hrl-empty">Önceki rapora göre adet artışı bulunamadı.</div>';
+  } else {
+    adetRows = adetGrowth.map(function(r, i) {
+      return (
+        '<div class="hrl-row">' +
+          '<span class="hrl-rank">' + (i + 1) + '</span>' +
+          '<div class="hrl-info">' +
+            '<div class="hrl-name">' + r.name + '</div>' +
+            '<div class="hrl-loc">' + r.loc + '</div>' +
+          '</div>' +
+          '<div class="hrl-vals">' +
+            '<div class="hrl-gain hd-g">+' + r.delta.toLocaleString('tr-TR') + '</div>' +
+            '<div class="hrl-prev">' + r.prevA.toLocaleString('tr-TR') + '→' + r.currA.toLocaleString('tr-TR') + '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+  html += rCard('hd-rc-gn', '📊', 'Yüksek Adet', '', adetRows, adetTabs);
 
   html += '</div></div>';
   return html;
