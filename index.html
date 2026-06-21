@@ -4,95 +4,180 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
 <title>TT Kuzey Anadolu · Performans Merkezi</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div class="app">
-  <!-- ÜST BAR -->
-  <div class="topbar">
-    <div class="mark">TT</div>
-    <div>
-      <h1>Kuzey Anadolu Performans Merkezi</h1>
-      <div class="sub">Bayi Satış Kanalı Yönetimi</div>
-    </div>
-    <div class="status" id="status">Örnek veri yüklü</div>
-  </div>
 
-  <!-- SOL PANEL -->
-  <div class="sidebar">
-    <div class="card-box">
-      <h3>📁 Rapor Yükle</h3>
-      <div class="dropbox" id="drop-today" onclick="document.getElementById('f-today').click()">
-        <div class="ic">📂</div>
-        <div class="t1">Güncel Rapor</div>
-        <div class="t2">Anadolu GM Satış Raporu (.xlsx)</div>
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="tb-brand">
+      <div class="tb-mark">TT</div>
+      <div class="tb-text">
+        <div class="tb-title">Kuzey Anadolu</div>
+        <div class="tb-sub">Performans Merkezi</div>
       </div>
-      <div class="dropbox" id="drop-prev" onclick="document.getElementById('f-prev').click()">
-        <div class="ic">🔄</div>
-        <div class="t1">Önceki Rapor (opsiyonel)</div>
-        <div class="t2">Değişim okları (▲▼) için</div>
+    </div>
+    <div class="status-badge" id="status">Örnek veri yüklü</div>
+  </header>
+
+  <!-- SCROLL AREA -->
+  <main class="scroll-area">
+
+    <!-- ── ANA SAYFA ── -->
+    <div class="page" id="page-ana" style="background:#F0F3FA">
+      <div class="upload-strip">
+        <div class="dropbox upload-strip-box" id="drop-today" onclick="document.getElementById('f-today').click()">
+          <div class="drop-icon">📂</div>
+          <div class="drop-title">Güncel Rapor</div>
+          <div class="drop-sub">.xlsx yükle</div>
+        </div>
+        <div class="dropbox upload-strip-box" id="drop-prev" onclick="document.getElementById('f-prev').click()">
+          <div class="drop-icon">🔄</div>
+          <div class="drop-title">Önceki Rapor</div>
+          <div class="drop-sub">▲▼ karşılaştırma</div>
+        </div>
       </div>
-      <input type="file" id="f-today" accept=".xlsx,.xls">
-      <input type="file" id="f-prev" accept=".xlsx,.xls">
       <div class="pmsg" id="pmsg"></div>
+      <div id="home-dashboard"></div>
     </div>
 
-    <div class="card-box">
-      <h3>🎯 Sıralama Seçenekleri</h3>
-      <div class="lbl">Sıralama Tipi</div>
-      <div class="tabs" id="sec-tabs"></div>
-      <div class="lbl">Ürün</div>
-      <div class="tabs" id="prod-tabs"></div>
-      <div class="lbl">Satış Yöneticisi</div>
-      <div class="tabs" id="sy-tabs"></div>
-      <div class="lbl" id="view-label">Görünüm</div>
-      <div class="tabs" id="view-tabs"></div>
-      <div class="lbl">Liste Boyu</div>
-      <select class="nsel" id="nsel" onchange="render()">
-        <option value="10">İlk/Son 10</option>
-        <option value="15" selected>İlk/Son 15</option>
-        <option value="20">İlk/Son 20</option>
-        <option value="999">Tam liste</option>
-      </select>
-    </div>
+    <!-- ── VERİ SAYFASI ── -->
+    <div class="page" id="page-data" style="display:none">
 
-    <div class="card-box">
-      <h3>📅 Forecast (manuel)</h3>
-      <div class="day-row">
-        <label>Geçen gün:</label><input type="number" class="day-inp" id="day-now" min="1" max="31" placeholder="—" oninput="render()">
-        <label>Ay toplam:</label><input type="number" class="day-inp" id="day-total" min="28" max="31" placeholder="—" oninput="render()">
+      <!-- Sayfa başlığı -->
+      <div class="page-hdr">
+        <div class="page-hdr-title" id="data-page-title">Bayiler</div>
+        <div class="page-hdr-sub"   id="data-page-sub">TTM Bayi Sıralaması</div>
       </div>
-      <div class="day-hint">İkisi de girilirse bayi kartlarında ay sonu Forecast HGO görünür. %100+ olanlar yeşil.</div>
+
+      <!-- Performans alt sekmeleri -->
+      <div class="perf-sub-strip" id="perf-sub-strip" style="display:none">
+        <button class="psub-tab" data-sec="matrix" onclick="perfSec('matrix')">📋 Matris</button>
+        <button class="psub-tab" data-sec="kupa"   onclick="perfSec('kupa')">🏆 Kupa</button>
+        <button class="psub-tab" data-sec="detay"  onclick="perfSec('detay')">🔍 Detay</button>
+        <button class="psub-tab" data-sec="trend"  onclick="perfSec('trend')">📈 Trend</button>
+        <button class="psub-tab" data-sec="risk"   onclick="perfSec('risk')">🚨 Risk</button>
+      </div>
+
+      <!-- Kompakt filtre çubuğu (Bayiler / Personel) -->
+      <div class="filter-bar" id="compact-filter-bar" style="display:none"></div>
+
+      <!-- Gizli kontrol şeridi — buildTabs() uyumluluğu için DOM'da kalmalı -->
+      <div style="display:none" aria-hidden="true">
+        <div class="ctrl-strip" id="ctrl-strip">
+          <div class="tabs" id="prod-tabs"></div>
+          <div class="tabs" id="sy-tabs"></div>
+          <div class="ctrl-label" id="view-label"></div>
+          <div class="tabs" id="view-tabs"></div>
+          <div class="layout-toggle">
+            <button id="lay-single" class="on" onclick="setLayout('single')">▢ Tek</button>
+            <button id="lay-grid" onclick="setLayout('grid')">▦ Tümü</button>
+          </div>
+          <select class="nsel" id="nsel" onchange="render()">
+            <option value="10">İlk/Son 10</option>
+            <option value="15" selected>İlk/Son 15</option>
+            <option value="20">İlk/Son 20</option>
+            <option value="999">Tam Liste</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Kart render alanı -->
+      <div class="cards-area">
+        <div class="cards single" id="cards"></div>
+      </div>
     </div>
 
-    <div class="card-box">
-      <h3>📤 Dışa Aktar</h3>
-      <button class="abtn abtn-png" id="btn-png" onclick="downloadPNG()">⬇️ Görüntülenen Kartı PNG İndir</button>
-      <button class="abtn abtn-txt" onclick="copyText()">📋 WhatsApp Metni Kopyala</button>
-      <button class="abtn abtn-grid" id="btn-all" onclick="downloadAll()">📦 Tüm Ürünleri PNG İndir</button>
+    <!-- ── AYARLAR ── -->
+    <div class="page" id="page-ayar" style="display:none">
+      <div class="page-hdr">
+        <div class="page-hdr-title">Ayarlar</div>
+        <div class="page-hdr-sub">Forecast ve dışa aktarma</div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-card">
+          <div class="settings-card-title">📅 Forecast (manuel)</div>
+          <div class="day-row">
+            <label>Geçen gün</label>
+            <input type="number" class="day-inp" id="day-now" min="1" max="31" placeholder="—" oninput="render()">
+            <label>Ay toplam</label>
+            <input type="number" class="day-inp" id="day-total" min="28" max="31" placeholder="—" oninput="render()">
+          </div>
+          <div class="day-hint">İkisi de girilirse bayi kartlarında ay sonu Forecast HGO görünür. %100+ olanlar yeşil.</div>
+        </div>
+        <div class="settings-card">
+          <div class="settings-card-title">📤 Dışa Aktar</div>
+          <button class="abtn abtn-png" id="btn-png" onclick="downloadPNG()">⬇️ Görüntülenen Kartı PNG İndir</button>
+          <button class="abtn abtn-txt" onclick="copyText()">📋 WhatsApp Metni Kopyala</button>
+          <button class="abtn abtn-grid" id="btn-all" onclick="downloadAll()">📦 Tüm Ürünleri PNG İndir</button>
+          <div class="hint-note">📲 PNG İndir → görsele uzun bas → paylaş</div>
+        </div>
+      </div>
     </div>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-nav="ana"  onclick="navTo('ana')">
+      <span class="nav-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+      <span class="nav-lbl">Ana Sayfa</span>
+    </button>
+    <button class="nav-item" data-nav="bayi" onclick="navTo('bayi')">
+      <span class="nav-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></span>
+      <span class="nav-lbl">Bayiler</span>
+    </button>
+    <button class="nav-item" data-nav="pers" onclick="navTo('pers')">
+      <span class="nav-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+      <span class="nav-lbl">Personel</span>
+    </button>
+    <button class="nav-item" data-nav="sy" onclick="navTo('sy')">
+      <span class="nav-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+      <span class="nav-lbl">Satış Yön.</span>
+    </button>
+    <button class="nav-item" data-nav="perf" onclick="navTo('perf')">
+      <span class="nav-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+      <span class="nav-lbl">Performans</span>
+    </button>
+    <button class="nav-item" data-nav="ayar" onclick="navTo('ayar')">
+      <span class="nav-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+      <span class="nav-lbl">Ayarlar</span>
+    </button>
+  </nav>
+
+  <!-- Gizli: sec-tabs -->
+  <div style="display:none" aria-hidden="true"><div id="sec-tabs"></div></div>
+
+  <!-- Dosya girdileri -->
+  <input type="file" id="f-today" accept=".xlsx,.xls">
+  <input type="file" id="f-prev"  accept=".xlsx,.xls">
+
+  <!-- BOTTOM SHEET MODAL -->
+  <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
+  <div class="bottom-sheet" id="bottom-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <span class="sheet-title" id="sheet-title">Filtrele</span>
+      <button class="sheet-close" onclick="closeSheet()">✕</button>
+    </div>
+    <div class="sheet-search-wrap" id="sheet-search-wrap" style="display:none">
+      <input type="text" id="sheet-search" class="sheet-search-inp" placeholder="Bayi ara…">
+    </div>
+    <div class="sheet-opts" id="sheet-options"></div>
   </div>
 
-  <!-- SAĞ ALAN -->
-  <div class="stage">
-    <div class="stage-head">
-      <div class="layout-toggle">
-        <button id="lay-single" class="on" onclick="setLayout('single')">▢ Tek</button>
-        <button id="lay-grid" onclick="setLayout('grid')">▦ Tümü</button>
-      </div>
-      <div class="hint-foot" style="text-align:right;padding:0;font-size:9px">📲 PNG İndir → görsele uzun bas → paylaş</div>
-    </div>
-    <div class="cards single" id="cards"></div>
-  </div>
 </div>
 
 <script src="js/data.js"></script>
 <script src="js/parser.js"></script>
 <script src="js/render.js"></script>
 <script src="js/export.js"></script>
+<script src="js/home.js"></script>
+<script src="js/filters.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

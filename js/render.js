@@ -78,7 +78,14 @@ function syList() {
   for (const k in src) for (const r of src[k]) if (r.sy) s.add(r.sy);
   return ["Tümü", ...[...s].sort()];
 }
-function filt(recs) { return sy === "Tümü" ? recs : recs.filter(r => r.sy === sy); }
+function filt(recs) {
+  var r = sy === "Tümü" ? recs : recs.filter(function(x) { return x.sy === sy; });
+  if (typeof bayiFilter !== "undefined" && bayiFilter !== "Tümü")
+    r = r.filter(function(x) { return x.b === bayiFilter; });
+  if (typeof riskOnly !== "undefined" && riskOnly)
+    r = r.filter(function(x) { return x.g !== null && x.g < 60; });
+  return r;
+}
 function setSy(s) { sy = s; buildTabs(); render(); }
 
 /* ───── YARDIMCILAR ───── */
@@ -132,7 +139,8 @@ function cardHTML(prodKey) {
   const syTag = sy === "Tümü" ? "" : " · SY: " + sy.split(" ")[0];
 
   if (section === "bayi") {
-    const recs = filt(DATA.bayi[prodKey] || []);
+    let recs = filt(DATA.bayi[prodKey] || []);
+    if (typeof compactListeN !== "undefined" && compactListeN < 999) recs = recs.slice(0, compactListeN);
     const icon = PRODS.bayi.find(p => p.key === prodKey).icon;
     if (!recs.length) return hdrHTML(icon, prodKey + " — Bayi", "Veri yok" + syTag);
     const maxV = Math.max(...recs.map(r => r.g)); const f = fc();

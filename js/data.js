@@ -32,7 +32,12 @@ let trendProd = "Toplam Mobil";
 const SECTIONS = [ { key: "pers", label: "👤 Personel" }, { key: "bayi", label: "🏢 Bayi (TTM)" }, { key: "matrix", label: "📋 Konsolide Matris" }, { key: "sy", label: "👔 Satış Yöneticisi" }, { key: "kupa", label: "🏆 Kupa Bende" }, { key: "detay", label: "🔍 Bayi Detayı" }, { key: "trend", label: "📈 Trend" }, { key: "risk", label: "🚨 Risk Radarı" } ];
 const STAR_PRODS = [ { key: "Toplam Mobil", icon: "📱" }, { key: "Faturalı", icon: "📄" }, { key: "Faturasız", icon: "📲" }, { key: "DSL", icon: "🌐" }, { key: "IPTV", icon: "📺" }, { key: "Uydu", icon: "📡" }, { key: "Cihaz", icon: "📦" } ];
 const PRODS = {
-  pers: [ { key: "Toplam Mobil", icon: "📱" }, { key: "DSL", icon: "🌐" }, { key: "Toplam TV", icon: "📺" } ],
+  pers: [
+    { key: "Toplam Mobil", icon: "📱" }, { key: "Faturalı",  icon: "📋" },
+    { key: "Faturasız",    icon: "📲" }, { key: "DSL",        icon: "🌐" },
+    { key: "Toplam TV",    icon: "📺" }, { key: "IPTV",       icon: "📡" },
+    { key: "Uydu",         icon: "🛰️"  }, { key: "Cihaz",      icon: "📦" },
+  ],
   bayi: [ { key: "Postpaid", icon: "📱" }, { key: "Prepaid", icon: "📲" }, { key: "Toplam Mobil", icon: "📶" },
           { key: "DSL", icon: "🌐" }, { key: "Toplam TV", icon: "📺" }, { key: "Akıllı Cihaz", icon: "📦" }, { key: "Diğer Cihaz", icon: "🔌" } ],
 };
