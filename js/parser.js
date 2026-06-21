@@ -200,25 +200,30 @@ function parseWB(wb) {
 
 /* ───── EDM PARSER — Dinamik kolon tespiti ───── */
 function parseEDMSheet(wb) {
+  /* ═══════════════════════════════════════════════════════
+     EDM BUAY Parser — Dinamik kolon tespiti v2
+     Aktivasyon kolonunu ad + komşu-sütun taramasıyla bulur.
+     ═══════════════════════════════════════════════════════ */
   const EDM_ANA_KOD = '507868';
   const wsName = wb.SheetNames.find(s => s.trim().toUpperCase() === 'EDM BUAY');
   if (!wsName) return { error: "EDM BUAY sheet'i bulunamadı.", data: null, detay: null };
 
   const allRows = XLSX.utils.sheet_to_json(wb.Sheets[wsName], { header: 1, defval: null });
-  let log = [];
+  const log = [];
 
-  /* ── 1. Başlık satırını bul ── */
-  let hi = -1, hdrs = [];
-  // "Ana Bölge" ilk sütun
-  let tmp = allRows.findIndex(r => r && r[0] && String(r[0]).trim() === "Ana Bölge");
-  if (tmp >= 0) { hi = tmp; hdrs = allRows[tmp].map(c => c ? String(c).trim() : ''); }
+  /* ── 1. Tek veya çift başlık satırı tespiti ── */
+  let hi = -1, hdrs = [], hdrs2 = []; // hdrs = asıl başlık, hdrs2 = üst (ürün grubu) başlık
+
+  // "Ana Bölge" olan satır
+  let t1 = allRows.findIndex(r => r && r[0] && String(r[0]).trim() === "Ana Bölge");
+  if (t1 >= 0) { hi = t1; hdrs = allRows[t1].map(c => c ? String(c).trim() : ''); }
 
   if (hi === -1) {
-    // bayi + hedef/tip/mobil içeren satır tara
+    // bayi + hedef/tipi/mobil içeren satır
     for (let i = 0; i < Math.min(allRows.length, 20); i++) {
       if (!allRows[i]) continue;
-      const rowStr = allRows[i].map(c => c ? String(c).trim() : '').join(' ').toLowerCase();
-      if (rowStr.includes('bayi') && (rowStr.includes('hedef') || rowStr.includes('tipi') || rowStr.includes('mobil'))) {
+      const rs = allRows[i].map(c => c ? String(c).trim() : '').join(' ').toLowerCase();
+      if (rs.includes('bayi') && (rs.includes('hedef') || rs.includes('tipi') || rs.includes('mobil'))) {
         hi = i; hdrs = allRows[i].map(c => c ? String(c).trim() : ''); break;
       }
     }
@@ -226,11 +231,33 @@ function parseEDMSheet(wb) {
 
   if (hi === -1) return { error: "EDM BUAY: Başlık satırı bulunamadı.", data: null, detay: null };
 
-  log.push('Başlık satırı: ' + hi + '. satır');
-  log.push('Sütunlar: ' + hdrs.map((h,i) => h ? i+':'+h : null).filter(Boolean).join(', '));
+  /* Önceki satır ürün grubu başlığı mı? (ör. "Mobil | | DSL | | Tivibu | |") */
+  if (hi > 0 && allRows[hi-1]) {
+    const prevRow = allRows[hi-1].map(c => c ? String(c).trim() : '');
+    const prevStr = prevRow.join(' ').toLowerCase();
+    if (prevStr.includes('mobil') || prevStr.includes('dsl') || prevStr.includes('tivibu') || prevStr.includes('cihaz')) {
+      hdrs2 = prevRow;
+      log.push('Çift başlık tespit edildi: ürün grubu satırı=' + (hi-1));
+    }
+  }
 
-  /* ── 2. Kolon eşleme (fuzzy) ── */
-  const ci = function(/* ...names */) {
+  /* Çift başlık varsa birleştir: "Mobil" + "Hedef" → "Mobil Hedef" */
+  if (hdrs2.length) {
+    let lastProd = '';
+    hdrs = hdrs.map((h, i) => {
+      const p = hdrs2[i] || '';
+      if (p) lastProd = p;
+      if (lastProd && h && h.toLowerCase() !== lastProd.toLowerCase()) return lastProd + ' ' + h;
+      return h || lastProd;
+    });
+    log.push('Birleştirilmiş başlıklar: ' + hdrs.map((h,i)=>h?i+':"'+h+'"':null).filter(Boolean).join(', '));
+  }
+
+  log.push('Başlık satırı: ' + hi + ' | Sütun sayısı: ' + hdrs.length);
+  log.push('Tüm sütunlar: ' + hdrs.map((h,i)=>h?i+':"'+h+'"':null).filter(Boolean).join(', '));
+
+  /* ── 2. Fuzzy kolon bulucu ── */
+  const ci = function() {
     const names = Array.prototype.slice.call(arguments);
     for (let pass = 0; pass < 2; pass++) {
       for (let ni = 0; ni < names.length; ni++) {
@@ -242,151 +269,181 @@ function parseEDMSheet(wb) {
     return -1;
   };
 
+  /* ── 3. Aktivasyon kolonu yoksa Hedef'e komşu sütunları dene ── */
+  const tryAkt = (hedefCol, foundAktCol) => {
+    if (foundAktCol >= 0) return foundAktCol;
+    if (hedefCol < 0) return -1;
+    /* Hedef'ten sonraki 1-3 sütuna bak */
+    for (let off = 1; off <= 3; off++) {
+      const nc = hedefCol + off;
+      if (nc >= hdrs.length) break;
+      const hl = hdrs[nc].toLowerCase();
+      /* Başka bir Hedef/HGO/FC ise dur */
+      if (hl.includes('hedef') || hl.includes('hgo') || hl.includes('%hgo') ||
+          hl.includes('forecast') || hl.includes(' fc')) break;
+      /* Aktivasyon işareti varsa kullan */
+      if (hl.includes('aktiv') || hl.includes('aktv') || hl.includes('gerç') ||
+          hl.includes('grc') || hl.includes('satış') || hl.includes('sat.') ||
+          hl === 'a' || hl === 'g' || hl === 'gerç.' || hl === 'satış' ||
+          hl.includes('gerçekleşen') || hl.includes('adet') || hl === '') {
+        return nc;
+      }
+    }
+    /* Son çare: Hedef+1 (boş/belirsiz başlık ise de olabilir) */
+    if (hedefCol+1 < hdrs.length) return hedefCol+1;
+    return -1;
+  };
+
+  /* ── 4. Kolon haritası ── */
   const C = {
     anaBayiKod: ci('Ana Bayi Kodu','Ana Bayi No','Üst Bayi Kodu','Ana Bayi'),
     bayiTipi:   ci('Bayi Tipi','Kanal Tipi','Segment','Tip','Kanal'),
     bayiAdi:    ci('Bayi Adı','Bayi Ad','Bayi Adi','Bayi Unvan','Acenta Adı','Acenta Ad'),
     bayiKod:    ci('Bayi Kodu','Bayi No','Bayi Kod','Acenta Kodu','Acenta No'),
     il:         ci('İl','Şehir','City','Province'),
-    sy:         ci('Satış Yöneticisi','SM','SY','Satis Yoneticisi'),
-    bolge:      ci('Bölge','Ana Bölge','Region'),
-    /* Toplam Mobil */
-    mobH:   ci('Toplam Mobil Hedef','Mobil Hedef','GSM Hedef','Mobil H'),
-    mobA:   ci('Toplam Mobil Gerçekleşen','Toplam Mobil Grc','Mobil Gerçekleşen','Mobil Grc','Mobil G'),
+    sy:         ci('Satış Yöneticisi','SM','SY'),
+    /* Hedef kolonu — aktivasyon tryAkt ile bulunacak */
+    ppH:  ci('Postpaid Hedef','Faturalı Hedef','Faturai Hedef','PP Hedef'),
+    ppA:  -1,
+    fpH:  ci('Prepaid Hedef','Faturasız Hedef','FP Hedef'),
+    fpA:  -1,
+    mobH: ci('Toplam Mobil Hedef','Mobil Hedef','GSM Hedef','Mobil H'),
+    mobA: ci('Toplam Mobil Gerçekleşen','Toplam Mobil Grc','Toplam Mobil Aktv','Mobil Gerçekleşen','Mobil Grc','Mobil Aktv','Mobil G','Mobil A'),
     mobHGO: ci('Toplam Mobil HGO','Mobil HGO','Mobil %','Mobil Hgo'),
-    mobFC:  ci('Toplam Mobil Forecast','Mobil Forecast','Mobil FC'),
-    /* Postpaid (Faturalı) */
-    ppH: ci('Postpaid Hedef','Faturalı Hedef','Faturai Hedef','PP Hedef'),
-    ppA: ci('Postpaid Gerçekleşen','Postpaid Grc','Faturalı Gerçekleşen','Faturalı Grc','PP Grc'),
-    /* Prepaid (Faturasız) */
-    fpH: ci('Prepaid Hedef','Faturasız Hedef','FP Hedef'),
-    fpA: ci('Prepaid Gerçekleşen','Prepaid Grc','Faturasız Gerçekleşen','Faturasız Grc'),
-    /* DSL */
-    dslH:   ci('DSL Hedef','Evde İnternet Hedef','ADSL Hedef','Dsl Hedef'),
-    dslA:   ci('DSL Gerçekleşen','DSL Grc','Evde İnternet Gerçekleşen','Evde Internet Grc'),
+    dslH: ci('DSL Hedef','Evde İnternet Hedef','ADSL Hedef','Dsl Hedef'),
+    dslA: ci('DSL Gerçekleşen','DSL Grc','DSL Aktv','Evde İnternet Gerçekleşen','Evde İnternet Grc','Evde İnternet Aktv','Dsl Grc','Dsl Aktv'),
     dslHGO: ci('DSL HGO','Evde İnternet HGO','Dsl Hgo'),
-    dslFC:  ci('DSL Forecast','DSL FC'),
-    /* IPTV */
-    iptvH: ci('IPTV Hedef','Tivibu IPTV Hedef'),
-    iptvA: ci('IPTV Gerçekleşen','IPTV Grc','Tivibu IPTV Grc'),
-    /* Uydu */
-    uydH: ci('Uydu Hedef','Uydu TV Hedef'),
-    uydA: ci('Uydu Gerçekleşen','Uydu Grc'),
-    /* Tivibu/TV (toplam veya ayrı) */
-    tvH:   ci('Tivibu Hedef','Toplam TV Hedef','TV Hedef','Tivibu Toplam Hedef'),
-    tvA:   ci('Tivibu Gerçekleşen','Tivibu Grc','Toplam TV Gerçekleşen','TV Grc'),
+    iptvH: ci('IPTV Hedef'),
+    iptvA: ci('IPTV Gerçekleşen','IPTV Grc','IPTV Aktv'),
+    uydH:  ci('Uydu Hedef','Uydu TV Hedef'),
+    uydA:  ci('Uydu Gerçekleşen','Uydu Grc','Uydu Aktv'),
+    tvH:  ci('Tivibu Hedef','Toplam TV Hedef','TV Hedef','Tivibu Toplam Hedef'),
+    tvA:  ci('Tivibu Gerçekleşen','Tivibu Grc','Tivibu Aktv','Toplam TV Gerçekleşen','TV Grc','TV Aktv'),
     tvHGO: ci('Tivibu HGO','Toplam TV HGO','TV HGO'),
-    tvFC:  ci('Tivibu Forecast','TV Forecast'),
-    /* Cihaz */
-    cihH:   ci('Akıllı Cihaz Hedef','Cihaz Hedef','Smart Cihaz Hedef','Toplam Cihaz Hedef'),
-    cihA:   ci('Akıllı Cihaz Gerçekleşen','Akıllı Cihaz Grc','Cihaz Gerçekleşen','Cihaz Grc'),
+    cihH: ci('Akıllı Cihaz Hedef','Cihaz Hedef','Toplam Cihaz Hedef','Smart Cihaz Hedef'),
+    cihA: ci('Akıllı Cihaz Gerçekleşen','Akıllı Cihaz Grc','Akıllı Cihaz Aktv','Cihaz Gerçekleşen','Cihaz Grc','Cihaz Aktv'),
     cihHGO: ci('Akıllı Cihaz HGO','Cihaz HGO'),
-    cihFC:  ci('Cihaz Forecast','Akıllı Cihaz Forecast'),
-    /* Diğer Cihaz */
     cihDH: ci('Diğer Cihaz Hedef'),
-    cihDA: ci('Diğer Cihaz Gerçekleşen','Diğer Cihaz Grc'),
+    cihDA: ci('Diğer Cihaz Gerçekleşen','Diğer Cihaz Grc','Diğer Cihaz Aktv'),
   };
 
-  /* Mapping raporu */
+  /* Aktivasyon bulunamadıysa komşu sütundan türet */
+  C.ppA  = tryAkt(C.ppH,  C.ppA);
+  C.fpA  = tryAkt(C.fpH,  C.fpA);
+  C.mobA = tryAkt(C.mobH, C.mobA);
+  C.dslA = tryAkt(C.dslH, C.dslA);
+  C.tvA  = tryAkt(C.tvH,  C.tvA);
+  C.iptvA= tryAkt(C.iptvH,C.iptvA);
+  C.uydA = tryAkt(C.uydH, C.uydA);
+  C.cihA = tryAkt(C.cihH, C.cihA);
+  C.cihDA= tryAkt(C.cihDH,C.cihDA);
+
+  /* ── 5. Mapping raporu ── */
+  const mapln = (lbl, hc, ac) =>
+    lbl + ' -> H:' + hc + '(' + (hc>=0 ? '"'+hdrs[hc]+'"' : 'YOK') + ')' +
+    '  A:' + ac + '(' + (ac>=0 ? '"'+hdrs[ac]+'"' : 'YOK') + ')';
   const mappingLines = [
-    'Ana Bayi Kodu -> ' + (C.anaBayiKod>=0 ? '"'+hdrs[C.anaBayiKod]+'" (sütun '+C.anaBayiKod+')' : 'BULUNAMADI'),
-    'Bayi Adı      -> ' + (C.bayiAdi>=0    ? '"'+hdrs[C.bayiAdi]+'" (sütun '+C.bayiAdi+')' : 'BULUNAMADI'),
-    'Bayi Kodu     -> ' + (C.bayiKod>=0    ? '"'+hdrs[C.bayiKod]+'" (sütun '+C.bayiKod+')' : 'BULUNAMADI'),
-    'Bayi Tipi     -> ' + (C.bayiTipi>=0   ? '"'+hdrs[C.bayiTipi]+'" (sütun '+C.bayiTipi+')' : 'BULUNAMADI'),
-    'İl            -> ' + (C.il>=0          ? '"'+hdrs[C.il]+'" (sütun '+C.il+')' : 'BULUNAMADI'),
-    'Mobil H/A     -> ' + C.mobH+'/'+C.mobA + (C.mobH<0&&C.ppH>=0?' (PP+FP ile hesaplanacak)':''),
-    'Postpaid H/A  -> ' + C.ppH+'/'+C.ppA,
-    'Prepaid H/A   -> ' + C.fpH+'/'+C.fpA,
-    'DSL H/A       -> ' + C.dslH+'/'+C.dslA,
-    'IPTV H/A      -> ' + C.iptvH+'/'+C.iptvA,
-    'Uydu H/A      -> ' + C.uydH+'/'+C.uydA,
-    'Tivibu H/A    -> ' + C.tvH+'/'+C.tvA,
-    'Cihaz H/A     -> ' + C.cihH+'/'+C.cihA,
-    'Diğer C H/A   -> ' + C.cihDH+'/'+C.cihDA,
+    '=== Kolon Mapping ===',
+    'Ana Bayi Kodu -> sütun ' + C.anaBayiKod + ' (' + (C.anaBayiKod>=0?'"'+hdrs[C.anaBayiKod]+'"':'BULUNAMADI') + ')',
+    'Bayi Adı      -> sütun ' + C.bayiAdi    + ' (' + (C.bayiAdi>=0?'"'+hdrs[C.bayiAdi]+'"':'BULUNAMADI') + ')',
+    'Bayi Kodu     -> sütun ' + C.bayiKod    + ' (' + (C.bayiKod>=0?'"'+hdrs[C.bayiKod]+'"':'BULUNAMADI') + ')',
+    'Bayi Tipi     -> sütun ' + C.bayiTipi   + ' (' + (C.bayiTipi>=0?'"'+hdrs[C.bayiTipi]+'"':'BULUNAMADI') + ')',
+    'İl            -> sütun ' + C.il          + ' (' + (C.il>=0?'"'+hdrs[C.il]+'"':'BULUNAMADI') + ')',
+    mapln('Postpaid    ', C.ppH,   C.ppA),
+    mapln('Prepaid     ', C.fpH,   C.fpA),
+    mapln('Toplam Mobil', C.mobH,  C.mobA),
+    mapln('DSL         ', C.dslH,  C.dslA),
+    mapln('IPTV        ', C.iptvH, C.iptvA),
+    mapln('Uydu        ', C.uydH,  C.uydA),
+    mapln('TV/Tivibu   ', C.tvH,   C.tvA),
+    mapln('Akıllı Cihaz', C.cihH,  C.cihA),
+    mapln('Diğer Cihaz ', C.cihDH, C.cihDA),
   ];
   log.push(...mappingLines);
   mappingLines.forEach(l => console.log('[EDM] ' + l));
 
-  /* ── 3. Ana Bayi Kodu sütununu değer taramasıyla da dene ── */
+  /* ── 6. Ana Bayi Kodu değer taraması ── */
   if (C.anaBayiKod < 0) {
-    for (let ci2 = 0; ci2 < Math.min(hdrs.length, 30); ci2++) {
-      const vals = allRows.slice(hi+1, hi+8).map(r => r && r[ci2] != null ? String(r[ci2]).trim() : '');
+    for (let ci2 = 0; ci2 < Math.min(hdrs.length, 40); ci2++) {
+      const vals = allRows.slice(hi+1, hi+10).map(r => r && r[ci2] != null ? String(r[ci2]).trim() : '');
       if (vals.some(v => v === EDM_ANA_KOD)) {
         C.anaBayiKod = ci2;
-        log.push('Ana Bayi Kodu değer taramasıyla bulundu: sütun ' + ci2);
+        log.push('Ana Bayi Kodu değer taramayla bulundu: sütun ' + ci2 + ' ("' + hdrs[ci2] + '")');
         break;
       }
     }
   }
 
-  /* ── 4. Ürün kolonu bulunamadıysa TTM BUAY fallback ── */
-  const hasProd = C.mobH>=0 || C.ppH>=0 || C.dslH>=0 || C.tvH>=0 || C.iptvH>=0 || C.cihH>=0;
+  /* ── 7. Ürün kolonu fallback (hiç bulunamazsa TTM BUAY pozisyonları) ── */
+  const hasProd = C.mobH>=0||C.ppH>=0||C.dslH>=0||C.tvH>=0||C.iptvH>=0||C.cihH>=0;
   if (!hasProd) {
-    log.push('Ürün sütunları adla bulunamadı → TTM BUAY konum fallback (49,50,53,54,57,58,69,70,73,74,77,78,81,82)');
-    console.log('[EDM] TTM fallback aktif');
-    C.ppH=49; C.ppA=50; C.fpH=53; C.fpA=54;
-    C.dslH=57; C.dslA=58;
-    C.iptvH=69; C.iptvA=70; C.uydH=73; C.uydA=74;
-    C.cihH=77; C.cihA=78; C.cihDH=81; C.cihDA=82;
+    log.push('!!! Ürün sütunları hiç bulunamadı → TTM BUAY pozisyon fallback !!!');
+    console.warn('[EDM] Ürün sütunları bulunamadı, TTM BUAY konum tahmini kullanılıyor');
+    C.ppH=49;C.ppA=50;C.fpH=53;C.fpA=54;
+    C.dslH=57;C.dslA=58;
+    C.iptvH=69;C.iptvA=70;C.uydH=73;C.uydA=74;
+    C.cihH=77;C.cihA=78;C.cihDH=81;C.cihDA=82;
   }
 
-  /* ── 5. Veri satırlarını parse et ── */
-  const out = { bayi: {"Postpaid":[],"Prepaid":[],"Toplam Mobil":[],"DSL":[],"Toplam TV":[],"Akıllı Cihaz":[],"Diğer Cihaz":[]} };
+  /* ── 8. Veri satırlarını parse et ── */
+  const out = { bayi:{"Postpaid":[],"Prepaid":[],"Toplam Mobil":[],"DSL":[],"Toplam TV":[],"Akıllı Cihaz":[],"Diğer Cihaz":[]} };
   const detayBayiler = {};
   let bayiCount = 0;
+  const debugSmp = {TTBN:[], ESN:[], OTHER:[]};
 
-  const gs = (r, col) => (col >= 0 && r && r[col] != null) ? String(r[col]).trim() : '';
-  const gn = (r, col) => (col >= 0 && r && r[col] != null) ? num(r[col]) : null;
-  const hg = (a, h, preHgo) => {
-    if (preHgo !== null && preHgo !== undefined && !isNaN(preHgo)) return Math.round(preHgo * 10) / 10;
-    return (a !== null && h && h > 0) ? Math.round(a/h*1000)/10 : null;
+  const gs = (r,col) => (col>=0&&r&&r[col]!=null)?String(r[col]).trim():'';
+  const gn = (r,col) => { if(col<0||!r||r[col]==null)return null; const v=num(r[col]); return v; };
+  const hg = (a,h,pre) => {
+    if(pre!==null&&pre!==undefined&&!isNaN(pre)&&pre>0)return Math.round(pre*10)/10;
+    return (a!==null&&h&&h>0)?Math.round(a/h*1000)/10:null;
   };
 
-  for (const r of allRows.slice(hi + 1)) {
+  for (const r of allRows.slice(hi+1)) {
     if (!r) continue;
 
     /* Ana Bayi Kodu filtresi */
-    if (C.anaBayiKod >= 0) {
-      const ank = gs(r, C.anaBayiKod);
-      if (ank !== EDM_ANA_KOD) continue;
-    } else {
-      /* Kolon bilinmiyorsa atlat — tüm satırları al (risk ama olmazsa olmaz) */
-    }
+    if (C.anaBayiKod >= 0 && gs(r, C.anaBayiKod) !== EDM_ANA_KOD) continue;
 
-    const bayiAdi = gs(r, C.bayiAdi) || (r[3] ? String(r[3]).trim() : '');
-    const bayiKod = gs(r, C.bayiKod) || (r[2] ? String(r[2]).trim() : '');
+    const bayiAdi = gs(r,C.bayiAdi)||(r[3]?String(r[3]).trim():'');
+    const bayiKod = gs(r,C.bayiKod)||(r[2]?String(r[2]).trim():'');
     if (!bayiAdi && !bayiKod) continue;
 
-    const b   = shortB(bayiAdi || bayiKod);
-    const bt  = gs(r, C.bayiTipi);
-    const il  = gs(r, C.il);
-    const sy_ = gs(r, C.sy);
-    const sub = bayiKod && il ? bayiKod + ' · ' + il : (bayiKod || il || '');
+    const b   = shortB(bayiAdi||bayiKod);
+    const bt  = gs(r,C.bayiTipi);
+    const il  = gs(r,C.il);
+    const sy_ = gs(r,C.sy);
+    const sub = bayiKod&&il ? bayiKod+' · '+il : (bayiKod||il||'');
 
-    /* Ürün verileri */
-    const ppH = gn(r,C.ppH)||0, ppA = gn(r,C.ppA)||0;
-    const fpH = gn(r,C.fpH)||0, fpA = gn(r,C.fpA)||0;
+    const ppH=gn(r,C.ppH)||0, ppA=gn(r,C.ppA)||0;
+    const fpH=gn(r,C.fpH)||0, fpA=gn(r,C.fpA)||0;
     let mobH, mobA;
-    if (C.mobH >= 0) { mobH = gn(r,C.mobH)||0; mobA = gn(r,C.mobA)||0; }
-    else              { mobH = ppH+fpH; mobA = ppA+fpA; }
-    const mobHGO  = gn(r, C.mobHGO);
-    const dslH = gn(r,C.dslH)||0, dslA = gn(r,C.dslA)||0, dslHGO = gn(r,C.dslHGO);
-    let tvH, tvA;
-    if (C.tvH >= 0) { tvH = gn(r,C.tvH)||0; tvA = gn(r,C.tvA)||0; }
-    else            { tvH = (gn(r,C.iptvH)||0)+(gn(r,C.uydH)||0); tvA = (gn(r,C.iptvA)||0)+(gn(r,C.uydA)||0); }
-    const tvHGO = gn(r, C.tvHGO);
-    const cihH = gn(r,C.cihH)||0, cihA = gn(r,C.cihA)||0, cihHGO = gn(r,C.cihHGO);
-    const cihDH = gn(r,C.cihDH)||0, cihDA = gn(r,C.cihDA)||0;
+    if(C.mobH>=0){ mobH=gn(r,C.mobH)||0; mobA=gn(r,C.mobA)||0; }
+    else          { mobH=ppH+fpH; mobA=ppA+fpA; }
+    const mobHGO=gn(r,C.mobHGO);
+    const dslH=gn(r,C.dslH)||0, dslA=gn(r,C.dslA)||0, dslHGO=gn(r,C.dslHGO);
+    let tvH,tvA;
+    if(C.tvH>=0){ tvH=gn(r,C.tvH)||0; tvA=gn(r,C.tvA)||0; }
+    else        { tvH=(gn(r,C.iptvH)||0)+(gn(r,C.uydH)||0); tvA=(gn(r,C.iptvA)||0)+(gn(r,C.uydA)||0); }
+    const tvHGO=gn(r,C.tvHGO);
+    const cihH=gn(r,C.cihH)||0, cihA=gn(r,C.cihA)||0, cihHGO=gn(r,C.cihHGO);
+    const cihDH=gn(r,C.cihDH)||0, cihDA=gn(r,C.cihDA)||0;
 
-    if (ppH>0)  out.bayi["Postpaid"].push({p:b,b:sub,sy:sy_,bt,g:hg(ppA,ppH,null)});
-    if (fpH>0)  out.bayi["Prepaid"].push({p:b,b:sub,sy:sy_,bt,g:hg(fpA,fpH,null)});
-    if (mobH>0||mobHGO!==null) out.bayi["Toplam Mobil"].push({p:b,b:sub,sy:sy_,bt,g:hg(mobA,mobH,mobHGO)});
-    if (dslH>0||dslHGO!==null) out.bayi["DSL"].push({p:b,b:sub,sy:sy_,bt,g:hg(dslA,dslH,dslHGO)});
-    if (tvH>0||tvHGO!==null)   out.bayi["Toplam TV"].push({p:b,b:sub,sy:sy_,bt,g:hg(tvA,tvH,tvHGO)});
-    if (cihH>0||cihHGO!==null) out.bayi["Akıllı Cihaz"].push({p:b,b:sub,sy:sy_,bt,g:hg(cihA,cihH,cihHGO)});
-    if (cihDH>0) out.bayi["Diğer Cihaz"].push({p:b,b:sub,sy:sy_,bt,g:hg(cihDA,cihDH,null)});
+    /* Debug örnek */
+    const smpKey = bt==='TTBN'?'TTBN':bt==='ESN'?'ESN':'OTHER';
+    if(debugSmp[smpKey].length<5) debugSmp[smpKey].push({
+      bayiKod,name:b,bt,il,mobH,mobA,dslH,dslA,tvH,tvA,cihH,cihA,
+      rawMobA:r[C.mobA],rawDslA:r[C.dslA],rawCihA:r[C.cihA]
+    });
 
-    const pr = {
+    if(ppH>0)  out.bayi["Postpaid"].push({p:b,b:sub,sy:sy_,bt,g:hg(ppA,ppH,null)});
+    if(fpH>0)  out.bayi["Prepaid"].push({p:b,b:sub,sy:sy_,bt,g:hg(fpA,fpH,null)});
+    if(mobH>0||mobHGO!==null) out.bayi["Toplam Mobil"].push({p:b,b:sub,sy:sy_,bt,g:hg(mobA,mobH,mobHGO)});
+    if(dslH>0||dslHGO!==null) out.bayi["DSL"].push({p:b,b:sub,sy:sy_,bt,g:hg(dslA,dslH,dslHGO)});
+    if(tvH>0||tvHGO!==null)   out.bayi["Toplam TV"].push({p:b,b:sub,sy:sy_,bt,g:hg(tvA,tvH,tvHGO)});
+    if(cihH>0||cihHGO!==null) out.bayi["Akıllı Cihaz"].push({p:b,b:sub,sy:sy_,bt,g:hg(cihA,cihH,cihHGO)});
+    if(cihDH>0) out.bayi["Diğer Cihaz"].push({p:b,b:sub,sy:sy_,bt,g:hg(cihDA,cihDH,null)});
+
+    const pr={
       "Postpaid":    {h:Math.round(ppH), a:Math.round(ppA), g:hg(ppA,ppH,null)},
       "Prepaid":     {h:Math.round(fpH), a:Math.round(fpA), g:hg(fpA,fpH,null)},
       "Toplam Mobil":{h:Math.round(mobH),a:Math.round(mobA),g:hg(mobA,mobH,mobHGO)},
@@ -396,22 +453,33 @@ function parseEDMSheet(wb) {
       "Diğer Cihaz": {h:Math.round(cihDH),a:Math.round(cihDA),g:hg(cihDA,cihDH,null)},
       "Toplam Cihaz":{h:Math.round(cihH+cihDH),a:Math.round(cihA+cihDA),g:hg(cihA+cihDA,cihH+cihDH,null)},
     };
-    detayBayiler[bayiKod || b] = {kod:bayiKod, b, il, bt, sy:sy_, prods:pr};
+    detayBayiler[bayiKod||b]={kod:bayiKod,b,il,bt,sy:sy_,prods:pr};
     bayiCount++;
   }
 
-  log.push('Parse edilen EDM bayi sayısı: ' + bayiCount);
-  if (typeof EDM_COL_LOG !== 'undefined') EDM_COL_LOG = log.join('\n');
+  /* ── 9. Debug: İlk 5 TTBN / ESN satırı ── */
+  ['TTBN','ESN','OTHER'].forEach(bk => {
+    if(!debugSmp[bk].length) return;
+    log.push('=== İlk '+debugSmp[bk].length+' '+bk+' satırı ===');
+    debugSmp[bk].forEach((s,i)=>{
+      log.push((i+1)+'. Kod:'+s.bayiKod+' Ad:'+s.name+' İl:'+s.il);
+      log.push('   Mob H:'+s.mobH+' A:'+s.mobA+' (raw:'+s.rawMobA+') | DSL H:'+s.dslH+' A:'+s.dslA+' (raw:'+s.rawDslA+') | TV H:'+s.tvH+' A:'+s.tvA+' | Cih H:'+s.cihH+' A:'+s.cihA+' (raw:'+s.rawCihA+')');
+    });
+  });
+  log.push('=== TOPLAM: '+bayiCount+' EDM bayi parse edildi ===');
 
-  if (bayiCount === 0) {
-    const msg = C.anaBayiKod >= 0
+  log.forEach(l=>console.log('[EDM] '+l));
+  if(typeof EDM_COL_LOG!=='undefined') EDM_COL_LOG=log.join('\n');
+
+  if(bayiCount===0){
+    const msg = C.anaBayiKod>=0
       ? "507868 Ana Bayi koduna bağlı EDM verisi bulunamadı."
-      : "Ana Bayi Kodu sütunu bulunamadı. Konsol loguna bakın.";
-    return { error: msg, data: out, detay: { bayiler: detayBayiler, pers: {} }, bayiCount: 0 };
+      : "Ana Bayi Kodu sütunu bulunamadı. Ayarlar→EDM bölümünde log'u inceleyin.";
+    return {error:msg,data:out,detay:{bayiler:detayBayiler,pers:{}},bayiCount:0};
   }
 
-  for (const k in out.bayi) out.bayi[k].sort((a,c) => (c.g||0)-(a.g||0));
-  return { data: out, detay: { bayiler: detayBayiler, pers: {} }, error: null, bayiCount };
+  for(const k in out.bayi) out.bayi[k].sort((a,c)=>(c.g||0)-(a.g||0));
+  return {data:out,detay:{bayiler:detayBayiler,pers:{}},error:null,bayiCount};
 }
 
 /* ───── DOSYA ───── */
