@@ -287,6 +287,30 @@ function _edmNoData() {
 
 /* ─── EDM SY GÖRÜNÜMÜ ───────────────────────────────────────────────── */
 
+/* ─── AYARLAR: EDM DURUM & DEBUG ────────────────────────────────────── */
+function renderEDMSettings() {
+  var el = document.getElementById('edm-settings-content');
+  if (!el) return;
+  if (!EDM_DATA && !EDM_ERROR) { el.innerHTML = '<div class="hist-s-empty">Excel yüklenince EDM verisi otomatik parse edilir.</div>'; return; }
+
+  var bayiSay = EDM_DATA ? (EDM_DATA.bayi['Toplam Mobil'] || []).length : 0;
+  var ttbnSay = EDM_DATA ? (EDM_DATA.bayi['Toplam Mobil'] || []).filter(function(r){return r.bt==='TTBN';}).length : 0;
+  var esnSay  = EDM_DATA ? (EDM_DATA.bayi['Toplam Mobil'] || []).filter(function(r){return r.bt==='ESN';}).length : 0;
+
+  var status = EDM_ERROR
+    ? '<div class="hist-s-row"><span class="hist-s-icon">⚠️</span><div class="hist-s-info"><div class="hist-s-name">Hata</div><div class="hist-s-file">'+EDM_ERROR+'</div></div></div>'
+    : '<div class="hist-s-row hist-s-active"><span class="hist-s-icon">✅</span><div class="hist-s-info">' +
+        '<div class="hist-s-name">'+bayiSay+' EDM Bayi yüklü</div>' +
+        '<div class="hist-s-file">TTBN: '+ttbnSay+' · ESN: '+esnSay+'</div></div>' +
+        '<span class="hist-s-badge">Aktif</span></div>';
+
+  var debugLog = (typeof EDM_COL_LOG !== 'undefined' && EDM_COL_LOG)
+    ? '<div class="edm-debug-log">📋 Kolon Mapping:<br>' + EDM_COL_LOG.replace(/\n/g,'<br>') + '</div>'
+    : '';
+
+  el.innerHTML = status + debugLog;
+}
+
 function renderEDMSY() {
   var cards = document.getElementById('cards');
   cards.className = 'cards single'; cards.style.maxWidth = '360px';

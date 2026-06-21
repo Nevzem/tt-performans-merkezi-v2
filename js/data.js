@@ -17,6 +17,7 @@ let EDM_FILTER = 'Tümü';  /* 'Tümü' | 'TTBN' | 'ESN' */
 let EDM_DATA   = null;    /* EDM BUAY verisi */
 let EDM_DETAY  = null;    /* EDM DETAY verisi */
 let EDM_ERROR  = null;    /* Parse hata mesajı */
+let EDM_COL_LOG = '';     /* Kolon mapping debug çıktısı */
 
 /* ───── ANA STATE DEĞİŞKENLERİ ───── */
 let PREV = null;

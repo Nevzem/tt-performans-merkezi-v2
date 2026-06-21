@@ -57,6 +57,7 @@ function navTo(page) {
 
   } else if (page === 'ayar') {
     if (typeof renderHistorySettings === 'function') renderHistorySettings();
+    if (typeof renderEDMSettings === 'function') renderEDMSettings();
   }
 
   var sa = document.querySelector('.scroll-area');
