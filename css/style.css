@@ -43,6 +43,7 @@
 
   /* Boyutlar */
   --topbar-h:    56px;
+  --chstrip-h:   36px;  /* kanal seçici şeridi */
   --bottomnav-h: 62px;
 }
 
@@ -59,6 +60,49 @@ body {
 
 /* ─── UYGULAMA KAPSAYICI ──────────────────────────────────────────── */
 .app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ─── KANAL SEÇİCİ ŞERİDİ ────────────────────────────────────────── */
+.channel-strip {
+  position: fixed; top: var(--topbar-h); left: 0; right: 0; z-index: 99;
+  height: var(--chstrip-h);
+  background: var(--navy-2);
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.ch-label {
+  font-size: 8px; font-weight: 800; color: rgba(255,255,255,0.4);
+  text-transform: uppercase; letter-spacing: 1.2px; flex-shrink: 0;
+}
+.ch-toggle {
+  display: flex; gap: 2px;
+  background: rgba(255,255,255,0.08); border-radius: 7px; padding: 2px;
+}
+.ch-btn {
+  padding: 3px 10px; border: none; border-radius: 5px;
+  font-size: 10.5px; font-weight: 800; cursor: pointer; font-family: inherit;
+  background: transparent; color: rgba(255,255,255,0.55);
+  transition: all 0.15s;
+}
+.ch-btn.active { background: #fff; color: var(--navy); }
+
+.edm-sub { display: flex; gap: 3px; margin-left: 4px; }
+.edmf-btn {
+  padding: 3px 8px; border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 5px; font-size: 9.5px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6);
+  transition: all 0.12s;
+}
+.edmf-btn.active { background: rgba(255,255,255,0.18); color: #fff; border-color: rgba(255,255,255,0.45); }
+
+.edm-badge {
+  font-size: 8.5px; font-weight: 700; padding: 2px 8px;
+  border-radius: 5px; margin-left: auto; flex-shrink: 0;
+}
+.edm-badge-ok   { background: rgba(14,122,64,0.3);    color: #6EE7A8; }
+.edm-badge-err  { background: rgba(193,20,33,0.3);    color: #FCA5A5; }
+.edm-badge-warn { background: rgba(178,107,0,0.3);    color: #FCD34D; }
 
 /* ─── TOP BAR ─────────────────────────────────────────────────────── */
 .topbar {
@@ -100,7 +144,7 @@ body {
 .scroll-area {
   flex: 1;
   overflow-y: auto;
-  padding-top: var(--topbar-h);
+  padding-top: calc(var(--topbar-h) + var(--chstrip-h));
   padding-bottom: calc(var(--bottomnav-h) + env(safe-area-inset-bottom, 8px));
 }
 

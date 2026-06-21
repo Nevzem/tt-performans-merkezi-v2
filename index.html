@@ -24,6 +24,21 @@
     <div class="status-badge" id="status">Örnek veri yüklü</div>
   </header>
 
+  <!-- KANAL SEÇİCİ -->
+  <div class="channel-strip">
+    <span class="ch-label">Kanal</span>
+    <div class="ch-toggle">
+      <button class="ch-btn active" data-ch="TTM" onclick="setKanal('TTM')">TTM</button>
+      <button class="ch-btn"        data-ch="EDM" onclick="setKanal('EDM')">EDM</button>
+    </div>
+    <div class="edm-sub" id="edm-sub" style="display:none">
+      <button class="edmf-btn active" data-bt="Tümü" onclick="setEdmFilter('Tümü')">Tümü</button>
+      <button class="edmf-btn"        data-bt="TTBN" onclick="setEdmFilter('TTBN')">TTBN</button>
+      <button class="edmf-btn"        data-bt="ESN"  onclick="setEdmFilter('ESN')">ESN</button>
+    </div>
+    <span class="edm-badge" id="edm-status-badge" style="display:none"></span>
+  </div>
+
   <!-- SCROLL AREA -->
   <main class="scroll-area">
 
@@ -243,6 +258,7 @@
 <script src="js/render.js"></script>
 <script src="js/export.js"></script>
 <script src="js/home.js"></script>
+<script src="js/edm.js"></script>
 <script src="js/history.js"></script>
 <script src="js/filters.js"></script>
 <script src="js/app.js"></script>

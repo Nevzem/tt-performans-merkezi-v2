@@ -52,6 +52,11 @@ function setHomeBayiRankProd(k) { _homeBayiRankProd = k; renderHome(); }
 function renderHome() {
   var el = document.getElementById('home-dashboard');
   if (!el) return;
+  /* EDM kanalı için ayrı render */
+  if (typeof KANAL !== 'undefined' && KANAL === 'EDM') {
+    if (typeof renderEDMHome === 'function') renderEDMHome(el);
+    return;
+  }
   var kpis = _hdKPIs();
   el.innerHTML = [
     _hdPageHeader(),

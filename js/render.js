@@ -138,6 +138,15 @@ function cardHTML(prodKey) {
   const N = parseInt(document.getElementById("nsel").value);
   const syTag = sy === "Tümü" ? "" : " · SY: " + sy.split(" ")[0];
 
+  /* EDM kanalı için ayrı render */
+  if (typeof KANAL !== "undefined" && KANAL === "EDM" && section === "bayi") {
+    return typeof renderEDMBayi === "function" ? renderEDMBayi(prodKey) : "";
+  }
+  if (typeof KANAL !== "undefined" && KANAL === "EDM" && section === "sy") {
+    if (typeof renderEDMSY === "function") renderEDMSY();
+    return "";
+  }
+
   if (section === "bayi") {
     let recs = filt(DATA.bayi[prodKey] || []);
     if (typeof compactListeN !== "undefined" && compactListeN < 999) recs = recs.slice(0, compactListeN);

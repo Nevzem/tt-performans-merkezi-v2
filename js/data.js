@@ -11,6 +11,13 @@
 /* ───── TREND DEPOSU ANAHTARI ───── */
 const TREND_KEY = "tt_kuzey_trend_v1";
 
+/* ───── KANAL STATE ───── */
+let KANAL      = 'TTM';   /* 'TTM' | 'EDM' */
+let EDM_FILTER = 'Tümü';  /* 'Tümü' | 'TTBN' | 'ESN' */
+let EDM_DATA   = null;    /* EDM BUAY verisi */
+let EDM_DETAY  = null;    /* EDM DETAY verisi */
+let EDM_ERROR  = null;    /* Parse hata mesajı */
+
 /* ───── ANA STATE DEĞİŞKENLERİ ───── */
 let PREV = null;
 let DONEM = "2026/06";

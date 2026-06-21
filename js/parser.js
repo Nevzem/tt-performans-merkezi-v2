@@ -198,6 +198,86 @@ function parseWB(wb) {
   return { data: out, donem: dfmt, persCount, bayiCount, matrix, kupa: kupaRows, detay: { bayiler: detayBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
 }
 
+/* ───── EDM PARSER ───── */
+function parseEDMSheet(wb) {
+  const EDM_ANA_KOD = '507868';
+  const wsName = wb.SheetNames.find(s => s.trim().toUpperCase() === 'EDM BUAY');
+  if (!wsName) return { error: "EDM BUAY sheet'i bulunamadı.", data: null, detay: null };
+
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[wsName], { header: 1, defval: null });
+
+  /* Başlık satırını bul */
+  let hi = rows.findIndex(r => r && r[0] && String(r[0]).trim() === "Ana Bölge");
+  if (hi === -1) hi = rows.findIndex(r => r && r.some(c => c && String(c).includes("Ana Bayi")));
+  if (hi === -1) return { error: "EDM BUAY: Başlık satırı bulunamadı.", data: null, detay: null };
+
+  const header = rows[hi].map(c => c ? String(c).trim() : '');
+  const col = name => header.findIndex(h => h === name || h.toLowerCase().includes(name.toLowerCase()));
+
+  const anaBayiKodCol = col('Ana Bayi Kodu') >= 0 ? col('Ana Bayi Kodu') : col('Ana Bayi');
+  const bayiTipiCol   = col('Bayi Tipi');
+  /* Ürün sütunları — TTM BUAY ile aynı konumlar varsayılır */
+
+  const out = {
+    bayi: { "Postpaid":[], "Prepaid":[], "Toplam Mobil":[], "DSL":[],
+            "Toplam TV":[], "Akıllı Cihaz":[], "Diğer Cihaz":[] }
+  };
+  const detayBayiler = {};
+  let bayiCount = 0;
+
+  for (const r of rows.slice(hi + 1)) {
+    if (!r || !r[3]) continue;
+    /* Ana Bayi Kodu filtresi */
+    if (anaBayiKodCol >= 0) {
+      const k = r[anaBayiKodCol] ? String(r[anaBayiKodCol]).trim() : '';
+      if (k !== EDM_ANA_KOD) continue;
+    }
+
+    const b   = shortB(r[3]);
+    const kod = r[2] ? String(r[2]).trim() : '';
+    const il  = r[5] ? String(r[5]).trim() : '';
+    const bt  = bayiTipiCol >= 0 && r[bayiTipiCol] ? String(r[bayiTipiCol]).trim() : '';
+    const sub = kod && il ? kod + " · " + il : (kod || il);
+    const sy_ = r[7] && String(r[7]).trim() !== "-" ? String(r[7]).trim() : "";
+
+    /* TTM BUAY ile aynı ürün sütun konumları */
+    const ph=num(r[49])||0,pa=num(r[50])||0,rh=num(r[53])||0,ra=num(r[54])||0;
+    const dh=num(r[57])||0,da=num(r[58])||0;
+    const ih=num(r[69])||0,ia=num(r[70])||0,uh=num(r[73])||0,ua=num(r[74])||0;
+    const ch=num(r[77])||0,ca=num(r[78])||0,gh=num(r[81])||0,ga=num(r[82])||0;
+
+    const hg=(a,h)=> h>0 ? Math.round(a/h*1000)/10 : null;
+    if (ph>0) out.bayi["Postpaid"].push({p:b,b:sub,sy:sy_,bt,g:hg(pa,ph)});
+    if (rh>0) out.bayi["Prepaid"].push({p:b,b:sub,sy:sy_,bt,g:hg(ra,rh)});
+    if (ph+rh>0) out.bayi["Toplam Mobil"].push({p:b,b:sub,sy:sy_,bt,g:hg(pa+ra,ph+rh)});
+    if (dh>0) out.bayi["DSL"].push({p:b,b:sub,sy:sy_,bt,g:hg(da,dh)});
+    if (ih+uh>0) out.bayi["Toplam TV"].push({p:b,b:sub,sy:sy_,bt,g:hg(ia+ua,ih+uh)});
+    if (ch>0) out.bayi["Akıllı Cihaz"].push({p:b,b:sub,sy:sy_,bt,g:hg(ca,ch)});
+    if (gh>0) out.bayi["Diğer Cihaz"].push({p:b,b:sub,sy:sy_,bt,g:hg(ga,gh)});
+
+    /* DETAY */
+    const pr={};
+    pr["Postpaid"]    ={h:Math.round(ph),a:Math.round(pa),g:hg(pa,ph)};
+    pr["Prepaid"]     ={h:Math.round(rh),a:Math.round(ra),g:hg(ra,rh)};
+    pr["Toplam Mobil"]={h:Math.round(ph+rh),a:Math.round(pa+ra),g:hg(pa+ra,ph+rh)};
+    pr["DSL"]         ={h:Math.round(dh),a:Math.round(da),g:hg(da,dh)};
+    pr["Toplam TV"]   ={h:Math.round(ih+uh),a:Math.round(ia+ua),g:hg(ia+ua,ih+uh)};
+    pr["Akıllı Cihaz"]={h:Math.round(ch),a:Math.round(ca),g:hg(ca,ch)};
+    pr["Diğer Cihaz"] ={h:Math.round(gh),a:Math.round(ga),g:hg(ga,gh)};
+    pr["Toplam Cihaz"]={h:Math.round(ch+gh),a:Math.round(ca+ga),g:hg(ca+ga,ch+gh)};
+    detayBayiler[kod] = {kod, b, il, bt, sy:sy_, prods:pr};
+    bayiCount++;
+  }
+
+  if (bayiCount === 0) {
+    return { error: "507868 Ana Bayi koduna bağlı EDM verisi bulunamadı.", data: out, detay: {bayilers:detayBayiler} };
+  }
+
+  for (const k in out.bayi) out.bayi[k].sort((a,c)=>c.g-a.g);
+
+  return { data: out, detay: { bayiler: detayBayiler, pers: {} }, error: null, bayiCount };
+}
+
 /* ───── DOSYA ───── */
 function wire(boxId, inputId, isPrev) {
   const box = document.getElementById(boxId), inp = document.getElementById(inputId);
@@ -225,6 +305,15 @@ function wire(boxId, inputId, isPrev) {
           document.getElementById("status").textContent = "📊 " + parsed.persCount + " personel · " + parsed.bayiCount + " bayi · " + parsed.donem;
           msg.className = "pmsg ok show"; msg.textContent = "✅ " + parsed.persCount + " personel + " + parsed.bayiCount + " bayi işlendi";
           sy = "Tümü";
+          /* EDM BUAY parse (mevcut Excel'den) */
+          try {
+            const wb2 = XLSX.read(new Uint8Array(e.target.result), { type: "array" });
+            const edm = parseEDMSheet(wb2);
+            EDM_DATA  = edm.data;
+            EDM_DETAY = edm.detay;
+            EDM_ERROR = edm.error;
+            if (typeof updateKanalBadge === 'function') updateKanalBadge();
+          } catch(edmErr) { EDM_ERROR = "EDM parse hatası: " + edmErr.message; }
         }
         buildTabs(); render();
       } catch (err) { msg.className = "pmsg err show"; msg.textContent = "❌ " + err.message; }
