@@ -14,7 +14,8 @@ function renderHome() {
     _hdChips(kpis),
     _hdScorecard(kpis),
     _hdAutoSummary(kpis),
-    _hdTopBayiler(),
+    _hdLeaders(),
+    _hdRisks(),
     _hdRiskCenter(kpis),
   ].join('');
 }
@@ -283,57 +284,103 @@ function _hdAutoSummary(kpis) {
 }
 
 /* ══════════════════════════════════════════
-   5. İLK 5 / SON 5 BAYİ LİSTESİ
+   5. ÜRÜN LİDERLERİ & RİSKLİ BAYİLER
+   McKinsey Executive · Bloomberg Terminal
    ══════════════════════════════════════════ */
-function _hdTopBayiler() {
-  var recs = (DATA.bayi && DATA.bayi['Toplam Mobil']) || [];
-  if (!recs.length) return '';
 
-  var top5 = recs.slice(0, 5);
-  var bot5 = recs.slice(-5).slice().reverse();
-  var prevRecs = (PREV && PREV.bayi && PREV.bayi['Toplam Mobil']) || null;
+/* 4 kart için ürün tanımları */
+var _CARD_PRODS = [
+  { icon: '📱', short: 'MOBİL',  dataKey: 'Toplam Mobil', detayKey: 'Toplam Mobil' },
+  { icon: '🌐', short: 'DSL',    dataKey: 'DSL',           detayKey: 'DSL'          },
+  { icon: '📺', short: 'TİVİBU', dataKey: 'Toplam TV',     detayKey: 'Toplam TV'    },
+  { icon: '📦', short: 'CİHAZ',  dataKey: 'Akıllı Cihaz',  detayKey: 'Akıllı Cihaz' },
+];
 
-  function deltaTag(r, curIdx) {
-    if (!prevRecs) return '';
-    var pi = prevRecs.findIndex(function(x) { return x.p === r.p; });
-    if (pi === -1) return '<span class="hd-bdelta hd-bd-new">YENİ</span>';
-    var d = pi - curIdx;
-    if (d > 0) return '<span class="hd-bdelta hd-bd-up">▲' + d + '</span>';
-    if (d < 0) return '<span class="hd-bdelta hd-bd-dn">▼' + Math.abs(d) + '</span>';
-    return '<span class="hd-bdelta hd-bd-eq">—</span>';
+/* DETAY'dan h/a çek (bayi kodu r.b'den ayıklanır: "4100343 · TOKAT") */
+function _detayProd(rec, detayKey) {
+  if (!DETAY || !rec || !rec.b) return null;
+  var kod  = rec.b.split(' · ')[0].trim();
+  var bayi = DETAY.bayiler[kod];
+  return bayi ? (bayi.prods[detayKey] || null) : null;
+}
+
+/* Tek kart HTML'i (lider veya riskli) */
+function _plCard(pm, rec, isLeader, f) {
+  if (!rec) {
+    return '<div class="pl-card pl-empty"><span class="pl-empty-txt">Veri yok</span></div>';
   }
 
-  function bRow(r, dispRank, isTop) {
-    var ci  = recs.findIndex(function(x) { return x.p === r.p; });
-    var medal = dispRank === 1 ? '🥇' : dispRank === 2 ? '🥈' : dispRank === 3 ? '🥉' : null;
-    var rkHTML = medal
-      ? '<span class="hd-medal">' + medal + '</span>'
-      : '<span class="hd-rank-n">' + dispRank + '</span>';
-    var hgoCls  = r.g >= 100 ? 'hd-g' : r.g >= 60 ? 'hd-y' : 'hd-r';
-    var podCls  = (isTop && dispRank <= 3) ? ' hd-pod' + dispRank : '';
-    return (
-      '<div class="hd-brow' + podCls + '">' +
-        '<div class="hd-brk">' + rkHTML + '</div>' +
-        deltaTag(r, ci) +
-        '<div class="hd-bnm">' +
-          '<div class="hd-bp">' + r.p + '</div>' +
-          '<div class="hd-bb">' + r.b + '</div>' +
-        '</div>' +
-        '<div class="hd-bhgo ' + hgoCls + '">%' + r.g.toFixed(1) + '</div>' +
-      '</div>'
+  var hgoClass = rec.g >= 100 ? 'hd-g' : rec.g >= 70 ? 'hd-y' : 'hd-r';
+  var dp       = _detayProd(rec, pm.detayKey);
+  var fcHgo    = (f && rec.g !== null) ? rec.g * f.k : null;
+  var fcClass  = fcHgo === null ? 'hd-navy' : fcHgo >= 100 ? 'hd-g' : fcHgo >= 70 ? 'hd-y' : 'hd-r';
+
+  var badge    = isLeader
+    ? '<span class="pl-badge">🏆</span>'
+    : '<span class="pl-badge">⚠️</span>';
+
+  /* Footer: Forecast + Hedef/Aktiv */
+  var footItems = [];
+  if (fcHgo !== null) {
+    footItems.push('<span class="pl-fc ' + fcClass + '">F %' + Math.round(fcHgo) + '</span>');
+  }
+  if (dp && dp.h > 0) {
+    footItems.push(
+      '<span class="pl-acts">' +
+        dp.a.toLocaleString('tr-TR') + '&thinsp;/&thinsp;' + dp.h.toLocaleString('tr-TR') +
+      '</span>'
     );
   }
 
   return (
-    '<div class="hd-section">' +
-      '<div class="hd-sec-title">Bayi Sıralaması &nbsp;·&nbsp; Toplam Mobil</div>' +
-      '<div class="hd-bl-card">' +
-        '<div class="hd-bl-head hd-bl-top">🏆 İLK 5</div>' +
-        top5.map(function(r, i) { return bRow(r, i + 1, true);  }).join('') +
-        '<div class="hd-bl-divider"></div>' +
-        '<div class="hd-bl-head hd-bl-bot">📉 SON 5</div>' +
-        bot5.map(function(r, i) { return bRow(r, recs.length - i, false); }).join('') +
+    '<div class="pl-card ' + (isLeader ? 'pl-leader' : 'pl-risk') + '">' +
+      '<div class="pl-head">' +
+        '<span class="pl-icon">' + pm.icon + '</span>' +
+        '<span class="pl-prod">' + pm.short + '</span>' +
+        badge +
       '</div>' +
+      '<div class="pl-name">' + rec.p + '</div>' +
+      '<div class="pl-loc">' + rec.b + '</div>' +
+      '<div class="pl-hgo-wrap">' +
+        '<div class="pl-hgo ' + hgoClass + '">%' + rec.g.toFixed(1) + '</div>' +
+        '<div class="pl-hgo-lbl">HGO</div>' +
+      '</div>' +
+      (footItems.length
+        ? '<div class="pl-foot">' + footItems.join('<span class="pl-sep">·</span>') + '</div>'
+        : '') +
+    '</div>'
+  );
+}
+
+/* Bölüm: Ürün Liderleri */
+function _hdLeaders() {
+  var f     = fc();
+  var cards = _CARD_PRODS.map(function(pm) {
+    var recs = (DATA.bayi && DATA.bayi[pm.dataKey]) || [];
+    return _plCard(pm, recs[0] || null, true, f);
+  }).join('');
+
+  return (
+    '<div class="hd-section">' +
+      '<div class="hd-sec-title">Ürün Liderleri</div>' +
+      '<div class="pl-grid">' + cards + '</div>' +
+    '</div>'
+  );
+}
+
+/* Bölüm: Riskli Ürün Bayileri (en düşük HGO) */
+function _hdRisks() {
+  var f     = fc();
+  var cards = _CARD_PRODS.map(function(pm) {
+    var recs  = (DATA.bayi && DATA.bayi[pm.dataKey]) || [];
+    var worst = recs.length ? recs[recs.length - 1] : null;
+    return _plCard(pm, worst, false, f);
+  }).join('');
+
+  return (
+    '<div class="hd-section">' +
+      '<div class="hd-sec-title">Riskli Ürün Bayileri</div>' +
+      '<div class="pl-grid">' + cards + '</div>' +
     '</div>'
   );
 }

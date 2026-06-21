@@ -975,3 +975,83 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
   flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;
 }
 .hd-rc-val { font-size: 11.5px; font-weight: 800; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   ÜRÜN LİDERLERİ / RİSKLİ BAYİLER — 2×2 premium kartlar
+   McKinsey Executive · Bloomberg Terminal
+   ═══════════════════════════════════════════════════════════════════ */
+
+.pl-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* ─── KART KAPSAYICI ──────────────────────────────────────────────── */
+.pl-card {
+  background: var(--card-bg);
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--line);
+  border-radius: 12px;
+  padding: 11px 11px 9px;
+  display: flex; flex-direction: column; gap: 4px;
+  box-shadow: 0 1px 4px rgba(10,31,92,0.05);
+  min-height: 172px;
+}
+.pl-leader { border-left-color: var(--green); }
+.pl-risk   { border-left-color: var(--crimson); }
+.pl-empty  { justify-content: center; align-items: center; min-height: 100px; }
+.pl-empty-txt { font-size: 11px; color: var(--muted); }
+
+/* ─── BAŞLIK SATIRI (ikon + ürün + rozet) ─────────────────────────── */
+.pl-head {
+  display: flex; align-items: center; gap: 5px; margin-bottom: 2px;
+}
+.pl-icon { font-size: 13px; flex-shrink: 0; }
+.pl-prod {
+  flex: 1;
+  font-size: 8px; font-weight: 800; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1.4px;
+}
+.pl-badge { font-size: 13px; flex-shrink: 0; }
+
+/* ─── BAYİ ADI & KONUM ─────────────────────────────────────────────── */
+.pl-name {
+  font-size: 11.5px; font-weight: 800; color: var(--navy);
+  line-height: 1.3; margin-top: 1px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.pl-loc {
+  font-size: 8.5px; color: var(--muted); font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ─── HGO (büyük rakam) ────────────────────────────────────────────── */
+.pl-hgo-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  justify-content: center; margin: 4px 0 2px;
+}
+.pl-hgo {
+  font-size: 27px; font-weight: 900;
+  letter-spacing: -1px; line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.pl-hgo-lbl {
+  font-size: 7.5px; font-weight: 800; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1.8px;
+  margin-top: 3px;
+}
+
+/* ─── FOOTER (Forecast · Hedef/Aktiv) ─────────────────────────────── */
+.pl-foot {
+  display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+  border-top: 1px solid var(--hairline);
+  padding-top: 7px; margin-top: 2px;
+}
+.pl-fc   { font-size: 10px; font-weight: 800; }
+.pl-sep  { font-size: 8px; color: var(--line); }
+.pl-acts { font-size: 9px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
