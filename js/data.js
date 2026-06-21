@@ -16,8 +16,11 @@ let KANAL      = 'TTM';   /* 'TTM' | 'EDM' */
 let EDM_FILTER = 'Tümü';  /* 'Tümü' | 'TTBN' | 'ESN' */
 let EDM_DATA   = null;    /* EDM BUAY verisi */
 let EDM_DETAY  = null;    /* EDM DETAY verisi */
-let EDM_ERROR  = null;    /* Parse hata mesajı */
+let EDM_ERROR   = null;   /* Parse hata mesajı */
 let EDM_COL_LOG = '';     /* Kolon mapping debug çıktısı */
+let EDM_SY_FILTER = 'Tümü'; /* Ana Sayfa SY filtresi */
+
+const EDM_SY_NAMES = ['Tümü','Muhammet Arslan','Mustafa Kayıkçı','Emre Filiz','Ahmet Çelik'];
 
 /* ───── ANA STATE DEĞİŞKENLERİ ───── */
 let PREV = null;

@@ -1370,6 +1370,30 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 .hist-s-file   { font-size: 8.5px; color: var(--muted); font-weight: 600; margin-top: 1px; }
 .hist-s-badge  { font-size: 8px; font-weight: 800; background: var(--green); color: #fff; padding: 2px 7px; border-radius: 5px; flex-shrink: 0; }
 .hist-s-empty  { font-size: 11px; color: var(--muted); font-style: italic; line-height: 1.6; }
+/* ─── EDM SY FİLTRE ŞERİDİ ─────────────────────────────────────── */
+.edm-sy-strip {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  padding: 8px 16px; background: var(--card-bg);
+  border-bottom: 1px solid var(--hairline);
+}
+.edm-sy-lbl { font-size: 8px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
+.edm-sy-btn {
+  padding: 4px 9px; border-radius: 7px; font-size: 10px; font-weight: 700;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--slate);
+  cursor: pointer; font-family: inherit; transition: all 0.12s;
+}
+.edm-sy-btn.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+
+/* ─── EDM BAYİ TİPİ ETİKETİ ─────────────────────────────────────── */
+.edm-bt-tag { display: inline; font-size: 7px; font-weight: 800; padding: 1px 4px; border-radius: 3px; vertical-align: middle; margin-left: 3px; }
+.edm-bt-ttbn { background: #EDF4FD; color: #1A3A8A; }
+.edm-bt-esn  { background: #F4EDF9; color: #6B3A8A; }
+
+/* ─── EDM SATIRLARDA AKTİVASYON ALANI ───────────────────────────── */
+.edm-row-vals { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; gap: 2px; min-width: 80px; }
+.edm-rv-a     { font-size: 14px; font-weight: 900; color: var(--navy); font-variant-numeric: tabular-nums; line-height: 1; }
+.edm-rv-sub   { font-size: 8px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+
 .edm-debug-log {
   margin-top: 10px; padding: 10px 12px;
   background: #F8F9FC; border: 1px solid var(--hairline); border-radius: 8px;

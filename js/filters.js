@@ -58,6 +58,16 @@ function buildFilterBar() {
     html += _fbarChip('sy-prod',  'Ürün',  syProdShort);
     html += _fbarChip('sy-liste', 'Liste', _syListeLabel);
 
+  } else if (isBayi && typeof KANAL !== 'undefined' && KANAL === 'EDM') {
+    /* ── EDM Bayiler filtre çubuğu (aktivasyon bazlı) ── */
+    var edmProdLabel = _fbarProdLabel();
+    var edmSyLabel   = (typeof EDM_SY_FILTER !== 'undefined' && EDM_SY_FILTER !== 'Tümü')
+      ? _truncate(EDM_SY_FILTER.split(' ')[0], 9) : 'Tümü';
+    html += _fbarChip('prod',      'Ürün',        edmProdLabel);
+    html += _fbarChip('edm-sy',    'Satış Yön.',  edmSyLabel);
+    html += _fbarChip('edm-bt',    'Bayi Tipi',   EDM_FILTER);
+    html += _fbarChip('liste',     'Liste',        _listeLabel);
+
   } else {
     /* ── Bayi / Personel filtre çubuğu ── */
     var prodLabel = _fbarProdLabel();
@@ -234,6 +244,30 @@ function _sheetConfig(type) {
     return { title: 'Liste Seçenekleri', items: items, active: _currentListeKey() };
   }
 
+  /* ── EDM Bayiler SY filtresi ── */
+  if (type === 'edm-sy') {
+    return {
+      title: 'Satış Yöneticisi (EDM)',
+      items: (typeof EDM_SY_NAMES !== 'undefined' ? EDM_SY_NAMES : ['Tümü']).map(function(s) {
+        return { key: s, label: s === 'Tümü' ? '👥 Tümü' : '👔 ' + s };
+      }),
+      active: typeof EDM_SY_FILTER !== 'undefined' ? EDM_SY_FILTER : 'Tümü',
+    };
+  }
+
+  /* ── EDM Bayi Tipi filtresi ── */
+  if (type === 'edm-bt') {
+    return {
+      title: 'Bayi Tipi',
+      items: [
+        { key: 'Tümü', label: '🏢 Tümü (TTBN + ESN)' },
+        { key: 'TTBN', label: '🔵 TTBN' },
+        { key: 'ESN',  label: '🟣 ESN' },
+      ],
+      active: EDM_FILTER,
+    };
+  }
+
   /* ── Geçmiş Kıyas filtreleri ── */
   if (type === 'gecm-tarih') {
     var files = (_histManifest && _histManifest.files) || [];
@@ -339,6 +373,14 @@ function _pick(type, key) {
 
   } else if (type === 'sy') {
     setSy(key);
+
+  /* ── EDM picks ── */
+  } else if (type === 'edm-sy') {
+    if (typeof setEdmSy === 'function') setEdmSy(key);
+    render();
+
+  } else if (type === 'edm-bt') {
+    if (typeof setEdmFilter === 'function') setEdmFilter(key);
 
   /* ── Geçmiş Kıyas picks ── */
   } else if (type === 'gecm-tarih') {
