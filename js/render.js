@@ -263,16 +263,32 @@ function renderSY() {
   const prods = S.products && S.products.length ? S.products : ["Mobil Toplam"];
   if (!prods.includes(syProd)) syProd = prods[0];
   const names = Object.keys(S.sy);
-  // syProd HGO forecast'ine göre sırala
-  const ranked = names.map(nm => ({ nm, ...S.sy[nm][syProd] })).filter(x => x).map(x => ({...x, _hgo: x.h>0 ? x.a/x.h*100 : 0})).sort((a,b) => b._hgo - a._hgo);
 
   const PICO = { "Mobil Toplam":"📱","Faturalı":"📄","Faturasız":"📲","Evde İnternet":"🌐","IPTV":"📺","Uydu":"📡","Tivibu Toplam":"📺","Cihaz":"📦","Cihaz Diğer":"🔌" };
-
-  // Ürün seçici (kart üstünde)
-  let prodSel = '<div class="syprod-tabs">' + prods.map(p =>
-    '<button class="tab' + (p === syProd ? " on-prod" : "") + '" onclick="setSyProd(\'' + p + '\')">' + (PICO[p]||"") + ' ' + p + '</button>').join("") + '</div>';
-
   const cls = g => g === null ? "" : g >= 100 ? "g" : g >= 80 ? "y" : "r";
+
+  /* HGO'ya göre sırala */
+  let ranked = names
+    .map(nm => ({ nm, ...S.sy[nm][syProd] }))
+    .filter(x => x && x.h != null)
+    .map(x => ({...x, _hgo: x.h > 0 ? x.a / x.h * 100 : 0}))
+    .sort((a, b) => b._hgo - a._hgo);
+
+  /* Liste modu filtresi (filters.js tarafından yönetilir) */
+  if (typeof syListMode !== "undefined") {
+    if      (syListMode === 'top10') ranked = ranked.slice(0, 10);
+    else if (syListMode === 'bot10') ranked = ranked.slice(-10).reverse();
+    else if (syListMode === 'risk')  ranked = ranked.filter(r => r._hgo < 80);
+  }
+
+  /* Bayi ve personel sayıları (SY bazında) */
+  const bayiCounts = {}, persCounts = {};
+  (DATA.bayi['Toplam Mobil'] || []).forEach(r => {
+    if (r.sy) bayiCounts[r.sy] = (bayiCounts[r.sy] || 0) + 1;
+  });
+  (DATA.pers['Toplam Mobil'] || []).forEach(r => {
+    if (r.sy) persCounts[r.sy] = (persCounts[r.sy] || 0) + 1;
+  });
 
   function chgHTML(nm) {
     if (!SYPREV || !SYPREV.sy[nm] || !SYPREV.sy[nm][syProd]) return "";
@@ -290,15 +306,27 @@ function renderSY() {
   const _gA = S.calismaGun || 0, _gB = S.calisilanGun || 0;
   const ayGun = Math.max(_gA, _gB), gecenGun = Math.min(_gA, _gB);
   const kalanGun = (ayGun > 0 && gecenGun > 0 && ayGun > gecenGun) ? (ayGun - gecenGun) : null;
+
   ranked.forEach((r, i) => {
-    const hgo = r.h > 0 ? Math.round(r.a / r.h * 1000) / 10 : null;
-    const kalan = Math.max(Math.round(r.h - r.a), 0);
-    const gunluk = (kalanGun && kalanGun > 0) ? Math.ceil(kalan / kalanGun) : null;
-    const medal = i===0?'<span class="badge b1">1</span>':i===1?'<span class="badge b2">2</span>':i===2?'<span class="badge b3">3</span>':'<span class="n">'+(i+1)+'</span>';
+    const hgo     = r.h > 0 ? Math.round(r.a / r.h * 1000) / 10 : null;
+    const kalan   = Math.max(Math.round(r.h - r.a), 0);
+    const gunluk  = (kalanGun && kalanGun > 0) ? Math.ceil(kalan / kalanGun) : null;
+    const bayiC   = bayiCounts[r.nm] || 0;
+    const persC   = persCounts[r.nm] || 0;
+    const medal   = i===0?'<span class="badge b1">1</span>':i===1?'<span class="badge b2">2</span>':i===2?'<span class="badge b3">3</span>':'<span class="n">'+(i+1)+'</span>';
+
     rows += '<div class="sy-card">' +
-      '<div class="sy-top"><div class="sy-rk">' + medal + '</div>' +
-      '<div class="sy-name">' + r.nm + '</div>' +
-      '<div class="chip ' + cls(hgo) + '" style="font-size:12.5px">' + (hgo===null?"—":"%"+hgo.toFixed(1)) + '</div></div>' +
+      '<div class="sy-top">' +
+        '<div class="sy-rk">' + medal + '</div>' +
+        '<div class="sy-name">' + r.nm + '</div>' +
+        '<div class="chip ' + cls(hgo) + '" style="font-size:12.5px">' + (hgo===null?"—":"%"+hgo.toFixed(1)) + '</div>' +
+      '</div>' +
+      (bayiC || persC
+        ? '<div class="sy-meta">' +
+            (bayiC ? '<span class="sy-mc">🏢 ' + bayiC + ' bayi</span>' : '') +
+            (persC ? '<span class="sy-mc">👤 ' + persC + ' pers.</span>' : '') +
+          '</div>'
+        : '') +
       '<div class="sy-metrics">' +
         '<div class="sy-m"><div class="sy-mv">' + r.h.toLocaleString("tr-TR") + '</div><div class="sy-ml">HEDEF</div></div>' +
         '<div class="sy-m"><div class="sy-mv">' + r.a.toLocaleString("tr-TR") + '</div><div class="sy-ml">ADET</div></div>' +
@@ -306,23 +334,26 @@ function renderSY() {
       '</div>' +
       '<div class="sy-need">' +
         '<div class="sy-n"><span class="sy-nv">' + kalan.toLocaleString("tr-TR") + '</span><span class="sy-nl">HEDEFE KALAN</span></div>' +
-        '<div class="sy-n accent-box"><span class="sy-nv accent">' + (gunluk===null?"—":gunluk.toLocaleString("tr-TR")) + '</span><span class="sy-nl">GÜNLÜK GEREKEN' + (kalanGun?" ("+kalanGun+" gün)":"") + '</span></div>' +
+        '<div class="sy-n accent-box"><span class="sy-nv accent">' + (gunluk===null?"—":gunluk.toLocaleString("tr-TR")) + '</span><span class="sy-nl">GÜNLÜK' + (kalanGun?" ("+kalanGun+"g)":"") + '</span></div>' +
       '</div>' +
-      chgHTML(r.nm) + '</div>';
+      chgHTML(r.nm) +
+    '</div>';
   });
 
   const f = (ayGun && gecenGun) ? gecenGun + "/" + ayGun + ". gün" : "";
-  const cmp = SYPREV ? " · geçen haftaya göre değişim" : " · kıyas için önceki raporu yükleyin";
+  const cmp = SYPREV ? " · önceki raporla karşılaştırma" : "";
   document.getElementById("cards").className = "cards single";
-  document.getElementById("cards").style.maxWidth = "330px";
+  document.getElementById("cards").style.maxWidth = "360px";
   document.getElementById("cards").innerHTML =
-    '<div style="width:100%">' + prodSel +
     '<div class="card" id="sy-card">' +
-    hdrHTML((PICO[syProd]||"👔"), syProd + " · Satış Yöneticisi", "HGO sıralaması (rozet = HGO)" + (f?" · "+f:"") + cmp) +
-    '<div class="sec t"><span>👔 Yöneticiler</span><span class="cnt">' + ranked.length + ' SY · rozet HGO</span></div>' +
+    hdrHTML((PICO[syProd]||"👔"), syProd + " · Satış Yöneticisi",
+      "HGO sıralaması" + (f?" · "+f:"") + cmp) +
+    '<div class="sec t"><span>👔 Yöneticiler</span><span class="cnt">' + ranked.length + ' SY</span></div>' +
     rows +
-    ftrHTML([[ranked.length, "Yönetici"], [ranked[0]?("%"+(ranked[0]._hgo||0).toFixed(0)):"—", "En Yüksek HGO"], [ranked[0]?ranked[0].nm.split(" ")[0]:"—", "Lider"]]) +
-    '</div></div>';
+    ftrHTML([[ranked.length, "Yönetici"],
+             [ranked[0]?("%"+(ranked[0]._hgo||0).toFixed(0)):"—", "En Yüksek HGO"],
+             [ranked[0]?ranked[0].nm.split(" ")[0]:"—", "Lider"]]) +
+    '</div>';
 }
 function setSyProd(p) { syProd = p; render(); }
 

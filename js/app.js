@@ -45,7 +45,7 @@ function navTo(page) {
 
   } else if (page === 'sy') {
     _setDataHeader('Satış Yöneticisi', 'SY Bazlı Performans · HGO Sıralaması');
-    fbar.style.display         = 'none';
+    fbar.style.display         = '';     /* SY için filtre çubuğu göster */
     perfSubStrip.style.display = 'none';
     setSec('sy');
 

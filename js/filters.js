@@ -5,13 +5,39 @@
    ════════════════════════════════════════════ */
 
 /* ─── DURUM DEĞİŞKENLERİ ─────────────────── */
-var bayiFilter    = "Tümü";   // Personel: hangi bayiye ait
-var riskOnly      = false;    // Sadece HGO < 60 olanlar
-var compactListeN = 999;      // Bayi listesi sınırı
+var bayiFilter    = "Tümü";
+var riskOnly      = false;
+var compactListeN = 999;
+var syListMode    = 'all';   // SY liste modu
 
-var _sheetType    = null;     // Açık sheet tipi
-var _listeLabel   = "Tüm Liste";   // Liste buton etiketi
-var _prevNavPage  = null;     // Sayfa geçişi takibi
+var _sheetType    = null;
+var _listeLabel   = "Tüm Liste";
+var _syListeLabel = 'Tümü';
+var _prevNavPage  = null;
+
+/* SY ürün görüntü isimleri */
+var _SY_DISPLAY = {
+  'Mobil Toplam':  '📱 Toplam Mobil',
+  'Faturalı':      '📋 Faturalı (Postpaid)',
+  'Faturasız':     '📲 Faturasız (Prepaid)',
+  'Evde İnternet': '🌐 DSL / Evde İnternet',
+  'IPTV':          '📺 IPTV',
+  'Uydu':          '📡 Uydu TV',
+  'Tivibu Toplam': '📺 Tivibu Toplam',
+  'Cihaz':         '📦 Akıllı Cihaz',
+  'Cihaz Diğer':   '🔌 Diğer Cihaz',
+};
+var _SY_SHORT = {
+  'Mobil Toplam':  'Toplam Mobil',
+  'Faturalı':      'Faturalı',
+  'Faturasız':     'Faturasız',
+  'Evde İnternet': 'DSL',
+  'IPTV':          'IPTV',
+  'Uydu':          'Uydu TV',
+  'Tivibu Toplam': 'Tivibu',
+  'Cihaz':         'Akıllı Cihaz',
+  'Cihaz Diğer':   'Diğer Cihaz',
+};
 
 /* ─── FİLTRE ÇUBUĞU OLUŞTURUCUsu ──────────── */
 function buildFilterBar() {
@@ -20,26 +46,33 @@ function buildFilterBar() {
 
   var isBayi = (navPage === 'bayi');
   var isPers  = (navPage === 'pers');
-  if (!isBayi && !isPers) { bar.innerHTML = ''; return; }
+  var isSY    = (navPage === 'sy');
 
-  /* Mevcut seçili değerlerin etiketleri */
-  var prodLabel = _fbarProdLabel();
-  var syLabel   = (sy === "Tümü") ? "Tümü" : _truncate(sy.split(" ")[0], 10);
+  if (!isBayi && !isPers && !isSY) { bar.innerHTML = ''; return; }
 
   var html = '';
 
-  /* Ürün */
-  html += _fbarChip('prod', 'Ürün', prodLabel);
-  /* SY */
-  html += _fbarChip('sy', 'Satış Yön.', syLabel);
-  /* Bayi (sadece personel) */
-  if (isPers) {
-    var bLabel = (bayiFilter === "Tümü") ? "Tümü" : _truncate(bayiFilter, 11);
-    html += _fbarChip('bayi', 'Bayi', bLabel);
+  if (isSY) {
+    /* ── Satış Yöneticisi filtre çubuğu ── */
+    var syProdShort = _SY_SHORT[syProd] || _truncate(syProd, 12) || 'Seç';
+    html += _fbarChip('sy-prod',  'Ürün',  syProdShort);
+    html += _fbarChip('sy-liste', 'Liste', _syListeLabel);
+
+  } else {
+    /* ── Bayi / Personel filtre çubuğu ── */
+    var prodLabel = _fbarProdLabel();
+    var syLabel   = (sy === "Tümü") ? "Tümü" : _truncate(sy.split(" ")[0], 10);
+
+    html += _fbarChip('prod', 'Ürün', prodLabel);
+    html += _fbarChip('sy', 'Satış Yön.', syLabel);
+    if (isPers) {
+      var bLabel = (bayiFilter === "Tümü") ? "Tümü" : _truncate(bayiFilter, 11);
+      html += _fbarChip('bayi', 'Bayi', bLabel);
+    }
+    html += _fbarChip('liste', 'Liste', _listeLabel);
   }
-  /* Liste */
-  html += _fbarChip('liste', 'Liste', _listeLabel);
-  /* Görsel Oluştur */
+
+  /* Görsel Oluştur — tüm ekranlarda */
   html += '<button class="fbar-chip fbar-dl" id="fbar-dl-btn" onclick="downloadCardPNG()">' +
     '<span class="fbar-chip-lbl">Görsel</span>' +
     '<span class="fbar-chip-val">Oluştur ↗</span>' +
@@ -151,6 +184,34 @@ function _sheetConfig(type) {
     };
   }
 
+  /* ── SY ürün filtresi ── */
+  if (type === 'sy-prod') {
+    var syProds = (SYDATA && SYDATA.products && SYDATA.products.length)
+      ? SYDATA.products
+      : ['Mobil Toplam'];
+    return {
+      title: 'Ürün Seç',
+      items: syProds.map(function(p) {
+        return { key: p, label: _SY_DISPLAY[p] || p };
+      }),
+      active: syProd,
+    };
+  }
+
+  /* ── SY liste filtresi ── */
+  if (type === 'sy-liste') {
+    return {
+      title: 'Liste Seçenekleri',
+      items: [
+        { key: 'all',  label: 'Tümü' },
+        { key: 'top10', label: 'En Yüksek 10' },
+        { key: 'bot10', label: 'En Düşük 10' },
+        { key: 'risk',  label: '🔴 Riskli Yöneticiler — HGO %80 altı' },
+      ],
+      active: syListMode,
+    };
+  }
+
   if (type === 'liste') {
     var items;
     if (navPage === 'bayi') {
@@ -221,6 +282,12 @@ function _pick(type, key) {
   } else if (type === 'sy') {
     setSy(key);
 
+  } else if (type === 'sy-prod') {
+    setSyProd(key);                    /* render() setSyProd içinde çağrılır */
+
+  } else if (type === 'sy-liste') {
+    _applySyListe(key);
+
   } else if (type === 'bayi') {
     bayiFilter = key;
     render();
@@ -255,6 +322,15 @@ function _applyListe(key) {
   }
 }
 
+function _applySyListe(key) {
+  syListMode = key;
+  _syListeLabel = key === 'all' ? 'Tümü'
+               : key === 'top10' ? 'En Yüksek 10'
+               : key === 'bot10' ? 'En Düşük 10'
+               : 'Riskli';
+  render();
+}
+
 /* ─── SAYFA GEÇİŞİNDE SIFIRLA ──────────────── */
 function resetFiltersForPage(page) {
   if (page === _prevNavPage) return;
@@ -269,6 +345,8 @@ function resetFiltersForPage(page) {
     var nsel = document.getElementById('nsel');
     if (nsel) nsel.value = 15;
     view = 'top';
+  } else if (page === 'sy') {
+    syListMode = 'all'; _syListeLabel = 'Tümü';
   }
 }
 
@@ -285,13 +363,17 @@ async function downloadCardPNG() {
   try {
     await ensureH2C();
 
-    var el = document.getElementById('card-main') ||
+    var el = document.getElementById('sy-card') ||      /* SY ekranı */
+             document.getElementById('card-main') ||
              document.querySelector('#cards .card') ||
              document.querySelector('.card');
     if (!el) throw new Error('Kart bulunamadı');
 
-    var scope   = (navPage === 'bayi') ? 'Bayi' : 'Personel';
-    var prodKey = prod.replace(/[^a-zA-ZçğıöşüÇĞİÖŞÜ0-9]/g, '');
+    var scope   = navPage === 'bayi' ? 'Bayi'
+                : navPage === 'sy'   ? 'SatisYoneticisi'
+                : 'Personel';
+    var rawProd = navPage === 'sy' ? (syProd || '') : prod;
+    var prodKey = rawProd.replace(/[^a-zA-ZçğıöşüÇĞİÖŞÜ0-9]/g, '');
     var dateStr = new Date().toLocaleDateString('tr-TR').replace(/\./g, '');
     var fname   = 'TT_' + scope + '_Siralama_' + prodKey + '_' + dateStr + '.png';
 

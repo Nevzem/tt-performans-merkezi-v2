@@ -563,7 +563,7 @@ input[type=file] { display: none; }
 .badge.b3 { background: linear-gradient(135deg, #C08A52, #96683A); box-shadow: 0 1px 4px rgba(150,104,58,0.45); }
 
 /* ─── DELTA (değişim oku) ─────────────────────────────────────────── */
-.delta { width: 32px; flex-shrink: 0; text-align: center; font-size: 8.5px; font-weight: 800; border-radius: 5px; padding: 2px 0; }
+.delta { width: 26px; flex-shrink: 0; text-align: center; font-size: 8px; font-weight: 800; border-radius: 5px; padding: 2px 0; }
 .delta.up  { color: var(--green);   background: var(--green-soft); }
 .delta.dn  { color: var(--crimson); background: var(--crimson-soft); }
 .delta.eq  { color: var(--muted); }
@@ -573,7 +573,7 @@ input[type=file] { display: none; }
 .nm { flex: 1; min-width: 0; }
 .nm .p { font-size: 11.5px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.1px; }
 .nm .b { font-size: 8.5px; color: var(--muted); font-weight: 600; letter-spacing: 0.4px; }
-.br { width: 122px; flex-shrink: 0; }
+.br { width: 104px; flex-shrink: 0; }
 .br-top { display: flex; justify-content: flex-end; gap: 4px; align-items: center; margin-bottom: 2px; }
 .chip { font-size: 10px; font-weight: 800; padding: 1px 7px; border-radius: 5px; border: 1px solid transparent; }
 .chip.g { color: var(--green);   background: var(--green-soft);   border-color: #CBE7D7; }
@@ -644,7 +644,9 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 /* ─── SY KARTLARI ─────────────────────────────────────────────────── */
 .syprod-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; justify-content: center; }
 .syprod-tabs .tab { font-size: 11px; }
-.sy-card { padding: 6px 10px; margin: 4px 7px; border: 2px solid #AEBAD0; border-radius: 12px; background: #fff; box-shadow: 0 2px 8px rgba(10,31,92,0.08); }
+.sy-card { padding: 8px 11px; margin: 4px 8px; border: 1.5px solid #AEBAD0; border-radius: 12px; background: #fff; box-shadow: 0 2px 8px rgba(10,31,92,0.07); }
+.sy-meta { display: flex; gap: 8px; padding: 3px 0 5px; }
+.sy-mc   { font-size: 9px; font-weight: 700; color: var(--muted); }
 .sy-top  { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
 .sy-rk   { width: 20px; text-align: center; flex-shrink: 0; }
 .sy-rk .n { font-size: 11px; font-weight: 700; color: var(--muted); }
