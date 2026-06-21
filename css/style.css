@@ -455,29 +455,30 @@ input[type=file] { display: none; }
   padding-bottom: env(safe-area-inset-bottom, 0px);
   box-shadow: 0 -4px 20px rgba(10,31,92,0.08);
 }
+/* 7 item için kompakt nav */
 .nav-item {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  padding: 9px 4px 7px;
+  padding: 7px 2px 5px;
   border: none; background: transparent; cursor: pointer;
   font-family: inherit; color: var(--muted);
-  transition: color 0.15s; position: relative; gap: 2px;
+  transition: color 0.15s; position: relative; gap: 1px;
 }
 .nav-item.active { color: var(--navy); }
 .nav-item.active::after {
   content: '';
   position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-  width: 28px; height: 3px;
+  width: 24px; height: 3px;
   background: var(--navy);
   border-radius: 0 0 3px 3px;
 }
 .nav-ic {
   display: flex; align-items: center; justify-content: center;
-  height: 24px;
+  height: 22px;
 }
 .nav-ic svg { transition: stroke 0.15s; }
 .nav-lbl {
-  font-size: 9px; font-weight: 700; letter-spacing: 0.2px;
+  font-size: 8px; font-weight: 700; letter-spacing: 0;
   white-space: nowrap;
 }
 
@@ -1184,6 +1185,144 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
   border-radius: 14px;
   box-shadow: 0 10px 48px rgba(0,0,0,0.7);
   display: block; height: auto;
-  /* iOS native pinch-zoom */
   touch-action: pan-y pinch-zoom;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   GEÇMİŞ KIYAS VE TREND MERKEZİ  (js/history.js)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ─── FİLTRE ÇUBUĞu ─────────────────────────────────────────────── */
+.gecm-fbar { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+.gecm-fbar::-webkit-scrollbar { display: none; }
+
+/* ─── BOŞ / KARŞILAMA ────────────────────────────────────────────── */
+.gecm-empty-area { padding: 16px; }
+.gecm-welcome    { text-align: center; padding: 32px 24px; }
+.gecm-wl-icon    { font-size: 40px; margin-bottom: 10px; }
+.gecm-wl-title   { font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+.gecm-wl-sub     { font-size: 12px; color: var(--slate); line-height: 1.6; margin-bottom: 10px; }
+.gecm-wl-hint    { font-size: 10.5px; color: var(--muted); line-height: 1.5; background: var(--surface); border-radius: 10px; padding: 10px 12px; }
+.gecm-wl-hint code { font-family: monospace; background: var(--line); border-radius: 3px; padding: 1px 4px; }
+.gecm-err        { color: var(--crimson); font-size: 12px; font-weight: 600; padding: 12px; text-align: center; }
+
+/* ─── YÜKLEME ────────────────────────────────────────────────────── */
+.gecm-loading-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 40px 24px; gap: 12px;
+}
+.gecm-loading-spinner {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 3px solid var(--line); border-top-color: var(--navy);
+  animation: gecm-spin 0.8s linear infinite;
+}
+@keyframes gecm-spin { to { transform: rotate(360deg); } }
+.gecm-load-txt { font-size: 12px; color: var(--muted); font-weight: 600; }
+
+/* ─── İÇERİK ALANI ───────────────────────────────────────────────── */
+.gecm-content-area { padding: 12px 16px 24px; display: flex; flex-direction: column; gap: 12px; }
+
+/* ─── EXECUTIVE ÖZET ─────────────────────────────────────────────── */
+.gecm-summary-card {
+  background: var(--navy); border-radius: 12px; padding: 14px 16px;
+  box-shadow: 0 3px 16px rgba(10,31,92,0.18);
+}
+.gecm-sum-hdr  { font-size: 9px; font-weight: 800; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+.gecm-sum-line { font-size: 11.5px; color: rgba(255,255,255,0.9); line-height: 1.6; margin-bottom: 4px; }
+.gecm-sum-meta { font-size: 9px; color: rgba(255,255,255,0.4); margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1); }
+.gecm-pos-txt  { color: #6EE7A8; font-weight: 700; }
+.gecm-neg-txt  { color: #FCA5A5; font-weight: 700; }
+
+/* ─── KARŞILAŞTIRMA KARTI ────────────────────────────────────────── */
+.gecm-comp-card {
+  background: var(--card-bg); border-radius: 12px;
+  border: 1px solid var(--hairline); overflow: hidden;
+  box-shadow: 0 1px 6px rgba(10,31,92,0.06);
+}
+.gecm-comp-hdr {
+  padding: 10px 14px; background: var(--navy);
+  border-bottom: 1px solid var(--hairline);
+}
+.gecm-ch-title { font-size: 12px; font-weight: 800; color: #fff; }
+.gecm-ch-sub   { font-size: 9px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+/* ─── KARŞILAŞTIRMA SATIRI ───────────────────────────────────────── */
+.gecm-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px; border-bottom: 1px solid var(--hairline);
+  border-left: 3px solid transparent;
+}
+.gecm-row:last-child { border-bottom: none; }
+.gecm-row-p1 { border-left-color: #C9A227; background: linear-gradient(90deg,#FFFDF4,#fff); }
+.gecm-row-p2 { border-left-color: #9AA4B4; background: linear-gradient(90deg,#FBFCFE,#fff); }
+.gecm-row-p3 { border-left-color: #A0703F; background: linear-gradient(90deg,#FDF8F3,#fff); }
+
+.gecm-row-lft  { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+.gecm-row-rank { font-size: 10px; font-weight: 700; color: var(--muted); width: 18px; flex-shrink: 0; text-align: center; }
+.gecm-row-info { flex: 1; min-width: 0; }
+.gecm-row-name { font-size: 11px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gecm-row-sub  { font-size: 8.5px; color: var(--muted); font-weight: 600; }
+
+.gecm-row-rgt { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* ─── METRIK HÜCRESİ ─────────────────────────────────────────────── */
+.gecm-metric { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; min-width: 64px; }
+.gecm-m-flow { display: flex; align-items: center; gap: 3px; }
+.gecm-m-h    { font-size: 9px; color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+.gecm-m-arr  { font-size: 8px; color: var(--line); }
+.gecm-m-c    { font-size: 10px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
+.gecm-m-diff { font-size: 11px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.gecm-m-lbl  { font-size: 7.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Renk sınıfları */
+.gecm-pos   { color: var(--green); }
+.gecm-neg   { color: var(--crimson); }
+.gecm-m-c.gecm-pos { color: var(--green); }
+.gecm-m-c.gecm-neg { color: var(--crimson); }
+
+/* ─── EXPORT BUTONU ──────────────────────────────────────────────── */
+.gecm-export-row { padding: 12px 0 0; display: flex; justify-content: center; }
+.gecm-export-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--navy); color: #fff;
+  border: none; border-radius: 10px; padding: 10px 20px;
+  font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer;
+  box-shadow: 0 2px 10px rgba(10,31,92,0.2);
+  transition: opacity 0.12s;
+}
+.gecm-export-btn:active { opacity: 0.8; }
+.gecm-export-btn:disabled { opacity: 0.5; cursor: wait; }
+
+/* ─── TREND GÖRÜNÜMÜ ─────────────────────────────────────────────── */
+.gecm-trend-info {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 12px; background: var(--surface); border-radius: 8px;
+  font-size: 9.5px; font-weight: 700; color: var(--muted);
+}
+.gecm-t-period { color: var(--navy); font-weight: 800; }
+.gecm-t-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-bottom: 1px solid var(--hairline);
+}
+.gecm-t-row:last-child { border-bottom: none; }
+.gecm-t-rank { font-size: 10px; font-weight: 700; color: var(--muted); width: 18px; text-align: center; flex-shrink: 0; }
+.gecm-t-nm   { flex: 1; font-size: 11px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gecm-t-val  { font-size: 12px; font-weight: 900; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+
+.gecm-empty-msg { padding: 20px; text-align: center; font-size: 11px; color: var(--muted); font-style: italic; }
+
+/* ─── AYARLAR: GEÇMİŞ RAPOR YÖNETİMİ ───────────────────────────── */
+.hist-s-list  { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.hist-s-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; background: var(--surface);
+  border: 1px solid var(--hairline); border-radius: 9px;
+}
+.hist-s-active { border-color: var(--green); background: var(--green-soft); }
+.hist-s-icon   { font-size: 16px; flex-shrink: 0; }
+.hist-s-info   { flex: 1; min-width: 0; }
+.hist-s-name   { font-size: 11px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hist-s-file   { font-size: 8.5px; color: var(--muted); font-weight: 600; margin-top: 1px; }
+.hist-s-badge  { font-size: 8px; font-weight: 800; background: var(--green); color: #fff; padding: 2px 7px; border-radius: 5px; flex-shrink: 0; }
+.hist-s-empty  { font-size: 11px; color: var(--muted); font-style: italic; line-height: 1.6; }

@@ -75,6 +75,52 @@
       </div>
     </div>
 
+    <!-- ── GEÇMİŞ KIYAS VE TREND ── -->
+    <div class="page" id="page-gecmis" style="display:none">
+      <div class="page-hdr">
+        <div class="page-hdr-title">Geçmiş Kıyas</div>
+        <div class="page-hdr-sub">Tarihsel karşılaştırma ve trend analizi</div>
+      </div>
+
+      <!-- Filtre çubuğu -->
+      <div class="filter-bar gecm-fbar" id="gecm-filter-bar">
+        <button class="fbar-chip" onclick="openSheet('gecm-tarih')">
+          <span class="fbar-chip-lbl">Tarih</span>
+          <span class="fbar-chip-val" id="gecm-tarih-val">Seç</span>
+        </button>
+        <button class="fbar-chip" onclick="openSheet('gecm-kiyas')">
+          <span class="fbar-chip-lbl">Kıyas</span>
+          <span class="fbar-chip-val" id="gecm-kiyas-val">Bayi</span>
+        </button>
+        <button class="fbar-chip" onclick="openSheet('gecm-prod')">
+          <span class="fbar-chip-lbl">Ürün</span>
+          <span class="fbar-chip-val" id="gecm-prod-val">Toplam Mobil</span>
+        </button>
+        <button class="fbar-chip" onclick="openSheet('gecm-gorunum')">
+          <span class="fbar-chip-lbl">Görünüm</span>
+          <span class="fbar-chip-val" id="gecm-gorunum-val">Tümü</span>
+        </button>
+        <button class="fbar-chip" onclick="openSheet('gecm-view')">
+          <span class="fbar-chip-lbl">Mod</span>
+          <span class="fbar-chip-val" id="gecm-view-val">Kıyas</span>
+        </button>
+      </div>
+
+      <!-- Yükleniyor -->
+      <div id="gecm-loading" style="display:none">
+        <div class="gecm-loading-wrap">
+          <div class="gecm-loading-spinner"></div>
+          <div class="gecm-load-txt">Yükleniyor…</div>
+        </div>
+      </div>
+
+      <!-- Başlangıç / boş durum -->
+      <div id="gecm-empty" class="gecm-empty-area"></div>
+
+      <!-- İçerik -->
+      <div id="gecm-content" style="display:none" class="gecm-content-area"></div>
+    </div>
+
     <!-- ── AYARLAR ── -->
     <div class="page" id="page-ayar" style="display:none">
       <div class="page-hdr">
@@ -114,6 +160,15 @@
           <div class="day-hint">İkisi de girilirse bayi kartlarında ay sonu Forecast HGO görünür. %100+ olanlar yeşil.</div>
         </div>
 
+        <!-- Geçmiş Rapor Yönetimi -->
+        <div class="settings-card">
+          <div class="settings-card-title">📂 Geçmiş Rapor Yönetimi</div>
+          <div id="hist-settings-content" class="hist-s-list">
+            <div class="hist-s-empty">Yükleniyor…</div>
+          </div>
+          <div class="vm-hint">Raporları <code>data/history/</code> klasörüne ekleyin ve <code>manifest.json</code> dosyasını güncelleyin.</div>
+        </div>
+
         <!-- Dışa Aktar -->
         <div class="settings-card">
           <div class="settings-card-title">📤 Dışa Aktar</div>
@@ -150,8 +205,12 @@
       <span class="nav-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
       <span class="nav-lbl">Performans</span>
     </button>
+    <button class="nav-item" data-nav="gecmis" onclick="navTo('gecmis')">
+      <span class="nav-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+      <span class="nav-lbl">Geçmiş</span>
+    </button>
     <button class="nav-item" data-nav="ayar" onclick="navTo('ayar')">
-      <span class="nav-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+      <span class="nav-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
       <span class="nav-lbl">Ayarlar</span>
     </button>
   </nav>
@@ -184,6 +243,7 @@
 <script src="js/render.js"></script>
 <script src="js/export.js"></script>
 <script src="js/home.js"></script>
+<script src="js/history.js"></script>
 <script src="js/filters.js"></script>
 <script src="js/app.js"></script>
 </body>

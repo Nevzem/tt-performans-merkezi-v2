@@ -234,6 +234,64 @@ function _sheetConfig(type) {
     return { title: 'Liste Seçenekleri', items: items, active: _currentListeKey() };
   }
 
+  /* ── Geçmiş Kıyas filtreleri ── */
+  if (type === 'gecm-tarih') {
+    var files = (_histManifest && _histManifest.files) || [];
+    if (!files.length) return { title: 'Geçmiş Rapor Seç', items: [{ key: '__none', label: 'Henüz rapor yüklenmedi' }], active: HIST_FNAME };
+    return {
+      title: 'Geçmiş Rapor Seç',
+      items: files.map(function(f) {
+        var lbl = f.replace(/\.xlsx?$/i, '');
+        return { key: f, label: '📄 ' + lbl };
+      }),
+      active: HIST_FNAME,
+    };
+  }
+
+  if (type === 'gecm-kiyas') {
+    return {
+      title: 'Kıyas Türü',
+      items: [
+        { key: 'bayi', label: '🏢 Bayi' },
+        { key: 'sy',   label: '👔 Satış Yöneticisi' },
+      ],
+      active: _gecmKiyas,
+    };
+  }
+
+  if (type === 'gecm-prod') {
+    return {
+      title: 'Ürün Seç',
+      items: (typeof _GECM_PRODS !== 'undefined' ? _GECM_PRODS : []).map(function(p) {
+        return { key: p.key, label: p.label };
+      }),
+      active: _gecmProd,
+    };
+  }
+
+  if (type === 'gecm-gorunum') {
+    return {
+      title: 'Görünüm',
+      items: [
+        { key: 'all',     label: 'Tümü' },
+        { key: 'growth',  label: '▲ En Çok Büyüyen' },
+        { key: 'decline', label: '▼ En Çok Düşen' },
+      ],
+      active: _gecmGorunum,
+    };
+  }
+
+  if (type === 'gecm-view') {
+    return {
+      title: 'Mod',
+      items: [
+        { key: 'kiyas', label: '⚖️ Kıyas (2 rapor karşılaştırma)' },
+        { key: 'trend', label: '📈 Trend Merkezi (günlük trend)' },
+      ],
+      active: _gecmView,
+    };
+  }
+
   return { title: '', items: [], active: null };
 }
 
@@ -281,6 +339,34 @@ function _pick(type, key) {
 
   } else if (type === 'sy') {
     setSy(key);
+
+  /* ── Geçmiş Kıyas picks ── */
+  } else if (type === 'gecm-tarih') {
+    if (key !== '__none') loadHistFile(key);
+
+  } else if (type === 'gecm-kiyas') {
+    _gecmKiyas = key;
+    var kv = document.getElementById('gecm-kiyas-val');
+    if (kv) kv.textContent = key === 'sy' ? 'Sat. Yön.' : 'Bayi';
+    if (typeof renderGecmisPage === 'function') renderGecmisPage();
+
+  } else if (type === 'gecm-prod') {
+    _gecmProd = key;
+    var pv = document.getElementById('gecm-prod-val');
+    if (pv) pv.textContent = _truncate(key, 12);
+    if (typeof renderGecmisPage === 'function') renderGecmisPage();
+
+  } else if (type === 'gecm-gorunum') {
+    _gecmGorunum = key;
+    var gv = document.getElementById('gecm-gorunum-val');
+    if (gv) gv.textContent = key === 'growth' ? 'Büyüyen' : key === 'decline' ? 'Düşen' : 'Tümü';
+    if (typeof renderGecmisPage === 'function') renderGecmisPage();
+
+  } else if (type === 'gecm-view') {
+    _gecmView = key;
+    var vv = document.getElementById('gecm-view-val');
+    if (vv) vv.textContent = key === 'trend' ? 'Trend' : 'Kıyas';
+    if (typeof renderGecmisPage === 'function') renderGecmisPage();
 
   } else if (type === 'sy-prod') {
     setSyProd(key);                    /* render() setSyProd içinde çağrılır */
