@@ -39,10 +39,10 @@ function buildFilterBar() {
   }
   /* Liste */
   html += _fbarChip('liste', 'Liste', _listeLabel);
-  /* İndir */
+  /* Görsel Oluştur */
   html += '<button class="fbar-chip fbar-dl" id="fbar-dl-btn" onclick="downloadCardPNG()">' +
-    '<span class="fbar-chip-lbl">İndir</span>' +
-    '<span class="fbar-chip-val">PNG ↓</span>' +
+    '<span class="fbar-chip-lbl">Görsel</span>' +
+    '<span class="fbar-chip-val">Oluştur ↗</span>' +
   '</button>';
 
   bar.innerHTML = html;
@@ -273,16 +273,18 @@ function resetFiltersForPage(page) {
 }
 
 /* ─── PNG İNDİR ─────────────────────────────── */
+/* ─── GÖRSEL OLUŞTUR ─────────────────────────────────────────────── */
+
 async function downloadCardPNG() {
-  var btn = document.getElementById('fbar-dl-btn');
+  var btn   = document.getElementById('fbar-dl-btn');
   var valEl = btn ? btn.querySelector('.fbar-chip-val') : null;
-  var orig = valEl ? valEl.textContent : 'PNG ↓';
-  if (btn) { btn.disabled = true; if (valEl) valEl.textContent = '⏳'; }
+  var orig  = valEl ? valEl.textContent : 'Oluştur ↗';
+  if (btn)   { btn.disabled = true; }
+  if (valEl) { valEl.textContent = '⏳'; }
 
   try {
     await ensureH2C();
 
-    /* Hedef element: mevcut kart */
     var el = document.getElementById('card-main') ||
              document.querySelector('#cards .card') ||
              document.querySelector('.card');
@@ -294,18 +296,95 @@ async function downloadCardPNG() {
     var fname   = 'TT_' + scope + '_Siralama_' + prodKey + '_' + dateStr + '.png';
 
     var canvas = await html2canvas(el, {
-      scale: 2.5,
-      backgroundColor: '#ffffff',
-      useCORS: true,
-      logging: false,
-      scrollX: 0, scrollY: 0,
+      scale: 2.5, backgroundColor: '#ffffff',
+      useCORS: true, logging: false, scrollX: 0, scrollY: 0,
     });
 
-    showModal(canvas.toDataURL('image/png'), fname);
+    _openSharePreview(canvas.toDataURL('image/png'), fname);
+
   } catch (e) {
-    alert('PNG hatası: ' + e.message);
+    alert('Görsel oluşturma hatası: ' + e.message);
   }
 
-  if (btn) { btn.disabled = false; }
-  if (valEl) valEl.textContent = orig;
+  if (btn)   { btn.disabled = false; }
+  if (valEl) { valEl.textContent = orig; }
+}
+
+/* ─── PAYLAŞIM ÖNİZLEME MODALI ──────────────────────────────────── */
+
+function _openSharePreview(dataUrl, fname) {
+  var existing = document.getElementById('spm');
+  if (existing) existing.remove();
+
+  var shareIcon = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>';
+
+  var m = document.createElement('div');
+  m.id = 'spm';
+  m.innerHTML =
+    '<div class="spm-toolbar">' +
+      '<button class="spm-btn spm-close-btn" onclick="_closeSPM()">✕&nbsp;Kapat</button>' +
+      '<span class="spm-title">Önizleme</span>' +
+      '<button class="spm-btn spm-share-btn" onclick="_shareSPM()">' + shareIcon + '&nbsp;Paylaş</button>' +
+    '</div>' +
+    '<div class="spm-body">' +
+      '<img src="' + dataUrl + '" class="spm-img" alt="Performans görseli">' +
+    '</div>';
+
+  m._spmData  = dataUrl;
+  m._spmFname = fname;
+
+  document.body.appendChild(m);
+  document.body.style.overflow = 'hidden';
+}
+
+function _closeSPM() {
+  var m = document.getElementById('spm');
+  if (m) { m.remove(); document.body.style.overflow = ''; }
+}
+
+async function _shareSPM() {
+  var m = document.getElementById('spm');
+  if (!m) return;
+
+  var dataUrl = m._spmData;
+  var fname   = m._spmFname;
+
+  /* Önce Web Share API ile dosya paylaşımı (iOS Safari ✓) */
+  if (navigator.share) {
+    try {
+      var blob = _spmBlob(dataUrl);
+      var file = new File([blob], fname, { type: 'image/png' });
+      var sharePayload = { files: [file], title: 'TT Kuzey Anadolu', text: 'Performans raporu' };
+
+      if (navigator.canShare && navigator.canShare(sharePayload)) {
+        await navigator.share(sharePayload);
+        return;
+      }
+      /* Dosya paylaşımı desteklenmiyorsa başlık+metin ile dene */
+      await navigator.share({ title: 'TT Kuzey Anadolu', text: 'Performans raporu' });
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return; /* Kullanıcı iptal etti */
+      /* Diğer hatalarda dosya indirmeye düş */
+    }
+  }
+
+  /* Fallback: dosya indir */
+  _spmDownload(dataUrl, fname);
+}
+
+function _spmBlob(dataUrl) {
+  var parts = dataUrl.split(',');
+  var mime  = parts[0].match(/:(.*?);/)[1];
+  var raw   = atob(parts[1]);
+  var n     = raw.length;
+  var buf   = new Uint8Array(n);
+  while (n--) buf[n] = raw.charCodeAt(n);
+  return new Blob([buf], { type: mime });
+}
+
+function _spmDownload(url, name) {
+  var a = document.createElement('a');
+  a.download = name; a.href = url;
+  document.body.appendChild(a); a.click(); a.remove();
 }
