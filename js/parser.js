@@ -208,14 +208,18 @@ function wire(boxId, inputId, isPrev) {
       try {
         await ensureXLSX();
         const parsed = parseWB(XLSX.read(new Uint8Array(e.target.result), { type: "array" }));
+        const _setBoxLabel = (b, name) => {
+          const el = b.querySelector(".drop-sub") || b.querySelector(".t2");
+          if (el) el.textContent = "✅ " + name;
+        };
         if (isPrev) {
           PREV = parsed.data; if (parsed.syData && Object.keys(parsed.syData.sy).length) SYPREV = parsed.syData; box.classList.add("loaded");
-          box.querySelector(".t2").textContent = "✅ " + f.name;
+          _setBoxLabel(box, f.name);
           msg.className = "pmsg ok show"; msg.textContent = "✅ Karşılaştırma yüklendi (" + parsed.donem + ")";
         } else {
           DATA = parsed.data; DONEM = parsed.donem; MATRIX = parsed.matrix; if (parsed.kupa && parsed.kupa.length) KUPA = parsed.kupa; if (parsed.detay && Object.keys(parsed.detay.bayiler).length) { DETAY = parsed.detay; detayKod = null; }
           try { trendCapture(); } catch(e) {} if (parsed.syData && Object.keys(parsed.syData.sy).length) SYDATA = parsed.syData; box.classList.add("loaded");
-          box.querySelector(".t2").textContent = "✅ " + f.name;
+          _setBoxLabel(box, f.name);
           document.getElementById("status").textContent = "📊 " + parsed.persCount + " personel · " + parsed.bayiCount + " bayi · " + parsed.donem;
           msg.className = "pmsg ok show"; msg.textContent = "✅ " + parsed.persCount + " personel + " + parsed.bayiCount + " bayi işlendi";
           sy = "Tümü";

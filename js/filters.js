@@ -275,7 +275,9 @@ function resetFiltersForPage(page) {
 /* ─── PNG İNDİR ─────────────────────────────── */
 async function downloadCardPNG() {
   var btn = document.getElementById('fbar-dl-btn');
-  if (btn) { btn.disabled = true; var valEl = btn.querySelector('.fbar-chip-val'); var orig = valEl.textContent; valEl.textContent = '⏳'; }
+  var valEl = btn ? btn.querySelector('.fbar-chip-val') : null;
+  var orig = valEl ? valEl.textContent : 'PNG ↓';
+  if (btn) { btn.disabled = true; if (valEl) valEl.textContent = '⏳'; }
 
   try {
     await ensureH2C();
@@ -304,5 +306,6 @@ async function downloadCardPNG() {
     alert('PNG hatası: ' + e.message);
   }
 
-  if (btn) { btn.disabled = false; if (valEl) valEl.textContent = orig; }
+  if (btn) { btn.disabled = false; }
+  if (valEl) valEl.textContent = orig;
 }
