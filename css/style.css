@@ -123,17 +123,21 @@ body {
   margin-top: 2px; letter-spacing: 0.2px;
 }
 
-/* ─── ANA SAYFA: KOMPAKT YÜKLEME ŞERİDİ ──────────────────────────── */
-.upload-strip {
+/* ─── AYARLAR: VERİ YÖNETİMİ YÜKLEME ────────────────────────────── */
+.vm-uploads {
   display: grid; grid-template-columns: 1fr 1fr;
-  gap: 10px; padding: 12px 16px 0;
+  gap: 10px; margin-bottom: 10px;
 }
-.upload-strip-box { padding: 14px 8px; }
-.upload-strip-box .drop-icon { font-size: 20px; margin-bottom: 4px; }
-.upload-strip-box .drop-title { font-size: 11px; }
-.upload-strip-box .drop-sub   { font-size: 9px; }
+.vm-drop { padding: 14px 10px; }
+.vm-drop .drop-icon  { font-size: 20px; margin-bottom: 4px; }
+.vm-drop .drop-title { font-size: 11px; }
+.vm-drop .drop-sub   { font-size: 9px; }
+.vm-hint {
+  font-size: 10px; color: var(--muted); line-height: 1.45;
+  margin-top: 6px;
+}
 
-/* ─── ANA SAYFA: YÜKLEME (eski, Ayarlar'da kullanılabilir) ───────── */
+/* ─── ANA SAYFA: YÜKLEME (artık kullanılmıyor, uyumluluk için) ───── */
 .upload-grid {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 12px; padding: 16px 16px 0;
@@ -810,30 +814,31 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 }
 
 /* ─── ÖZET ÇİPLER (2 × 3 grid) ───────────────────────────────────── */
+/* 3 sütun × 2 satır — kompakt CEO chips */
 .hd-chips {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 8px; padding: 12px 16px 0;
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px; padding: 8px 16px 0;
 }
 .hd-chip {
   background: var(--card-bg);
   border: 1px solid var(--hairline);
-  border-radius: 10px; padding: 10px 12px;
-  display: flex; flex-direction: column; gap: 1px;
-  box-shadow: 0 1px 4px rgba(10,31,92,0.05);
+  border-radius: 10px; padding: 7px 9px;
+  display: flex; flex-direction: column; gap: 0;
+  box-shadow: 0 1px 3px rgba(10,31,92,0.04);
 }
 .hd-chip-lbl {
-  font-size: 8px; font-weight: 800; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 1.2px;
+  font-size: 7.5px; font-weight: 800; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1px;
 }
 .hd-chip-val {
-  font-size: 22px; font-weight: 900; color: var(--navy);
-  letter-spacing: -0.5px; line-height: 1.1;
+  font-size: 18px; font-weight: 900; color: var(--navy);
+  letter-spacing: -0.5px; line-height: 1.15;
   font-variant-numeric: tabular-nums;
 }
-.hd-chip-val.hdc-xl   { font-size: 26px; }
-.hd-chip-val.hdc-date { font-size: 14px; font-weight: 700; letter-spacing: 0; }
-.hd-chip-val.hdc-small { font-size: 14px; }
-.hd-chip-sub  { font-size: 9px; color: var(--muted); font-weight: 600; margin-top: 1px; }
+.hd-chip-val.hdc-xl    { font-size: 20px; }
+.hd-chip-val.hdc-date  { font-size: 12px; font-weight: 700; letter-spacing: 0; line-height: 1.2; }
+.hd-chip-val.hdc-small { font-size: 13px; }
+.hd-chip-sub { font-size: 8px; color: var(--muted); font-weight: 600; margin-top: 0; }
 
 /* Chip renk varyantları */
 .hdc-green   { color: var(--green); }
