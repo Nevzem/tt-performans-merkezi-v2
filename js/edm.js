@@ -35,6 +35,11 @@ function setEdmIl(il) {
   else { if (typeof buildFilterBar === 'function') buildFilterBar(); render(); }
 }
 
+function setEdmIlView(v) {
+  if (typeof EDM_IL_VIEW !== 'undefined') EDM_IL_VIEW = v;
+  if (typeof render === 'function') render();
+}
+
 function _kanalUI() {
   document.querySelectorAll('.ch-btn').forEach(function(b) {
     b.classList.toggle('active', b.dataset.ch === KANAL);
@@ -138,10 +143,17 @@ function _edmPageHeader() {
   var syLabel = EDM_SY_FILTER !== 'Tümü'
     ? ' · ' + EDM_SY_FILTER.split(' ').map(function(w,i){ return i===0?w.slice(0,1)+'.':w; }).join(' ')
     : '';
+  var loadTs = '';
+  try {
+    var _ts = (typeof LOAD_KEY_EDM !== 'undefined') ? localStorage.getItem(LOAD_KEY_EDM) : null;
+    if (_ts) { var _d = new Date(_ts); loadTs = _d.toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
+  } catch(_e) {}
   return '<div class="hd-page-header">' +
     '<div class="hd-ph-left"><div class="hd-ph-mark">TT</div>' +
     '<div><div class="hd-ph-title">EDM Performans Merkezi' + syLabel + '</div>' +
-    '<div class="hd-ph-sub">' + btLabel + ' · ' + recs.length + ' Bayi · ' + DONEM + '</div></div></div>' +
+    '<div class="hd-ph-sub">' + btLabel + ' · ' + recs.length + ' Bayi · ' + DONEM + '</div>' +
+    (loadTs ? '<div class="hd-ph-load">Son yükleme: ' + loadTs + '</div>' : '') +
+    '</div></div>' +
     '<div class="hd-ph-period">EDM</div></div>';
 }
 
@@ -331,43 +343,59 @@ function renderEDMBayi(prodKey) {
 
   if (!recs.length) return hdrHTML(icon, prodKey + ' — EDM', 'Veri yok (' + btLabel + ')');
 
-  var rows = '';
-  recs.forEach(function(r, i) {
-    var fcAktiv = (f && r.a > 0) ? Math.round(r.a * f.k) : null;
-    var kalan   = Math.max((r.h||0) - (r.a||0), 0);
-    var rk      = i < 3 ? '<span class="badge b' + (i+1) + '">' + (i+1) + '</span>' : '<span class="n">' + (i+1) + '</span>';
+  var ilView = (typeof EDM_IL_VIEW !== 'undefined') ? EDM_IL_VIEW : 'liste';
+  var toggleHTML = '<div class="edm-view-toggle">' +
+    '<button class="edm-vt-btn' + (ilView === 'liste'    ? ' edm-vt-on' : '') + '" onclick="setEdmIlView(\'liste\')">Liste</button>' +
+    '<button class="edm-vt-btn' + (ilView === 'il-grubu' ? ' edm-vt-on' : '') + '" onclick="setEdmIlView(\'il-grubu\')">İl Grubu</button>' +
+    '</div>';
 
+  function mkRow(r, i) {
+    var fcAktiv = (f && r.a > 0) ? Math.round(r.a * f.k) : null;
+    var fcCls = fcAktiv !== null && r.h > 0 && fcAktiv >= r.h ? 'edm-trio-ok' : 'edm-trio-warn';
     var btCls = r.bt === 'TTBN' ? 'edm-bt-ttbn' : r.bt === 'ESN' ? 'edm-bt-esn' : 'edm-bt-other';
     var btTag = r.bt ? '<span class="edm-bt-tag ' + btCls + '">' + r.bt + '</span>' : '';
-
-    var fcCls = fcAktiv !== null && r.h > 0 && fcAktiv >= r.h ? 'edm-trio-ok' : 'edm-trio-warn';
-
-    rows += '<div class="row' + (i<3 ? ' r'+(i+1) : '') + '">' +
+    var rk = i < 3 ? '<span class="badge b' + (i+1) + '">' + (i+1) + '</span>' : '<span class="n">' + (i+1) + '</span>';
+    return '<div class="row' + (i < 3 ? ' r' + (i+1) : '') + '">' +
       '<div class="rk">' + rk + '</div>' +
       '<div class="nm">' +
         '<div class="p">' + r.p + '&thinsp;' + btTag + '</div>' +
         '<div class="b">' + r.b + (r.sy ? ' · ' + r.sy.split(' ')[0] : '') + '</div>' +
       '</div>' +
       '<div class="edm-trio">' +
-        '<div class="edm-trio-cell">' +
-          '<div class="edm-trio-lbl">HDF</div>' +
-          '<div class="edm-trio-val">' + (r.h > 0 ? (r.h||0).toLocaleString('tr-TR') : '—') + '</div>' +
-        '</div>' +
-        '<div class="edm-trio-cell edm-trio-act">' +
-          '<div class="edm-trio-lbl">AKT</div>' +
-          '<div class="edm-trio-val">' + (r.a||0).toLocaleString('tr-TR') + '</div>' +
-        '</div>' +
-        '<div class="edm-trio-cell">' +
-          '<div class="edm-trio-lbl">FC</div>' +
-          '<div class="edm-trio-val ' + (fcAktiv !== null ? fcCls : '') + '">' +
-            (fcAktiv !== null ? fcAktiv.toLocaleString('tr-TR') : '—') +
-          '</div>' +
-        '</div>' +
+        '<div class="edm-trio-cell"><div class="edm-trio-lbl">HDF</div><div class="edm-trio-val">' + (r.h > 0 ? (r.h||0).toLocaleString('tr-TR') : '—') + '</div></div>' +
+        '<div class="edm-trio-cell edm-trio-act"><div class="edm-trio-lbl">AKT</div><div class="edm-trio-val">' + (r.a||0).toLocaleString('tr-TR') + '</div></div>' +
+        '<div class="edm-trio-cell"><div class="edm-trio-lbl">FC</div><div class="edm-trio-val ' + (fcAktiv !== null ? fcCls : '') + '">' + (fcAktiv !== null ? fcAktiv.toLocaleString('tr-TR') : '—') + '</div></div>' +
       '</div>' +
     '</div>';
-  });
+  }
+
+  var rows = '';
+  if (ilView === 'il-grubu') {
+    var groups = {}, order = [];
+    recs.forEach(function(r) {
+      var il = r.il || '—';
+      if (!groups[il]) { groups[il] = []; order.push(il); }
+      groups[il].push(r);
+    });
+    order.sort(function(a, b) {
+      var sa = groups[a].reduce(function(s,r){ return s+(r.a||0); }, 0);
+      var sb = groups[b].reduce(function(s,r){ return s+(r.a||0); }, 0);
+      return sb - sa;
+    });
+    var gi = 0;
+    order.forEach(function(il) {
+      var grp = groups[il];
+      var totA = grp.reduce(function(s,r){ return s+(r.a||0); }, 0);
+      rows += '<div class="edm-il-group-hdr">' + il +
+        '<span class="edm-il-group-cnt">' + grp.length + ' bayi · ' + totA.toLocaleString('tr-TR') + ' aktiv</span></div>';
+      grp.forEach(function(r) { rows += mkRow(r, gi++); });
+    });
+  } else {
+    recs.forEach(function(r, i) { rows += mkRow(r, i); });
+  }
 
   return hdrHTML(icon, prodKey + ' — EDM (' + btLabel + ')', sub) +
+    toggleHTML +
     '<div class="sec t"><span>🏢 EDM Bayileri</span><span class="cnt">Aktivasyon bazlı sıralama</span></div>' +
     rows +
     ftrHTML([[recs.length,'Bayi'],[(recs[0].a||0).toLocaleString('tr-TR'),'Lider Aktiv'],[recs[0].p.split(' ')[0],'Lider']]);

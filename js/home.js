@@ -60,6 +60,7 @@ function renderHome() {
   var kpis = _hdKPIs();
   el.innerHTML = [
     _hdPageHeader(),
+    _hdDataHealth(),
     _hdChips(kpis),
     _hdScorecard(kpis),
     _hdAutoSummary(kpis),
@@ -78,6 +79,14 @@ function _hdPageHeader() {
   var today = new Date().toLocaleDateString('tr-TR', {
     day: 'numeric', month: 'long', year: 'numeric'
   });
+  var loadTs = '';
+  try {
+    var ts = (typeof LOAD_KEY_TTM !== 'undefined') ? localStorage.getItem(LOAD_KEY_TTM) : null;
+    if (ts) {
+      var d = new Date(ts);
+      loadTs = d.toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    }
+  } catch(_e) {}
   return (
     '<div class="hd-page-header">' +
       '<div class="hd-ph-left">' +
@@ -85,11 +94,22 @@ function _hdPageHeader() {
         '<div>' +
           '<div class="hd-ph-title">Kuzey Anadolu Performans Merkezi</div>' +
           '<div class="hd-ph-sub">Bayi Satış Kanalı &nbsp;·&nbsp; ' + today + '</div>' +
+          (loadTs ? '<div class="hd-ph-load">Son yükleme: ' + loadTs + '</div>' : '') +
         '</div>' +
       '</div>' +
       '<div class="hd-ph-period">' + DONEM + '</div>' +
     '</div>'
   );
+}
+
+function _hdDataHealth() {
+  if (typeof DATA_HEALTH === 'undefined' || !DATA_HEALTH) return '';
+  var dh = DATA_HEALTH;
+  var cls = dh.ok ? 'dh-ok' : 'dh-warn';
+  var icon = dh.ok ? '✅' : '⚠️';
+  var msg = icon + ' ' + dh.persCount + ' personel · ' + dh.bayiCount + ' bayi · ' + dh.syCount + ' SY';
+  if (!dh.ok && dh.warnings && dh.warnings.length) msg += ' · ' + dh.warnings.length + ' kolon uyarısı';
+  return '<div class="hd-data-health ' + cls + '">' + msg + '</div>';
 }
 
 /* ══════════════════════════════════════════

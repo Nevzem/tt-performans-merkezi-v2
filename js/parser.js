@@ -54,6 +54,7 @@ function parseWB(wb) {
   const acc = () => ({ mobil:[0,0], dsl:[0,0], iptv:[0,0], uydu:[0,0], tv:[0,0], cihaz:[0,0] });
   const kuzeyTot = acc(), anadoluTot = acc();
   let donem = null, persCount = 0, bayiCount = 0;
+  const warnings = [];
 
   const wsName = wb.SheetNames.find(s => s.trim().toUpperCase() === "ÇALIŞAN");
   if (!wsName) throw new Error("'ÇALIŞAN' sheet'i bulunamadı.");
@@ -87,6 +88,20 @@ function parseWB(wb) {
   const rowsB = XLSX.utils.sheet_to_json(wb.Sheets[wsB], { header: 1, defval: null });
   let hib = rowsB.findIndex(r => r && String(r[0]).trim() === "Ana Bölge");
   if (hib === -1) throw new Error("TTM BUAY: 'Ana Bölge' başlığı bulunamadı.");
+  /* Sprint 3: TTM BUAY kolon kayması kontrolü */
+  { const bh = rowsB[hib].map(c => c ? String(c).trim() : '');
+    [['Postpaid Hedef',49,['Postpaid Hedef','Faturalı Hedef','PP Hedef']],
+     ['DSL Hedef',57,['DSL Hedef','Evde İnternet Hedef','ADSL Hedef']],
+     ['IPTV Hedef',69,['IPTV Hedef']],
+     ['Akıllı Cihaz Hedef',77,['Akıllı Cihaz Hedef','Cihaz Hedef']]
+    ].forEach(([nm,exp,aliases]) => {
+      const found = findColByName(bh, ...aliases);
+      if (found >= 0 && found !== exp) {
+        const w = 'TTM BUAY kolon kayması: "'+nm+'" beklenen='+exp+', bulunan='+found;
+        console.warn('[TTM] '+w); warnings.push(w);
+      }
+    });
+  }
   for (const r of rowsB.slice(hib + 1)) {
     if (!r || !r[3]) continue;
     const bolge_ = r[1] ? String(r[1]).trim().toUpperCase() : "";
@@ -212,7 +227,7 @@ function parseWB(wb) {
     }
   }
   const dfmt = donem && donem.length === 6 ? donem.slice(0,4) + "/" + donem.slice(4) : (donem || "—");
-  return { data: out, donem: dfmt, persCount, bayiCount, matrix, kupa: kupaRows, detay: { bayiler: detayBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
+  return { data: out, donem: dfmt, persCount, bayiCount, warnings, matrix, kupa: kupaRows, detay: { bayiler: detayBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
 }
 
 /* ───── EDM PARSER — Dinamik kolon tespiti ───── */
@@ -534,6 +549,14 @@ function wire(boxId, inputId, isPrev) {
           document.getElementById("status").textContent = "📊 " + parsed.persCount + " personel · " + parsed.bayiCount + " bayi · " + parsed.donem;
           msg.className = "pmsg ok show"; msg.textContent = "✅ " + parsed.persCount + " personel + " + parsed.bayiCount + " bayi işlendi";
           sy = "Tümü";
+          /* Sprint 3: TTM son yükleme zaman damgası */
+          try { localStorage.setItem(LOAD_KEY_TTM, new Date().toISOString()); } catch(_e) {}
+          /* Sprint 3: Kalan Gün auto-fill — SY ÖZET verisinden day-now/day-total doldur */
+          if (parsed.syData && parsed.syData.calisilanGun && parsed.syData.calismaGun) {
+            var _dnEl = document.getElementById('day-now');
+            var _dtEl = document.getElementById('day-total');
+            if (_dnEl && _dtEl && !_dnEl.value) { _dnEl.value = parsed.syData.calisilanGun; _dtEl.value = parsed.syData.calismaGun; }
+          }
           /* EDM BUAY parse (mevcut Excel'den) */
           try {
             const wb2 = XLSX.read(new Uint8Array(e.target.result), { type: "array" });
@@ -543,6 +566,9 @@ function wire(boxId, inputId, isPrev) {
             EDM_ERROR = edm.error;
             if (typeof updateKanalBadge === 'function') updateKanalBadge();
           } catch(edmErr) { EDM_ERROR = "EDM parse hatası: " + edmErr.message; }
+          /* Sprint 3: EDM son yükleme + DATA_HEALTH */
+          try { if (!EDM_ERROR) localStorage.setItem(LOAD_KEY_EDM, new Date().toISOString()); } catch(_e) {}
+          DATA_HEALTH = { bayiCount: parsed.bayiCount, persCount: parsed.persCount, syCount: parsed.syData ? Object.keys(parsed.syData.sy).length : 0, warnings: parsed.warnings || [], ok: (parsed.warnings || []).length === 0 };
         }
         buildTabs(); render();
       } catch (err) { msg.className = "pmsg err show"; msg.textContent = "❌ " + err.message; }

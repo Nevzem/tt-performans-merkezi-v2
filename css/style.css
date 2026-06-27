@@ -854,10 +854,46 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 }
 .hd-ph-title { font-size: 13px; font-weight: 800; color: var(--navy); letter-spacing: -0.1px; }
 .hd-ph-sub   { font-size: 9px; color: var(--muted); font-weight: 600; margin-top: 1px; }
+.hd-ph-load  { font-size: 8px; color: var(--muted); margin-top: 2px; opacity: 0.75; }
 .hd-ph-period {
   font-size: 11px; font-weight: 700; color: var(--navy);
   border: 1.5px solid var(--line); border-radius: 6px;
   padding: 3px 9px; flex-shrink: 0; letter-spacing: 0.5px;
+}
+
+/* ─── Sprint 3: VERİ SAĞLIĞI BARI ─────────────────────────────────── */
+.hd-data-health {
+  margin: 4px 16px 0; padding: 5px 10px;
+  border-radius: 8px; font-size: 9px; font-weight: 700;
+  letter-spacing: 0.1px;
+}
+.hd-data-health.dh-ok   { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.hd-data-health.dh-warn { background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; }
+
+/* ─── Sprint 3: İL GRUBU GÖRÜNÜMÜ ──────────────────────────────────── */
+.edm-il-group-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 16px 4px; font-size: 10px; font-weight: 800;
+  color: var(--navy); border-bottom: 1.5px solid var(--line);
+  background: var(--bg); letter-spacing: 0.2px; margin-top: 4px;
+}
+.edm-il-group-cnt {
+  font-size: 8.5px; font-weight: 600; color: var(--muted);
+  background: var(--hairline); border-radius: 6px; padding: 2px 7px;
+}
+
+/* ─── Sprint 3: LİSTE/İL GRUBU TOGGLE ──────────────────────────────── */
+.edm-view-toggle {
+  display: flex; gap: 4px; padding: 6px 16px 2px;
+}
+.edm-vt-btn {
+  font-size: 9px; font-weight: 700; padding: 3px 10px;
+  border: 1.5px solid var(--line); border-radius: 20px;
+  background: var(--card-bg); color: var(--muted); cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.edm-vt-btn.edm-vt-on {
+  background: var(--navy); color: #fff; border-color: var(--navy);
 }
 
 /* ─── ÖZET ÇİPLER (2 × 3 grid) ───────────────────────────────────── */

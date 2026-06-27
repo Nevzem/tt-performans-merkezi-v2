@@ -9,7 +9,9 @@
    ════════════════════════════════════════════ */
 
 /* ───── TREND DEPOSU ANAHTARI ───── */
-const TREND_KEY = "tt_kuzey_trend_v1";
+const TREND_KEY    = "tt_kuzey_trend_v1";
+const LOAD_KEY_TTM = "tt_son_yukleme_ttm";
+const LOAD_KEY_EDM = "tt_son_yukleme_edm";
 
 /* ───── MERKEZİ YAPILANDIRMA ─────
    Bölge, EDM ana bayi kodu, trend limiti ve SY listeleri
@@ -42,6 +44,8 @@ let EDM_ERROR   = null;   /* Parse hata mesajı */
 let EDM_COL_LOG = '';     /* Kolon mapping debug çıktısı */
 let EDM_SY_FILTER = 'Tümü'; /* Ana Sayfa SY filtresi */
 let EDM_IL_FILTER = 'Tümü'; /* İl filtresi */
+let EDM_IL_VIEW   = 'liste'; /* 'liste' | 'il-grubu' */
+let DATA_HEALTH   = null;    /* { bayiCount, persCount, syCount, warnings[], ok } */
 
 const EDM_SY_NAMES = ['Tümü', ...APP_CONFIG.edmSY];
 
