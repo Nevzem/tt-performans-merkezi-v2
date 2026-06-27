@@ -49,7 +49,7 @@
 
 /* ─── RESET ───────────────────────────────────────────────────────── */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 100%; }
+html, body { height: 100%; overflow: hidden; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: var(--ink);
@@ -59,7 +59,7 @@ body {
 }
 
 /* ─── UYGULAMA KAPSAYICI ──────────────────────────────────────────── */
-.app { display: flex; flex-direction: column; min-height: 100vh; }
+.app { display: flex; flex-direction: column; height: 100%; }
 
 /* ─── KANAL SEÇİCİ ŞERİDİ ────────────────────────────────────────── */
 .channel-strip {
@@ -143,9 +143,11 @@ body {
 /* ─── SCROLL ALANI ────────────────────────────────────────────────── */
 .scroll-area {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding-top: calc(var(--topbar-h) + var(--chstrip-h));
-  padding-bottom: calc(var(--bottomnav-h) + env(safe-area-inset-bottom, 8px));
+  padding-bottom: calc(var(--bottomnav-h) + env(safe-area-inset-bottom, 0px));
 }
 
 /* ─── SAYFALAR ────────────────────────────────────────────────────── */
@@ -1983,6 +1985,7 @@ body.exporting #sheet-overlay,
 body.exporting .drawer-overlay,
 body.exporting .modal-backdrop,
 body.exporting .loading-overlay,
-body.exporting .backdrop { display: none !important; }
+body.exporting .backdrop,
+body.exporting .bottom-nav { display: none !important; }
 body.exporting * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; filter: none !important; }
 .rnk-bar.hd-gg { background: #059669; }
