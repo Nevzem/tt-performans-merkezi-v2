@@ -616,6 +616,7 @@ async function downloadCardPNG() {
   if (btn)   { btn.disabled = true; }
   if (valEl) { valEl.textContent = '⏳'; }
 
+  var hiddenEls = [];
   try {
     await ensureH2C();
 
@@ -624,6 +625,19 @@ async function downloadCardPNG() {
              document.querySelector('#cards .card') ||
              document.querySelector('.card');
     if (!el) throw new Error('Kart bulunamadı');
+
+    /* — overlay'leri gizle, body.exporting ekle — */
+    var OVERLAY_SEL = '#detay-overlay, #sheet-overlay, .detay-overlay, .drawer-overlay, .modal-backdrop, .loading-overlay, .backdrop, .overlay';
+    document.querySelectorAll(OVERLAY_SEL).forEach(function(ov) {
+      hiddenEls.push({ el: ov, display: ov.style.display });
+      ov.style.display = 'none';
+    });
+    document.body.classList.add('exporting');
+
+    /* — RAF + 100ms bekleme — */
+    await new Promise(function(resolve) {
+      requestAnimationFrame(function() { setTimeout(resolve, 100); });
+    });
 
     var scope   = navPage === 'bayi' ? 'Bayi'
                 : navPage === 'sy'   ? 'SatisYoneticisi'
@@ -643,6 +657,10 @@ async function downloadCardPNG() {
   } catch (e) {
     alert('Görsel oluşturma hatası: ' + e.message);
   }
+
+  /* — her zaman restore — */
+  document.body.classList.remove('exporting');
+  hiddenEls.forEach(function(item) { item.el.style.display = item.display; });
 
   if (btn)   { btn.disabled = false; }
   if (valEl) { valEl.textContent = orig; }

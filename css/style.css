@@ -1975,4 +1975,14 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 /* 15. 5-seviye renk — gg (≥120) */
 .chip.gg { color: #064e3b; background: #d1fae5; border-color: #6ee7b7; }
 .fill.gg { background: linear-gradient(90deg, #059669, #047857); }
+
+/* ── Sprint 8.1 — Görsel Oluştur Overlay Fix ───────────────────── */
+body.exporting #detay-overlay,
+body.exporting .detay-overlay,
+body.exporting #sheet-overlay,
+body.exporting .drawer-overlay,
+body.exporting .modal-backdrop,
+body.exporting .loading-overlay,
+body.exporting .backdrop { display: none !important; }
+body.exporting * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; filter: none !important; }
 .rnk-bar.hd-gg { background: #059669; }
