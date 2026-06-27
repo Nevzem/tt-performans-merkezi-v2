@@ -616,11 +616,12 @@ async function downloadCardPNG() {
   if (btn)   { btn.disabled = true; }
   if (valEl) { valEl.textContent = '⏳'; }
 
+  var wrapper   = null;
   var hiddenEls = [];
   try {
     await ensureH2C();
 
-    var el = document.getElementById('sy-card') ||      /* SY ekranı */
+    var el = document.getElementById('sy-card') ||
              document.getElementById('card-main') ||
              document.querySelector('#cards .card') ||
              document.querySelector('.card');
@@ -634,9 +635,29 @@ async function downloadCardPNG() {
     });
     document.body.classList.add('exporting');
 
-    /* — RAF + 100ms bekleme — */
+    /* ── Temiz klon: animasyon/opacity sorununu tamamen bertaraf et ──
+       Clone #cards dışında olduğundan s9cardFade animasyonu başlamaz.
+       Inline stil ile filter/opacity/transform sıfırlanır. */
+    var elW = Math.ceil(el.offsetWidth || el.getBoundingClientRect().width || 360);
+    wrapper  = document.createElement('div');
+    wrapper.style.cssText =
+      'position:fixed;left:-9999px;top:0;width:' + elW + 'px;' +
+      'background:#ffffff;z-index:-1;pointer-events:none;overflow:visible;';
+
+    var clone = el.cloneNode(true);
+    clone.style.cssText =
+      (clone.getAttribute('style') || '') +
+      ';opacity:1;filter:none;-webkit-filter:none;' +
+      'backdrop-filter:none;-webkit-backdrop-filter:none;' +
+      'mix-blend-mode:normal;transform:none;' +
+      'animation:none;-webkit-animation:none;';
+
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+
+    /* — RAF: klon layout'u yerleşsin — */
     await new Promise(function(resolve) {
-      requestAnimationFrame(function() { setTimeout(resolve, 100); });
+      requestAnimationFrame(function() { setTimeout(resolve, 60); });
     });
 
     var scope   = navPage === 'bayi' ? 'Bayi'
@@ -647,10 +668,13 @@ async function downloadCardPNG() {
     var dateStr = new Date().toLocaleDateString('tr-TR').replace(/\./g, '');
     var fname   = 'TT_' + scope + '_Siralama_' + prodKey + '_' + dateStr + '.png';
 
-    var canvas = await html2canvas(el, {
+    var canvas  = await html2canvas(clone, {
       scale: 2.5, backgroundColor: '#ffffff',
       useCORS: true, logging: false, scrollX: 0, scrollY: 0,
     });
+
+    /* klon DOM'dan çıkar, sonra modal aç */
+    if (wrapper && wrapper.parentNode) { wrapper.parentNode.removeChild(wrapper); wrapper = null; }
 
     _openSharePreview(canvas.toDataURL('image/png'), fname);
 
@@ -659,6 +683,7 @@ async function downloadCardPNG() {
   }
 
   /* — her zaman restore — */
+  if (wrapper && wrapper.parentNode) { wrapper.parentNode.removeChild(wrapper); }
   document.body.classList.remove('exporting');
   hiddenEls.forEach(function(item) { item.el.style.display = item.display; });
 

@@ -1987,5 +1987,12 @@ body.exporting .modal-backdrop,
 body.exporting .loading-overlay,
 body.exporting .backdrop,
 body.exporting .bottom-nav { display: none !important; }
-body.exporting * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; filter: none !important; }
+/* backdrop-filter'ı sadece overlay'lerde kapat; kart içeriğini dokunma */
+body.exporting .sheet-overlay,
+body.exporting #sheet-overlay,
+body.exporting #detay-overlay,
+body.exporting .detay-overlay { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+/* kart animasyonunu durdur (doğrudan capture sırasında opacity:1 garantisi) */
+body.exporting #cards .card,
+body.exporting .card { animation: none !important; opacity: 1 !important; transform: none !important; }
 .rnk-bar.hd-gg { background: #059669; }
