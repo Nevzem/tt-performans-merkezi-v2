@@ -1917,3 +1917,62 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 /* 9. Boşluklar azalt */
 .page-hdr   { padding: 13px 16px 10px !important; }
 .cards-area { padding: 10px 12px 18px !important; gap: 10px !important; }
+
+/* ════════════════════ SPRINT 9 — Personel Ekranı Premium Revizyonu ══════════ */
+
+/* 1. Personel satırı — nm-main (isim + AI rozet yan yana) */
+.nm-main { display: flex; align-items: baseline; gap: 4px; overflow: hidden; }
+.nm-main .p { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
+
+/* 1. h/a satırı (gerçekleşen/hedef) */
+.br-ha     { font-size: 8px; font-weight: 700; color: var(--ink); text-align: right; margin: 1px 0; line-height: 1; }
+.br-hmax   { color: var(--muted); font-weight: 500; }
+
+/* 2. Forecast rozet artık personelde de çalışır (fchip zaten var) */
+
+/* 3. İl satırı (personel altında) */
+.nm-il { font-size: 7px; color: var(--muted); font-weight: 600; letter-spacing: 0.3px; margin-top: 1px; }
+
+/* 4. Progress bar — %100 tik daha belirgin */
+.tick { width: 2px !important; opacity: 0.7 !important; box-shadow: 0 0 3px rgba(10,31,92,0.35); }
+
+/* 5. Liste modları — yeni CSS yok, JS tarafı değişti */
+
+/* 6. Performans filtresi — fbar chip yoksa CSS gerekmez */
+
+/* 8. AI rozetleri */
+.ai-bdg { font-size: 7.5px; font-weight: 800; padding: 1px 4px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+.ai-bdg.ai-gg { color: #064e3b; background: #d1fae5; }
+.ai-bdg.ai-g  { color: #065f46; background: #ecfdf5; }
+.ai-bdg.ai-y  { color: #92400e; background: #fffbeb; }
+.ai-bdg.ai-o  { color: #9a3412; background: #fff7ed; }
+.ai-bdg.ai-r  { color: #7f1d1d; background: #fef2f2; }
+
+/* 11. Arama kutusu — filter-bar[data-pg="pers"] */
+.filter-bar[data-pg="pers"] {
+  display: flex; flex-direction: column;
+  overflow-x: visible; padding: 6px 12px; gap: 6px;
+}
+.fbar-chips-wrap {
+  display: flex; gap: 6px; overflow-x: auto;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 2px 0;
+}
+.fbar-chips-wrap::-webkit-scrollbar { display: none; }
+.fbar-chips-wrap .fbar-chip { flex-shrink: 0; }
+.fbar-search-row { width: 100%; box-sizing: border-box; }
+.fbar-search-inp {
+  width: 100%; box-sizing: border-box;
+  padding: 6px 10px; border: 1.5px solid var(--line);
+  border-radius: 8px; font-size: 10.5px; font-family: inherit;
+  color: var(--ink); background: var(--surface); outline: none;
+}
+.fbar-search-inp:focus { border-color: var(--navy); }
+
+/* 14. Premium animasyon — kart fade */
+@keyframes s9cardFade { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+#cards .card { animation: s9cardFade 0.17s ease; }
+
+/* 15. 5-seviye renk — gg (≥120) */
+.chip.gg { color: #064e3b; background: #d1fae5; border-color: #6ee7b7; }
+.fill.gg { background: linear-gradient(90deg, #059669, #047857); }
+.rnk-bar.hd-gg { background: #059669; }

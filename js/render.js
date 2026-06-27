@@ -84,16 +84,39 @@ function filt(recs) {
     r = r.filter(function(x) { return x.b === bayiFilter; });
   if (typeof riskOnly !== "undefined" && riskOnly)
     r = r.filter(function(x) { return x.g !== null && x.g < 60; });
+  if (typeof perfFilter !== "undefined" && perfFilter && perfFilter !== 'all')
+    r = _applyPerfF(r, perfFilter);
+  if (typeof persSearch !== "undefined" && persSearch) {
+    var _q = persSearch.toLowerCase();
+    r = r.filter(function(x) { return (x.p||'').toLowerCase().includes(_q) || (x.b||'').toLowerCase().includes(_q); });
+  }
   return r;
 }
 function setSy(s) { sy = s; buildTabs(); render(); }
 
 /* ───── YARDIMCILAR ───── */
-const cls = g => g >= 100 ? "g" : g >= 80 ? "y" : g >= 70 ? "o" : "r";
+const cls = g => g >= 120 ? "gg" : g >= 100 ? "g" : g >= 80 ? "y" : g >= 70 ? "o" : "r";
 function fc() {
   const d = parseInt(document.getElementById("day-now").value);
   const t = parseInt(document.getElementById("day-total").value);
   return (d > 0 && t > 0 && d <= t) ? { d, t, k: t / d } : null;
+}
+/* ── Sprint 9: Performans filtre yardımcısı ── */
+function _applyPerfF(r, pf) {
+  if (pf === '120p')   return r.filter(function(x) { return x.g >= 120; });
+  if (pf === '100p')   return r.filter(function(x) { return x.g >= 100; });
+  if (pf === '80-100') return r.filter(function(x) { return x.g >= 80 && x.g < 100; });
+  if (pf === '70-80')  return r.filter(function(x) { return x.g >= 70 && x.g < 80; });
+  if (pf === '70m')    return r.filter(function(x) { return x.g < 70; });
+  return r;
+}
+/* ── Sprint 9: Personel AI rozeti ── */
+function _persAiBadge(g) {
+  if (g >= 120) return '<span class="ai-bdg ai-gg">🔥 Üst</span>';
+  if (g >= 100) return '<span class="ai-bdg ai-g">🚀 Hedef+</span>';
+  if (g >= 80)  return '<span class="ai-bdg ai-y">👍</span>';
+  if (g >= 70)  return '<span class="ai-bdg ai-o">⚠</span>';
+  return '<span class="ai-bdg ai-r">🔴</span>';
 }
 function deltaHTML(rec, prodKey) {
   if (!PREV) return "";
@@ -109,23 +132,35 @@ function deltaHTML(rec, prodKey) {
 }
 function rkHTML(rank) { return rank <= 3 ? '<span class="badge b' + rank + '">' + rank + '</span>' : '<span class="n">' + rank + '</span>'; }
 function rowHTML(rec, rank, maxV, podium, withFc, prodKey) {
-  const f = withFc ? fc() : null;
+  const isPers = section === 'pers';
+  const f = fc();
   let fhtml = "";
-  if (f) { const fv = rec.g * f.k; fhtml = '<span class="fchip' + (fv >= 100 ? " ok" : "") + '">F %' + fv.toFixed(0) + '</span>'; }
+  if (f && (withFc || isPers)) {
+    const fv = rec.g * f.k;
+    fhtml = '<span class="fchip' + (fv >= 100 ? " ok" : "") + '">F%' + fv.toFixed(0) + '</span>';
+  }
   const w = maxV > 0 ? Math.min(rec.g / maxV * 100, 100) : 0;
   const tick = maxV > 100 ? '<div class="tick" style="left:' + (100 / maxV * 100) + '%"></div>' : "";
-  /* Sprint 5: detay onclick */
   const _eb = (rec.b||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
   const _ep = (rec.p||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
   const _km = rec.b && rec.b.match(/^(\d+)\s*·/);
   const _oc = _km
     ? ' onclick="openDetay(\'bayi\',\'' + _km[1] + '\')" style="cursor:pointer"'
     : ' onclick="_detayPers(\'' + _ep + '\',\'' + _eb + '\')" style="cursor:pointer"';
+  let nmHtml, haHtml = '';
+  if (isPers) {
+    const ilLine = rec.il ? '<div class="nm-il">' + rec.il + '</div>' : '';
+    nmHtml = '<div class="nm">' +
+      '<div class="nm-main"><div class="p">' + rec.p + '</div>' + _persAiBadge(rec.g) + '</div>' +
+      '<div class="b">' + rec.b + '</div>' + ilLine + '</div>';
+    if (rec.h) haHtml = '<div class="br-ha">' + rec.a + '<span class="br-hmax">/' + rec.h + '</span></div>';
+  } else {
+    nmHtml = '<div class="nm"><div class="p">' + rec.p + '</div><div class="b">' + rec.b + '</div></div>';
+  }
   return '<div class="row' + (podium && rank <= 3 ? " r" + rank : "") + '"' + _oc + '>' +
-    '<div class="rk">' + rkHTML(rank) + '</div>' + deltaHTML(rec, prodKey) +
-    '<div class="nm"><div class="p">' + rec.p + '</div><div class="b">' + rec.b + '</div></div>' +
+    '<div class="rk">' + rkHTML(rank) + '</div>' + deltaHTML(rec, prodKey) + nmHtml +
     '<div class="br"><div class="br-top">' + fhtml + '<span class="chip ' + cls(rec.g) + '">%' + rec.g.toFixed(1) + '</span></div>' +
-    '<div class="track"><div class="fill ' + cls(rec.g) + '" style="width:' + w + '%"></div>' + tick + '</div></div></div>';
+    haHtml + '<div class="track"><div class="fill ' + cls(rec.g) + '" style="width:' + w + '%"></div>' + tick + '</div></div></div>';
 }
 function hdrHTML(icon, t, sub) {
   return '<div class="hdr"><div class="hdr-stripe"></div><div class="hdr-gold"></div><div class="hdr-body">' +
@@ -179,16 +214,24 @@ function cardHTML(prodKey) {
     return hdrHTML("⭐", "Günün Yıldızları", "3 üründe zirvedeki isimler · HGO bazlı" + syTag) + rows + ftrHTML([[STAR_PRODS.length, "Ürün Lideri"], ["⭐", "Tebrikler"]]);
   }
   const recs = filt(DATA.pers[prodKey] || []);
+  /* Sprint 9 Item 7: Forecast sıralaması */
+  if (typeof _fcSort !== 'undefined' && _fcSort) {
+    const _fo = fc(); if (_fo) recs.sort((a, b) => (b.g * _fo.k) - (a.g * _fo.k));
+  }
   if (!recs.length) return hdrHTML(icon, prodKey, "Veri yok" + syTag);
   const showT = view === "top" || view === "both", showB = view === "bot" || view === "both";
   const top = recs.slice(0, N), bot = recs.slice(-N).reverse();
   const tMax = Math.max(...top.map(r => r.g)), bMax = Math.max(...bot.map(r => r.g), 1);
+  const isFcSort = typeof _fcSort !== 'undefined' && _fcSort;
   let body = "";
-  if (showT) { body += '<div class="sec t"><span>İlk ' + (N>900?"":N+" ") + '— Zirvedekiler</span><span class="cnt">HGO bazlı</span></div>'; top.forEach((r, i) => body += rowHTML(r, i + 1, tMax, true, false, prodKey)); }
+  if (showT) { body += '<div class="sec t"><span>İlk ' + (N>900?"":N+" ") + '— Zirvedekiler</span><span class="cnt">' + (isFcSort ? 'Forecast bazlı' : 'HGO bazlı') + '</span></div>'; top.forEach((r, i) => body += rowHTML(r, i + 1, tMax, true, false, prodKey)); }
   if (showT && showB) body += '<div class="divider"></div>';
   if (showB) { body += '<div class="sec b"><span>Son ' + (N>900?"":N+" ") + '— Gelişim Fırsatı</span><span class="cnt">HGO bazlı</span></div>'; bot.forEach((r, i) => body += rowHTML(r, recs.length - i, bMax, false, false, prodKey)); }
-  return hdrHTML(icon, prodKey + " Personel Sıralaması", "HGO bazlı · " + recs.length + " hedefli personel" + syTag) +
-    body + ftrHTML([[recs.length, "Personel"], ["%" + recs[0].g.toFixed(1), "En Yüksek"], [recs[0].p.split(" ")[0], "Lider"]]);
+  /* Sprint 9 Item 12: SY istatistiği; Item 9: ftr avg HGO + tam lider adı */
+  const _syInfo = sy !== 'Tümü' ? sy + ' · ' + recs.length + ' Personel' : recs.length + ' hedefli personel' + syTag;
+  const _avgG   = Math.round(recs.reduce((s, r) => s + r.g, 0) / recs.length * 10) / 10;
+  return hdrHTML(icon, prodKey + " Personel Sıralaması", "HGO bazlı · " + _syInfo) +
+    body + ftrHTML([[recs.length, "Personel"], ["%"+_avgG.toFixed(1), "Ort. HGO"], [recs[0].p, "Lider"]]);
 }
 
 

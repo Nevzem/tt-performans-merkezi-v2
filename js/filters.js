@@ -15,6 +15,12 @@ var _listeLabel   = "Tüm Liste";
 var _syListeLabel = 'Tümü';
 var _prevNavPage  = null;
 
+/* ─── SPRINT 9: Personel ek durum ───────── */
+var perfFilter  = 'all';
+var persSearch  = '';
+var _perfLabel  = 'Hepsi';
+var _fcSort     = false;
+
 /* SY ürün görüntü isimleri */
 var _SY_DISPLAY = {
   'Mobil Toplam':  '📱 Toplam Mobil',
@@ -81,6 +87,8 @@ function buildFilterBar() {
     if (isPers) {
       var bLabel = (bayiFilter === "Tümü") ? "Tümü" : _truncate(bayiFilter, 11);
       html += _fbarChip('bayi', 'Bayi', bLabel);
+      html += _fbarChip('perf', 'Performans', _perfLabel);
+      html += _fbarChip('pers-sort', 'Sıralama', _fcSort ? 'Forecast' : 'HGO');
     }
     html += _fbarChip('liste', 'Liste', _listeLabel);
   }
@@ -91,9 +99,23 @@ function buildFilterBar() {
     '<span class="fbar-chip-val">Oluştur ↗</span>' +
   '</button>';
 
-  bar.setAttribute('data-pg', (isBayi && (typeof KANAL === 'undefined' || KANAL !== 'EDM')) ? 'bayi' : '');
+  /* Personel arama kutusu — chip satırının altına */
+  if (isPers) {
+    html = '<div class="fbar-chips-wrap">' + html + '</div>' +
+      '<div class="fbar-search-row">' +
+      '<input type="text" class="fbar-search-inp" id="fbar-search-inp" ' +
+      'placeholder="🔍 Personel ara..." oninput="setPersonelSearch(this.value)"' +
+      (persSearch ? ' value="' + persSearch.replace(/"/g, '&quot;') + '"' : '') + '>' +
+      '</div>';
+  }
+
+  bar.setAttribute('data-pg',
+    (isBayi && (typeof KANAL === 'undefined' || KANAL !== 'EDM')) ? 'bayi' :
+    isPers ? 'pers' : ''
+  );
   bar.innerHTML = html;
   _updateBayiSub();
+  _updatePersSub();
 }
 
 function _updateBayiSub() {
@@ -109,6 +131,28 @@ function _updateBayiSub() {
     : (typeof DATA !== 'undefined' && DATA && DATA.bayi ? (DATA.bayi[prodKey] || []) : []);
   var n = (typeof compactListeN !== 'undefined' && compactListeN < 999) ? Math.min(arr.length, compactListeN) : arr.length;
   sub.textContent = (isEDM ? 'EDM' : 'TTM') + ' · ' + prodKey + syName + riskTag + ' · ' + n + ' Bayi';
+}
+
+function _updatePersSub() {
+  if (typeof navPage === 'undefined' || navPage !== 'pers') return;
+  var sub = document.getElementById('data-page-sub');
+  if (!sub) return;
+  var prodKey = (typeof prod !== 'undefined' && prod) ? prod : 'Toplam Mobil';
+  var arr = (typeof DATA !== 'undefined' && DATA && DATA.pers) ? (DATA.pers[prodKey] || []) : [];
+  var n = (typeof filt === 'function') ? filt(arr).length : arr.length;
+  var syName = (typeof sy !== 'undefined' && sy !== 'Tümü') ? sy : '';
+  var perfTag = (perfFilter && perfFilter !== 'all') ? ' · ' + _perfLabel : '';
+  var searchTag = persSearch ? ' · "' + persSearch + '"' : '';
+  if (syName) {
+    sub.textContent = prodKey + ' · ' + syName.split(' ')[0] + ' · ' + n + ' Personel' + perfTag + searchTag;
+  } else {
+    sub.textContent = prodKey + ' · ' + n + ' Personel' + perfTag + searchTag;
+  }
+}
+
+function setPersonelSearch(val) {
+  persSearch = (val || '').trim();
+  render();
 }
 
 function _fbarChip(type, label, value) {
@@ -253,15 +297,42 @@ function _sheetConfig(type) {
       ];
     } else {
       items = [
-        { key: 'both15', label: 'İlk / Son 15' },
         { key: 'top10',  label: 'İlk 10' },
+        { key: 'top15',  label: 'İlk 15' },
         { key: 'bot10',  label: 'Son 10' },
-        { key: 'both20', label: 'İlk / Son 20' },
+        { key: 'bot15',  label: 'Son 15' },
         { key: 'all',    label: 'Tüm Liste' },
-        { key: 'risk',   label: '🔴 Riskli Personeller — HGO %60 altı' },
       ];
     }
     return { title: 'Liste Seçenekleri', items: items, active: _currentListeKey() };
+  }
+
+  /* ── Sprint 9: Performans filtresi ── */
+  if (type === 'perf') {
+    return {
+      title: 'Performans Filtresi',
+      items: [
+        { key: 'all',     label: '👥 Hepsi' },
+        { key: '120p',    label: '🔥 %120 ve üstü — Üst Performans' },
+        { key: '100p',    label: '🚀 %100 ve üstü — Hedef Üstü' },
+        { key: '80-100',  label: '👍 %80–100 — Stabil' },
+        { key: '70-80',   label: '⚠ %70–80 — Risk Bölgesi' },
+        { key: '70m',     label: '🔴 %70 altı — Kritik' },
+      ],
+      active: perfFilter,
+    };
+  }
+
+  /* ── Sprint 9: Sıralama (HGO / Forecast) ── */
+  if (type === 'pers-sort') {
+    return {
+      title: 'Sıralama',
+      items: [
+        { key: 'hgo', label: '📊 HGO Sıralaması' },
+        { key: 'fc',  label: '🔮 Forecast Sıralaması' },
+      ],
+      active: _fcSort ? 'fc' : 'hgo',
+    };
   }
 
   /* ── EDM Bayiler SY filtresi ── */
@@ -379,10 +450,12 @@ function _currentListeKey() {
   var nsel = document.getElementById('nsel');
   var n = nsel ? parseInt(nsel.value) : 15;
   if (view === 'top'  && n === 10)  return 'top10';
+  if (view === 'top'  && n === 15)  return 'top15';
   if (view === 'bot'  && n === 10)  return 'bot10';
+  if (view === 'bot'  && n === 15)  return 'bot15';
   if (view === 'both' && n === 20)  return 'both20';
   if (n >= 999)                     return 'all';
-  return 'both15';
+  return 'top15';
 }
 
 /* ─── OPSİYONLARI RENDER ET ─────────────────── */
@@ -463,6 +536,16 @@ function _pick(type, key) {
     bayiFilter = key;
     render();
 
+  } else if (type === 'perf') {
+    perfFilter = key;
+    _perfLabel = key === 'all' ? 'Hepsi' : key === '120p' ? '%120+' : key === '100p' ? '%100+' :
+                 key === '80-100' ? '%80-100' : key === '70-80' ? '%70-80' : '%70 Altı';
+    render();
+
+  } else if (type === 'pers-sort') {
+    _fcSort = (key === 'fc');
+    render();
+
   } else if (type === 'liste') {
     _applyListe(key);
   }
@@ -482,13 +565,14 @@ function _applyListe(key) {
     render();
 
   } else {
-    /* Personel */
+    /* Personel — Sprint 9 liste modları */
+    riskOnly = false;
     if      (key === 'top10')  { setView('top');  if (nsel) nsel.value = 10;  _listeLabel = 'İlk 10'; }
+    else if (key === 'top15')  { setView('top');  if (nsel) nsel.value = 15;  _listeLabel = 'İlk 15'; }
     else if (key === 'bot10')  { setView('bot');  if (nsel) nsel.value = 10;  _listeLabel = 'Son 10'; }
-    else if (key === 'both20') { setView('both'); if (nsel) nsel.value = 20;  _listeLabel = 'İlk/Son 20'; }
+    else if (key === 'bot15')  { setView('bot');  if (nsel) nsel.value = 15;  _listeLabel = 'Son 15'; }
     else if (key === 'all')    { setView('both'); if (nsel) nsel.value = 999; _listeLabel = 'Tüm Liste'; }
-    else if (key === 'risk')   { riskOnly = true; if (nsel) nsel.value = 999; setView('both'); _listeLabel = 'Riskli'; }
-    else                       { setView('both'); if (nsel) nsel.value = 15;  _listeLabel = 'İlk/Son 15'; }
+    else                       { setView('top');  if (nsel) nsel.value = 15;  _listeLabel = 'İlk 15'; }
     /* setView() zaten render() çağırır */
   }
 }
@@ -511,8 +595,9 @@ function resetFiltersForPage(page) {
     riskOnly = false; compactListeN = 999; _listeLabel = 'Tüm Liste';
     bayiFilter = "Tümü";
   } else if (page === 'pers') {
-    riskOnly = false; compactListeN = 999; _listeLabel = 'İlk/Son 15';
-    bayiFilter = "Tümü";
+    riskOnly = false; compactListeN = 999; _listeLabel = 'İlk 15';
+    bayiFilter = "Tümü"; perfFilter = 'all'; _perfLabel = 'Hepsi';
+    persSearch = ''; _fcSort = false;
     var nsel = document.getElementById('nsel');
     if (nsel) nsel.value = 15;
     view = 'top';

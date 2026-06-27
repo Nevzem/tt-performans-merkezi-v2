@@ -68,11 +68,12 @@ function parseWB(wb) {
     persCount++;
     const b = shortB(r[3]), p = String(r[6]).trim();
     const sy_ = r[4] && String(r[4]).trim() !== "-" ? String(r[4]).trim() : "";
+    const il_ = r[5] && String(r[5]).trim() !== "-" ? String(r[5]).trim() : "";
     const ph = num(r[38]) || 0, pa = num(r[39]) || 0, rh = num(r[41]) || 0, ra = num(r[42]) || 0;
     const dh = num(r[44]) || 0, da = num(r[45]) || 0;
     const ih = num(r[53]) || 0, ia = num(r[54]) || 0, uh = num(r[56]) || 0, ua = num(r[57]) || 0;
     const ch = num(r[59]) || 0, ca = num(r[60]) || 0, gh = num(r[62]) || 0, ga = num(r[63]) || 0;
-    const pushP = (key, h, a) => { if (h > 0) out.pers[key].push({ b, p, sy: sy_, g: Math.round(a / h * 1000) / 10 }); };
+    const pushP = (key, h, a) => { if (h > 0) out.pers[key].push({ b, p, sy: sy_, il: il_, h: Math.round(h), a: Math.round(a), g: Math.round(a / h * 1000) / 10 }); };
     pushP("Toplam Mobil", ph + rh, pa + ra);
     pushP("Faturalı", ph, pa);
     pushP("Faturasız", rh, ra);
