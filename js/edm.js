@@ -148,13 +148,37 @@ function _edmPageHeader() {
     var _ts = (typeof LOAD_KEY_EDM !== 'undefined') ? localStorage.getItem(LOAD_KEY_EDM) : null;
     if (_ts) { var _d = new Date(_ts); loadTs = _d.toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
   } catch(_e) {}
-  return '<div class="hd-page-header">' +
-    '<div class="hd-ph-left"><div class="hd-ph-mark">TT</div>' +
-    '<div><div class="hd-ph-title">EDM Performans Merkezi' + syLabel + '</div>' +
-    '<div class="hd-ph-sub">' + btLabel + ' · ' + recs.length + ' Bayi · ' + DONEM + '</div>' +
-    (loadTs ? '<div class="hd-ph-load">Son yükleme: ' + loadTs + '</div>' : '') +
-    '</div></div>' +
-    '<div class="hd-ph-period">EDM</div></div>';
+
+  var kalanGun = null;
+  try {
+    var _dnEl = document.getElementById('day-now');
+    var _dtEl = document.getElementById('day-total');
+    if (_dnEl && _dtEl && _dnEl.value && _dtEl.value) kalanGun = Math.max(parseInt(_dtEl.value) - parseInt(_dnEl.value), 0);
+  } catch(_e2) {}
+  if (kalanGun === null && typeof SYDATA !== 'undefined' && SYDATA && SYDATA.calismaGun && SYDATA.calisilanGun)
+    kalanGun = Math.max(SYDATA.calismaGun - SYDATA.calisilanGun, 0);
+
+  var kalanBlock = kalanGun !== null
+    ? '<div class="hd-hero-kalan"><div class="hd-hero-kalan-val">' + kalanGun + '</div><div class="hd-hero-kalan-lbl">Kalan Gün</div></div>'
+    : '<div class="hd-hero-period">EDM</div>';
+
+  return '<div class="hd-hero hd-anim" style="--i:0">' +
+    '<div class="hd-hero-main">' +
+      '<div class="hd-hero-head">' +
+        '<div class="hd-ph-mark">TT</div>' +
+        '<div class="hd-hero-ch-badge ch-edm">EDM</div>' +
+        '<div class="hd-hero-titles">' +
+          '<div class="hd-hero-title">EDM Performans Merkezi' + syLabel + '</div>' +
+          '<div class="hd-hero-sub">' + btLabel + ' · ' + recs.length + ' Bayi · ' + DONEM + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="hd-hero-meta">' +
+        (loadTs ? '<span class="hd-hero-load">⏱ ' + loadTs + '</span>' : '') +
+        '<span class="hd-hero-donem">' + DONEM + '</span>' +
+      '</div>' +
+    '</div>' +
+    kalanBlock +
+  '</div>';
 }
 
 /* ─── SY FİLTRE ŞERİDİ ──────────────────────────────────────────── */

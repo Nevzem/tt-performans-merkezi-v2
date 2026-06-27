@@ -59,13 +59,12 @@ function renderHome() {
   }
   var kpis = _hdKPIs();
   el.innerHTML = [
-    _hdPageHeader(),
-    _hdDataHealth(),
+    _hdHero(),
     _hdChips(kpis),
+    _hdDailyTarget(kpis),
+    _hdExecutiveInsights(),
     _hdScorecard(kpis),
     _hdAutoSummary(kpis),
-    _hdLeaders(),
-    _hdRiskList(),
     _hdPersRanking(),
     _hdBayiRanking(),
     _hdRiskCenter(kpis),
@@ -143,6 +142,7 @@ function _hdChips(kpis) {
   function chip(lbl, val, valCls, sub) {
     return (
       '<div class="hd-chip">' +
+        '<div class="hd-chip-accent"></div>' +
         '<div class="hd-chip-lbl">' + lbl + '</div>' +
         '<div class="hd-chip-val ' + valCls + '">' + val + '</div>' +
         '<div class="hd-chip-sub">' + sub + '</div>' +
@@ -151,7 +151,7 @@ function _hdChips(kpis) {
   }
 
   return (
-    '<div class="hd-chips">' +
+    '<div class="hd-chips hd-anim" style="--i:1">' +
       chip('ORT. HGO',         ortHGO !== null ? '%' + ortHGO.toFixed(1) : '—',
                                'hdc-xl ' + ortCls,  '4 ürün ortalaması') +
       chip('RİSKLİ BAYİ',      String(riskliN),
@@ -663,6 +663,170 @@ function _hdRiskCenter(kpis) {
         adetTabs +
       '</div>' +
       '<div class="hrl-card">' + adetRows + '</div>' +
+    '</div>'
+  );
+}
+
+/* ══════════════════════════════════════════
+   Sprint 4 — EXECUTIVE HERO
+   ══════════════════════════════════════════ */
+function _hdHero() {
+  var today = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+  var loadTs = '';
+  try {
+    var _ts = (typeof LOAD_KEY_TTM !== 'undefined') ? localStorage.getItem(LOAD_KEY_TTM) : null;
+    if (_ts) { var _d = new Date(_ts); loadTs = _d.toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
+  } catch(_e) {}
+
+  var kalanGun = null;
+  var _gA = (typeof SYDATA !== 'undefined' && SYDATA && SYDATA.calismaGun)  || 0;
+  var _gB = (typeof SYDATA !== 'undefined' && SYDATA && SYDATA.calisilanGun) || 0;
+  if (_gA > 0 && _gB > 0) kalanGun = Math.max(_gA - _gB, 0);
+  if (kalanGun === null) {
+    try {
+      var _dnEl = document.getElementById('day-now');
+      var _dtEl = document.getElementById('day-total');
+      if (_dnEl && _dtEl && _dnEl.value && _dtEl.value) kalanGun = Math.max(parseInt(_dtEl.value) - parseInt(_dnEl.value), 0);
+    } catch(_e2) {}
+  }
+
+  var dhHtml = '';
+  if (typeof DATA_HEALTH !== 'undefined' && DATA_HEALTH) {
+    var dh = DATA_HEALTH;
+    dhHtml = '<span class="hd-hero-dh ' + (dh.ok ? 'hero-dh-ok' : 'hero-dh-warn') + '">' +
+      (dh.ok ? '✅' : '⚠️') + ' Veri Sağlığı' + (dh.warnings && dh.warnings.length ? ' (' + dh.warnings.length + ')' : '') + '</span>';
+  }
+
+  var kalanBlock = kalanGun !== null
+    ? '<div class="hd-hero-kalan"><div class="hd-hero-kalan-val">' + kalanGun + '</div><div class="hd-hero-kalan-lbl">Kalan Gün</div></div>'
+    : '<div class="hd-hero-period">' + DONEM + '</div>';
+
+  return (
+    '<div class="hd-hero hd-anim" style="--i:0">' +
+      '<div class="hd-hero-main">' +
+        '<div class="hd-hero-head">' +
+          '<div class="hd-ph-mark">TT</div>' +
+          '<div class="hd-hero-ch-badge">TTM</div>' +
+          '<div class="hd-hero-titles">' +
+            '<div class="hd-hero-title">Kuzey Anadolu Performans Merkezi</div>' +
+            '<div class="hd-hero-sub">Bayi Satış Kanalı &nbsp;·&nbsp; ' + today + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="hd-hero-meta">' +
+          (loadTs ? '<span class="hd-hero-load">⏱ ' + loadTs + '</span>' : '') +
+          dhHtml +
+          '<span class="hd-hero-donem">' + DONEM + '</span>' +
+        '</div>' +
+      '</div>' +
+      kalanBlock +
+    '</div>'
+  );
+}
+
+/* ══════════════════════════════════════════
+   Sprint 4 — GÜNLÜK HEDEF MOTORU (progress bar)
+   ══════════════════════════════════════════ */
+function _hdDailyTarget(kpis) {
+  if (!kpis[0].hasDetay) return '';
+  var cards = kpis.map(function(k) {
+    var pct = k.hgo !== null ? Math.min(Math.round(k.hgo), 100) : 0;
+    var barCls = pct >= 100 ? 'bar-green' : pct >= 70 ? 'bar-amber' : 'bar-red';
+    var hgoCls = k.hgo !== null ? (k.hgo >= 100 ? 'hd-g' : k.hgo >= 70 ? 'hd-y' : 'hd-r') : '';
+    return (
+      '<div class="hd-dt-card">' +
+        '<div class="hd-dt-head">' +
+          '<span class="hd-dt-icon">' + k.icon + '</span>' +
+          '<span class="hd-dt-prod">' + k.short + '</span>' +
+          '<span class="hd-dt-hgo ' + hgoCls + '">' + (k.hgo !== null ? '%' + k.hgo.toFixed(1) : '—') + '</span>' +
+        '</div>' +
+        '<div class="hd-dt-bar-wrap"><div class="hd-dt-bar ' + barCls + '" style="width:' + pct + '%"></div></div>' +
+        '<div class="hd-dt-nums">' +
+          '<span class="hd-dt-lbl">H<strong>' + (k.h > 0 ? k.h.toLocaleString('tr-TR') : '—') + '</strong></span>' +
+          '<span class="hd-dt-lbl">A<strong>' + (k.a > 0 ? k.a.toLocaleString('tr-TR') : '—') + '</strong></span>' +
+          '<span class="hd-dt-lbl">K<strong class="hd-r">' + (k.kalan !== null ? k.kalan.toLocaleString('tr-TR') : '—') + '</strong></span>' +
+          (k.gunluk !== null ? '<span class="hd-dt-lbl">GG<strong>' + k.gunluk + '/g</strong></span>' : '') +
+        '</div>' +
+      '</div>'
+    );
+  }).join('');
+  return (
+    '<div class="hd-section hd-anim" style="--i:2">' +
+      '<div class="hd-sec-title">Günlük Hedef Takibi</div>' +
+      '<div class="hd-dt-grid">' + cards + '</div>' +
+    '</div>'
+  );
+}
+
+/* ══════════════════════════════════════════
+   Sprint 4 — EXECUTIVE INSIGHTS (4 panel: Top5 / Risk5 / Rising / Falling)
+   ══════════════════════════════════════════ */
+function _hdExecutiveInsights() {
+  var mobRecs = (typeof DATA !== 'undefined' && DATA.bayi && DATA.bayi['Toplam Mobil']) || [];
+  var top5  = mobRecs.slice(0, 5);
+  var risk5 = mobRecs.slice(-5).slice().reverse();
+
+  function insRow(r, i, isPod) {
+    var cls = r.g >= 100 ? 'hd-g' : r.g >= 70 ? 'hd-y' : 'hd-r';
+    var podCls = isPod && i < 3 ? ' hd-ins-p' + (i + 1) : '';
+    return '<div class="hd-ins-row' + podCls + '">' +
+      '<span class="hd-ins-n">' + (i + 1) + '</span>' +
+      '<div class="hd-ins-name">' + r.p + '<div class="hd-ins-sub">' + r.b + '</div></div>' +
+      '<span class="hd-ins-hgo ' + cls + '">%' + r.g.toFixed(1) + '</span>' +
+    '</div>';
+  }
+
+  var top5HTML  = top5.length  ? top5.map(function(r, i) { return insRow(r, i, true);  }).join('') : '<div class="hd-ins-empty">Veri yok</div>';
+  var risk5HTML = risk5.length ? risk5.map(function(r, i) { return insRow(r, i, false); }).join('') : '<div class="hd-ins-empty">Veri yok</div>';
+
+  var risingHTML  = '<div class="hd-ins-empty">Önceki rapor yüklenmedi.</div>';
+  var fallingHTML = '<div class="hd-ins-empty">Önceki rapor yüklenmedi.</div>';
+
+  var hasPrev = (typeof PREV_DETAY !== 'undefined' && PREV_DETAY &&
+                 typeof DETAY !== 'undefined' && DETAY && Object.keys(DETAY.bayiler).length);
+  if (hasPrev) {
+    var changes = [];
+    for (var kod in DETAY.bayiler) {
+      var curr = DETAY.bayiler[kod], prev = PREV_DETAY.bayiler[kod];
+      if (!prev) continue;
+      var cp = curr.prods['Toplam Mobil'], pp = prev.prods['Toplam Mobil'];
+      if (!cp || !pp || !pp.h || !cp.h) continue;
+      changes.push({ name: curr.b, sub: curr.il || '', delta: Math.round((cp.g - pp.g) * 10) / 10, hgo: cp.g });
+    }
+    changes.sort(function(a, b) { return b.delta - a.delta; });
+    function chgRow(c, i) {
+      var isPos = c.delta > 0;
+      var hgoCls = c.hgo >= 100 ? 'hd-g' : c.hgo >= 70 ? 'hd-y' : 'hd-r';
+      return '<div class="hd-ins-row">' +
+        '<span class="hd-ins-n">' + (i + 1) + '</span>' +
+        '<div class="hd-ins-name">' + c.name + '<div class="hd-ins-sub">' + c.sub + '</div></div>' +
+        '<div class="hd-ins-right">' +
+          '<span class="hd-ins-delta ' + (isPos ? 'hd-g' : 'hd-r') + '">' + (isPos ? '▲' : '▼') + Math.abs(c.delta).toFixed(1) + '</span>' +
+          '<span class="hd-ins-hgo ' + hgoCls + '">%' + c.hgo.toFixed(1) + '</span>' +
+        '</div>' +
+      '</div>';
+    }
+    var rising  = changes.filter(function(c) { return c.delta > 0; }).slice(0, 5);
+    var falling = changes.filter(function(c) { return c.delta < 0; }).slice(-5).reverse();
+    risingHTML  = rising.length  ? rising.map(chgRow).join('')  : '<div class="hd-ins-empty">Artış bulunamadı.</div>';
+    fallingHTML = falling.length ? falling.map(chgRow).join('') : '<div class="hd-ins-empty">Düşüş bulunamadı.</div>';
+  }
+
+  function panel(title, rows, idx) {
+    return '<div class="hd-ins-panel hd-anim" style="--i:' + idx + '">' +
+      '<div class="hd-ins-title">' + title + '</div>' +
+      '<div class="hd-ins-body">' + rows + '</div>' +
+    '</div>';
+  }
+
+  return (
+    '<div class="hd-section" style="padding-top:8px">' +
+      '<div class="hd-sec-title hd-anim" style="--i:3">Executive Görünüm &nbsp;·&nbsp; Toplam Mobil</div>' +
+      '<div class="hd-insights-grid">' +
+        panel('🔥 En İyi 5 Bayi',    top5HTML,    4) +
+        panel('⚠️ Riskli 5 Bayi',   risk5HTML,   5) +
+        panel('📈 En Çok Yükselen', risingHTML,  6) +
+        panel('📉 En Çok Düşen',    fallingHTML, 7) +
+      '</div>' +
     '</div>'
   );
 }

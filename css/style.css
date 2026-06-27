@@ -1473,3 +1473,132 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
   font-size: 9.5px; color: var(--slate); font-family: monospace;
   line-height: 1.6; word-break: break-word;
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Sprint 4 · Executive Dashboard
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ─── ANİMASYON ─────────────────────────────────────────────────────── */
+@keyframes hdFadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hd-anim {
+  animation: hdFadeUp 0.15s ease both;
+  animation-delay: calc(var(--i, 0) * 20ms);
+}
+
+/* ─── EXECUTIVE HERO ────────────────────────────────────────────────── */
+.hd-hero {
+  background: var(--card-bg);
+  border-bottom: 2px solid var(--hairline);
+  padding: 14px 16px 12px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.hd-hero-main { flex: 1; min-width: 0; }
+.hd-hero-head { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.hd-hero-ch-badge {
+  font-size: 8.5px; font-weight: 900; letter-spacing: 1.5px;
+  background: var(--navy); color: #fff;
+  padding: 3px 8px; border-radius: 5px; flex-shrink: 0;
+}
+.hd-hero-ch-badge.ch-edm { background: linear-gradient(90deg, #6D28D9, #8B5CF6); }
+.hd-hero-titles { flex: 1; min-width: 0; }
+.hd-hero-title { font-size: 13px; font-weight: 800; color: var(--navy); letter-spacing: -0.1px; }
+.hd-hero-sub   { font-size: 9px; color: var(--muted); font-weight: 600; margin-top: 1px; }
+.hd-hero-meta  {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin-top: 5px;
+}
+.hd-hero-load { font-size: 8px; color: var(--muted); }
+.hd-hero-dh {
+  font-size: 8px; font-weight: 700; padding: 2px 6px; border-radius: 4px; flex-shrink: 0;
+}
+.hd-hero-dh.hero-dh-ok   { background: #ecfdf5; color: #065f46; }
+.hd-hero-dh.hero-dh-warn { background: #fffbeb; color: #92400e; }
+.hd-hero-donem {
+  font-size: 8.5px; font-weight: 700; color: var(--navy);
+  border: 1.5px solid var(--line); border-radius: 5px; padding: 2px 7px;
+}
+.hd-hero-kalan {
+  text-align: center; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-3) 100%);
+  color: #fff; border-radius: 12px; padding: 8px 14px; min-width: 54px;
+  box-shadow: 0 4px 12px rgba(10,31,92,0.25);
+}
+.hd-hero-kalan-val { font-size: 26px; font-weight: 900; line-height: 1; letter-spacing: -1px; }
+.hd-hero-kalan-lbl { font-size: 7px; font-weight: 700; opacity: 0.8; margin-top: 3px; letter-spacing: 0.8px; text-transform: uppercase; }
+.hd-hero-period {
+  font-size: 11px; font-weight: 700; color: var(--navy);
+  border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 9px; flex-shrink: 0;
+}
+
+/* ─── CHIP GELİŞTİRME — gradient accent üst çizgi + scale hover ─────── */
+.hd-chip { position: relative; overflow: hidden; }
+.hd-chip-accent {
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--navy-3), #3B5CE4);
+  border-radius: 11px 11px 0 0;
+}
+.hd-chip:hover {
+  box-shadow: 0 8px 24px rgba(10,31,92,0.15);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* ─── GÜNLÜK HEDEF MOTORU ───────────────────────────────────────────── */
+.hd-dt-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.hd-dt-card {
+  background: var(--card-bg); border: 1px solid var(--hairline);
+  border-radius: 10px; padding: 10px;
+}
+.hd-dt-head { display: flex; align-items: center; gap: 5px; margin-bottom: 7px; }
+.hd-dt-icon { font-size: 14px; }
+.hd-dt-prod {
+  font-size: 8.5px; font-weight: 800; color: var(--muted);
+  flex: 1; letter-spacing: 0.5px; text-transform: uppercase;
+}
+.hd-dt-hgo { font-size: 15px; font-weight: 900; }
+.hd-dt-bar-wrap {
+  height: 5px; background: var(--hairline); border-radius: 3px; overflow: hidden; margin-bottom: 7px;
+}
+.hd-dt-bar { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+.hd-dt-bar.bar-green { background: var(--green); }
+.hd-dt-bar.bar-amber { background: var(--amber); }
+.hd-dt-bar.bar-red   { background: var(--crimson); }
+.hd-dt-nums { display: flex; gap: 8px; flex-wrap: wrap; }
+.hd-dt-lbl { font-size: 8px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+.hd-dt-lbl strong { color: var(--ink); font-size: 9.5px; display: block; }
+
+/* ─── EXECUTIVE INSIGHTS 2 × 2 GRID ────────────────────────────────── */
+.hd-insights-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.hd-ins-panel {
+  background: var(--card-bg); border: 1px solid var(--hairline);
+  border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;
+}
+.hd-ins-title {
+  padding: 8px 10px 6px; font-size: 9.5px; font-weight: 800; color: var(--navy);
+  border-bottom: 1px solid var(--hairline); background: var(--surface);
+  letter-spacing: 0.1px; flex-shrink: 0;
+}
+.hd-ins-body { flex: 1; }
+.hd-ins-row {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-bottom: 1px solid var(--hairline);
+}
+.hd-ins-row:last-child { border-bottom: none; }
+.hd-ins-p1 { background: linear-gradient(90deg, #FFFDF4, #fff); border-left: 2px solid var(--gold); }
+.hd-ins-p2 { background: linear-gradient(90deg, #F8F9FC, #fff); border-left: 2px solid #8C96A8; }
+.hd-ins-p3 { background: linear-gradient(90deg, #FDF8F3, #fff); border-left: 2px solid var(--bronze); }
+.hd-ins-n  { font-size: 8.5px; font-weight: 700; color: var(--muted); width: 11px; flex-shrink: 0; }
+.hd-ins-name {
+  flex: 1; min-width: 0; font-size: 10px; font-weight: 700; color: var(--ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hd-ins-sub  { font-size: 7.5px; color: var(--muted); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hd-ins-right { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
+.hd-ins-hgo   { font-size: 12px; font-weight: 900; flex-shrink: 0; }
+.hd-ins-delta { font-size: 9px; font-weight: 800; }
+.hd-ins-empty { padding: 12px 10px; font-size: 10px; color: var(--muted); text-align: center; }
