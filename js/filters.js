@@ -91,7 +91,24 @@ function buildFilterBar() {
     '<span class="fbar-chip-val">Oluştur ↗</span>' +
   '</button>';
 
+  bar.setAttribute('data-pg', (isBayi && (typeof KANAL === 'undefined' || KANAL !== 'EDM')) ? 'bayi' : '');
   bar.innerHTML = html;
+  _updateBayiSub();
+}
+
+function _updateBayiSub() {
+  if (typeof navPage === 'undefined' || navPage !== 'bayi') return;
+  var sub = document.getElementById('data-page-sub');
+  if (!sub) return;
+  var isEDM = typeof KANAL !== 'undefined' && KANAL === 'EDM';
+  var prodKey = (typeof prod !== 'undefined' && prod) ? prod : 'Toplam Mobil';
+  var syName  = (typeof sy !== 'undefined' && sy !== 'Tümü') ? ' · ' + sy.split(' ')[0] : '';
+  var riskTag = (typeof riskOnly !== 'undefined' && riskOnly) ? ' · Riskli' : '';
+  var arr = isEDM
+    ? (typeof EDM_DATA !== 'undefined' && EDM_DATA && EDM_DATA.bayi ? (EDM_DATA.bayi[prodKey] || []) : [])
+    : (typeof DATA !== 'undefined' && DATA && DATA.bayi ? (DATA.bayi[prodKey] || []) : []);
+  var n = (typeof compactListeN !== 'undefined' && compactListeN < 999) ? Math.min(arr.length, compactListeN) : arr.length;
+  sub.textContent = (isEDM ? 'EDM' : 'TTM') + ' · ' + prodKey + syName + riskTag + ' · ' + n + ' Bayi';
 }
 
 function _fbarChip(type, label, value) {

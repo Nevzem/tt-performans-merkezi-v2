@@ -89,7 +89,7 @@ function filt(recs) {
 function setSy(s) { sy = s; buildTabs(); render(); }
 
 /* ───── YARDIMCILAR ───── */
-const cls = g => g >= 100 ? "g" : g >= 60 ? "y" : "r";
+const cls = g => g >= 100 ? "g" : g >= 80 ? "y" : g >= 70 ? "o" : "r";
 function fc() {
   const d = parseInt(document.getElementById("day-now").value);
   const t = parseInt(document.getElementById("day-total").value);
@@ -164,7 +164,7 @@ function cardHTML(prodKey) {
     const sub = "Bayi HGO sıralaması · " + recs.length + " bayi" + syTag + (f ? " · Forecast " + f.d + "/" + f.t : "");
     return hdrHTML(icon, prodKey + " — Bayi Sıralaması", sub) +
       '<div class="sec t"><span>🏢 TTM Bayileri</span><span class="cnt">' + (f ? "F = ay sonu forecast" : "HGO bazlı") + '</span></div>' +
-      rows + ftrHTML([[recs.length, "Bayi"], ["%" + recs[0].g.toFixed(1), "Lider HGO"], [recs[0].p.split(" ")[0], "Lider"]]);
+      rows + ftrHTML([[recs.length, "Bayi"], ["%" + recs[0].g.toFixed(1), "Lider HGO"], [recs[0].p, "Lider"]]);
   }
 
   const icon = PRODS.pers.find(p => p.key === prodKey).icon;
