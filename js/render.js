@@ -114,7 +114,14 @@ function rowHTML(rec, rank, maxV, podium, withFc, prodKey) {
   if (f) { const fv = rec.g * f.k; fhtml = '<span class="fchip' + (fv >= 100 ? " ok" : "") + '">F %' + fv.toFixed(0) + '</span>'; }
   const w = maxV > 0 ? Math.min(rec.g / maxV * 100, 100) : 0;
   const tick = maxV > 100 ? '<div class="tick" style="left:' + (100 / maxV * 100) + '%"></div>' : "";
-  return '<div class="row' + (podium && rank <= 3 ? " r" + rank : "") + '">' +
+  /* Sprint 5: detay onclick */
+  const _eb = (rec.b||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  const _ep = (rec.p||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  const _km = rec.b && rec.b.match(/^(\d+)\s*·/);
+  const _oc = _km
+    ? ' onclick="openDetay(\'bayi\',\'' + _km[1] + '\')" style="cursor:pointer"'
+    : ' onclick="_detayPers(\'' + _ep + '\',\'' + _eb + '\')" style="cursor:pointer"';
+  return '<div class="row' + (podium && rank <= 3 ? " r" + rank : "") + '"' + _oc + '>' +
     '<div class="rk">' + rkHTML(rank) + '</div>' + deltaHTML(rec, prodKey) +
     '<div class="nm"><div class="p">' + rec.p + '</div><div class="b">' + rec.b + '</div></div>' +
     '<div class="br"><div class="br-top">' + fhtml + '<span class="chip ' + cls(rec.g) + '">%' + rec.g.toFixed(1) + '</span></div>' +

@@ -379,7 +379,9 @@ function renderEDMBayi(prodKey) {
     var btCls = r.bt === 'TTBN' ? 'edm-bt-ttbn' : r.bt === 'ESN' ? 'edm-bt-esn' : 'edm-bt-other';
     var btTag = r.bt ? '<span class="edm-bt-tag ' + btCls + '">' + r.bt + '</span>' : '';
     var rk = i < 3 ? '<span class="badge b' + (i+1) + '">' + (i+1) + '</span>' : '<span class="n">' + (i+1) + '</span>';
-    return '<div class="row' + (i < 3 ? ' r' + (i+1) : '') + '">' +
+    var _km = r.b && r.b.match(/^(\d+)/);
+    var _oc = _km ? ' onclick="openDetay(\'bayi\',\'' + _km[1] + '\')" style="cursor:pointer"' : '';
+    return '<div class="row' + (i < 3 ? ' r' + (i+1) : '') + '"' + _oc + '>' +
       '<div class="rk">' + rk + '</div>' +
       '<div class="nm">' +
         '<div class="p">' + r.p + '&thinsp;' + btTag + '</div>' +

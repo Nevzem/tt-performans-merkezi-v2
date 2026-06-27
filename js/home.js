@@ -766,9 +766,11 @@ function _hdExecutiveInsights() {
   var risk5 = mobRecs.slice(-5).slice().reverse();
 
   function insRow(r, i, isPod) {
-    var cls = r.g >= 100 ? 'hd-g' : r.g >= 70 ? 'hd-y' : 'hd-r';
+    var cls    = r.g >= 100 ? 'hd-g' : r.g >= 70 ? 'hd-y' : 'hd-r';
     var podCls = isPod && i < 3 ? ' hd-ins-p' + (i + 1) : '';
-    return '<div class="hd-ins-row' + podCls + '">' +
+    var km     = r.b && r.b.match(/^(\d+)/);
+    var oc     = km ? ' onclick="openDetay(\'bayi\',\'' + km[1] + '\')" style="cursor:pointer"' : '';
+    return '<div class="hd-ins-row' + podCls + '"' + oc + '>' +
       '<span class="hd-ins-n">' + (i + 1) + '</span>' +
       '<div class="hd-ins-name">' + r.p + '<div class="hd-ins-sub">' + r.b + '</div></div>' +
       '<span class="hd-ins-hgo ' + cls + '">%' + r.g.toFixed(1) + '</span>' +
@@ -790,13 +792,14 @@ function _hdExecutiveInsights() {
       if (!prev) continue;
       var cp = curr.prods['Toplam Mobil'], pp = prev.prods['Toplam Mobil'];
       if (!cp || !pp || !pp.h || !cp.h) continue;
-      changes.push({ name: curr.b, sub: curr.il || '', delta: Math.round((cp.g - pp.g) * 10) / 10, hgo: cp.g });
+      changes.push({ name: curr.b, sub: curr.il || '', delta: Math.round((cp.g - pp.g) * 10) / 10, hgo: cp.g, kod: kod });
     }
     changes.sort(function(a, b) { return b.delta - a.delta; });
     function chgRow(c, i) {
-      var isPos = c.delta > 0;
+      var isPos  = c.delta > 0;
       var hgoCls = c.hgo >= 100 ? 'hd-g' : c.hgo >= 70 ? 'hd-y' : 'hd-r';
-      return '<div class="hd-ins-row">' +
+      var oc     = c.kod ? ' onclick="openDetay(\'bayi\',\'' + c.kod + '\')" style="cursor:pointer"' : '';
+      return '<div class="hd-ins-row"' + oc + '>' +
         '<span class="hd-ins-n">' + (i + 1) + '</span>' +
         '<div class="hd-ins-name">' + c.name + '<div class="hd-ins-sub">' + c.sub + '</div></div>' +
         '<div class="hd-ins-right">' +
