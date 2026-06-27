@@ -869,23 +869,29 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 .hd-chip {
   background: var(--card-bg);
   border: 1px solid var(--hairline);
-  border-radius: 10px; padding: 7px 9px;
-  display: flex; flex-direction: column; gap: 0;
-  box-shadow: 0 1px 3px rgba(10,31,92,0.04);
+  border-radius: 12px; padding: 10px 10px 8px;
+  display: flex; flex-direction: column; gap: 2px;
+  box-shadow: 0 2px 8px rgba(10,31,92,0.07);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  cursor: default;
+}
+.hd-chip:hover {
+  box-shadow: 0 6px 18px rgba(10,31,92,0.13);
+  transform: translateY(-1px);
 }
 .hd-chip-lbl {
   font-size: 7.5px; font-weight: 800; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 1px;
+  text-transform: uppercase; letter-spacing: 1.1px;
 }
 .hd-chip-val {
-  font-size: 18px; font-weight: 900; color: var(--navy);
-  letter-spacing: -0.5px; line-height: 1.15;
+  font-size: 20px; font-weight: 900; color: var(--navy);
+  letter-spacing: -0.5px; line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
-.hd-chip-val.hdc-xl    { font-size: 20px; }
-.hd-chip-val.hdc-date  { font-size: 12px; font-weight: 700; letter-spacing: 0; line-height: 1.2; }
+.hd-chip-val.hdc-xl    { font-size: 22px; }
+.hd-chip-val.hdc-date  { font-size: 12px; font-weight: 700; letter-spacing: 0; line-height: 1.3; }
 .hd-chip-val.hdc-small { font-size: 13px; }
-.hd-chip-sub { font-size: 8px; color: var(--muted); font-weight: 600; margin-top: 0; }
+.hd-chip-sub { font-size: 8px; color: var(--muted); font-weight: 600; margin-top: 1px; }
 
 /* Chip renk varyantları */
 .hdc-green   { color: var(--green); }
@@ -893,6 +899,8 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 .hdc-red     { color: var(--crimson); }
 .hdc-gold    { color: #9C7A1A; }
 .hdc-neutral { color: var(--navy); }
+.hdc-ttbn    { color: #1E40AF; font-weight: 900; }
+.hdc-esn     { color: #6D28D9; font-weight: 900; }
 
 /* ─── SCORECARD TABLOSU (yatay, McKinsey) ─────────────────────────── */
 .hd-score-wrap {
@@ -1385,11 +1393,40 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 .edm-sy-btn.active { background: var(--navy); border-color: var(--navy); color: #fff; }
 
 /* ─── EDM BAYİ TİPİ ETİKETİ ─────────────────────────────────────── */
-.edm-bt-tag { display: inline; font-size: 7px; font-weight: 800; padding: 1px 4px; border-radius: 3px; vertical-align: middle; margin-left: 3px; }
-.edm-bt-ttbn { background: #EDF4FD; color: #1A3A8A; }
-.edm-bt-esn  { background: #F4EDF9; color: #6B3A8A; }
+.edm-bt-tag  {
+  display: inline-block; font-size: 8.5px; font-weight: 800;
+  padding: 2px 6px; border-radius: 4px; vertical-align: middle;
+  margin-left: 3px; letter-spacing: 0.4px; line-height: 1.4;
+}
+.edm-bt-ttbn  { background: #1E40AF; color: #fff; }
+.edm-bt-esn   { background: #6D28D9; color: #fff; }
+.edm-bt-other { background: #0E7A40; color: #fff; }
 
-/* ─── EDM SATIRLARDA AKTİVASYON ALANI ───────────────────────────── */
+/* ─── EDM SATIRLARDA HEDEF / AKTİVASYON / FORECAST ÜÇLÜSÜ ────────── */
+.edm-trio {
+  display: flex; flex-shrink: 0; gap: 0;
+  border: 1px solid var(--hairline); border-radius: 8px; overflow: hidden;
+  min-width: 108px;
+}
+.edm-trio-cell {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  padding: 3px 4px; gap: 1px;
+}
+.edm-trio-cell + .edm-trio-cell { border-left: 1px solid var(--hairline); }
+.edm-trio-lbl {
+  font-size: 6.5px; font-weight: 800; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.8px; line-height: 1;
+}
+.edm-trio-val {
+  font-size: 12px; font-weight: 900; color: var(--navy);
+  font-variant-numeric: tabular-nums; line-height: 1.2;
+}
+.edm-trio-act .edm-trio-lbl { color: var(--green); }
+.edm-trio-act .edm-trio-val { color: var(--green); font-size: 13px; }
+.edm-trio-ok   { color: var(--green); }
+.edm-trio-warn { color: var(--amber); }
+
+/* (eski edm-row-vals korunuyor — geçiş dönemi için) */
 .edm-row-vals { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; gap: 2px; min-width: 80px; }
 .edm-rv-a     { font-size: 14px; font-weight: 900; color: var(--navy); font-variant-numeric: tabular-nums; line-height: 1; }
 .edm-rv-sub   { font-size: 8px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }

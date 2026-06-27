@@ -29,6 +29,12 @@ function setEdmSy(sy) {
   else render();
 }
 
+function setEdmIl(il) {
+  EDM_IL_FILTER = il;
+  if (navPage === 'ana') renderHome();
+  else { if (typeof buildFilterBar === 'function') buildFilterBar(); render(); }
+}
+
 function _kanalUI() {
   document.querySelectorAll('.ch-btn').forEach(function(b) {
     b.classList.toggle('active', b.dataset.ch === KANAL);
@@ -64,6 +70,8 @@ function _edmFilt(recs) {
     r = r.filter(function(x) { return x.bt === EDM_FILTER; });
   if (EDM_SY_FILTER && EDM_SY_FILTER !== 'Tümü')
     r = r.filter(function(x) { return x.sy === EDM_SY_FILTER; });
+  if (typeof EDM_IL_FILTER !== 'undefined' && EDM_IL_FILTER !== 'Tümü')
+    r = r.filter(function(x) { return x.il === EDM_IL_FILTER; });
   return r;
 }
 
@@ -153,14 +161,23 @@ function _edmSyFilterHTML() {
 
 function _escQ(s) { return s.replace(/'/g, "\\'"); }
 
-/* ─── AKTİVASYON ÇİPLERİ ─────────────────────────────────────────── */
+/* ─── AKTİVASYON ÇİPLERİ — 6 KPI ───────────────────────────────── */
 
 function _edmChips(kpis) {
-  var mobKpi  = kpis[0];
-  var recs    = _edmFilt(EDM_DATA.bayi['Toplam Mobil'] || []);
-  var bayiSay = recs.length;
-  var riskN   = recs.filter(function(r) { return r.h > 0 && r.a < r.h * 0.6; }).length;
-  var dateStr = new Date().toLocaleDateString('tr-TR', {day:'2-digit',month:'2-digit',year:'numeric'});
+  var mobKpi = kpis[0];
+  var recs   = _edmFilt(EDM_DATA.bayi['Toplam Mobil'] || []);
+  var ttbnN  = recs.filter(function(r) { return r.bt === 'TTBN'; }).length;
+  var esnN   = recs.filter(function(r) { return r.bt === 'ESN';  }).length;
+
+  var fcAktiv = mobKpi.fcAktiv;
+  var kalan   = mobKpi.kalan;
+  var f       = mobKpi.f;
+
+  var kalanGun = (f && f.t > f.d) ? (f.t - f.d) : null;
+  var gunluk   = (kalanGun && kalanGun > 0 && kalan > 0) ? Math.ceil(kalan / kalanGun) : null;
+
+  var fcLbl = fcAktiv !== null ? fcAktiv.toLocaleString('tr-TR') : '—';
+  var fcCls = fcAktiv !== null && mobKpi.h > 0 && fcAktiv >= mobKpi.h ? 'hdc-green' : 'hdc-amber';
 
   function chip(lbl, val, cls, sub) {
     return '<div class="hd-chip">' +
@@ -170,16 +187,13 @@ function _edmChips(kpis) {
     '</div>';
   }
 
-  var fcLbl = mobKpi.fcAktiv !== null ? mobKpi.fcAktiv.toLocaleString('tr-TR') : '—';
-  var fcCls = mobKpi.fcAktiv !== null && mobKpi.h > 0 && mobKpi.fcAktiv >= mobKpi.h ? 'hdc-green' : 'hdc-amber';
-
   return '<div class="hd-chips">' +
-    chip('MOBİL AKTİV',  mobKpi.a > 0 ? mobKpi.a.toLocaleString('tr-TR') : '—',  'hdc-xl hdc-neutral', 'gerçekleşen adet') +
-    chip('HEDEF',        mobKpi.h > 0 ? mobKpi.h.toLocaleString('tr-TR') : '—',  'hdc-neutral',        'aylık hedef') +
-    chip('FORECAST',     fcLbl, fcCls, 'tahmini ay sonu') +
-    chip('KALAN ADET',   mobKpi.kalan > 0 ? mobKpi.kalan.toLocaleString('tr-TR') : '0', mobKpi.kalan === 0 ? 'hdc-green' : 'hdc-red', 'hedefe kalan') +
-    chip('RİSKLİ BAYİ',  String(riskN), riskN > 0 ? 'hdc-red' : 'hdc-green', 'aktiv %60 altı') +
-    chip('TOPLAM BAYİ',  String(bayiSay), 'hdc-neutral', (EDM_FILTER==='Tümü'?'TTBN+ESN':EDM_FILTER)) +
+    chip('TTBN BAYİ',      String(ttbnN), 'hdc-ttbn',    'toplam TTBN') +
+    chip('ESN BAYİ',       String(esnN),  'hdc-esn',     'toplam ESN') +
+    chip('AKTİVASYON',    mobKpi.a > 0 ? mobKpi.a.toLocaleString('tr-TR') : '—', 'hdc-xl hdc-neutral', 'toplam gerçekleşen') +
+    chip('FORECAST',      fcLbl, fcCls, 'tahmini ay sonu') +
+    chip('KALAN HEDEF',   kalan > 0 ? kalan.toLocaleString('tr-TR') : '0', kalan === 0 ? 'hdc-green' : 'hdc-red', 'hedefe kalan adet') +
+    chip('GÜNLÜK GEREKEN', gunluk !== null ? String(gunluk) : '—', gunluk !== null && gunluk > 5 ? 'hdc-red' : 'hdc-amber', kalanGun ? kalanGun + ' gün kaldı' : 'gün gir') +
   '</div>';
 }
 
@@ -322,7 +336,11 @@ function renderEDMBayi(prodKey) {
     var fcAktiv = (f && r.a > 0) ? Math.round(r.a * f.k) : null;
     var kalan   = Math.max((r.h||0) - (r.a||0), 0);
     var rk      = i < 3 ? '<span class="badge b' + (i+1) + '">' + (i+1) + '</span>' : '<span class="n">' + (i+1) + '</span>';
-    var btTag   = r.bt ? '<span class="edm-bt-tag edm-bt-' + r.bt.toLowerCase() + '">' + r.bt + '</span>' : '';
+
+    var btCls = r.bt === 'TTBN' ? 'edm-bt-ttbn' : r.bt === 'ESN' ? 'edm-bt-esn' : 'edm-bt-other';
+    var btTag = r.bt ? '<span class="edm-bt-tag ' + btCls + '">' + r.bt + '</span>' : '';
+
+    var fcCls = fcAktiv !== null && r.h > 0 && fcAktiv >= r.h ? 'edm-trio-ok' : 'edm-trio-warn';
 
     rows += '<div class="row' + (i<3 ? ' r'+(i+1) : '') + '">' +
       '<div class="rk">' + rk + '</div>' +
@@ -330,12 +348,20 @@ function renderEDMBayi(prodKey) {
         '<div class="p">' + r.p + '&thinsp;' + btTag + '</div>' +
         '<div class="b">' + r.b + (r.sy ? ' · ' + r.sy.split(' ')[0] : '') + '</div>' +
       '</div>' +
-      '<div class="edm-row-vals">' +
-        '<div class="edm-rv-a">' + (r.a||0).toLocaleString('tr-TR') + '</div>' +
-        '<div class="edm-rv-sub">' +
-          'H:' + (r.h||0).toLocaleString('tr-TR') +
-          (fcAktiv !== null ? ' · F:' + fcAktiv.toLocaleString('tr-TR') : '') +
-          (kalan > 0 ? ' · K:' + kalan.toLocaleString('tr-TR') : '') +
+      '<div class="edm-trio">' +
+        '<div class="edm-trio-cell">' +
+          '<div class="edm-trio-lbl">HDF</div>' +
+          '<div class="edm-trio-val">' + (r.h > 0 ? (r.h||0).toLocaleString('tr-TR') : '—') + '</div>' +
+        '</div>' +
+        '<div class="edm-trio-cell edm-trio-act">' +
+          '<div class="edm-trio-lbl">AKT</div>' +
+          '<div class="edm-trio-val">' + (r.a||0).toLocaleString('tr-TR') + '</div>' +
+        '</div>' +
+        '<div class="edm-trio-cell">' +
+          '<div class="edm-trio-lbl">FC</div>' +
+          '<div class="edm-trio-val ' + (fcAktiv !== null ? fcCls : '') + '">' +
+            (fcAktiv !== null ? fcAktiv.toLocaleString('tr-TR') : '—') +
+          '</div>' +
         '</div>' +
       '</div>' +
     '</div>';

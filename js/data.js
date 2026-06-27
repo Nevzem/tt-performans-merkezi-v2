@@ -41,6 +41,7 @@ let EDM_DETAY  = null;    /* EDM DETAY verisi */
 let EDM_ERROR   = null;   /* Parse hata mesajı */
 let EDM_COL_LOG = '';     /* Kolon mapping debug çıktısı */
 let EDM_SY_FILTER = 'Tümü'; /* Ana Sayfa SY filtresi */
+let EDM_IL_FILTER = 'Tümü'; /* İl filtresi */
 
 const EDM_SY_NAMES = ['Tümü', ...APP_CONFIG.edmSY];
 

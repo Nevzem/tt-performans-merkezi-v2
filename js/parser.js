@@ -459,13 +459,13 @@ function parseEDMSheet(wb) {
     });
 
     /* h ve a alanları EDM'de aktivasyon bazlı sıralama ve gösterim için gerekli */
-    if(ppH>0)  out.bayi["Postpaid"].push({p:b,b:sub,sy:sy_,bt,g:hg(ppA,ppH,null),h:Math.round(ppH),a:Math.round(ppA)});
-    if(fpH>0)  out.bayi["Prepaid"].push({p:b,b:sub,sy:sy_,bt,g:hg(fpA,fpH,null),h:Math.round(fpH),a:Math.round(fpA)});
-    if(mobH>0||mobHGO!==null) out.bayi["Toplam Mobil"].push({p:b,b:sub,sy:sy_,bt,g:hg(mobA,mobH,mobHGO),h:Math.round(mobH),a:Math.round(mobA)});
-    if(dslH>0||dslHGO!==null) out.bayi["DSL"].push({p:b,b:sub,sy:sy_,bt,g:hg(dslA,dslH,dslHGO),h:Math.round(dslH),a:Math.round(dslA)});
-    if(tvH>0||tvHGO!==null)   out.bayi["Toplam TV"].push({p:b,b:sub,sy:sy_,bt,g:hg(tvA,tvH,tvHGO),h:Math.round(tvH),a:Math.round(tvA)});
-    if(cihH>0||cihHGO!==null) out.bayi["Akıllı Cihaz"].push({p:b,b:sub,sy:sy_,bt,g:hg(cihA,cihH,cihHGO),h:Math.round(cihH),a:Math.round(cihA)});
-    if(cihDH>0) out.bayi["Diğer Cihaz"].push({p:b,b:sub,sy:sy_,bt,g:hg(cihDA,cihDH,null),h:Math.round(cihDH),a:Math.round(cihDA)});
+    if(ppH>0)  out.bayi["Postpaid"].push({p:b,b:sub,sy:sy_,bt,il,g:hg(ppA,ppH,null),h:Math.round(ppH),a:Math.round(ppA)});
+    if(fpH>0)  out.bayi["Prepaid"].push({p:b,b:sub,sy:sy_,bt,il,g:hg(fpA,fpH,null),h:Math.round(fpH),a:Math.round(fpA)});
+    if(mobH>0||mobHGO!==null) out.bayi["Toplam Mobil"].push({p:b,b:sub,sy:sy_,bt,il,g:hg(mobA,mobH,mobHGO),h:Math.round(mobH),a:Math.round(mobA)});
+    if(dslH>0||dslHGO!==null) out.bayi["DSL"].push({p:b,b:sub,sy:sy_,bt,il,g:hg(dslA,dslH,dslHGO),h:Math.round(dslH),a:Math.round(dslA)});
+    if(tvH>0||tvHGO!==null)   out.bayi["Toplam TV"].push({p:b,b:sub,sy:sy_,bt,il,g:hg(tvA,tvH,tvHGO),h:Math.round(tvH),a:Math.round(tvA)});
+    if(cihH>0||cihHGO!==null) out.bayi["Akıllı Cihaz"].push({p:b,b:sub,sy:sy_,bt,il,g:hg(cihA,cihH,cihHGO),h:Math.round(cihH),a:Math.round(cihA)});
+    if(cihDH>0) out.bayi["Diğer Cihaz"].push({p:b,b:sub,sy:sy_,bt,il,g:hg(cihDA,cihDH,null),h:Math.round(cihDH),a:Math.round(cihDA)});
 
     const pr={
       "Postpaid":    {h:Math.round(ppH), a:Math.round(ppA), g:hg(ppA,ppH,null)},

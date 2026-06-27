@@ -63,9 +63,12 @@ function buildFilterBar() {
     var edmProdLabel = _fbarProdLabel();
     var edmSyLabel   = (typeof EDM_SY_FILTER !== 'undefined' && EDM_SY_FILTER !== 'Tümü')
       ? _truncate(EDM_SY_FILTER.split(' ')[0], 9) : 'Tümü';
+    var edmIlLabel   = (typeof EDM_IL_FILTER !== 'undefined' && EDM_IL_FILTER !== 'Tümü')
+      ? _truncate(EDM_IL_FILTER, 9) : 'Tümü';
     html += _fbarChip('prod',      'Ürün',        edmProdLabel);
     html += _fbarChip('edm-sy',    'Satış Yön.',  edmSyLabel);
-    html += _fbarChip('edm-bt',    'Bayi Tipi',   EDM_FILTER);
+    html += _fbarChip('edm-bt',    'Bayi Tipi',   typeof EDM_FILTER !== 'undefined' ? EDM_FILTER : 'Tümü');
+    html += _fbarChip('edm-il',    'İl',          edmIlLabel);
     html += _fbarChip('liste',     'Liste',        _listeLabel);
 
   } else {
@@ -268,6 +271,26 @@ function _sheetConfig(type) {
     };
   }
 
+  /* ── EDM İl filtresi ── */
+  if (type === 'edm-il') {
+    var ilSet = new Set(['Tümü']);
+    if (typeof EDM_DATA !== 'undefined' && EDM_DATA && EDM_DATA.bayi) {
+      var ilRecs = EDM_DATA.bayi['Toplam Mobil'] || [];
+      ilRecs.forEach(function(r) { if (r.il) ilSet.add(r.il); });
+    }
+    var ilList = Array.from(ilSet).sort(function(a, b) {
+      if (a === 'Tümü') return -1; if (b === 'Tümü') return 1;
+      return a.localeCompare(b, 'tr');
+    });
+    return {
+      title: 'İl Seç',
+      items: ilList.map(function(il) {
+        return { key: il, label: il === 'Tümü' ? '📍 Tümü' : '📍 ' + il };
+      }),
+      active: typeof EDM_IL_FILTER !== 'undefined' ? EDM_IL_FILTER : 'Tümü',
+    };
+  }
+
   /* ── Geçmiş Kıyas filtreleri ── */
   if (type === 'gecm-tarih') {
     var files = (_histManifest && _histManifest.files) || [];
@@ -381,6 +404,9 @@ function _pick(type, key) {
 
   } else if (type === 'edm-bt') {
     if (typeof setEdmFilter === 'function') setEdmFilter(key);
+
+  } else if (type === 'edm-il') {
+    if (typeof setEdmIl === 'function') setEdmIl(key);
 
   /* ── Geçmiş Kıyas picks ── */
   } else if (type === 'gecm-tarih') {
