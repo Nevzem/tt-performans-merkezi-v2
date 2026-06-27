@@ -123,12 +123,15 @@ function _hdChips(kpis) {
   var riskliN = recs.filter(function(r) { return r.g < 60; }).length;
   var eliteN  = recs.filter(function(r) { return r.g >= 100; }).length;
 
-  /* Ortalama HGO: mevcut 4 ürün HGO değerlerinin ortalaması */
-  var hgoVals = kpis.map(function(k) { return k.hgo; })
-                    .filter(function(v) { return v !== null; });
-  var ortHGO = hgoVals.length
-    ? Math.round(hgoVals.reduce(function(s, v) { return s + v; }, 0) / hgoVals.length * 10) / 10
-    : null;
+  /* Genel HGO: 4 ürün toplam gerçekleşen / toplam hedef (ağırlıklı) */
+  var _totalH4 = kpis.reduce(function(s, k) { return s + (k.h || 0); }, 0);
+  var _totalA4 = kpis.reduce(function(s, k) { return s + (k.a || 0); }, 0);
+  var ortHGO = _totalH4 > 0
+    ? Math.round(_totalA4 / _totalH4 * 1000) / 10
+    : (function() {
+        var v = kpis.map(function(k){return k.hgo;}).filter(function(x){return x!==null;});
+        return v.length ? Math.round(v.reduce(function(s,x){return s+x;},0)/v.length*10)/10 : null;
+      }());
 
   var ortCls = ortHGO === null ? 'hdc-neutral'
              : ortHGO >= 100  ? 'hdc-green'
@@ -152,8 +155,8 @@ function _hdChips(kpis) {
 
   return (
     '<div class="hd-chips hd-anim" style="--i:1">' +
-      chip('ORT. HGO',         ortHGO !== null ? '%' + ortHGO.toFixed(1) : '—',
-                               'hdc-xl ' + ortCls,  '4 ürün ortalaması') +
+      chip('GENEL HGO',         ortHGO !== null ? '%' + ortHGO.toFixed(1) : '—',
+                               'hdc-xl ' + ortCls,  '4 ürün toplam gerçekleşme') +
       chip('RİSKLİ BAYİ',      String(riskliN),
                                riskliN > 0 ? 'hdc-red' : 'hdc-green', 'HGO %60 altı') +
       chip('ELİTE BAYİ',       String(eliteN),
@@ -307,49 +310,49 @@ function _hdScorecard(kpis) {
 }
 
 /* ══════════════════════════════════════════
-   4. OTOMATİK BÖLGE ÖZETİ
+   4. AI OPERASYON ÖZETİ
    ══════════════════════════════════════════ */
 function _hdAutoSummary(kpis) {
-  var mob   = kpis[0], dsl = kpis[1], tv = kpis[2], cihaz = kpis[3];
-  var lines = [];
-
-  function fc2(k) { return k.fcHgo !== null ? ' Forecast %' + Math.round(k.fcHgo) + '.' : ''; }
-
-  if (mob.hgo !== null) {
-    if      (mob.hgo >= 100) lines.push({ icon: '✅', text: 'Mobil kanalı hedefe ulaştı (%' + mob.hgo.toFixed(1) + ').' + fc2(mob) });
-    else if (mob.hgo >= 85)  lines.push({ icon: '📈', text: 'Mobil güçlü seyrediyor (%' + mob.hgo.toFixed(1) + '). Kapanış potansiyeli yüksek.' + fc2(mob) });
-    else if (mob.hgo >= 65)  lines.push({ icon: '⚠️', text: 'Mobil hedefin gerisinde (%' + mob.hgo.toFixed(1) + '). Tempo artırılmalı.' + fc2(mob) });
-    else                      lines.push({ icon: '🔴', text: 'Mobil kritik seviyede (%' + mob.hgo.toFixed(1) + '). Acil aksiyon gerekiyor.' + fc2(mob) });
+  function aiCard(k) {
+    var h = k.hgo, fc = k.fcHgo;
+    var icon, msg, acCls;
+    if (h === null) {
+      icon = '📊'; msg = 'Veri bekleniyor.'; acCls = 'ai-neutral';
+    } else if (k.key === 'mobil') {
+      if      (h >= 100) { icon = '✅'; msg = 'Hedefe ulaşıldı.';                        acCls = 'ai-ok'; }
+      else if (h >= 85)  { icon = '📈'; msg = 'Güçlü seyrediyor, kapanış potansiyeli yüksek.'; acCls = 'ai-ok'; }
+      else if (h >= 65)  { icon = '⚠️'; msg = 'Tempo artırılmalı.';                      acCls = 'ai-warn'; }
+      else               { icon = '🔴'; msg = 'Kritik. Acil aksiyon gerekiyor.';         acCls = 'ai-risk'; }
+    } else if (k.key === 'dsl') {
+      if      (h >= 95) { icon = '✅'; msg = 'Hedefine yakın.';                           acCls = 'ai-ok'; }
+      else if (h >= 65) { icon = '📊'; msg = 'Tempo korunursa ay sonuna yaklaşılır.';    acCls = 'ai-warn'; }
+      else              { icon = '⚠️'; msg = 'Riskli. Destek önlemi önerilir.';           acCls = 'ai-risk'; }
+    } else if (k.key === 'tv') {
+      if      (h >= 90) { icon = '✅'; msg = 'Hedefine yakın.';                           acCls = 'ai-ok'; }
+      else if (h >= 60) { icon = '📊'; msg = 'Ek satış fırsatları değerlendirilebilir.'; acCls = 'ai-warn'; }
+      else              { icon = '⚠️'; msg = 'Zayıf. Odak artırılmalı.';                 acCls = 'ai-risk'; }
+    } else {
+      if      (h >= 95) { icon = '✅'; msg = 'Hedef üzerinde, ivme korunmalı.';           acCls = 'ai-ok'; }
+      else if (h >= 65) { icon = '📊'; msg = 'Makul düzeyde.';                            acCls = 'ai-warn'; }
+      else              { icon = '⚠️'; msg = 'Riskli.';                                   acCls = 'ai-risk'; }
+    }
+    var hgoStr = h !== null ? '%' + h.toFixed(1) : '';
+    var fcStr  = fc !== null ? '<span class="ai-fc">Forecast %' + Math.round(fc) + '</span>' : '';
+    return '<div class="hd-ai-card ' + acCls + '">' +
+      '<div class="hd-ai-head">' +
+        '<span class="hd-ai-icon">' + k.icon + '</span>' +
+        '<span class="hd-ai-prod">' + k.short + '</span>' +
+        (hgoStr ? '<span class="hd-ai-hgo">' + hgoStr + '</span>' : '') +
+      '</div>' +
+      '<div class="hd-ai-msg">' + icon + ' ' + msg + '</div>' +
+      (fcStr ? '<div class="hd-ai-fcrow">' + fcStr + '</div>' : '') +
+    '</div>';
   }
-  if (dsl.hgo !== null) {
-    if      (dsl.hgo >= 95) lines.push({ icon: '✅', text: 'DSL hedefine yakın (%' + dsl.hgo.toFixed(1) + ').' + fc2(dsl) });
-    else if (dsl.hgo >= 65) lines.push({ icon: '📊', text: 'DSL tarafında tempo korunursa ay sonu hedefe yaklaşılabilir (%' + dsl.hgo.toFixed(1) + ').' + fc2(dsl) });
-    else                     lines.push({ icon: '⚠️', text: 'DSL riskli görünmektedir (%' + dsl.hgo.toFixed(1) + '). Destek önlemi önerilir.' + fc2(dsl) });
-  }
-  if (tv.hgo !== null) {
-    if      (tv.hgo >= 90)  lines.push({ icon: '✅', text: 'TV/Tivibu hedefine yakın (%' + tv.hgo.toFixed(1) + ').' });
-    else if (tv.hgo >= 60)  lines.push({ icon: '📊', text: 'TV/Tivibu orta düzeyde (%' + tv.hgo.toFixed(1) + '). Ek satış fırsatları değerlendirilebilir.' });
-    else                     lines.push({ icon: '⚠️', text: 'TV/Tivibu zayıf seyrediyor (%' + tv.hgo.toFixed(1) + '). Odak artırılmalı.' });
-  }
-  if (cihaz.hgo !== null) {
-    if      (cihaz.hgo >= 95) lines.push({ icon: '✅', text: 'Cihaz hedef üzerinde (%' + cihaz.hgo.toFixed(1) + '). İvme korunmalı.' });
-    else if (cihaz.hgo >= 65) lines.push({ icon: '📊', text: 'Cihaz makul düzeyde (%' + cihaz.hgo.toFixed(1) + ').' });
-    else                       lines.push({ icon: '⚠️', text: 'Cihaz riskli görünmektedir (%' + cihaz.hgo.toFixed(1) + ').' });
-  }
-
-  if (!lines.length) lines.push({ icon: '📊', text: 'Rapor yüklendikten sonra bölge özeti burada otomatik oluşturulacak.' });
 
   return (
     '<div class="hd-section">' +
-      '<div class="hd-sec-title">Bölge Özeti</div>' +
-      '<div class="hd-summary-card">' +
-        lines.map(function(l) {
-          return '<div class="hd-summary-line">' +
-            '<span class="hd-sum-icon">' + l.icon + '</span>' +
-            '<span class="hd-sum-text">' + l.text + '</span>' +
-          '</div>';
-        }).join('') +
-      '</div>' +
+      '<div class="hd-sec-title">AI Operasyon Özeti</div>' +
+      '<div class="hd-ai-grid">' + kpis.map(aiCard).join('') + '</div>' +
     '</div>'
   );
 }
@@ -713,14 +716,27 @@ function _hdHero() {
           '</div>' +
         '</div>' +
         '<div class="hd-hero-meta">' +
-          (loadTs ? '<span class="hd-hero-load">⏱ ' + loadTs + '</span>' : '') +
-          dhHtml +
-          '<span class="hd-hero-donem">' + DONEM + '</span>' +
+          _hdHeroVK(loadTs) +
         '</div>' +
       '</div>' +
       kalanBlock +
     '</div>'
   );
+}
+
+function _hdHeroVK(loadTs) {
+  var dh    = (typeof DATA_HEALTH !== 'undefined' && DATA_HEALTH) ? DATA_HEALTH : null;
+  var isOk  = !dh || dh.ok;
+  var sayiTxt = dh ? (dh.persCount + ' Personel · ' + dh.bayiCount + ' Bayi') : '';
+  var tsTxt   = loadTs || ((typeof DONEM !== 'undefined' && DONEM) ? DONEM : '');
+  return '<div class="hd-vkutu">' +
+    '<div class="hd-vk-status">' +
+      '<span class="hd-vk-dot ' + (isOk ? 'vk-ok' : 'vk-warn') + '"></span>' +
+      (isOk ? 'Güncel Veri' : 'Kolon Uyarısı') +
+    '</div>' +
+    (sayiTxt ? '<div class="hd-vk-sayi">' + sayiTxt + '</div>' : '') +
+    (tsTxt   ? '<div class="hd-vk-ts">'   + tsTxt   + '</div>' : '') +
+  '</div>';
 }
 
 /* ══════════════════════════════════════════
@@ -738,13 +754,14 @@ function _hdDailyTarget(kpis) {
           '<span class="hd-dt-icon">' + k.icon + '</span>' +
           '<span class="hd-dt-prod">' + k.short + '</span>' +
           '<span class="hd-dt-hgo ' + hgoCls + '">' + (k.hgo !== null ? '%' + k.hgo.toFixed(1) : '—') + '</span>' +
+          (k.fcHgo !== null ? '<span class="hd-dt-fc-bdg">F %' + Math.round(k.fcHgo) + '</span>' : '') +
         '</div>' +
         '<div class="hd-dt-bar-wrap"><div class="hd-dt-bar ' + barCls + '" style="width:' + pct + '%"></div></div>' +
         '<div class="hd-dt-nums">' +
           '<span class="hd-dt-lbl">H<strong>' + (k.h > 0 ? k.h.toLocaleString('tr-TR') : '—') + '</strong></span>' +
           '<span class="hd-dt-lbl">A<strong>' + (k.a > 0 ? k.a.toLocaleString('tr-TR') : '—') + '</strong></span>' +
           '<span class="hd-dt-lbl">K<strong class="hd-r">' + (k.kalan !== null ? k.kalan.toLocaleString('tr-TR') : '—') + '</strong></span>' +
-          (k.gunluk !== null ? '<span class="hd-dt-lbl">GG<strong>' + k.gunluk + '/g</strong></span>' : '') +
+          (k.gunluk !== null ? '<div class="hd-dt-gunluk"><div class="hd-dt-gv">' + k.gunluk + '</div><div class="hd-dt-gl">GÜNLÜK</div></div>' : '') +
         '</div>' +
       '</div>'
     );
