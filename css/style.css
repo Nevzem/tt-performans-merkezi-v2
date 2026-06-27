@@ -583,8 +583,9 @@ input[type=file] { display: none; }
   letter-spacing: 1.8px; text-transform: uppercase;
   background: #FAFBFD; border-bottom: 1px solid var(--hairline);
 }
-.sec.t { color: var(--navy);    box-shadow: inset 3px 0 0 var(--gold); }
-.sec.b { color: var(--crimson); box-shadow: inset 3px 0 0 var(--crimson); }
+/* border-left kullanılıyor — html2canvas inset box-shadow'u tüm bg dolduruyor (bug) */
+.sec.t { color: var(--navy);    border-left: 3px solid var(--gold); }
+.sec.b { color: var(--crimson); border-left: 3px solid var(--crimson); }
 .sec .cnt { font-size: 8.5px; font-weight: 700; color: var(--muted); letter-spacing: 0.4px; text-transform: none; }
 
 /* ─── SATIRLAR ────────────────────────────────────────────────────── */
