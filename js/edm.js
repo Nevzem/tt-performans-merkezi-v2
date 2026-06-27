@@ -365,8 +365,8 @@ function renderEDMSY() {
     return;
   }
 
-  /* EDM SY isimlerini büyük harfle karşılaştır */
-  var edmTargets = ['MUHAMMET ARSLAN','MUSTAFA KAYIKÇI','EMRE FİLİZ','AHMET ÇELİK'];
+  /* EDM SY isimlerini büyük harfle karşılaştır — APP_CONFIG.edmSY'dan türetilir */
+  var edmTargets = APP_CONFIG.edmSY.map(function(n) { return n.toUpperCase(); });
   var found = Object.keys(SYDATA.sy).filter(function(nm) {
     return edmTargets.indexOf(nm.toUpperCase()) >= 0;
   });
@@ -374,7 +374,7 @@ function renderEDMSY() {
   if (!found.length) {
     cards.innerHTML = hdrHTML('👔','EDM · Satış Yöneticisi','') +
       '<div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">' +
-      'EDM SY isimleri SY ÖZET\'te bulunamadı.<br>Beklenen: Muhammet Arslan, Mustafa Kayıkçı, Emre Filiz, Ahmet Çelik</div>';
+      'EDM SY isimleri SY ÖZET\'te bulunamadı.<br>Beklenen: ' + APP_CONFIG.edmSY.join(', ') + '</div>';
     return;
   }
 

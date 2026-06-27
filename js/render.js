@@ -33,9 +33,9 @@ function trendCapture(forceDate, srcData, srcDonem) {
     }
   }
   store[today] = snap;
-  // Son 30 günü tut
   const days = Object.keys(store).sort();
-  if (days.length > 30) for (const d of days.slice(0, days.length-30)) delete store[d];
+  const maxDays = (typeof APP_CONFIG !== 'undefined') ? APP_CONFIG.trendMaxDays : 30;
+  if (days.length > maxDays) for (const d of days.slice(0, days.length - maxDays)) delete store[d];
   trendSave(store);
 }
 // Bir kişi/bayi için ürün bazlı tarihsel seri döndür

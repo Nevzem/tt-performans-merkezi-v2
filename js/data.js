@@ -11,6 +11,28 @@
 /* ───── TREND DEPOSU ANAHTARI ───── */
 const TREND_KEY = "tt_kuzey_trend_v1";
 
+/* ───── MERKEZİ YAPILANDIRMA ─────
+   Bölge, EDM ana bayi kodu, trend limiti ve SY listeleri
+   tek yerden yönetilir. parser.js ve edm.js buradan okur.
+   ───────────────────────────────── */
+const APP_CONFIG = {
+  bolge:         'KUZEY ANADOLU',
+  edmAnaBayiKod: '507868',
+  trendMaxDays:  30,
+  /* SY ÖZET sheet filtresi — büyük harf, parser.js kullanır */
+  ttmSY: [
+    "KORAY YEŞİLÖRDEK",
+    "YUSUF DILKI",
+    "MUHAMMET ARSLAN",
+    "MUSTAFA KAYIKÇI",
+    "EMRE FİLİZ",
+    "AHMET ÇELİK"
+  ],
+  /* EDM kanal SY filtre listesi — normal harf, UI kullanır */
+  edmSY: ['Muhammet Arslan', 'Mustafa Kayıkçı', 'Emre Filiz', 'Ahmet Çelik'],
+  edmBayiTipleri: ['TTBN', 'ESN'],
+};
+
 /* ───── KANAL STATE ───── */
 let KANAL      = 'TTM';   /* 'TTM' | 'EDM' */
 let EDM_FILTER = 'Tümü';  /* 'Tümü' | 'TTBN' | 'ESN' */
@@ -20,7 +42,7 @@ let EDM_ERROR   = null;   /* Parse hata mesajı */
 let EDM_COL_LOG = '';     /* Kolon mapping debug çıktısı */
 let EDM_SY_FILTER = 'Tümü'; /* Ana Sayfa SY filtresi */
 
-const EDM_SY_NAMES = ['Tümü','Muhammet Arslan','Mustafa Kayıkçı','Emre Filiz','Ahmet Çelik'];
+const EDM_SY_NAMES = ['Tümü', ...APP_CONFIG.edmSY];
 
 /* ───── ANA STATE DEĞİŞKENLERİ ───── */
 let PREV = null;

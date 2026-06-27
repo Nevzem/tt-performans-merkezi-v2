@@ -29,6 +29,23 @@ async function ensureH2C() {
 function shortB(n) { return String(n).trim().split(/\s+/).slice(0, 2).join(" ").substring(0, 22); }
 const num = v => { const n = parseFloat(v); return isFinite(n) ? n : null; };
 
+/* Bir başlık dizisinde kolon adı arar; önce tam eşleşme, sonra içerme.
+   TTM parser'ı için yardımcı — sabit indekslerden bağımsız alternatif kontrol sağlar. */
+function findColByName(headers, ...names) {
+  for (let pass = 0; pass < 2; pass++) {
+    for (const name of names) {
+      const nl = name.toLowerCase();
+      const idx = headers.findIndex(h =>
+        pass === 0
+          ? String(h || '').trim().toLowerCase() === nl
+          : String(h || '').trim().toLowerCase().includes(nl)
+      );
+      if (idx >= 0) return idx;
+    }
+  }
+  return -1;
+}
+
 function parseWB(wb) {
   const out = { pers: { "Toplam Mobil": [], "Faturalı": [], "Faturasız": [], "DSL": [], "Toplam TV": [], "IPTV": [], "Uydu": [], "Cihaz": [] },
                 bayi: { "Postpaid": [], "Prepaid": [], "Toplam Mobil": [], "DSL": [], "Toplam TV": [], "Akıllı Cihaz": [], "Diğer Cihaz": [] } };
@@ -180,7 +197,7 @@ function parseWB(wb) {
     const g1 = sr.find(r => r && String(r[0]).trim() === "Çalışma Günü");
     const g2 = sr.find(r => r && String(r[0]).trim() === "Çalışılan Gün");
     syToplamGun = g1 ? num(g1[1]) : null; syGun = g2 ? num(g2[1]) : null;
-    const TGT = ["KORAY YEŞİLÖRDEK","YUSUF DILKI","MUHAMMET ARSLAN","MUSTAFA KAYIKÇI","EMRE FİLİZ","AHMET ÇELİK"];
+    const TGT = APP_CONFIG.ttmSY;
     const PC = { "Mobil Toplam":[4,5,6], "Faturalı":[7,8,9], "Faturasız":[10,11,12], "Evde İnternet":[18,19,20], "IPTV":[27,28,29], "Uydu":[30,31,32], "Tivibu Toplam":[33,34,35], "Cihaz":[36,37,38], "Cihaz Diğer":[39,40,41] };
     for (const r of sr) {
       if (!r || !r[3]) continue;
@@ -204,7 +221,7 @@ function parseEDMSheet(wb) {
      EDM BUAY Parser — Dinamik kolon tespiti v2
      Aktivasyon kolonunu ad + komşu-sütun taramasıyla bulur.
      ═══════════════════════════════════════════════════════ */
-  const EDM_ANA_KOD = '507868';
+  const EDM_ANA_KOD = APP_CONFIG.edmAnaBayiKod;
   const wsName = wb.SheetNames.find(s => s.trim().toUpperCase() === 'EDM BUAY');
   if (!wsName) return { error: "EDM BUAY sheet'i bulunamadı.", data: null, detay: null };
 
@@ -480,7 +497,7 @@ function parseEDMSheet(wb) {
 
   if(bayiCount===0){
     const msg = C.anaBayiKod>=0
-      ? "507868 Ana Bayi koduna bağlı EDM verisi bulunamadı."
+      ? APP_CONFIG.edmAnaBayiKod + " Ana Bayi koduna bağlı EDM verisi bulunamadı."
       : "Ana Bayi Kodu sütunu bulunamadı. Ayarlar→EDM bölümünde log'u inceleyin.";
     return {error:msg,data:out,detay:{bayiler:detayBayiler,pers:{}},bayiCount:0};
   }
