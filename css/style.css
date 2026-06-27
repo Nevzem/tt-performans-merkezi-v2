@@ -1801,3 +1801,64 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 }
 .nav-item.active .nav-ic svg { stroke-width: 2.5; }
 .nav-lbl { font-size: 9px; }
+
+/* ════════════════════ SPRINT 7 — Executive Premium Dashboard ════════════════ */
+
+/* 1. Operasyon Skoru chip renkleri */
+.hd-chip-val.hdc-ops-elite { color: #065f46; }
+.hd-chip-val.hdc-ops-good  { color: #0E7A40; }
+.hd-chip-val.hdc-ops-amber { color: #92400e; }
+.hd-chip-val.hdc-ops-red   { color: #991b1b; }
+
+/* 2. Hero kompakt — %20 daha küçük */
+.hd-hero { padding: 10px 14px !important; }
+.hd-hero-kalan { padding: 7px 10px !important; }
+
+/* 3. VKutu — her satır ayrı çizgi */
+.hd-vk-sayi div, .hd-vk-ts div { line-height: 1.5; }
+
+/* 4. Günlük Hedef etiket genişliği */
+.hd-dt-lbl { font-size: 6.5px !important; white-space: nowrap; }
+
+/* 5. Executive panel başlık ikonları belirgin */
+.hd-ins-title { font-size: 11.5px !important; letter-spacing: 0; }
+
+/* 6. Sıralama ilerleme çubuğu */
+.rnk-bar-wrap {
+  width: 60px; height: 3px; background: var(--hairline);
+  border-radius: 2px; margin-top: 4px; overflow: hidden; flex-shrink: 0;
+}
+.rnk-bar { height: 100%; border-radius: 2px; transition: width 0.2s ease; }
+.rnk-bar.hd-g { background: var(--green); }
+.rnk-bar.hd-y { background: var(--amber); }
+.rnk-bar.hd-r { background: var(--crimson); }
+
+/* 7. Yüksek Adet yüzde etiketi */
+.hrl-pct {
+  font-size: 9px; font-weight: 700; color: var(--green); opacity: 0.9;
+}
+
+/* 8. AI Önerilen Operasyon satırı */
+.hd-ai-aksiyon {
+  font-size: 9px; color: var(--navy-3); font-weight: 700;
+  margin-top: 5px; padding-top: 5px; border-top: 1px solid var(--hairline);
+  line-height: 1.4;
+}
+
+/* 9. "Düşüş yaşanmadı" başarı banner */
+.hd-ins-ok-banner {
+  padding: 7px 10px; font-size: 10px; font-weight: 700;
+  color: #065f46; background: #ecfdf5; border-radius: 6px;
+  text-align: center; margin: 4px 6px;
+}
+
+/* 10. Delta etiket — metin taşmasını önle */
+.hd-ins-delta { white-space: nowrap; font-size: 9.5px; }
+.hd-ins-right { gap: 4px; }
+
+/* 11. Premium animasyonlar 180-220ms */
+.hd-chip    { transition: box-shadow 0.2s ease, transform 0.2s ease !important; }
+.hd-ai-card { transition: box-shadow 0.2s ease; }
+.rnk-row    { transition: background 0.18s ease; }
+.hd-ins-row { transition: background 0.18s ease; }
+.hrl-row    { transition: background 0.18s ease; }

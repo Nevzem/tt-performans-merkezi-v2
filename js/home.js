@@ -12,6 +12,7 @@ var _homeRiskProd    = 'Toplam Mobil';
 var _homeAdetProd    = 'Toplam Mobil';
 var _homePersRankProd = 'Toplam Mobil';
 var _homeBayiRankProd = 'Toplam Mobil';
+var _hdInsightProd   = 'Toplam Mobil';
 
 /* Risk & Yüksek Adet filtresi (4 ürün) */
 var _HP_PRODS = [
@@ -47,6 +48,7 @@ function setHomeRiskProd(k)     { _homeRiskProd    = k; renderHome(); }
 function setHomeAdetProd(k)     { _homeAdetProd    = k; renderHome(); }
 function setHomePersRankProd(k) { _homePersRankProd = k; renderHome(); }
 function setHomeBayiRankProd(k) { _homeBayiRankProd = k; renderHome(); }
+function setHdInsightProd(k)    { _hdInsightProd   = k; renderHome(); }
 
 /* ─── ANA RENDER ─────────────────────────── */
 function renderHome() {
@@ -123,24 +125,21 @@ function _hdChips(kpis) {
   var riskliN = recs.filter(function(r) { return r.g < 60; }).length;
   var eliteN  = recs.filter(function(r) { return r.g >= 100; }).length;
 
-  /* Genel HGO: 4 ürün toplam gerçekleşen / toplam hedef (ağırlıklı) */
-  var _totalH4 = kpis.reduce(function(s, k) { return s + (k.h || 0); }, 0);
-  var _totalA4 = kpis.reduce(function(s, k) { return s + (k.a || 0); }, 0);
-  var ortHGO = _totalH4 > 0
-    ? Math.round(_totalA4 / _totalH4 * 1000) / 10
-    : (function() {
-        var v = kpis.map(function(k){return k.hgo;}).filter(function(x){return x!==null;});
-        return v.length ? Math.round(v.reduce(function(s,x){return s+x;},0)/v.length*10)/10 : null;
-      }());
-
-  var ortCls = ortHGO === null ? 'hdc-neutral'
-             : ortHGO >= 100  ? 'hdc-green'
-             : ortHGO >= 70   ? 'hdc-amber'
-             : 'hdc-red';
-
-  var dateStr = new Date().toLocaleDateString('tr-TR', {
-    day: '2-digit', month: '2-digit', year: 'numeric'
+  /* Kritik Bayi: herhangi bir üründe HGO %70 altı */
+  var kritikSet = {};
+  [DATA.bayi['Toplam Mobil']||[], DATA.bayi['DSL']||[], DATA.bayi['Toplam TV']||[], DATA.bayi['Akıllı Cihaz']||[]].forEach(function(arr) {
+    arr.forEach(function(r) { if (r.g < 70) { var _k = (r.b||'').split(' · ')[0].trim(); if (_k) kritikSet[_k] = 1; } });
   });
+  var kritikN = Object.keys(kritikSet).length;
+
+  /* Operasyon Skoru: Mobil%40 + DSL%25 + TV%20 + Cihaz%15 − riskli ceza − veri cezası */
+  var _wts = [0.40, 0.25, 0.20, 0.15];
+  var _base = 0;
+  kpis.forEach(function(k, i) { if (k.hgo !== null) _base += k.hgo * _wts[i]; });
+  var _riskP = Math.min(riskliN, 15);
+  var _dataP = (typeof DATA_HEALTH !== 'undefined' && DATA_HEALTH && !DATA_HEALTH.ok) ? 3 : 0;
+  var _opsScore = Math.min(Math.max(Math.round(_base - _riskP - _dataP), 0), 100);
+  var _opsCls   = 'hdc-xl ' + (_opsScore >= 95 ? 'hdc-ops-elite' : _opsScore >= 90 ? 'hdc-ops-good' : _opsScore >= 80 ? 'hdc-ops-amber' : 'hdc-ops-red');
 
   function chip(lbl, val, valCls, sub) {
     return (
@@ -155,18 +154,18 @@ function _hdChips(kpis) {
 
   return (
     '<div class="hd-chips hd-anim" style="--i:1">' +
-      chip('GENEL HGO',         ortHGO !== null ? '%' + ortHGO.toFixed(1) : '—',
-                               'hdc-xl ' + ortCls,  '4 ürün toplam gerçekleşme') +
-      chip('RİSKLİ BAYİ',      String(riskliN),
-                               riskliN > 0 ? 'hdc-red' : 'hdc-green', 'HGO %60 altı') +
-      chip('ELİTE BAYİ',       String(eliteN),
+      chip('OPERASYON SKORU',  String(_opsScore),
+                               _opsCls,            '4 ürün · risk ağırlıklı') +
+      chip('KRİTİK BAYİ',     String(kritikN),
+                               kritikN > 0 ? 'hdc-red' : 'hdc-green', 'herhangi bir ürün <%70') +
+      chip('ELİTE BAYİ',      String(eliteN),
                                eliteN  > 0 ? 'hdc-gold' : 'hdc-neutral', 'HGO %100 üstü') +
-      chip('TOPLAM BAYİ',      String(bayiSay),
+      chip('TOPLAM BAYİ',     String(bayiSay),
                                'hdc-neutral', 'aktif TTM bayisi') +
-      chip('TOPLAM PERSONEL',  String(persSay),
+      chip('TOPLAM PERSONEL', String(persSay),
                                'hdc-neutral', 'hedefli personel') +
-      chip('RAPOR TARİHİ',     dateStr,
-                               'hdc-date',    DONEM + ' dönemi') +
+      chip('RİSKLİ BAYİ',    String(riskliN),
+                               riskliN > 0 ? 'hdc-red' : 'hdc-green', 'HGO %60 altı') +
     '</div>'
   );
 }
@@ -180,7 +179,7 @@ var _HD_PRODS = [
   { key: 'mobil', label: 'Toplam Mobil', dataKey: 'Toplam Mobil', mxKey: 'mobil', icon: '📱', short: 'MOBİL'  },
   { key: 'dsl',   label: 'DSL',          dataKey: 'DSL',           mxKey: 'dsl',   icon: '🌐', short: 'DSL'    },
   { key: 'tv',    label: 'Tivibu / TV',  dataKey: 'Toplam TV',     mxKey: 'tv',    icon: '📺', short: 'TV'     },
-  { key: 'cihaz', label: 'Cihaz',        dataKey: 'Toplam Cihaz',  mxKey: 'cihaz', icon: '📦', short: 'CİHAZ'  },
+  { key: 'cihaz', label: 'Cihaz',        dataKey: 'Toplam Cihaz',  altDataKey: 'Akıllı Cihaz', mxKey: 'cihaz', icon: '📦', short: 'CİHAZ'  },
 ];
 
 function _hdKPIs() {
@@ -209,7 +208,7 @@ function _hdKPIs() {
 
     var prevHgo = null, delta = null;
     if (PREV && PREV.bayi) {
-      var precs = PREV.bayi[pm.dataKey] || [];
+      var precs = PREV.bayi[pm.dataKey] || (pm.altDataKey ? PREV.bayi[pm.altDataKey] : null) || [];
       if (precs.length) {
         var sum = 0;
         for (var i = 0; i < precs.length; i++) sum += precs[i].g;
@@ -312,6 +311,29 @@ function _hdScorecard(kpis) {
 /* ══════════════════════════════════════════
    4. AI OPERASYON ÖZETİ
    ══════════════════════════════════════════ */
+function _hdGetAksiyon(key, h) {
+  if (h === null) return 'Excel yüklendikten sonra öneri oluşturulacak.';
+  if (key === 'mobil') {
+    if (h >= 100) return 'İvme korunmalı, kapanışa kadar ziyaretler sürdürülmeli.';
+    if (h >= 85)  return 'Satış temsilcisi ziyaretleri artırılmalı.';
+    if (h >= 65)  return 'Günlük kota takibi yoğunlaştırılmalı.';
+    return 'Acil saha desteği, SY devreye girmeli.';
+  }
+  if (key === 'dsl') {
+    if (h >= 95) return 'Fiber dönüşüm takipte tutulmalı.';
+    if (h >= 65) return 'Fiber kampanya teklifleri artırılmalı.';
+    return 'DSL alarm durumu, satış ekibi yönlendirilmeli.';
+  }
+  if (key === 'tv') {
+    if (h >= 90) return 'Paket satışı sürdürülmeli.';
+    if (h >= 60) return 'TV+İnternet paket kampanyası önerilmeli.';
+    return 'Tivibu farkındalığı artırılmalı.';
+  }
+  if (h >= 95) return 'Premium cihaz satışı desteklenmeli.';
+  if (h >= 65) return 'Taksit kampanyaları tanıtılmalı.';
+  return 'Cihaz satış eğitimi verilmeli.';
+}
+
 function _hdAutoSummary(kpis) {
   function aiCard(k) {
     var h = k.hgo, fc = k.fcHgo;
@@ -336,8 +358,9 @@ function _hdAutoSummary(kpis) {
       else if (h >= 65) { icon = '📊'; msg = 'Makul düzeyde.';                            acCls = 'ai-warn'; }
       else              { icon = '⚠️'; msg = 'Riskli.';                                   acCls = 'ai-risk'; }
     }
-    var hgoStr = h !== null ? '%' + h.toFixed(1) : '';
-    var fcStr  = fc !== null ? '<span class="ai-fc">Forecast %' + Math.round(fc) + '</span>' : '';
+    var hgoStr  = h !== null ? '%' + h.toFixed(1) : '';
+    var fcStr   = fc !== null ? '<span class="ai-fc">Forecast %' + Math.round(fc) + '</span>' : '';
+    var aksiyon = _hdGetAksiyon(k.key, h);
     return '<div class="hd-ai-card ' + acCls + '">' +
       '<div class="hd-ai-head">' +
         '<span class="hd-ai-icon">' + k.icon + '</span>' +
@@ -346,6 +369,7 @@ function _hdAutoSummary(kpis) {
       '</div>' +
       '<div class="hd-ai-msg">' + icon + ' ' + msg + '</div>' +
       (fcStr ? '<div class="hd-ai-fcrow">' + fcStr + '</div>' : '') +
+      '<div class="hd-ai-aksiyon">→ ' + aksiyon + '</div>' +
     '</div>';
   }
 
@@ -523,6 +547,7 @@ function _hdPersRanking() {
         '<div class="rnk-rgt">' +
           '<div class="rnk-hgo ' + hgoCls + '">%' + r.g.toFixed(1) + '</div>' +
           (meta ? '<div class="rnk-meta">' + meta + '</div>' : '') +
+          '<div class="rnk-bar-wrap"><div class="rnk-bar ' + hgoCls + '" style="width:' + Math.min(r.g, 100).toFixed(0) + '%"></div></div>' +
         '</div>' +
       '</div>'
     );
@@ -584,6 +609,7 @@ function _hdBayiRanking() {
         '<div class="rnk-rgt">' +
           '<div class="rnk-hgo ' + hgoCls + '">%' + r.g.toFixed(1) + '</div>' +
           (meta ? '<div class="rnk-meta">' + meta + '</div>' : '') +
+          '<div class="rnk-bar-wrap"><div class="rnk-bar ' + hgoCls + '" style="width:' + Math.min(r.g, 100).toFixed(0) + '%"></div></div>' +
         '</div>' +
       '</div>'
     );
@@ -624,6 +650,7 @@ function _hdAdetGrowth() {
         name: curr.b,
         loc: (curr.kod || '') + (curr.il ? ' · ' + curr.il : ''),
         delta: delta, prevA: pProd.a, currA: cProd.a,
+        pct: pProd.a > 0 ? Math.round(delta / pProd.a * 1000) / 10 : null,
       });
     }
   }
@@ -651,7 +678,7 @@ function _hdRiskCenter(kpis) {
             '<div class="hrl-loc">' + r.loc + '</div>' +
           '</div>' +
           '<div class="hrl-vals">' +
-            '<div class="hrl-gain hd-g">+' + r.delta.toLocaleString('tr-TR') + '</div>' +
+            '<div class="hrl-gain hd-g">+' + r.delta.toLocaleString('tr-TR') + (r.pct ? ' <span class="hrl-pct">+%' + r.pct.toFixed(1) + '</span>' : '') + '</div>' +
             '<div class="hrl-prev">' + r.prevA.toLocaleString('tr-TR') + '→' + r.currA.toLocaleString('tr-TR') + '</div>' +
           '</div>' +
         '</div>'
@@ -725,17 +752,15 @@ function _hdHero() {
 }
 
 function _hdHeroVK(loadTs) {
-  var dh    = (typeof DATA_HEALTH !== 'undefined' && DATA_HEALTH) ? DATA_HEALTH : null;
-  var isOk  = !dh || dh.ok;
-  var sayiTxt = dh ? (dh.persCount + ' Personel · ' + dh.bayiCount + ' Bayi') : '';
-  var tsTxt   = loadTs || ((typeof DONEM !== 'undefined' && DONEM) ? DONEM : '');
+  var dh   = (typeof DATA_HEALTH !== 'undefined' && DATA_HEALTH) ? DATA_HEALTH : null;
+  var isOk = !dh || dh.ok;
+  var loadDate = '', loadTime = '';
+  if (loadTs) { var _tp = loadTs.split(' '); loadDate = _tp[0] || ''; loadTime = _tp[1] || ''; }
+  var donem = (typeof DONEM !== 'undefined' && DONEM) ? DONEM : '';
   return '<div class="hd-vkutu">' +
-    '<div class="hd-vk-status">' +
-      '<span class="hd-vk-dot ' + (isOk ? 'vk-ok' : 'vk-warn') + '"></span>' +
-      (isOk ? 'Güncel Veri' : 'Kolon Uyarısı') +
-    '</div>' +
-    (sayiTxt ? '<div class="hd-vk-sayi">' + sayiTxt + '</div>' : '') +
-    (tsTxt   ? '<div class="hd-vk-ts">'   + tsTxt   + '</div>' : '') +
+    '<div class="hd-vk-status"><span class="hd-vk-dot ' + (isOk ? 'vk-ok' : 'vk-warn') + '"></span>' + (isOk ? 'Güncel Veri' : 'Kolon Uyarısı') + '</div>' +
+    (dh ? '<div class="hd-vk-sayi"><div>' + dh.persCount + ' Personel</div><div>' + dh.bayiCount + ' Bayi</div></div>' : '') +
+    (loadDate ? '<div class="hd-vk-ts"><div>' + loadDate + '</div><div>' + loadTime + '</div></div>' : (donem ? '<div class="hd-vk-ts">' + donem + '</div>' : '')) +
   '</div>';
 }
 
@@ -758,9 +783,9 @@ function _hdDailyTarget(kpis) {
         '</div>' +
         '<div class="hd-dt-bar-wrap"><div class="hd-dt-bar ' + barCls + '" style="width:' + pct + '%"></div></div>' +
         '<div class="hd-dt-nums">' +
-          '<span class="hd-dt-lbl">H<strong>' + (k.h > 0 ? k.h.toLocaleString('tr-TR') : '—') + '</strong></span>' +
-          '<span class="hd-dt-lbl">A<strong>' + (k.a > 0 ? k.a.toLocaleString('tr-TR') : '—') + '</strong></span>' +
-          '<span class="hd-dt-lbl">K<strong class="hd-r">' + (k.kalan !== null ? k.kalan.toLocaleString('tr-TR') : '—') + '</strong></span>' +
+          '<span class="hd-dt-lbl">Hedef<strong>' + (k.h > 0 ? k.h.toLocaleString('tr-TR') : '—') + '</strong></span>' +
+          '<span class="hd-dt-lbl">Gerçekleşen<strong>' + (k.a > 0 ? k.a.toLocaleString('tr-TR') : '—') + '</strong></span>' +
+          '<span class="hd-dt-lbl">Kalan<strong class="hd-r">' + (k.kalan !== null ? k.kalan.toLocaleString('tr-TR') : '—') + '</strong></span>' +
           (k.gunluk !== null ? '<div class="hd-dt-gunluk"><div class="hd-dt-gv">' + k.gunluk + '</div><div class="hd-dt-gl">GÜNLÜK</div></div>' : '') +
         '</div>' +
       '</div>'
@@ -778,9 +803,12 @@ function _hdDailyTarget(kpis) {
    Sprint 4 — EXECUTIVE INSIGHTS (4 panel: Top5 / Risk5 / Rising / Falling)
    ══════════════════════════════════════════ */
 function _hdExecutiveInsights() {
-  var mobRecs = (typeof DATA !== 'undefined' && DATA.bayi && DATA.bayi['Toplam Mobil']) || [];
-  var top5  = mobRecs.slice(0, 5);
-  var risk5 = mobRecs.slice(-5).slice().reverse();
+  var _ipm    = _HP_PRODS.filter(function(p) { return p.key === _hdInsightProd; })[0] || _HP_PRODS[0];
+  var dataKey  = _ipm.key;
+  var detayKey = _ipm.detayKey;
+  var recs     = (typeof DATA !== 'undefined' && DATA.bayi && DATA.bayi[dataKey]) || [];
+  var top5     = recs.slice(0, 5);
+  var risk5    = recs.slice(-5).slice().reverse();
 
   function insRow(r, i, isPod) {
     var cls    = r.g >= 100 ? 'hd-g' : r.g >= 70 ? 'hd-y' : 'hd-r';
@@ -804,31 +832,36 @@ function _hdExecutiveInsights() {
                  typeof DETAY !== 'undefined' && DETAY && Object.keys(DETAY.bayiler).length);
   if (hasPrev) {
     var changes = [];
-    for (var kod in DETAY.bayiler) {
-      var curr = DETAY.bayiler[kod], prev = PREV_DETAY.bayiler[kod];
-      if (!prev) continue;
-      var cp = curr.prods['Toplam Mobil'], pp = prev.prods['Toplam Mobil'];
-      if (!cp || !pp || !pp.h || !cp.h) continue;
-      changes.push({ name: curr.b, sub: curr.il || '', delta: Math.round((cp.g - pp.g) * 10) / 10, hgo: cp.g, kod: kod });
+    for (var eKod in DETAY.bayiler) {
+      var eCurr = DETAY.bayiler[eKod], ePrev = PREV_DETAY.bayiler[eKod];
+      if (!ePrev) continue;
+      var ecp = eCurr.prods[detayKey], epp = ePrev.prods[detayKey];
+      if (!ecp || !epp || !epp.h || !ecp.h) continue;
+      changes.push({ name: eCurr.b, sub: eCurr.il || '', delta: Math.round((ecp.g - epp.g) * 10) / 10, hgo: ecp.g, kod: eKod });
     }
     changes.sort(function(a, b) { return b.delta - a.delta; });
     function chgRow(c, i) {
-      var isPos  = c.delta > 0;
+      var isDrop = c.delta < 0;
       var hgoCls = c.hgo >= 100 ? 'hd-g' : c.hgo >= 70 ? 'hd-y' : 'hd-r';
       var oc     = c.kod ? ' onclick="openDetay(\'bayi\',\'' + c.kod + '\')" style="cursor:pointer"' : '';
       return '<div class="hd-ins-row"' + oc + '>' +
         '<span class="hd-ins-n">' + (i + 1) + '</span>' +
         '<div class="hd-ins-name">' + c.name + '<div class="hd-ins-sub">' + c.sub + '</div></div>' +
         '<div class="hd-ins-right">' +
-          '<span class="hd-ins-delta ' + (isPos ? 'hd-g' : 'hd-r') + '">' + (isPos ? '▲' : '▼') + Math.abs(c.delta).toFixed(1) + '</span>' +
+          '<span class="hd-ins-delta ' + (isDrop ? 'hd-r' : 'hd-g') + '">' + (isDrop ? '▼ ' : '▲ +') + Math.abs(c.delta).toFixed(1) + ' HGO</span>' +
           '<span class="hd-ins-hgo ' + hgoCls + '">%' + c.hgo.toFixed(1) + '</span>' +
         '</div>' +
       '</div>';
     }
     var rising  = changes.filter(function(c) { return c.delta > 0; }).slice(0, 5);
-    var falling = changes.filter(function(c) { return c.delta < 0; }).slice(-5).reverse();
-    risingHTML  = rising.length  ? rising.map(chgRow).join('')  : '<div class="hd-ins-empty">Artış bulunamadı.</div>';
-    fallingHTML = falling.length ? falling.map(chgRow).join('') : '<div class="hd-ins-empty">Düşüş bulunamadı.</div>';
+    var falling = changes.slice().reverse().slice(0, 5);
+    var hasDrops = falling.some(function(c) { return c.delta < 0; });
+    risingHTML  = rising.length ? rising.map(chgRow).join('') : '<div class="hd-ins-empty">Artış bulunamadı.</div>';
+    fallingHTML = falling.length
+      ? (hasDrops
+          ? falling.filter(function(c) { return c.delta < 0; }).map(chgRow).join('')
+          : '<div class="hd-ins-ok-banner">✅ Düşüş yaşanmadı</div>' + falling.map(chgRow).join(''))
+      : '<div class="hd-ins-empty">Veri bulunamadı.</div>';
   }
 
   function panel(title, rows, idx) {
@@ -840,7 +873,10 @@ function _hdExecutiveInsights() {
 
   return (
     '<div class="hd-section" style="padding-top:8px">' +
-      '<div class="hd-sec-title hd-anim" style="--i:3">Executive Görünüm &nbsp;·&nbsp; Toplam Mobil</div>' +
+      '<div class="hd-sec-head">' +
+        '<div class="hd-sec-title hd-anim" style="--i:3">Executive Görünüm</div>' +
+        _hpTabs(_hdInsightProd, 'setHdInsightProd', true) +
+      '</div>' +
       '<div class="hd-insights-grid">' +
         panel('🔥 En İyi 5 Bayi',    top5HTML,    4) +
         panel('⚠️ Riskli 5 Bayi',   risk5HTML,   5) +
