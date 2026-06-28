@@ -50,11 +50,22 @@ function buildFilterBar() {
   var bar = document.getElementById('compact-filter-bar');
   if (!bar) return;
 
-  var isBayi = (navPage === 'bayi');
-  var isPers  = (navPage === 'pers');
-  var isSY    = (navPage === 'sy');
+  var isBayi   = (navPage === 'bayi');
+  var isPers   = (navPage === 'pers');
+  var isSY     = (navPage === 'sy');
+  var isMatrix = (navPage === 'perf' && typeof section !== 'undefined' && section === 'matrix');
 
-  if (!isBayi && !isPers && !isSY) { bar.innerHTML = ''; return; }
+  if (!isBayi && !isPers && !isSY && !isMatrix) { bar.innerHTML = ''; return; }
+
+  if (isMatrix) {
+    bar.setAttribute('data-pg', 'matrix');
+    bar.innerHTML =
+      '<button class="fbar-chip fbar-dl" id="fbar-dl-btn" onclick="downloadMatrixPNG()">' +
+        '<span class="fbar-chip-lbl">Görsel</span>' +
+        '<span class="fbar-chip-val">Oluştur ↗</span>' +
+      '</button>';
+    return;
+  }
 
   var html = '';
 
@@ -687,6 +698,180 @@ async function downloadCardPNG() {
   document.body.classList.remove('exporting');
   hiddenEls.forEach(function(item) { item.el.style.display = item.display; });
 
+  if (btn)   { btn.disabled = false; }
+  if (valEl) { valEl.textContent = orig; }
+}
+
+/* ─── MATRİS GÖRSEL OLUŞTUR ─────────────────────────────────────── */
+
+async function downloadMatrixPNG() {
+  var btn   = document.getElementById('fbar-dl-btn');
+  var valEl = btn ? btn.querySelector('.fbar-chip-val') : null;
+  var orig  = valEl ? valEl.textContent : 'Oluştur ↗';
+  if (btn)   { btn.disabled = true; }
+  if (valEl) { valEl.textContent = '⏳'; }
+
+  var wrapper = null;
+  try {
+    await ensureH2C();
+
+    var M = (typeof MATRIX !== 'undefined') ? MATRIX : null;
+    if (!M || !M.rows || !M.rows.length) throw new Error('Matris verisi yok');
+
+    var f = (typeof fc === 'function') ? fc() : null;
+    var k = f ? f.k : null;
+
+    var PCOLS = [
+      { key: 'mobil', lbl: 'MOBİL',  bg: '#16295C' },
+      { key: 'dsl',   lbl: 'DSL',    bg: '#7A6A1E' },
+      { key: 'iptv',  lbl: 'İP TV',  bg: '#5B54A8' },
+      { key: 'ipdsl', lbl: 'İP/DSL', bg: '#B5836B' },
+      { key: 'uydu',  lbl: 'UYDU',   bg: '#4E854E' },
+      { key: 'tv',    lbl: 'TV',      bg: '#1C8CC4' },
+      { key: 'cihaz', lbl: 'CİHAZ',  bg: '#7E8A3E' },
+    ];
+
+    var EXPORT_WIDTH = 1240;
+    var W_RANK = 40, W_KOD = 72, W_BAYI = 224;
+    var W_VAL  = Math.floor((EXPORT_WIDTH - W_RANK - W_KOD - W_BAYI) / (PCOLS.length * 2));
+
+    var fcVal = function(v) {
+      return (k && v !== null && v !== undefined) ? Math.round(v * k) : null;
+    };
+
+    var sortLbl = (PCOLS.find(function(p) { return p.key === matrixSort; }) || {lbl:'MOBİL'}).lbl;
+
+    var sortedRows = M.rows.slice().sort(function(a, b) {
+      var av = a[matrixSort], bv = b[matrixSort];
+      return ((bv == null ? -1 : bv) - (av == null ? -1 : av));
+    });
+
+    function heatCell(v, fontSize, extraStyle) {
+      if (v === null || v === undefined) {
+        return 'background:#F4F6FA;color:#B0B8C8;font-size:' + fontSize + ';font-weight:700;text-align:center;padding:5px 2px;border:1px solid rgba(0,0,0,0.07);' + (extraStyle || '');
+      }
+      var s = (typeof heat === 'function') ? heat(v) : 'background:#E8F5E9;color:#1B5E20';
+      return s + ';font-size:' + fontSize + ';font-weight:700;text-align:center;padding:5px 2px;border:1px solid rgba(0,0,0,0.07);' + (extraStyle || '');
+    }
+
+    /* Başlık satırı 1: ürün grupları */
+    var fixedHd = 'background:#0A1733;color:#fff;font-weight:800;text-align:center;padding:7px 4px;border:1px solid rgba(255,255,255,0.15);';
+    var thead1  = '<tr>' +
+      '<th colspan="3" style="' + fixedHd + 'font-size:10.5px;letter-spacing:0.5px">' + sortLbl + ' SIRALI — KUZEY ANADOLU</th>';
+    PCOLS.forEach(function(p) {
+      thead1 += '<th colspan="2" style="background:' + p.bg + ';color:#fff;font-weight:800;font-size:10.5px;letter-spacing:0.5px;text-align:center;padding:6px 3px;border:1px solid rgba(255,255,255,0.15)">' + p.lbl + '</th>';
+    });
+    thead1 += '</tr>';
+
+    /* Başlık satırı 2: alt sütun isimleri */
+    var subHd = 'background:#EBEEF5;color:#5A6A8A;font-size:8.5px;font-weight:700;text-align:center;padding:4px 2px;border:1px solid #D5DAE8;letter-spacing:0.2px;width:' + W_VAL + 'px;';
+    var fixedSubHd = 'background:#F0F3FA;color:#3A4A6A;font-size:9px;font-weight:700;text-align:center;padding:4px 2px;border:1px solid #D5DAE8;';
+    var thead2 = '<tr>' +
+      '<th style="' + fixedSubHd + 'width:' + W_RANK + 'px">#</th>' +
+      '<th style="' + fixedSubHd + 'width:' + W_KOD  + 'px">Kod</th>' +
+      '<th style="' + fixedSubHd + 'width:' + W_BAYI + 'px;text-align:left;padding-left:8px">Bayi · İl</th>';
+    PCOLS.forEach(function() {
+      thead2 += '<th style="' + subHd + '">Fc%</th><th style="' + subHd + '">HGO%</th>';
+    });
+    thead2 += '</tr>';
+
+    /* Gövde satırları */
+    var tbody = '';
+    sortedRows.forEach(function(r, i) {
+      var rowBg = i % 2 === 0 ? '#FFFFFF' : '#F8FAFF';
+      var tds =
+        '<td style="background:#F7F9FC;color:#0A1F5C;font-weight:800;font-size:11px;text-align:center;padding:5px 3px;border:1px solid #DCE2EC">' + (i + 1) + '</td>' +
+        '<td style="color:#6A7A9A;font-size:9.5px;font-weight:600;text-align:center;padding:5px 2px;border:1px solid #DCE2EC;font-variant-numeric:tabular-nums">' + r.kod + '</td>' +
+        '<td style="color:#1A2A4A;font-size:11px;font-weight:700;text-align:left;padding:5px 8px;border:1px solid #DCE2EC;background:' + rowBg + '">' +
+          r.b + '<span style="color:#8A9AB4;font-size:8.5px;font-weight:600"> · ' + r.il + '</span>' +
+        '</td>';
+
+      PCOLS.forEach(function(p) {
+        var raw = r[p.key];
+        var fv  = fcVal(raw);
+        /* Fc% hücresi */
+        var fcDisplay = fv !== null ? fv : (raw !== null && raw !== undefined ? Math.round(raw) : null);
+        tds += '<td style="' + heatCell(fv !== null ? fv : raw, '11px', 'font-variant-numeric:tabular-nums') + '">' +
+          (fcDisplay !== null ? '%' + fcDisplay : '—') + '</td>';
+        /* HGO% hücresi */
+        tds += '<td style="' + heatCell(raw, '9.5px', 'opacity:0.82;font-variant-numeric:tabular-nums') + '">' +
+          (raw !== null && raw !== undefined ? '%' + Math.round(raw) : '—') + '</td>';
+      });
+
+      tbody += '<tr>' + tds + '</tr>';
+    });
+
+    /* Alt toplam satırları */
+    function totRow(t, lbl, bg) {
+      var tds = '<td colspan="3" style="background:' + bg + ';color:#fff;font-weight:800;font-size:10.5px;text-align:center;padding:7px 4px;border:1px solid rgba(255,255,255,0.15);letter-spacing:1.5px">' + lbl + '</td>';
+      PCOLS.forEach(function(p) {
+        var raw = t[p.key];
+        var fv  = fcVal(raw);
+        var fcDisp = fv !== null ? fv : (raw !== null && raw !== undefined ? Math.round(raw) : null);
+        tds += '<td style="background:' + bg + ';color:#fff;font-weight:800;font-size:11.5px;text-align:center;padding:7px 2px;border:1px solid rgba(255,255,255,0.15)">' +
+          (fcDisp !== null ? '%' + fcDisp : '—') + '</td>';
+        tds += '<td style="background:' + bg + ';color:rgba(255,255,255,0.68);font-size:9.5px;font-weight:700;text-align:center;padding:7px 2px;border:1px solid rgba(255,255,255,0.15)">' +
+          (raw !== null && raw !== undefined ? '%' + Math.round(raw) : '—') + '</td>';
+      });
+      return '<tr>' + tds + '</tr>';
+    }
+
+    var dateStr = new Date().toLocaleDateString('tr-TR');
+    var fcNote  = f ? (f.d + '/' + f.t + '. gün · ay sonu tahmini') : 'Forecast bilgisi girilmemiş';
+    var donem   = (typeof DONEM !== 'undefined') ? DONEM : '';
+
+    var exportHTML =
+      '<div style="background:#fff;padding:0;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif;">' +
+        '<div style="background:linear-gradient(140deg,#0A1733,#1A3568);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;">' +
+          '<div>' +
+            '<div style="color:#fff;font-size:17px;font-weight:800;letter-spacing:-0.3px">📋 Konsolide Forecast Matrisi</div>' +
+            '<div style="color:rgba(201,162,39,0.9);font-size:9px;font-weight:600;letter-spacing:2px;margin-top:3px;text-transform:uppercase">KUZEY ANADOLU · TÜM ÜRÜNLER · ' + fcNote + '</div>' +
+          '</div>' +
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">' +
+            '<div style="color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border:1px solid rgba(201,162,39,0.5);background:rgba(201,162,39,0.1);border-radius:6px">' + donem + '</div>' +
+            '<div style="color:rgba(255,255,255,0.55);font-size:8px;font-weight:600">' + dateStr + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<table style="border-collapse:collapse;width:100%;table-layout:fixed;font-size:11px;">' +
+          '<thead>' + thead1 + thead2 + '</thead>' +
+          '<tbody>' + tbody + '</tbody>' +
+          '<tfoot>' + totRow(M.kuzey, 'KUZEY ANADOLU', '#2C4A8A') + totRow(M.anadolu, 'ANADOLU', '#0A1733') + '</tfoot>' +
+        '</table>' +
+        '<div style="background:#F7F9FC;padding:8px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #DCE2EC;">' +
+          '<span style="color:#3A4A6A;font-size:9px;font-weight:700;letter-spacing:0.5px">TT KUZEY ANADOLU PERFORMANS MERKEZİ</span>' +
+          '<span style="color:#8A9AB4;font-size:8px;font-weight:600">' + M.rows.length + ' bayi · ' + dateStr + '</span>' +
+        '</div>' +
+      '</div>';
+
+    wrapper = document.createElement('div');
+    wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;width:' + EXPORT_WIDTH + 'px;' +
+      'background:#fff;z-index:-1;pointer-events:none;overflow:visible;';
+    wrapper.innerHTML = exportHTML;
+    document.body.appendChild(wrapper);
+
+    await new Promise(function(resolve) {
+      requestAnimationFrame(function() { setTimeout(resolve, 100); });
+    });
+
+    var dateFile = new Date().toLocaleDateString('tr-TR').replace(/\./g, '');
+    var fname    = 'TT_Matris_' + donem.replace('/', '-') + '_' + dateFile + '.png';
+
+    var canvas = await html2canvas(wrapper, {
+      scale: 2, backgroundColor: '#ffffff',
+      useCORS: true, logging: false, scrollX: 0, scrollY: 0,
+      width:  EXPORT_WIDTH,
+      height: wrapper.scrollHeight,
+    });
+
+    if (wrapper && wrapper.parentNode) { wrapper.parentNode.removeChild(wrapper); wrapper = null; }
+
+    _openSharePreview(canvas.toDataURL('image/png'), fname);
+
+  } catch (e) {
+    alert('Matris görseli oluşturma hatası: ' + e.message);
+  }
+
+  if (wrapper && wrapper.parentNode) { wrapper.parentNode.removeChild(wrapper); }
   if (btn)   { btn.disabled = false; }
   if (valEl) { valEl.textContent = orig; }
 }

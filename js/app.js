@@ -48,8 +48,8 @@ function navTo(page) {
 
   } else if (page === 'perf') {
     _setDataHeader('Performans', 'Detaylı Analiz ve Raporlar');
-    fbar.style.display = 'none'; perfSubStrip.style.display = '';
-    perfSec(_perfSection);
+    perfSubStrip.style.display = '';
+    perfSec(_perfSection); /* perfSec fbar'ı yönetir */
 
   } else if (page === 'gecmis') {
     fbar.style.display = 'none'; perfSubStrip.style.display = 'none';
@@ -70,6 +70,8 @@ function perfSec(sec) {
   document.querySelectorAll('.psub-tab').forEach(function(b) {
     b.classList.toggle('active', b.dataset.sec === sec);
   });
+  var fbar = document.getElementById('compact-filter-bar');
+  if (fbar) fbar.style.display = (sec === 'matrix') ? '' : 'none';
   setSec(sec);
 }
 
