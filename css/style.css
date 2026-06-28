@@ -1999,6 +1999,10 @@ body.exporting #cards .card,
 body.exporting .card { animation: none !important; opacity: 1 !important; transform: none !important; }
 .rnk-bar.hd-gg { background: #059669; }
 
+/* ── Sprint 10.2 — Personel satırı sadeleşme ── */
+.chip.chip-lg { font-size: 13px; font-weight: 900; padding: 3px 9px; border-radius: 7px; }
+.track.track-lg { height: 6px; border-radius: 3px; }
+
 /* ── Sprint 10 — Matris Görsel Oluştur filtre çubuğu ── */
 .filter-bar[data-pg="matrix"] {
   display: flex; justify-content: flex-end; align-items: center;

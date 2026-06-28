@@ -135,7 +135,7 @@ function rowHTML(rec, rank, maxV, podium, withFc, prodKey) {
   const isPers = section === 'pers';
   const f = fc();
   let fhtml = "";
-  if (f && (withFc || isPers)) {
+  if (f && withFc) {
     const fv = rec.g * f.k;
     fhtml = '<span class="fchip' + (fv >= 100 ? " ok" : "") + '">F%' + fv.toFixed(0) + '</span>';
   }
@@ -147,20 +147,11 @@ function rowHTML(rec, rank, maxV, podium, withFc, prodKey) {
   const _oc = _km
     ? ' onclick="openDetay(\'bayi\',\'' + _km[1] + '\')" style="cursor:pointer"'
     : ' onclick="_detayPers(\'' + _ep + '\',\'' + _eb + '\')" style="cursor:pointer"';
-  let nmHtml, haHtml = '';
-  if (isPers) {
-    const ilLine = rec.il ? '<div class="nm-il">' + rec.il + '</div>' : '';
-    nmHtml = '<div class="nm">' +
-      '<div class="nm-main"><div class="p">' + rec.p + '</div>' + _persAiBadge(rec.g) + '</div>' +
-      '<div class="b">' + rec.b + '</div>' + ilLine + '</div>';
-    if (rec.h) haHtml = '<div class="br-ha">' + rec.a + '<span class="br-hmax">/' + rec.h + '</span></div>';
-  } else {
-    nmHtml = '<div class="nm"><div class="p">' + rec.p + '</div><div class="b">' + rec.b + '</div></div>';
-  }
+  const nmHtml = '<div class="nm"><div class="p">' + rec.p + '</div><div class="b">' + rec.b + '</div></div>';
   return '<div class="row' + (podium && rank <= 3 ? " r" + rank : "") + '"' + _oc + '>' +
     '<div class="rk">' + rkHTML(rank) + '</div>' + deltaHTML(rec, prodKey) + nmHtml +
-    '<div class="br"><div class="br-top">' + fhtml + '<span class="chip ' + cls(rec.g) + '">%' + rec.g.toFixed(1) + '</span></div>' +
-    haHtml + '<div class="track"><div class="fill ' + cls(rec.g) + '" style="width:' + w + '%"></div>' + tick + '</div></div></div>';
+    '<div class="br"><div class="br-top">' + fhtml + '<span class="chip' + (isPers ? ' chip-lg' : '') + ' ' + cls(rec.g) + '">%' + rec.g.toFixed(1) + '</span></div>' +
+    '<div class="track' + (isPers ? ' track-lg' : '') + '"><div class="fill ' + cls(rec.g) + '" style="width:' + w + '%"></div>' + tick + '</div></div></div>';
 }
 function hdrHTML(icon, t, sub) {
   return '<div class="hdr"><div class="hdr-stripe"></div><div class="hdr-gold"></div><div class="hdr-body">' +
