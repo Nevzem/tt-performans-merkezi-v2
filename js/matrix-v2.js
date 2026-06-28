@@ -15,9 +15,9 @@ var MV2_COLS = [
   { key:'cihaz', label:'CİHAZ', thBg:'#2D5A1A', subBg:'#EDF5E8', subFg:'#2D5A1A', single:false },
 ];
 
-/* İn-app sütun px genişlikleri — toplam 936px (yatay scroll) */
-var MV2_W = { sira:34, kod:68, ad:152, hgo:54, fc:50, ipdsl:58 };
-/* 34+68+152 + 6*(54+50) + 58 = 254+624+58 = 936 */
+/* İn-app sütun px genişlikleri — toplam 952px (yatay scroll) */
+var MV2_W = { sira:34, kod:68, ad:168, hgo:54, fc:50, ipdsl:58 };
+/* 34+68+168 + 6*(54+50) + 58 = 270+624+58 = 952 */
 
 /* Export şablon genişlikleri — toplam 2048px, scale:2 → 4096px çıktı */
 var MV2_WE = { sira:44, kod:84, ad:220, hgo:106, fc:136, ipdsl:248 };
@@ -104,13 +104,15 @@ function buildMatrixGrid() {
 
   return rows.map(function(r, i) {
     var rowBg = i % 2 === 0 ? '#FFFFFF' : '#F7F9FC';
-    var tdBase = 'height:40px;border:' + bOrd + ';vertical-align:middle;';
+    var tdBase = 'height:38px;border:' + bOrd + ';vertical-align:middle;';
     var html   = '<tr style="background:' + rowBg + ';">' +
       '<td style="' + tdBase + 'text-align:center;font-size:13px;font-weight:800;color:#0B1F4D;">' + (i + 1) + '</td>' +
       '<td style="' + tdBase + 'text-align:center;font-size:11px;color:#64748B;">' + (r.kod || '') + '</td>' +
-      '<td style="' + tdBase + 'padding:3px 8px;">' +
-        '<div style="font-size:12px;font-weight:700;color:#0B1F4D;line-height:1.2;">' + (r.b || '') + '</div>' +
-        (r.il ? '<div style="font-size:10px;color:#94A3B8;font-weight:600;">' + r.il + '</div>' : '') +
+      '<td style="' + tdBase + 'padding:0 8px;max-width:' + MV2_W.ad + 'px;">' +
+        '<div style="font-size:12px;color:#0B1F4D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
+          '<span style="font-weight:700;">' + (r.b || '') + '</span>' +
+          (r.il ? '<span style="color:#7A869A;font-weight:400;"> · ' + r.il + '</span>' : '') +
+        '</div>' +
       '</td>';
 
     MV2_COLS.forEach(function(col) {
@@ -309,15 +311,17 @@ function _buildMatrixExportDOM() {
   /* Veri satırları */
   var body = rows.map(function(r, i) {
     var rowBg = i % 2 === 0 ? '#FFFFFF' : '#F7F9FC';
-    var tdH   = 48;
+    var tdH   = 44;
     var html  = '<tr style="background:' + rowBg + ';">' +
       '<td style="height:' + tdH + 'px;border:' + bOrd + ';text-align:center;' +
         'font-size:22px;font-weight:800;color:#0B1F4D;vertical-align:middle;">' + (i + 1) + '</td>' +
       '<td style="height:' + tdH + 'px;border:' + bOrd + ';text-align:center;' +
         'font-size:16px;color:#64748B;vertical-align:middle;">' + (r.kod || '') + '</td>' +
-      '<td style="height:' + tdH + 'px;border:' + bOrd + ';padding:4px 14px;vertical-align:middle;">' +
-        '<div style="font-size:22px;font-weight:700;color:#0B1F4D;line-height:1.2;">' + (r.b || '') + '</div>' +
-        (r.il ? '<div style="font-size:16px;color:#7A8DAA;font-weight:600;">' + r.il + '</div>' : '') +
+      '<td style="height:' + tdH + 'px;border:' + bOrd + ';padding:0 14px;vertical-align:middle;max-width:' + W.ad + 'px;">' +
+        '<div style="font-size:22px;color:#0B1F4D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
+          '<span style="font-weight:700;">' + (r.b || '') + '</span>' +
+          (r.il ? '<span style="color:#7A869A;font-weight:400;"> · ' + r.il + '</span>' : '') +
+        '</div>' +
       '</td>';
     MV2_COLS.forEach(function(col) {
       var raw = (r[col.key] !== undefined) ? r[col.key] : null;
