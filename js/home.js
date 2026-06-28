@@ -857,11 +857,9 @@ function _hdExecutiveInsights() {
     var falling = changes.slice().reverse().slice(0, 5);
     var hasDrops = falling.some(function(c) { return c.delta < 0; });
     risingHTML  = rising.length ? rising.map(chgRow).join('') : '<div class="hd-ins-empty">Artış bulunamadı.</div>';
-    fallingHTML = falling.length
-      ? (hasDrops
-          ? falling.filter(function(c) { return c.delta < 0; }).map(chgRow).join('')
-          : '<div class="hd-ins-ok-banner">✅ Düşüş yaşanmadı</div>' + falling.map(chgRow).join(''))
-      : '<div class="hd-ins-empty">Veri bulunamadı.</div>';
+    fallingHTML = (falling.length && hasDrops)
+      ? falling.filter(function(c) { return c.delta < 0; }).map(chgRow).join('')
+      : '';
   }
 
   function panel(title, rows, idx) {
