@@ -89,6 +89,10 @@ function buildFilterBar() {
       '<button class="fbar-chip fbar-dl" id="fbar-excel-btn" onclick="downloadExcelMatrisPNG()">' +
         '<span class="fbar-chip-lbl">Excel</span>' +
         '<span class="fbar-chip-val">Matris ↗</span>' +
+      '</button>' +
+      '<button class="fbar-chip fbar-dl" id="fbar-v2-btn" onclick="matrixExportV2()">' +
+        '<span class="fbar-chip-lbl">V2</span>' +
+        '<span class="fbar-chip-val">Rapor ↗</span>' +
       '</button>';
     return;
   }

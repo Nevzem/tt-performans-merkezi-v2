@@ -1,0 +1,27 @@
+/* ════════════════════════════════════════════════════════════════════
+   css/matrix-v2.css  —  Matrix Engine V2 (Premium Excel Edition)
+   Eski matrix stillerine dokunulmaz.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Scrollbar – in-app tablo sarmalayıcı */
+.mv2-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #C8D0E0 transparent;
+}
+.mv2-scroll::-webkit-scrollbar         { height: 4px; }
+.mv2-scroll::-webkit-scrollbar-track   { background: transparent; }
+.mv2-scroll::-webkit-scrollbar-thumb   { background: #C8D0E0; border-radius: 2px; }
+.mv2-scroll::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+/* Dışa aktarma klon container'ı sayfada görünmez */
+.mv2-export-wrap {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: visible;
+  background: #fff;
+}
