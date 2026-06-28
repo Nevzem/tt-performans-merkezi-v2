@@ -26,8 +26,53 @@ function copyText() {
   navigator.clipboard.writeText(t).then(() => { const m = document.getElementById("pmsg"); m.className = "pmsg ok show"; m.textContent = "✅ WhatsApp metni kopyalandı"; });
 }
 
-/* ───── PNG ───── */
-async function snap(el) { await ensureH2C(); const c = await html2canvas(el, { scale: 2.5, backgroundColor: null, useCORS: true, logging: false }); return c.toDataURL("image/png"); }
+/* ─── ORTAK EXPORT ALTYAPISI ─────────────────────────────────────── */
+
+async function createCleanExportClone(el, fixedWidth) {
+  var elW = fixedWidth || Math.ceil(
+    el.offsetWidth || (el.getBoundingClientRect ? el.getBoundingClientRect().width : 0) || 360
+  );
+  var wrapper = document.createElement('div');
+  wrapper.className = 'export-clone';
+  wrapper.style.cssText =
+    'position:fixed;left:-9999px;top:0;width:' + elW + 'px;' +
+    'background:#ffffff;z-index:-1;pointer-events:none;overflow:visible;';
+
+  var clone = el.cloneNode(true);
+  clone.style.cssText = (clone.getAttribute('style') || '') +
+    ';opacity:1;filter:none;-webkit-filter:none;' +
+    'backdrop-filter:none;-webkit-backdrop-filter:none;' +
+    'mix-blend-mode:normal;transform:none;' +
+    'animation:none;-webkit-animation:none;background:#ffffff;';
+
+  wrapper.appendChild(clone);
+  document.body.appendChild(wrapper);
+
+  await new Promise(function(resolve) {
+    requestAnimationFrame(function() { setTimeout(resolve, 80); });
+  });
+
+  return { wrapper: wrapper, clone: clone, width: elW };
+}
+
+async function captureExportImage(target, opts) {
+  await ensureH2C();
+  return html2canvas(target, Object.assign({
+    scale: 2.5,
+    backgroundColor: '#ffffff',
+    useCORS: true,
+    logging: false,
+    scrollX: 0,
+    scrollY: 0,
+  }, opts || {}));
+}
+
+function cleanupExportClone(wrapper) {
+  if (wrapper && wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+}
+
+/* ───── PNG (Ayarlar sayfası eski butonlar için) ───── */
+async function snap(el) { await ensureH2C(); const c = await html2canvas(el, { scale: 2.5, backgroundColor: '#ffffff', useCORS: true, logging: false }); return c.toDataURL("image/png"); }
 function dl(url, name) { const a = document.createElement("a"); a.download = name; a.href = url; document.body.appendChild(a); a.click(); a.remove(); }
 function fname(p) {
   const v = section === "bayi" ? "Bayi" : view === "top" ? "Ilk" : view === "bot" ? "Son" : view === "both" ? "Tam" : "Yildizlar";

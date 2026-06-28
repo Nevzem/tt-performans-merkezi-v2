@@ -50,12 +50,23 @@ function buildFilterBar() {
   var bar = document.getElementById('compact-filter-bar');
   if (!bar) return;
 
-  var isBayi   = (navPage === 'bayi');
-  var isPers   = (navPage === 'pers');
-  var isSY     = (navPage === 'sy');
-  var isMatrix = (navPage === 'perf' && typeof section !== 'undefined' && section === 'matrix');
+  var isBayi       = (navPage === 'bayi');
+  var isPers       = (navPage === 'pers');
+  var isSY         = (navPage === 'sy');
+  var isMatrix     = (navPage === 'perf' && typeof section !== 'undefined' && section === 'matrix');
+  var isKupaOrRisk = (navPage === 'perf' && typeof section !== 'undefined' && (section === 'kupa' || section === 'risk'));
 
-  if (!isBayi && !isPers && !isSY && !isMatrix) { bar.innerHTML = ''; return; }
+  if (!isBayi && !isPers && !isSY && !isMatrix && !isKupaOrRisk) { bar.innerHTML = ''; return; }
+
+  if (isKupaOrRisk) {
+    bar.setAttribute('data-pg', section);
+    bar.innerHTML =
+      '<button class="fbar-chip fbar-dl" id="fbar-dl-btn" onclick="downloadCardPNG()">' +
+        '<span class="fbar-chip-lbl">Görsel</span>' +
+        '<span class="fbar-chip-val">Oluştur ↗</span>' +
+      '</button>';
+    return;
+  }
 
   if (isMatrix) {
     bar.setAttribute('data-pg', 'matrix');
@@ -655,65 +666,44 @@ async function downloadCardPNG() {
   if (btn)   { btn.disabled = true; }
   if (valEl) { valEl.textContent = '⏳'; }
 
-  var wrapper   = null;
-  var hiddenEls = [];
+  var cloneWrapper = null;
+  var hiddenEls    = [];
   try {
-    await ensureH2C();
-
-    var el = document.getElementById('sy-card') ||
-             document.getElementById('card-main') ||
+    /* — Doğru kartı bul — */
+    var el = document.getElementById('sy-card')     ||
+             document.getElementById('kupa-card')   ||
+             document.getElementById('risk-card')   ||
+             document.getElementById('card-main')   ||
              document.querySelector('#cards .card') ||
              document.querySelector('.card');
     if (!el) throw new Error('Kart bulunamadı');
 
-    /* — overlay'leri gizle, body.exporting ekle — */
-    var OVERLAY_SEL = '#detay-overlay, #sheet-overlay, .detay-overlay, .drawer-overlay, .modal-backdrop, .loading-overlay, .backdrop, .overlay';
+    /* — Overlay ve SPM'yi geçici gizle — */
+    var OVERLAY_SEL = '#detay-overlay,#sheet-overlay,#spm,.detay-overlay,.drawer-overlay,.modal-backdrop,.loading-overlay,.backdrop,.overlay';
     document.querySelectorAll(OVERLAY_SEL).forEach(function(ov) {
       hiddenEls.push({ el: ov, display: ov.style.display });
       ov.style.display = 'none';
     });
     document.body.classList.add('exporting');
 
-    /* ── Temiz klon: animasyon/opacity sorununu tamamen bertaraf et ──
-       Clone #cards dışında olduğundan s9cardFade animasyonu başlamaz.
-       Inline stil ile filter/opacity/transform sıfırlanır. */
-    var elW = Math.ceil(el.offsetWidth || el.getBoundingClientRect().width || 360);
-    wrapper  = document.createElement('div');
-    wrapper.style.cssText =
-      'position:fixed;left:-9999px;top:0;width:' + elW + 'px;' +
-      'background:#ffffff;z-index:-1;pointer-events:none;overflow:visible;';
+    /* — Temiz clone — animasyon/opacity/filter reset, body dışı alanda — */
+    var res  = await createCleanExportClone(el);
+    cloneWrapper = res.wrapper;
 
-    var clone = el.cloneNode(true);
-    clone.style.cssText =
-      (clone.getAttribute('style') || '') +
-      ';opacity:1;filter:none;-webkit-filter:none;' +
-      'backdrop-filter:none;-webkit-backdrop-filter:none;' +
-      'mix-blend-mode:normal;transform:none;' +
-      'animation:none;-webkit-animation:none;';
-
-    wrapper.appendChild(clone);
-    document.body.appendChild(wrapper);
-
-    /* — RAF: klon layout'u yerleşsin — */
-    await new Promise(function(resolve) {
-      requestAnimationFrame(function() { setTimeout(resolve, 60); });
-    });
-
-    var scope   = navPage === 'bayi' ? 'Bayi'
-                : navPage === 'sy'   ? 'SatisYoneticisi'
-                : 'Personel';
-    var rawProd = navPage === 'sy' ? (syProd || '') : prod;
-    var prodKey = rawProd.replace(/[^a-zA-ZçğıöşüÇĞİÖŞÜ0-9]/g, '');
+    /* — Dosya adı — */
+    var scope = navPage === 'bayi' ? 'Bayi'
+              : navPage === 'sy'   ? 'SatisYoneticisi'
+              : navPage === 'perf' && typeof section !== 'undefined' && section === 'kupa' ? 'KupaBende'
+              : navPage === 'perf' && typeof section !== 'undefined' && section === 'risk' ? 'RiskRadari'
+              : 'Personel';
+    var rawProd = navPage === 'sy' ? (typeof syProd !== 'undefined' ? syProd : '') : (typeof prod !== 'undefined' ? prod : '');
+    var prodKey = (rawProd || '').replace(/[^a-zA-ZçğıöşüÇĞİÖŞÜ0-9]/g, '');
     var dateStr = new Date().toLocaleDateString('tr-TR').replace(/\./g, '');
-    var fname   = 'TT_' + scope + '_Siralama_' + prodKey + '_' + dateStr + '.png';
+    var fname   = 'TT_' + scope + (prodKey ? '_' + prodKey : '') + '_' + dateStr + '.png';
 
-    var canvas  = await html2canvas(clone, {
-      scale: 2.5, backgroundColor: '#ffffff',
-      useCORS: true, logging: false, scrollX: 0, scrollY: 0,
-    });
-
-    /* klon DOM'dan çıkar, sonra modal aç */
-    if (wrapper && wrapper.parentNode) { wrapper.parentNode.removeChild(wrapper); wrapper = null; }
+    /* — Capture — */
+    var canvas = await captureExportImage(res.clone);
+    cleanupExportClone(cloneWrapper); cloneWrapper = null;
 
     _openSharePreview(canvas.toDataURL('image/png'), fname);
 
@@ -721,11 +711,10 @@ async function downloadCardPNG() {
     alert('Görsel oluşturma hatası: ' + e.message);
   }
 
-  /* — her zaman restore — */
-  if (wrapper && wrapper.parentNode) { wrapper.parentNode.removeChild(wrapper); }
+  /* — Her durumda temizle — */
+  cleanupExportClone(cloneWrapper);
   document.body.classList.remove('exporting');
   hiddenEls.forEach(function(item) { item.el.style.display = item.display; });
-
   if (btn)   { btn.disabled = false; }
   if (valEl) { valEl.textContent = orig; }
 }

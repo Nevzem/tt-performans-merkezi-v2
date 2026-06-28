@@ -1272,11 +1272,21 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
   padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
 }
 .spm-img {
-  width: 100%; max-width: 500px;
+  width: 100%; max-width: 100%;
   border-radius: 14px;
   box-shadow: 0 10px 48px rgba(0,0,0,0.7);
   display: block; height: auto;
   touch-action: pan-y pinch-zoom;
+  object-fit: contain;
+}
+
+/* ─── EXPORT CLONE — animasyon / opacity bastır ──────────────────── */
+.export-clone,
+.export-clone * {
+  animation: none !important;
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition: none !important;
 }
 
 
