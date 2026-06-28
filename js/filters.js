@@ -55,8 +55,19 @@ function buildFilterBar() {
   var isSY         = (navPage === 'sy');
   var isMatrix     = (navPage === 'perf' && typeof section !== 'undefined' && section === 'matrix');
   var isKupaOrRisk = (navPage === 'perf' && typeof section !== 'undefined' && (section === 'kupa' || section === 'risk'));
+  var isDetay      = (navPage === 'perf' && typeof section !== 'undefined' && section === 'detay');
 
-  if (!isBayi && !isPers && !isSY && !isMatrix && !isKupaOrRisk) { bar.innerHTML = ''; return; }
+  if (!isBayi && !isPers && !isSY && !isMatrix && !isKupaOrRisk && !isDetay) { bar.innerHTML = ''; return; }
+
+  if (isDetay) {
+    bar.setAttribute('data-pg', 'detay');
+    bar.innerHTML =
+      '<button class="fbar-chip fbar-dl" id="fbar-dl-btn" onclick="downloadDetayCardPNG()">' +
+        '<span class="fbar-chip-lbl">Görsel</span>' +
+        '<span class="fbar-chip-val">Oluştur ↗</span>' +
+      '</button>';
+    return;
+  }
 
   if (isKupaOrRisk) {
     bar.setAttribute('data-pg', section);

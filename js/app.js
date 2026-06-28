@@ -75,7 +75,7 @@ function perfSec(sec) {
     b.classList.toggle('active', b.dataset.sec === sec);
   });
   var fbar = document.getElementById('compact-filter-bar');
-  if (fbar) fbar.style.display = (sec === 'matrix' || sec === 'kupa' || sec === 'risk') ? '' : 'none';
+  if (fbar) fbar.style.display = (sec === 'matrix' || sec === 'kupa' || sec === 'risk' || sec === 'detay') ? '' : 'none';
   setSec(sec);
 }
 
