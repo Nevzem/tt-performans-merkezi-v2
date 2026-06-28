@@ -37,7 +37,11 @@ function navTo(page) {
     setSec('bayi');
 
   } else if (page === 'pers') {
-    _setDataHeader('Personel', 'Personel Sıralaması · HGO Bazlı');
+    var isEDMPers = typeof KANAL !== 'undefined' && KANAL === 'EDM';
+    _setDataHeader(
+      isEDMPers ? 'Satış Temsilcisi' : 'Personel',
+      isEDMPers ? 'Satış Temsilcisi Sıralaması · Aktivasyon Bazlı' : 'Personel Sıralaması · HGO Bazlı'
+    );
     fbar.style.display = ''; perfSubStrip.style.display = 'none';
     setSec('pers');
 

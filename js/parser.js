@@ -335,6 +335,7 @@ function parseEDMSheet(wb) {
     bayiKod:    ci('Bayi Kodu','Bayi No','Bayi Kod','Acenta Kodu','Acenta No'),
     il:         ci('İl','Şehir','City','Province'),
     sy:         ci('Satış Yöneticisi','Satis Yoneticisi','SM','SY','Yönetici'),
+    st:         ci('Satış Temsilcisi','Satis Temsilcisi','Temsilci','ST','Çalışan','Calisan'),
     /* Hedef kolonu — aktivasyon tryAkt ile bulunacak */
     ppH:  ci('Postpaid Hedef','Faturalı Hedef','Faturai Hedef','PP Hedef'),
     ppA:  -1,
@@ -451,6 +452,7 @@ function parseEDMSheet(wb) {
     const bt  = gs(r,C.bayiTipi);
     const il  = gs(r,C.il);
     const sy_ = gs(r,C.sy);
+    const st_ = gs(r,C.st);
     const sub = bayiKod&&il ? bayiKod+' · '+il : (bayiKod||il||'');
 
     const ppH=gn(r,C.ppH)||0, ppA=gn(r,C.ppA)||0;
@@ -475,13 +477,13 @@ function parseEDMSheet(wb) {
     });
 
     /* h ve a alanları EDM'de aktivasyon bazlı sıralama ve gösterim için gerekli */
-    if(ppH>0)  out.bayi["Postpaid"].push({p:b,b:sub,sy:sy_,bt,il,g:hg(ppA,ppH,null),h:Math.round(ppH),a:Math.round(ppA)});
-    if(fpH>0)  out.bayi["Prepaid"].push({p:b,b:sub,sy:sy_,bt,il,g:hg(fpA,fpH,null),h:Math.round(fpH),a:Math.round(fpA)});
-    if(mobH>0||mobHGO!==null) out.bayi["Toplam Mobil"].push({p:b,b:sub,sy:sy_,bt,il,g:hg(mobA,mobH,mobHGO),h:Math.round(mobH),a:Math.round(mobA)});
-    if(dslH>0||dslHGO!==null) out.bayi["DSL"].push({p:b,b:sub,sy:sy_,bt,il,g:hg(dslA,dslH,dslHGO),h:Math.round(dslH),a:Math.round(dslA)});
-    if(tvH>0||tvHGO!==null)   out.bayi["Toplam TV"].push({p:b,b:sub,sy:sy_,bt,il,g:hg(tvA,tvH,tvHGO),h:Math.round(tvH),a:Math.round(tvA)});
-    if(cihH>0||cihHGO!==null) out.bayi["Akıllı Cihaz"].push({p:b,b:sub,sy:sy_,bt,il,g:hg(cihA,cihH,cihHGO),h:Math.round(cihH),a:Math.round(cihA)});
-    if(cihDH>0) out.bayi["Diğer Cihaz"].push({p:b,b:sub,sy:sy_,bt,il,g:hg(cihDA,cihDH,null),h:Math.round(cihDH),a:Math.round(cihDA)});
+    if(ppH>0)  out.bayi["Postpaid"].push({p:b,b:sub,sy:sy_,st:st_,bt,il,g:hg(ppA,ppH,null),h:Math.round(ppH),a:Math.round(ppA)});
+    if(fpH>0)  out.bayi["Prepaid"].push({p:b,b:sub,sy:sy_,st:st_,bt,il,g:hg(fpA,fpH,null),h:Math.round(fpH),a:Math.round(fpA)});
+    if(mobH>0||mobHGO!==null) out.bayi["Toplam Mobil"].push({p:b,b:sub,sy:sy_,st:st_,bt,il,g:hg(mobA,mobH,mobHGO),h:Math.round(mobH),a:Math.round(mobA)});
+    if(dslH>0||dslHGO!==null) out.bayi["DSL"].push({p:b,b:sub,sy:sy_,st:st_,bt,il,g:hg(dslA,dslH,dslHGO),h:Math.round(dslH),a:Math.round(dslA)});
+    if(tvH>0||tvHGO!==null)   out.bayi["Toplam TV"].push({p:b,b:sub,sy:sy_,st:st_,bt,il,g:hg(tvA,tvH,tvHGO),h:Math.round(tvH),a:Math.round(tvA)});
+    if(cihH>0||cihHGO!==null) out.bayi["Akıllı Cihaz"].push({p:b,b:sub,sy:sy_,st:st_,bt,il,g:hg(cihA,cihH,cihHGO),h:Math.round(cihH),a:Math.round(cihA)});
+    if(cihDH>0) out.bayi["Diğer Cihaz"].push({p:b,b:sub,sy:sy_,st:st_,bt,il,g:hg(cihDA,cihDH,null),h:Math.round(cihDH),a:Math.round(cihDA)});
 
     const pr={
       "Postpaid":    {h:Math.round(ppH), a:Math.round(ppA), g:hg(ppA,ppH,null)},
@@ -493,7 +495,7 @@ function parseEDMSheet(wb) {
       "Diğer Cihaz": {h:Math.round(cihDH),a:Math.round(cihDA),g:hg(cihDA,cihDH,null)},
       "Toplam Cihaz":{h:Math.round(cihH+cihDH),a:Math.round(cihA+cihDA),g:hg(cihA+cihDA,cihH+cihDH,null)},
     };
-    detayBayiler[bayiKod||b]={kod:bayiKod,b,il,bt,sy:sy_,prods:pr};
+    detayBayiler[bayiKod||b]={kod:bayiKod,b,il,bt,sy:sy_,st:st_,prods:pr};
     bayiCount++;
   }
 

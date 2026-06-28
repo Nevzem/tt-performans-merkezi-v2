@@ -179,6 +179,9 @@ function cardHTML(prodKey) {
     if (typeof renderEDMSY === "function") renderEDMSY();
     return "";
   }
+  if (typeof KANAL !== "undefined" && KANAL === "EDM" && section === "pers") {
+    return typeof renderEDMPers === "function" ? renderEDMPers(prodKey) : "";
+  }
 
   if (section === "bayi") {
     let recs = filt(DATA.bayi[prodKey] || []);

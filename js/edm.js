@@ -11,6 +11,13 @@ function setKanal(k) {
   _kanalUI();
   if (navPage === 'ana') renderHome();
   else { buildTabs(); render(); }
+  if (navPage === 'pers' && typeof _setDataHeader === 'function') {
+    var isE = k === 'EDM';
+    _setDataHeader(
+      isE ? 'Satış Temsilcisi' : 'Personel',
+      isE ? 'Satış Temsilcisi Sıralaması · Aktivasyon Bazlı' : 'Personel Sıralaması · HGO Bazlı'
+    );
+  }
 }
 
 function setEdmFilter(bt) {
@@ -464,6 +471,73 @@ function _edmNoData() {
   return hdrHTML('📊','EDM Verisi','') +
     '<div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">' +
     (EDM_ERROR || 'Excel raporu yükleyince EDM verisi otomatik okunur.') + '</div>';
+}
+
+/* ─── EDM PERSONEL EKRANI — SATIŞ TEMSİLCİSİ SIRALAMASI ─────────── */
+
+function renderEDMPers(prodKey) {
+  if (!EDM_DATA) return _edmNoData();
+
+  var _PERS_TO_EDM = { 'Faturalı': 'Postpaid', 'Faturasız': 'Prepaid', 'Cihaz': 'Akıllı Cihaz' };
+  var edmKey = _PERS_TO_EDM[prodKey] || prodKey;
+  var recs   = _edmFilt((EDM_DATA.bayi[edmKey]) || []);
+  var f      = fc();
+
+  var PICO = {'Toplam Mobil':'📱','DSL':'🌐','Toplam TV':'📺','Akıllı Cihaz':'📦','Diğer Cihaz':'🔌','Postpaid':'📋','Prepaid':'📲'};
+  var icon    = PICO[edmKey] || '👤';
+  var btLabel = EDM_FILTER === 'Tümü' ? 'TTBN+ESN' : EDM_FILTER;
+  var syLabel = EDM_SY_FILTER !== 'Tümü' ? ' · ' + EDM_SY_FILTER.split(' ')[0] : '';
+
+  if (!recs.length) return hdrHTML(icon, 'Satış Temsilcisi — EDM', 'Veri yok (' + btLabel + ')');
+
+  var hasST = recs.some(function(r) { return r.st && r.st.trim(); });
+  if (!hasST) console.warn('[EDM PERSONEL] Sales representative field not found, fallback to dealer-based ranking');
+
+  var groups = {}, order = [];
+  recs.forEach(function(r) {
+    var key = (hasST && r.st && r.st.trim()) ? r.st.trim() : r.p;
+    if (!groups[key]) { groups[key] = { name: key, h: 0, a: 0, count: 0 }; order.push(key); }
+    groups[key].h += (r.h || 0);
+    groups[key].a += (r.a || 0);
+    groups[key].count++;
+  });
+
+  order.sort(function(a, b) { return groups[b].a - groups[a].a; });
+
+  var nsel  = document.getElementById('nsel');
+  var listN = (nsel && parseInt(nsel.value) > 0 && parseInt(nsel.value) < 999) ? parseInt(nsel.value) : order.length;
+  if (typeof compactListeN !== 'undefined' && compactListeN < 999) listN = Math.min(listN, compactListeN);
+  var shown = order.slice(0, listN);
+
+  var sub = 'EDM · ' + btLabel + syLabel + ' · ' + shown.length + ' temsilci · aktivasyon bazlı' +
+    (hasST ? '' : ' · bayi-fallback') + (f ? ' · F ' + f.d + '/' + f.t : '');
+
+  function mkRow(name, i) {
+    var g       = groups[name];
+    var fcAktiv = (f && g.a > 0) ? Math.round(g.a * f.k) : null;
+    var fcCls   = fcAktiv !== null && g.h > 0 && fcAktiv >= g.h ? 'edm-trio-ok' : 'edm-trio-warn';
+    var rk = i < 3 ? '<span class="badge b' + (i+1) + '">' + (i+1) + '</span>' : '<span class="n">' + (i+1) + '</span>';
+    return '<div class="row' + (i < 3 ? ' r' + (i+1) : '') + '">' +
+      '<div class="rk">' + rk + '</div>' +
+      '<div class="nm">' +
+        '<div class="p">' + g.name + '</div>' +
+        '<div class="b">' + g.count + ' bayi</div>' +
+      '</div>' +
+      '<div class="edm-trio">' +
+        '<div class="edm-trio-cell"><div class="edm-trio-lbl">HDF</div><div class="edm-trio-val">' + (g.h > 0 ? g.h.toLocaleString('tr-TR') : '—') + '</div></div>' +
+        '<div class="edm-trio-cell edm-trio-act"><div class="edm-trio-lbl">AKT</div><div class="edm-trio-val">' + g.a.toLocaleString('tr-TR') + '</div></div>' +
+        '<div class="edm-trio-cell"><div class="edm-trio-lbl">FC</div><div class="edm-trio-val ' + (fcAktiv !== null ? fcCls : '') + '">' + (fcAktiv !== null ? fcAktiv.toLocaleString('tr-TR') : '—') + '</div></div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  var rows   = shown.map(function(name, i) { return mkRow(name, i); }).join('');
+  var leader = groups[order[0]];
+  return hdrHTML(icon, 'Satış Temsilcisi Sıralaması — EDM', sub) +
+    '<div class="sec t"><span>👤 ' + (hasST ? 'Satış Temsilcileri' : 'Bayiler (fallback)') + '</span>' +
+    '<span class="cnt">Aktivasyon bazlı</span></div>' +
+    rows +
+    ftrHTML([[shown.length, 'Temsilci'], [leader.a.toLocaleString('tr-TR'), 'Lider Aktiv'], [leader.name.split(' ')[0], 'Lider']]);
 }
 
 /* ─── EDM SY GÖRÜNÜMÜ ───────────────────────────────────────────── */

@@ -88,6 +88,19 @@ function buildFilterBar() {
     html += _fbarChip('edm-il',    'İl',          edmIlLabel);
     html += _fbarChip('liste',     'Liste',        _listeLabel);
 
+  } else if (isPers && typeof KANAL !== 'undefined' && KANAL === 'EDM') {
+    /* ── EDM Personel filtre çubuğu (satış temsilcisi bazlı) ── */
+    var edmPersProdLabel = _fbarProdLabel();
+    var edmPersSyLabel   = (typeof EDM_SY_FILTER !== 'undefined' && EDM_SY_FILTER !== 'Tümü')
+      ? _truncate(EDM_SY_FILTER.split(' ')[0], 9) : 'Tümü';
+    var edmPersIlLabel   = (typeof EDM_IL_FILTER !== 'undefined' && EDM_IL_FILTER !== 'Tümü')
+      ? _truncate(EDM_IL_FILTER, 9) : 'Tümü';
+    html += _fbarChip('prod',   'Ürün',       edmPersProdLabel);
+    html += _fbarChip('edm-sy', 'Satış Yön.', edmPersSyLabel);
+    html += _fbarChip('edm-bt', 'Bayi Tipi',  typeof EDM_FILTER !== 'undefined' ? EDM_FILTER : 'Tümü');
+    html += _fbarChip('edm-il', 'İl',         edmPersIlLabel);
+    html += _fbarChip('liste',  'Liste',       _listeLabel);
+
   } else {
     /* ── Bayi / Personel filtre çubuğu ── */
     var prodLabel = _fbarProdLabel();
@@ -110,8 +123,9 @@ function buildFilterBar() {
     '<span class="fbar-chip-val">Oluştur ↗</span>' +
   '</button>';
 
-  /* Personel arama kutusu — chip satırının altına */
-  if (isPers) {
+  /* Personel arama kutusu — TTM pers için, EDM pers için gösterilmez */
+  var isEdmPers = isPers && typeof KANAL !== 'undefined' && KANAL === 'EDM';
+  if (isPers && !isEdmPers) {
     html = '<div class="fbar-chips-wrap">' + html + '</div>' +
       '<div class="fbar-search-row">' +
       '<input type="text" class="fbar-search-inp" id="fbar-search-inp" ' +
@@ -149,6 +163,16 @@ function _updatePersSub() {
   var sub = document.getElementById('data-page-sub');
   if (!sub) return;
   var prodKey = (typeof prod !== 'undefined' && prod) ? prod : 'Toplam Mobil';
+  var isEDM = typeof KANAL !== 'undefined' && KANAL === 'EDM';
+  if (isEDM) {
+    var _PERS_TO_EDM = { 'Faturalı': 'Postpaid', 'Faturasız': 'Prepaid', 'Cihaz': 'Akıllı Cihaz' };
+    var edmKey  = _PERS_TO_EDM[prodKey] || prodKey;
+    var edmRecs = (typeof EDM_DATA !== 'undefined' && EDM_DATA && EDM_DATA.bayi) ? (EDM_DATA.bayi[edmKey] || []) : [];
+    var btTag   = (typeof EDM_FILTER !== 'undefined' && EDM_FILTER !== 'Tümü') ? ' · ' + EDM_FILTER : '';
+    var syTag   = (typeof EDM_SY_FILTER !== 'undefined' && EDM_SY_FILTER !== 'Tümü') ? ' · ' + EDM_SY_FILTER.split(' ')[0] : '';
+    sub.textContent = 'EDM · ' + edmKey + btTag + syTag + ' · ' + edmRecs.length + ' bayi';
+    return;
+  }
   var arr = (typeof DATA !== 'undefined' && DATA && DATA.pers) ? (DATA.pers[prodKey] || []) : [];
   var n = (typeof filt === 'function') ? filt(arr).length : arr.length;
   var syName = (typeof sy !== 'undefined' && sy !== 'Tümü') ? sy : '';
@@ -299,13 +323,15 @@ function _sheetConfig(type) {
 
   if (type === 'liste') {
     var items;
-    if (navPage === 'bayi') {
+    var isEdmPersList = navPage === 'pers' && typeof KANAL !== 'undefined' && KANAL === 'EDM';
+    if (navPage === 'bayi' || isEdmPersList) {
       items = [
         { key: 'all',    label: 'Tüm Liste' },
         { key: 'top10',  label: 'İlk 10' },
         { key: 'top20',  label: 'İlk 20' },
         { key: 'risk',   label: '🔴 Riskli Bayiler — HGO %60 altı' },
       ];
+      if (isEdmPersList) items = items.filter(function(it) { return it.key !== 'risk'; });
     } else {
       items = [
         { key: 'top10',  label: 'İlk 10' },
@@ -453,7 +479,8 @@ function _sheetConfig(type) {
 
 function _currentListeKey() {
   if (riskOnly) return 'risk';
-  if (navPage === 'bayi') {
+  var isEdmPers = navPage === 'pers' && typeof KANAL !== 'undefined' && KANAL === 'EDM';
+  if (navPage === 'bayi' || isEdmPers) {
     if (compactListeN === 10)  return 'top10';
     if (compactListeN === 20)  return 'top20';
     return 'all';
@@ -567,8 +594,9 @@ function _pick(type, key) {
 function _applyListe(key) {
   riskOnly = false;
   var nsel = document.getElementById('nsel');
+  var isEdmPers = navPage === 'pers' && typeof KANAL !== 'undefined' && KANAL === 'EDM';
 
-  if (navPage === 'bayi') {
+  if (navPage === 'bayi' || isEdmPers) {
     if      (key === 'top10') { compactListeN = 10;  _listeLabel = 'İlk 10'; }
     else if (key === 'top20') { compactListeN = 20;  _listeLabel = 'İlk 20'; }
     else if (key === 'risk')  { compactListeN = 999; riskOnly = true; _listeLabel = 'Riskli'; }
