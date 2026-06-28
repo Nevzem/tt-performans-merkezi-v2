@@ -67,14 +67,47 @@ function updateKanalBadge() {
   badge.style.display = '';
 }
 
+/* ─── SY İSİM NORMALİZASYON & EŞLEŞME ──────────────────────────── */
+
+function normalizeSyName(v) {
+  if (!v) return '';
+  return String(v)
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/ı/g, 'i').replace(/İ/g, 'I')
+    .replace(/ş/g, 's').replace(/Ş/g, 'S')
+    .replace(/ç/g, 'c').replace(/Ç/g, 'C')
+    .replace(/ğ/g, 'g').replace(/Ğ/g, 'G')
+    .replace(/ö/g, 'o').replace(/Ö/g, 'O')
+    .replace(/ü/g, 'u').replace(/Ü/g, 'U')
+    .toUpperCase()
+    .replace(/[^A-Z0-9 ]/g, '');
+}
+
+function matchEdmSy(record, selectedSy) {
+  if (!selectedSy || selectedSy === 'Tümü') return true;
+  var ns = normalizeSyName(selectedSy);
+  if (!ns) return true;
+  if (record.sy)              return normalizeSyName(record.sy)              === ns;
+  if (record.satisYoneticisi) return normalizeSyName(record.satisYoneticisi) === ns;
+  return false;
+}
+
 /* ─── FİLTRE YARDIMCILARI ────────────────────────────────────────── */
 
 function _edmFilt(recs) {
   var r = recs;
   if (EDM_FILTER !== 'Tümü')
     r = r.filter(function(x) { return x.bt === EDM_FILTER; });
-  if (EDM_SY_FILTER && EDM_SY_FILTER !== 'Tümü')
-    r = r.filter(function(x) { return x.sy === EDM_SY_FILTER; });
+  if (EDM_SY_FILTER && EDM_SY_FILTER !== 'Tümü') {
+    var filtered = r.filter(function(x) { return matchEdmSy(x, EDM_SY_FILTER); });
+    if (filtered.length === 0 && r.length > 0) {
+      console.warn('[EDM SY FILTER] selected SY matched 0 records, fallback to all EDM dealers', EDM_SY_FILTER);
+      /* r değiştirilmiyor — tüm kayıtlar korunur */
+    } else {
+      r = filtered;
+    }
+  }
   if (typeof EDM_IL_FILTER !== 'undefined' && EDM_IL_FILTER !== 'Tümü')
     r = r.filter(function(x) { return x.il === EDM_IL_FILTER; });
   return r;
