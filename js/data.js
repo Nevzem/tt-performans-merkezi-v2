@@ -33,6 +33,11 @@ const APP_CONFIG = {
   /* EDM kanal SY filtre listesi — normal harf, UI kullanır */
   edmSY: ['Muhammet Arslan', 'Mustafa Kayıkçı', 'Emre Filiz', 'Ahmet Çelik'],
   edmBayiTipleri: ['TTBN', 'ESN'],
+  /* Ana Sayfa SY filtresi (TTM): key=büyük harf (DATA'daki gibi), label=görünen isim */
+  homeSY: [
+    { key: 'YUSUF DILKI',       label: 'Yusuf Dilki'       },
+    { key: 'KORAY YEŞİLÖRDEK',  label: 'Koray Yeşilördek'  },
+  ],
 };
 
 /* ───── KANAL STATE ───── */

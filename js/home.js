@@ -7,6 +7,31 @@
 /* Önceki raporun DETAY verisi (parser.js tarafından set edilir) */
 var PREV_DETAY = null;
 
+/* Ana Sayfa SY filtresi */
+var _homeSY = 'Tümü';
+
+function setHomeSyFilter(key) {
+  _homeSY = key;
+  renderHome();
+}
+
+/* Kayıt dizisini _homeSY'ye göre filtreler (DATA.bayi / DATA.pers kayıtları) */
+function _hdFilterBySY(recs) {
+  if (_homeSY === 'Tümü') return recs;
+  return (recs || []).filter(function(r) { return r.sy === _homeSY; });
+}
+
+/* DETAY.bayiler nesnesini _homeSY'ye göre filtreler */
+function _hdDetayFiltered() {
+  var bayiler = (typeof DETAY !== 'undefined' && DETAY && DETAY.bayiler) ? DETAY.bayiler : {};
+  if (_homeSY === 'Tümü') return bayiler;
+  var result = {};
+  for (var k in bayiler) {
+    if (bayiler[k].sy === _homeSY) result[k] = bayiler[k];
+  }
+  return result;
+}
+
 /* Ana Sayfa içi ürün filtresi state'leri */
 var _homeRiskProd    = 'Toplam Mobil';
 var _homeAdetProd    = 'Toplam Mobil';
@@ -50,6 +75,25 @@ function setHomePersRankProd(k) { _homePersRankProd = k; renderHome(); }
 function setHomeBayiRankProd(k) { _homeBayiRankProd = k; renderHome(); }
 function setHdInsightProd(k)    { _hdInsightProd   = k; renderHome(); }
 
+/* ── SY Filtre Çubuğu (Ana Sayfa) ── */
+function _hdSyFilter() {
+  var list = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.homeSY) ? APP_CONFIG.homeSY : [];
+  if (!list.length) return '';
+  var activeLabel = _homeSY === 'Tümü' ? 'Tümü'
+    : (list.find(function(t) { return t.key === _homeSY; }) || { label: _homeSY }).label;
+  return '<div class="hd-sy-filter hd-anim" style="--i:0.5">' +
+    '<span class="hd-sy-label">SY</span>' +
+    '<div class="hd-sy-tabs">' +
+      '<button class="hd-sy-tab' + (_homeSY === 'Tümü' ? ' hd-sy-on' : '') + '" onclick="setHomeSyFilter(\'Tümü\')">Tümü</button>' +
+      list.map(function(t) {
+        var on = (_homeSY === t.key);
+        return '<button class="hd-sy-tab' + (on ? ' hd-sy-on' : '') + '" onclick="setHomeSyFilter(\'' + t.key.replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\')">' + t.label + '</button>';
+      }).join('') +
+    '</div>' +
+    (_homeSY !== 'Tümü' ? '<span class="hd-sy-badge">' + activeLabel + '</span>' : '') +
+  '</div>';
+}
+
 /* ─── ANA RENDER ─────────────────────────── */
 function renderHome() {
   var el = document.getElementById('home-dashboard');
@@ -62,6 +106,7 @@ function renderHome() {
   var kpis = _hdKPIs();
   el.innerHTML = [
     _hdHero(),
+    _hdSyFilter(),
     _hdChips(kpis),
     _hdDailyTarget(kpis),
     _hdExecutiveInsights(),
@@ -119,16 +164,16 @@ function _hdDataHealth() {
    → T.Bayi → T.Pers → Tarih
    ══════════════════════════════════════════ */
 function _hdChips(kpis) {
-  var recs    = DATA.bayi['Toplam Mobil'] || [];
+  var recs    = _hdFilterBySY(DATA.bayi['Toplam Mobil'] || []);
   var bayiSay = recs.length;
-  var persSay = (DATA.pers['Toplam Mobil'] || []).length;
+  var persSay = _hdFilterBySY(DATA.pers['Toplam Mobil'] || []).length;
   var riskliN = recs.filter(function(r) { return r.g < 60; }).length;
   var eliteN  = recs.filter(function(r) { return r.g >= 100; }).length;
 
   /* Kritik Bayi: herhangi bir üründe HGO %70 altı */
   var kritikSet = {};
   [DATA.bayi['Toplam Mobil']||[], DATA.bayi['DSL']||[], DATA.bayi['Toplam TV']||[], DATA.bayi['Akıllı Cihaz']||[]].forEach(function(arr) {
-    arr.forEach(function(r) { if (r.g < 70) { var _k = (r.b||'').split(' · ')[0].trim(); if (_k) kritikSet[_k] = 1; } });
+    _hdFilterBySY(arr).forEach(function(r) { if (r.g < 70) { var _k = (r.b||'').split(' · ')[0].trim(); if (_k) kritikSet[_k] = 1; } });
   });
   var kritikN = Object.keys(kritikSet).length;
 
@@ -189,13 +234,14 @@ function _hdKPIs() {
   var ayGun    = Math.max(_gA, _gB);
   var gecenGun = Math.min(_gA, _gB);
   var kalanGun = (ayGun > 0 && gecenGun > 0 && ayGun > gecenGun) ? ayGun - gecenGun : null;
-  var hasDetay = DETAY && Object.keys(DETAY.bayiler).length > 0;
+  var _filteredBayiler = _hdDetayFiltered();
+  var hasDetay = DETAY && Object.keys(_filteredBayiler).length > 0;
 
   return _HD_PRODS.map(function(pm) {
     var totalH = 0, totalA = 0;
     if (hasDetay) {
-      for (var kod in DETAY.bayiler) {
-        var d = DETAY.bayiler[kod].prods[pm.dataKey];
+      for (var kod in _filteredBayiler) {
+        var d = _filteredBayiler[kod].prods[pm.dataKey];
         if (d) { totalH += d.h; totalA += d.a; }
       }
     }
@@ -208,7 +254,7 @@ function _hdKPIs() {
 
     var prevHgo = null, delta = null;
     if (PREV && PREV.bayi) {
-      var precs = PREV.bayi[pm.dataKey] || (pm.altDataKey ? PREV.bayi[pm.altDataKey] : null) || [];
+      var precs = _hdFilterBySY(PREV.bayi[pm.dataKey] || (pm.altDataKey ? PREV.bayi[pm.altDataKey] : null) || []);
       if (precs.length) {
         var sum = 0;
         for (var i = 0; i < precs.length; i++) sum += precs[i].g;
@@ -436,7 +482,7 @@ function _plCard(pm, rec, isLeader, f) {
 function _hdLeaders() {
   var f     = fc();
   var cards = _CARD_PRODS.map(function(pm) {
-    var recs = (DATA.bayi && DATA.bayi[pm.dataKey]) || [];
+    var recs = _hdFilterBySY((DATA.bayi && DATA.bayi[pm.dataKey]) || []);
     return _plCard(pm, recs[0] || null, true, f);
   }).join('');
   return (
@@ -464,7 +510,7 @@ function _hpTabs(activeKey, setter, small, prods) {
 /* Bölüm: Riskli Ürün Bayileri (filtrelenebilir liste) */
 function _hdRiskList() {
   var f      = fc();
-  var recs   = (DATA.bayi && DATA.bayi[_homeRiskProd]) || [];
+  var recs   = _hdFilterBySY((DATA.bayi && DATA.bayi[_homeRiskProd]) || []);
   var worst5 = recs.slice(-5).slice().reverse(); // en düşük HGO önce
 
   var rows = worst5.length
@@ -505,7 +551,7 @@ function _hdRiskList() {
    ══════════════════════════════════════════ */
 function _hdPersRanking() {
   var prodKey  = _homePersRankProd;
-  var recs     = (DATA.pers && DATA.pers[prodKey]) || [];
+  var recs     = _hdFilterBySY((DATA.pers && DATA.pers[prodKey]) || []);
   var top10    = recs.slice(0, 10);
 
   /* DETAY.pers'den h ve a lookup map'i oluştur */
@@ -570,7 +616,7 @@ function _hdPersRanking() {
    ══════════════════════════════════════════ */
 function _hdBayiRanking() {
   var prodKey = _homeBayiRankProd;
-  var recs    = (DATA.bayi && DATA.bayi[prodKey]) || [];
+  var recs    = _hdFilterBySY((DATA.bayi && DATA.bayi[prodKey]) || []);
   var top5    = recs.slice(0, 5);
 
   /* DETAY.bayiler'den h ve a çek */
@@ -637,8 +683,9 @@ function _hdAdetGrowth() {
   if (!hasPrev) return null; // null = önceki rapor yok
 
   var items = [];
-  for (var kod in DETAY.bayiler) {
-    var curr = DETAY.bayiler[kod];
+  var _filteredForAdet = _hdDetayFiltered();
+  for (var kod in _filteredForAdet) {
+    var curr = _filteredForAdet[kod];
     var prev = PREV_DETAY.bayiler[kod];
     if (!prev) continue;
     var cProd = curr.prods[_homeAdetProd];
@@ -754,13 +801,9 @@ function _hdHero() {
 function _hdHeroVK(loadTs) {
   var dh   = (typeof DATA_HEALTH !== 'undefined' && DATA_HEALTH) ? DATA_HEALTH : null;
   var isOk = !dh || dh.ok;
-  var loadDate = '', loadTime = '';
-  if (loadTs) { var _tp = loadTs.split(' '); loadDate = _tp[0] || ''; loadTime = _tp[1] || ''; }
-  var donem = (typeof DONEM !== 'undefined' && DONEM) ? DONEM : '';
   return '<div class="hd-vkutu">' +
-    '<div class="hd-vk-status"><span class="hd-vk-dot ' + (isOk ? 'vk-ok' : 'vk-warn') + '"></span>' + (isOk ? 'Güncel Veri' : 'Kolon Uyarısı') + '</div>' +
-    (dh ? '<div class="hd-vk-sayi"><div>' + dh.persCount + ' Personel</div><div>' + dh.bayiCount + ' Bayi</div></div>' : '') +
-    (loadDate ? '<div class="hd-vk-ts"><div>' + loadDate + '</div><div>' + loadTime + '</div></div>' : (donem ? '<div class="hd-vk-ts">' + donem + '</div>' : '')) +
+    '<div class="hd-vk-status"><span class="hd-vk-dot ' + (isOk ? 'vk-ok' : 'vk-warn') + '"></span>' + (isOk ? 'Güncel Veri' : 'Kolon Uyarısı') + (dh && dh.warnings && dh.warnings.length ? ' (' + dh.warnings.length + ')' : '') + '</div>' +
+    (dh ? '<div class="hd-vk-compact">' + dh.persCount + ' Personel · ' + dh.bayiCount + ' Bayi</div>' : '') +
   '</div>';
 }
 
@@ -806,7 +849,7 @@ function _hdExecutiveInsights() {
   var _ipm    = _HP_PRODS.filter(function(p) { return p.key === _hdInsightProd; })[0] || _HP_PRODS[0];
   var dataKey  = _ipm.key;
   var detayKey = _ipm.detayKey;
-  var recs     = (typeof DATA !== 'undefined' && DATA.bayi && DATA.bayi[dataKey]) || [];
+  var recs     = _hdFilterBySY((typeof DATA !== 'undefined' && DATA.bayi && DATA.bayi[dataKey]) || []);
   var top5     = recs.slice(0, 5);
   var risk5    = recs.slice(-5).slice().reverse();
 
@@ -832,8 +875,9 @@ function _hdExecutiveInsights() {
                  typeof DETAY !== 'undefined' && DETAY && Object.keys(DETAY.bayiler).length);
   if (hasPrev) {
     var changes = [];
-    for (var eKod in DETAY.bayiler) {
-      var eCurr = DETAY.bayiler[eKod], ePrev = PREV_DETAY.bayiler[eKod];
+    var _filteredForInsights = _hdDetayFiltered();
+    for (var eKod in _filteredForInsights) {
+      var eCurr = _filteredForInsights[eKod], ePrev = PREV_DETAY.bayiler[eKod];
       if (!ePrev) continue;
       var ecp = eCurr.prods[detayKey], epp = ePrev.prods[detayKey];
       if (!ecp || !epp || !epp.h || !ecp.h) continue;
@@ -853,13 +897,10 @@ function _hdExecutiveInsights() {
         '</div>' +
       '</div>';
     }
-    var rising  = changes.filter(function(c) { return c.delta > 0; }).slice(0, 5);
-    var falling = changes.slice().reverse().slice(0, 5);
-    var hasDrops = falling.some(function(c) { return c.delta < 0; });
-    risingHTML  = rising.length ? rising.map(chgRow).join('') : '<div class="hd-ins-empty">Artış bulunamadı.</div>';
-    fallingHTML = (falling.length && hasDrops)
-      ? falling.filter(function(c) { return c.delta < 0; }).map(chgRow).join('')
-      : '';
+    var rising      = changes.filter(function(c) { return c.delta > 0; }).slice(0, 5);
+    var leastRising = changes.slice().reverse().slice(0, 5);
+    risingHTML  = rising.length      ? rising.map(function(c, i)      { return chgRow(c, i); }).join('') : '<div class="hd-ins-empty">Artış bulunamadı.</div>';
+    fallingHTML = leastRising.length ? leastRising.map(function(c, i) { return chgRow(c, i); }).join('') : '';
   }
 
   function panel(title, rows, idx) {
@@ -879,7 +920,7 @@ function _hdExecutiveInsights() {
         panel('🔥 En İyi 5 Bayi',    top5HTML,    4) +
         panel('⚠️ Riskli 5 Bayi',   risk5HTML,   5) +
         panel('📈 En Çok Yükselen', risingHTML,  6) +
-        panel('📉 En Çok Düşen',    fallingHTML, 7) +
+        panel('📉 En Az Yükselen',   fallingHTML, 7) +
       '</div>' +
     '</div>'
   );

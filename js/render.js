@@ -135,7 +135,7 @@ function rowHTML(rec, rank, maxV, podium, withFc, prodKey) {
   const isPers = section === 'pers';
   const f = fc();
   let fhtml = "";
-  if (f && withFc) {
+  if (f && (withFc || isPers)) {
     const fv = rec.g * f.k;
     fhtml = '<span class="fchip' + (fv >= 100 ? " ok" : "") + '">F%' + fv.toFixed(0) + '</span>';
   }
@@ -156,7 +156,7 @@ function rowHTML(rec, rank, maxV, podium, withFc, prodKey) {
 function hdrHTML(icon, t, sub) {
   return '<div class="hdr"><div class="hdr-stripe"></div><div class="hdr-gold"></div><div class="hdr-body">' +
     '<div class="hdr-row"><div class="brand"><div class="brand-mark">TT</div>' +
-    '<div class="brand-txt">Türk Telekom<small>KUZEY ANADOLU BÖLGESİ</small></div></div>' +
+    '<div class="brand-txt">Türk Telekom<small>KUZEY ANADOLU BÖLGE</small></div></div>' +
     '<div class="donem">' + DONEM + '</div></div>' +
     '<div class="title">' + icon + ' ' + t + '</div><div class="subtitle">' + sub + '</div></div></div>';
 }
@@ -393,7 +393,7 @@ function renderSY() {
   const f = (ayGun && gecenGun) ? gecenGun + "/" + ayGun + ". gün" : "";
   const cmp = SYPREV ? " · önceki raporla karşılaştırma" : "";
   document.getElementById("cards").className = "cards single";
-  document.getElementById("cards").style.maxWidth = "360px";
+  document.getElementById("cards").style.maxWidth = "420px";
   document.getElementById("cards").innerHTML =
     '<div class="card" id="sy-card">' +
     hdrHTML((PICO[syProd]||"👔"), syProd + " · Satış Yöneticisi",
@@ -437,7 +437,7 @@ function renderKupa() {
 
   const champ = K[0];
   document.getElementById("cards").className = "cards single";
-  document.getElementById("cards").style.maxWidth = "330px";
+  document.getElementById("cards").style.maxWidth = "380px";
   document.getElementById("cards").innerHTML =
     '<div class="card" id="kupa-card">' +
     '<div class="kp-hero"><div class="kp-hero-stripe"></div><div class="kp-hero-gold"></div>' +
