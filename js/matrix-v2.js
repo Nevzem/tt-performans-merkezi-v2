@@ -5,23 +5,26 @@
 
 /* ─── ÜRÜN TANIMI ─────────────────────────────────────────────────── */
 
+/* İP/DSL kolonu kullanıcı isteğiyle çıkarıldı (2026-07-04) */
 var MV2_COLS = [
   { key:'mobil', label:'MOBİL',  thBg:'#0C2860', subBg:'#E8EEFC', subFg:'#0C2860', single:false },
   { key:'dsl',   label:'DSL',    thBg:'#1A5E38', subBg:'#E8F5EC', subFg:'#1A5E38', single:false },
   { key:'iptv',  label:'İP TV',  thBg:'#3D1A78', subBg:'#EDE8FC', subFg:'#3D1A78', single:false },
-  { key:'ipdsl', label:'İP/DSL', thBg:'#8B1A1A', subBg:'#FCE8E8', subFg:'#8B1A1A', single:true  },
   { key:'uydu',  label:'UYDU',   thBg:'#1A4D3D', subBg:'#E8F5F0', subFg:'#1A4D3D', single:false },
   { key:'tv',    label:'TV',     thBg:'#0A3D6B', subBg:'#E8F0FC', subFg:'#0A3D6B', single:false },
   { key:'cihaz', label:'CİHAZ', thBg:'#2D5A1A', subBg:'#EDF5E8', subFg:'#2D5A1A', single:false },
 ];
 
-/* İn-app sütun px genişlikleri — toplam 952px (yatay scroll) */
-var MV2_W = { sira:34, kod:68, ad:168, hgo:54, fc:50, ipdsl:58 };
-/* 34+68+168 + 6*(54+50) + 58 = 270+624+58 = 952 */
+/* Belirgin ızgara çizgi rengi — tüm hücre kenarları */
+var MV2_GRID = '#A9B4C8';
 
-/* Export şablon genişlikleri — toplam 2048px, scale:2 → 4096px çıktı */
-var MV2_WE = { sira:44, kod:84, ad:220, hgo:106, fc:136, ipdsl:248 };
-/* 44+84+220 + 6*(106+136) + 248 = 348+1452+248 = 2048 */
+/* İn-app sütun px genişlikleri — toplam 894px (yatay scroll) */
+var MV2_W = { sira:34, kod:68, ad:168, hgo:54, fc:50 };
+/* 34+68+168 + 6*(54+50) = 270+624 = 894 */
+
+/* Export şablon genişlikleri — toplam 1800px, scale:2 → 3600px çıktı */
+var MV2_WE = { sira:44, kod:84, ad:220, hgo:106, fc:136 };
+/* 44+84+220 + 6*(106+136) = 348+1452 = 1800 */
 
 /* ─── RENK SKALASI ─────────────────────────────────────────────────── */
 
@@ -43,7 +46,7 @@ function matrixCell(v, fs) {
   var str = (v !== null && v !== undefined) ? '%' + Math.round(v) : '—';
   return '<td style="background:' + c.bg + ';color:' + c.fg + ';' +
     'text-align:center;font-size:' + (fs || 13) + 'px;font-weight:700;' +
-    'border:1px solid #D8DEE9;padding:0 3px;height:40px;' +
+    'border:1px solid ' + MV2_GRID + ';padding:0 3px;height:40px;' +
     'vertical-align:middle;white-space:nowrap;">' + str + '</td>';
 }
 
@@ -52,7 +55,7 @@ function matrixCell(v, fs) {
 function buildMatrixHeader() {
   var f    = (typeof fc === 'function') ? fc() : null;
   var bNav = '1px solid rgba(255,255,255,0.12)';
-  var bOrd = '1px solid #D8DEE9';
+  var bOrd = '1px solid ' + MV2_GRID;
   var thS  = 'background:#0C2860;color:#fff;border:' + bNav + ';' +
              'padding:7px 4px;text-align:center;font-weight:900;white-space:nowrap;vertical-align:middle;';
 
@@ -76,12 +79,8 @@ function buildMatrixHeader() {
   MV2_COLS.forEach(function(col) {
     var sS = 'background:' + col.subBg + ';color:' + col.subFg + ';border:' + bOrd + ';' +
       'padding:5px 3px;font-size:10px;font-weight:800;text-align:center;vertical-align:middle;';
-    if (col.single) {
-      r2 += '<th style="' + sS + 'width:' + MV2_W.ipdsl + 'px;">ORAN</th>';
-    } else {
-      r2 += '<th style="' + sS + 'width:' + MV2_W.hgo + 'px;">HGO</th>';
-      r2 += '<th style="' + sS + 'width:' + MV2_W.fc  + 'px;">' + (f ? 'Fc' : 'Fc') + '</th>';
-    }
+    r2 += '<th style="' + sS + 'width:' + MV2_W.hgo + 'px;">HGO</th>';
+    r2 += '<th style="' + sS + 'width:' + MV2_W.fc  + 'px;">Fc</th>';
   });
   r2 += '</tr>';
 
@@ -96,7 +95,7 @@ function buildMatrixGrid() {
   var f    = (typeof fc === 'function') ? fc() : null;
   var fcV  = function(v) { return (f && v !== null && v !== undefined) ? Math.round(v * f.k) : null; };
   var sKey = (typeof matrixSort !== 'undefined') ? matrixSort : 'mobil';
-  var bOrd = '1px solid #D8DEE9';
+  var bOrd = '1px solid ' + MV2_GRID;
 
   var rows = M.rows.slice().sort(function(a, b) {
     return ((b[sKey] == null ? -Infinity : b[sKey]) - (a[sKey] == null ? -Infinity : a[sKey]));
@@ -225,7 +224,6 @@ function renderMatrixV2() {
     '<col style="width:' + MV2_W.kod  + 'px">' +
     '<col style="width:' + MV2_W.ad   + 'px">' +
     MV2_COLS.map(function(col) {
-      if (col.single) return '<col style="width:' + MV2_W.ipdsl + 'px">';
       return '<col style="width:' + MV2_W.hgo + 'px"><col style="width:' + MV2_W.fc + 'px">';
     }).join('') +
   '</colgroup>';
@@ -249,7 +247,7 @@ function renderMatrixV2() {
     '</div>';
 }
 
-/* ─── EXPORT DOM ŞABLONU (2048px → scale:2 → 4096px çıktı) ─────────── */
+/* ─── EXPORT DOM ŞABLONU (1800px → scale:2 → 3600px çıktı) ─────────── */
 
 function _buildMatrixExportDOM() {
   var M = (typeof MATRIX !== 'undefined') ? MATRIX : null;
@@ -262,7 +260,7 @@ function _buildMatrixExportDOM() {
   var today = new Date().toLocaleDateString('tr-TR');
   var sKey  = (typeof matrixSort !== 'undefined') ? matrixSort : 'mobil';
   var W     = MV2_WE;
-  var bOrd  = '1px solid #D8DEE9';
+  var bOrd  = '1px solid ' + MV2_GRID;
   var bNav  = '1px solid rgba(255,255,255,0.12)';
 
   var rows = M.rows.slice().sort(function(a, b) {
@@ -299,12 +297,8 @@ function _buildMatrixExportDOM() {
   MV2_COLS.forEach(function(col) {
     var sS = 'background:' + col.subBg + ';color:' + col.subFg + ';border:' + bOrd + ';' +
       'padding:8px 6px;font-size:18px;font-weight:800;text-align:center;vertical-align:middle;';
-    if (col.single) {
-      h2 += '<th style="' + sS + 'width:' + W.ipdsl + 'px;">ORAN</th>';
-    } else {
-      h2 += '<th style="' + sS + 'width:' + W.hgo + 'px;">HGO</th>';
-      h2 += '<th style="' + sS + 'width:' + W.fc  + 'px;">Forecast</th>';
-    }
+    h2 += '<th style="' + sS + 'width:' + W.hgo + 'px;">HGO</th>';
+    h2 += '<th style="' + sS + 'width:' + W.fc  + 'px;">Forecast</th>';
   });
   h2 += '</tr>';
 
@@ -366,7 +360,6 @@ function _buildMatrixExportDOM() {
     '<col style="width:' + W.kod  + 'px">' +
     '<col style="width:' + W.ad   + 'px">' +
     MV2_COLS.map(function(col) {
-      if (col.single) return '<col style="width:' + W.ipdsl + 'px">';
       return '<col style="width:' + W.hgo + 'px"><col style="width:' + W.fc + 'px">';
     }).join('') +
   '</colgroup>';
@@ -391,7 +384,7 @@ function _buildMatrixExportDOM() {
         '<div style="color:#fff;font-size:36px;font-weight:900;letter-spacing:0.3px;line-height:1.1;">' +
           'PERFORMANS MATRİS RAPORU</div>' +
         '<div style="color:rgba(255,255,255,0.35);font-size:12px;font-weight:700;' +
-          'letter-spacing:2px;margin-top:8px;">' + rows.length + ' Bayi &nbsp;·&nbsp; 7 Ürün</div>' +
+          'letter-spacing:2px;margin-top:8px;">' + rows.length + ' Bayi &nbsp;·&nbsp; ' + MV2_COLS.length + ' Ürün</div>' +
       '</div>' +
       '<div style="text-align:right;">' +
         '<div style="color:#fff;font-size:32px;font-weight:900;">' + donem + '</div>' +
@@ -412,7 +405,7 @@ function _buildMatrixExportDOM() {
         'Hedefe Birlikte &nbsp;&#183;&nbsp; ' + today + '</div>' +
     '</div>';
 
-  return '<div id="matrix-export" style="width:2048px;background:#ffffff;' +
+  return '<div id="matrix-export" style="width:1800px;background:#ffffff;' +
     'font-family:-apple-system,BlinkMacSystemFont,\'Inter\',\'Roboto Condensed\',Arial,sans-serif;">' +
     header +
     '<table style="border-collapse:collapse;width:100%;table-layout:fixed;">' +
@@ -455,14 +448,14 @@ async function matrixExportV2() {
     /* html2canvas'ın DOM'u okuyabilmesi için bir frame bekle */
     await new Promise(function(r) { requestAnimationFrame(function() { setTimeout(r, 150); }); });
 
-    var elW = content.scrollWidth || content.offsetWidth || 2048;
+    var elW = content.scrollWidth || content.offsetWidth || 1800;
     var elH = content.scrollHeight || content.offsetHeight;
 
     var donem2 = (typeof DONEM !== 'undefined' && DONEM) ? DONEM.replace('/', '') : '';
     var fname  = 'TT_MatrisV2_' + donem2 + '.png';
 
     var canvas = await captureExportImage(content, {
-      scale:        2,       /* 2048 × 2 = 4096px genişlik */
+      scale:        2,       /* 1800 × 2 = 3600px genişlik */
       width:        elW,
       height:       elH,
       windowWidth:  elW + 50,
