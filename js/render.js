@@ -275,56 +275,8 @@ function cardHTML(prodKey) {
 function setMatrixSort(p) { matrixSort = p; render(); }
 
 
-/* ───── SY KIYAS KARTI — Sprint 21 ─────
-   HGO sıralamasında ilk iki SY'nin yan yana karşılaştırması.
-   İyi olan değer altın/yeşil vurgulanır. */
-function _syVsCard(ranked) {
-  if (!ranked || ranked.length < 2) return "";
-  const A = ranked[0], B = ranked[1];
-  const kalanGun = gunInfo().kalanGun;
-
-  function metrics(x) {
-    const hgo   = x.h > 0 ? Math.round(x.a / x.h * 1000) / 10 : null;
-    const kalan = Math.max(Math.round(x.h - x.a), 0);
-    return {
-      hgo: hgo, hedef: x.h, adet: x.a, fcst: x.f, kalan: kalan,
-      gunluk: (kalanGun && kalanGun > 0 && kalan > 0) ? Math.ceil(kalan / kalanGun) : null,
-    };
-  }
-  const a = metrics(A), b = metrics(B);
-  const fmtN = v => v === null || v === undefined ? '—' : v.toLocaleString('tr-TR');
-  const fmtP = v => v === null || v === undefined ? '—' : '%' + (Math.round(v * 10) / 10);
-
-  /* better: 'hi' yüksek iyi · 'lo' düşük iyi · 'none' nötr */
-  function row(lbl, va, vb, fa, fb, better) {
-    let ca = '', cb = '';
-    if (va != null && vb != null && va !== vb && better !== 'none') {
-      const aw = better === 'hi' ? va > vb : va < vb;
-      ca = aw ? ' syvs-win' : ''; cb = aw ? '' : ' syvs-win';
-    }
-    return '<div class="syvs-row">' +
-      '<span class="syvs-val' + ca + '">' + fa + '</span>' +
-      '<span class="syvs-metric">' + lbl + '</span>' +
-      '<span class="syvs-val' + cb + '">' + fb + '</span>' +
-    '</div>';
-  }
-
-  return '<div class="syvs-card">' +
-    '<div class="syvs-head">' +
-      '<span class="syvs-name">' + A.nm.split(' ')[0] + '</span>' +
-      '<span class="syvs-vs">KIYAS</span>' +
-      '<span class="syvs-name">' + B.nm.split(' ')[0] + '</span>' +
-    '</div>' +
-    row('HGO',      a.hgo,    b.hgo,    fmtP(a.hgo),    fmtP(b.hgo),    'hi')   +
-    row('Adet',     a.adet,   b.adet,   fmtN(a.adet),   fmtN(b.adet),   'hi')   +
-    row('Hedef',    a.hedef,  b.hedef,  fmtN(a.hedef),  fmtN(b.hedef),  'none') +
-    row('Forecast', a.fcst,   b.fcst,   fmtP(a.fcst),   fmtP(b.fcst),   'hi')   +
-    row('Kalan',    a.kalan,  b.kalan,  fmtN(a.kalan),  fmtN(b.kalan),  'lo')   +
-    row('Günlük',   a.gunluk, b.gunluk, fmtN(a.gunluk), fmtN(b.gunluk), 'lo')   +
-  '</div>';
-}
-
 /* ───── SY GÖRÜNÜMÜ (mobil kart) ───── */
+/* Not: SY kıyas kartı (_syVsCard) kullanıcı isteğiyle kaldırıldı (2026-07-05) */
 function renderSY(onlyNames) {
   const S = SYDATA;
   const prods = S.products && S.products.length ? S.products : ["Mobil Toplam"];
@@ -415,7 +367,6 @@ function renderSY(onlyNames) {
     '<div class="card" id="sy-card">' +
     hdrHTML((PICO[syProd]||"👔"), syProd + " · Satış Yöneticisi",
       "HGO sıralaması" + (f?" · "+f:"") + cmp) +
-    _syVsCard(ranked) +
     '<div class="sec t"><span>👔 Yöneticiler</span><span class="cnt">' + ranked.length + ' SY</span></div>' +
     rows +
     ftrHTML([[ranked.length, "Yönetici"],

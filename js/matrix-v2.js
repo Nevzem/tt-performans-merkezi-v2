@@ -1,11 +1,11 @@
 /* ════════════════════════════════════════════════════════════════════
    js/matrix-v2.js  —  Matrix Engine V2 (Premium Excel Edition)
    Sprint 16  |  Sprint 19'dan itibaren matrisin TEK motoru.
-   Sprint 22  |  WhatsApp Premium Redesign:
+   Sprint 22  |  WhatsApp Premium Redesign (2026-07-05 revizyonu):
      · Benchmark satırları (Kuzey Anadolu / Anadolu) heatmap DIŞI —
-       ürün başlık renk ailesinin açık tonuyla boyanır (benchBg/subBg).
-     · Belirgin grid (#8EA0B8) + ürün grupları arası kalın ayırıcı (#5E7191).
-     · Soft/premium heatmap skalası (eşikler: 110/100/90/80).
+       tüm satır etiket fon renginde (#0C2860 / #1A3A70), yüzdeler BEYAZ.
+     · HGO hücreleri RENKSİZ; soft heatmap yalnız Forecast hücrelerinde.
+     · Koyu/kalın sütun çizgileri (MV2_VLINE) + ürün grubu ayırıcıları.
      · WhatsApp okunabilirliği için büyütülmüş fontlar ve satır yükseklikleri.
    NOT: Stiller bilinçli olarak inline — html2canvas export'unda birebir
    aynı görünümü garanti eder. Veri/hesap/sıralama mantığı değişmemiştir.
@@ -15,21 +15,22 @@
 /* İP/DSL kolonu kullanıcı isteğiyle çıkarıldı (2026-07-04)
    thBg  : ürün başlığı (koyu kurumsal)
    subBg : HGO/Fc alt başlık zemini (çok açık ton)
-   subFg : alt başlık yazısı (koyu ürün rengi)
-   benchBg: KUZEY ANADOLU benchmark hücre zemini (kontrollü açık ton) */
+   subFg : alt başlık yazısı (koyu ürün rengi) */
 var MV2_COLS = [
-  { key:'mobil', label:'MOBİL',  thBg:'#0C2860', subBg:'#E8EEFC', subFg:'#0C2860', benchBg:'#CBD8F2' },
-  { key:'dsl',   label:'DSL',    thBg:'#1A5E38', subBg:'#E8F5EC', subFg:'#1A5E38', benchBg:'#C9E6D3' },
-  { key:'iptv',  label:'İP TV',  thBg:'#3D1A78', subBg:'#EDE8FC', subFg:'#3D1A78', benchBg:'#DACFF0' },
-  { key:'uydu',  label:'UYDU',   thBg:'#1A4D3D', subBg:'#E8F5F0', subFg:'#1A4D3D', benchBg:'#C7E1D7' },
-  { key:'tv',    label:'TV',     thBg:'#0A3D6B', subBg:'#E8F0FC', subFg:'#0A3D6B', benchBg:'#C8DCF0' },
-  { key:'cihaz', label:'CİHAZ', thBg:'#2D5A1A', subBg:'#EDF5E8', subFg:'#2D5A1A', benchBg:'#D4E4C6' },
+  { key:'mobil', label:'MOBİL',  thBg:'#0C2860', subBg:'#E8EEFC', subFg:'#0C2860' },
+  { key:'dsl',   label:'DSL',    thBg:'#1A5E38', subBg:'#E8F5EC', subFg:'#1A5E38' },
+  { key:'iptv',  label:'İP TV',  thBg:'#3D1A78', subBg:'#EDE8FC', subFg:'#3D1A78' },
+  { key:'uydu',  label:'UYDU',   thBg:'#1A4D3D', subBg:'#E8F5F0', subFg:'#1A4D3D' },
+  { key:'tv',    label:'TV',     thBg:'#0A3D6B', subBg:'#E8F0FC', subFg:'#0A3D6B' },
+  { key:'cihaz', label:'CİHAZ', thBg:'#2D5A1A', subBg:'#EDF5E8', subFg:'#2D5A1A' },
 ];
 
 /* ─── GRID ÇİZGİ SİSTEMİ ──────────────────────────────────────────── */
-var MV2_GRID        = '#8EA0B8';  /* standart hücre çizgisi — WhatsApp'ta kaybolmaz   */
-var MV2_GRID_STRONG = '#5E7191';  /* ürün grubu / isim kolonu / başlık altı ayırıcısı */
-var MV2_BENCH_SEP   = '#0C2860';  /* benchmark bölümü üstü kalın koyu çizgi           */
+/* 2026-07-05: sütun çizgileri koyulaştırılıp kalınlaştırıldı */
+var MV2_GRID        = '#7F8FA8';  /* yatay hücre çizgisi (1px)                          */
+var MV2_VLINE       = '#5E7191';  /* her sütun arası dikey çizgi (in-app 2px, export 3px)*/
+var MV2_GRID_STRONG = '#3E4C68';  /* ürün grubu / isim kolonu ayırıcısı (3px / 5px)      */
+var MV2_BENCH_SEP   = '#0C2860';  /* benchmark bölümü üstü kalın koyu çizgi              */
 
 /* İn-app sütun px genişlikleri — toplam 918px (yatay scroll) */
 var MV2_W = { sira:36, kod:64, ad:170, hgo:56, fc:52 };
@@ -62,6 +63,15 @@ function matrixCell(v, fs, extra) {
     'vertical-align:middle;white-space:nowrap;' + (extra || '') + '">' + str + '</td>';
 }
 
+/* 2026-07-05: HGO hücreleri renksiz — heatmap yalnız Forecast'ta */
+function mvPlainCell(v, fs, extra) {
+  var str = (v !== null && v !== undefined) ? '%' + Math.round(v) : '—';
+  return '<td style="color:#0B1F4D;' +
+    'text-align:center;font-size:' + (fs || 14) + 'px;font-weight:800;' +
+    'border:1px solid ' + MV2_GRID + ';padding:0 3px;height:42px;' +
+    'vertical-align:middle;white-space:nowrap;' + (extra || '') + '">' + str + '</td>';
+}
+
 /* ─── İN-APP BAŞLIK ─────────────────────────────────────────────────── */
 
 function buildMatrixHeader() {
@@ -74,7 +84,7 @@ function buildMatrixHeader() {
     '<th rowspan="2" style="' + thS + 'font-size:11.5px;width:' + MV2_W.sira + 'px;">Sıra</th>' +
     '<th rowspan="2" style="' + thS + 'font-size:11.5px;width:' + MV2_W.kod  + 'px;">Kodu</th>' +
     '<th rowspan="2" style="' + thS + 'font-size:11.5px;width:' + MV2_W.ad   + 'px;text-align:left;padding-left:8px;' +
-      'border-right:2px solid ' + MV2_GRID_STRONG + ';">Bayi Adı</th>';
+      'border-right:3px solid ' + MV2_GRID_STRONG + ';">Bayi Adı</th>';
 
   MV2_COLS.forEach(function(col) {
     /* Aktif sıralama kolonu altın alt çizgiyle vurgulanır */
@@ -94,8 +104,8 @@ function buildMatrixHeader() {
     var sS = 'background:' + col.subBg + ';color:' + col.subFg + ';' +
       'border:1px solid ' + MV2_GRID + ';border-bottom:2px solid ' + MV2_GRID_STRONG + ';' +
       'padding:6px 3px;font-size:11px;font-weight:800;text-align:center;vertical-align:middle;';
-    r2 += '<th style="' + sS + 'border-left:2px solid ' + MV2_GRID_STRONG + ';width:' + MV2_W.hgo + 'px;">HGO</th>';
-    r2 += '<th style="' + sS + 'width:' + MV2_W.fc  + 'px;">Fc</th>';
+    r2 += '<th style="' + sS + 'border-left:3px solid ' + MV2_GRID_STRONG + ';width:' + MV2_W.hgo + 'px;">HGO</th>';
+    r2 += '<th style="' + sS + 'border-left:2px solid ' + MV2_VLINE + ';width:' + MV2_W.fc  + 'px;">Fc</th>';
   });
   r2 += '</tr>';
 
@@ -120,9 +130,9 @@ function buildMatrixGrid() {
     var tdBase = 'height:42px;border:1px solid ' + MV2_GRID + ';vertical-align:middle;';
     var html   = '<tr style="background:' + rowBg + ';">' +
       '<td style="' + tdBase + 'text-align:center;font-size:14px;font-weight:800;color:#0B1F4D;">' + (i + 1) + '</td>' +
-      '<td style="' + tdBase + 'text-align:center;font-size:11px;font-weight:600;color:#64748B;">' + (r.kod || '') + '</td>' +
-      '<td style="' + tdBase + 'padding:0 8px;max-width:' + MV2_W.ad + 'px;' +
-        'border-right:2px solid ' + MV2_GRID_STRONG + ';">' +
+      '<td style="' + tdBase + 'border-left:2px solid ' + MV2_VLINE + ';text-align:center;font-size:11px;font-weight:600;color:#64748B;">' + (r.kod || '') + '</td>' +
+      '<td style="' + tdBase + 'border-left:2px solid ' + MV2_VLINE + ';padding:0 8px;max-width:' + MV2_W.ad + 'px;' +
+        'border-right:3px solid ' + MV2_GRID_STRONG + ';">' +
         '<div style="font-size:13px;color:#0B1F4D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
           '<span style="font-weight:800;">' + (r.b || '') + '</span>' +
           (r.il ? '<span style="color:#7A869A;font-weight:500;font-size:11px;"> · ' + r.il + '</span>' : '') +
@@ -131,8 +141,9 @@ function buildMatrixGrid() {
 
     MV2_COLS.forEach(function(col) {
       var raw = (r[col.key] !== undefined) ? r[col.key] : null;
-      html += matrixCell(raw, 14, 'border-left:2px solid ' + MV2_GRID_STRONG + ';');
-      html += matrixCell(fcV(raw), 12.5);
+      /* HGO renksiz, Forecast heatmap'li */
+      html += mvPlainCell(raw, 14, 'border-left:3px solid ' + MV2_GRID_STRONG + ';');
+      html += matrixCell(fcV(raw), 12.5, 'border-left:2px solid ' + MV2_VLINE + ';');
     });
 
     return html + '</tr>';
@@ -140,9 +151,9 @@ function buildMatrixGrid() {
 }
 
 /* ─── İN-APP BENCHMARK SATIRLARI (Kuzey Anadolu / Anadolu) ─────────── */
-/* Performans heatmap'i UYGULANMAZ. Sol etiket koyu lacivert + beyaz;
-   değer hücreleri ürün başlığının renk ailesinden açık tonda,
-   yazılar koyu ürün renginde. KUZEY satırı biraz daha dolgun tonda. */
+/* 2026-07-05: Tüm satır etiketin fon rengiyle boyanır —
+   KUZEY ANADOLU #0C2860, ANADOLU #1A3A70; yüzdeler BEYAZ.
+   Performans heatmap'i uygulanmaz. */
 
 function buildMatrixFooter() {
   var M  = (typeof MATRIX !== 'undefined') ? MATRIX : null;
@@ -151,28 +162,26 @@ function buildMatrixFooter() {
   var fcV = function(v) { return (f && v !== null && v !== undefined) ? Math.round(v * f.k) : null; };
 
   function benchRow(totData, label, isPrimary) {
-    var lblBg  = isPrimary ? '#0C2860' : '#1A3A70';
+    var rowBg  = isPrimary ? '#0C2860' : '#1A3A70';
     var topSep = isPrimary ? 'border-top:3px solid ' + MV2_BENCH_SEP + ';' : '';
+    var bCell  = '1px solid rgba(255,255,255,0.20)';
+    var base   = 'background:' + rowBg + ';border:' + bCell + ';' + topSep +
+      'height:50px;vertical-align:middle;white-space:nowrap;';
     var html   = '<tr>' +
-      '<td colspan="3" style="background:' + lblBg + ';color:#fff;' +
-        'border:1px solid rgba(255,255,255,0.18);' + topSep +
-        'border-right:2px solid ' + MV2_GRID_STRONG + ';' +
-        'height:50px;vertical-align:middle;padding:0 10px;' +
+      '<td colspan="3" style="' + base +
+        'border-right:3px solid rgba(255,255,255,0.40);' +
+        'color:#fff;padding:0 10px;' +
         'font-size:12.5px;font-weight:900;text-align:left;letter-spacing:0.5px;">' +
         '&#9646; ' + label + '</td>';
 
     MV2_COLS.forEach(function(col) {
-      var raw    = (totData && totData[col.key] !== undefined) ? totData[col.key] : null;
-      var fv     = raw !== null ? fcV(raw) : null;
-      var cellBg = isPrimary ? col.benchBg : col.subBg;
-      var cellFg = col.thBg;
-      var base   = 'background:' + cellBg + ';color:' + cellFg + ';' +
-        'border:1px solid ' + MV2_GRID + ';' + topSep +
-        'height:50px;vertical-align:middle;text-align:center;white-space:nowrap;';
-      html += '<td style="' + base + 'border-left:2px solid ' + MV2_GRID_STRONG + ';' +
-        'font-size:14.5px;font-weight:800;">' +
+      var raw = (totData && totData[col.key] !== undefined) ? totData[col.key] : null;
+      var fv  = raw !== null ? fcV(raw) : null;
+      html += '<td style="' + base + 'border-left:3px solid rgba(255,255,255,0.40);' +
+        'color:#FFFFFF;text-align:center;font-size:14.5px;font-weight:800;">' +
         ((raw !== null && raw !== undefined) ? '%' + Math.round(raw) : '—') + '</td>';
-      html += '<td style="' + base + 'font-size:12.5px;font-weight:700;opacity:0.85;">' +
+      html += '<td style="' + base + 'border-left:2px solid rgba(255,255,255,0.25);' +
+        'color:rgba(255,255,255,0.85);text-align:center;font-size:12.5px;font-weight:700;">' +
         (fv !== null ? '%' + fv : '—') + '</td>';
     });
 
@@ -295,6 +304,15 @@ function _buildMatrixExportDOM() {
       'vertical-align:middle;white-space:nowrap;' + (extra || '') + '">' + str + '</td>';
   }
 
+  /* HGO hücresi renksiz (heatmap yalnız Forecast'ta) */
+  function ePlain(v, fs, h, extra) {
+    var str = (v !== null && v !== undefined) ? '%' + Math.round(v) : '—';
+    return '<td style="color:#0B1F4D;' +
+      'text-align:center;font-size:' + (fs || 26) + 'px;font-weight:800;' +
+      'border:' + bOrd + ';padding:0 6px;height:' + (h || 52) + 'px;' +
+      'vertical-align:middle;white-space:nowrap;' + (extra || '') + '">' + str + '</td>';
+  }
+
   /* Başlık Satır 1: ürün grup adları */
   var thS = 'background:#0C2860;color:#fff;border:' + bNav + ';padding:14px 6px;' +
     'text-align:center;font-weight:900;vertical-align:middle;';
@@ -303,7 +321,7 @@ function _buildMatrixExportDOM() {
     '<th rowspan="2" style="' + thS + 'font-size:19px;width:' + W.sira + 'px;">Sıra</th>' +
     '<th rowspan="2" style="' + thS + 'font-size:19px;width:' + W.kod  + 'px;">Kodu</th>' +
     '<th rowspan="2" style="' + thS + 'font-size:19px;width:' + W.ad + 'px;text-align:left;padding-left:16px;' +
-      'border-right:3px solid ' + MV2_GRID_STRONG + ';">Bayi Adı</th>';
+      'border-right:5px solid ' + MV2_GRID_STRONG + ';">Bayi Adı</th>';
   MV2_COLS.forEach(function(col) {
     var on = (col.key === sKey);
     h1 += '<th colspan="2" style="background:' + col.thBg + ';color:#fff;' +
@@ -319,11 +337,11 @@ function _buildMatrixExportDOM() {
   var h2 = '<tr>';
   MV2_COLS.forEach(function(col) {
     var sS = 'background:' + col.subBg + ';color:' + col.subFg + ';' +
-      'border:' + bOrd + ';border-bottom:3px solid ' + MV2_GRID_STRONG + ';' +
+      'border:' + bOrd + ';border-bottom:4px solid ' + MV2_GRID_STRONG + ';' +
       'padding:9px 6px;font-size:15px;font-weight:900;text-align:center;vertical-align:middle;' +
       'letter-spacing:0.5px;';
-    h2 += '<th style="' + sS + 'border-left:3px solid ' + MV2_GRID_STRONG + ';width:' + W.hgo + 'px;">HGO</th>';
-    h2 += '<th style="' + sS + 'width:' + W.fc  + 'px;">FORECAST</th>';
+    h2 += '<th style="' + sS + 'border-left:5px solid ' + MV2_GRID_STRONG + ';width:' + W.hgo + 'px;">HGO</th>';
+    h2 += '<th style="' + sS + 'border-left:3px solid ' + MV2_VLINE + ';width:' + W.fc  + 'px;">FORECAST</th>';
   });
   h2 += '</tr>';
 
@@ -335,10 +353,10 @@ function _buildMatrixExportDOM() {
     var html  = '<tr style="background:' + rowBg + ';">' +
       '<td style="' + tdBase + 'text-align:center;' +
         'font-size:24px;font-weight:800;color:#0B1F4D;">' + (i + 1) + '</td>' +
-      '<td style="' + tdBase + 'text-align:center;' +
+      '<td style="' + tdBase + 'border-left:3px solid ' + MV2_VLINE + ';text-align:center;' +
         'font-size:16px;font-weight:600;color:#64748B;">' + (r.kod || '') + '</td>' +
-      '<td style="' + tdBase + 'padding:0 16px;max-width:' + W.ad + 'px;' +
-        'border-right:3px solid ' + MV2_GRID_STRONG + ';">' +
+      '<td style="' + tdBase + 'border-left:3px solid ' + MV2_VLINE + ';padding:0 16px;max-width:' + W.ad + 'px;' +
+        'border-right:5px solid ' + MV2_GRID_STRONG + ';">' +
         '<div style="font-size:23px;color:#0B1F4D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
           '<span style="font-weight:800;">' + (r.b || '') + '</span>' +
           (r.il ? '<span style="color:#7A869A;font-weight:500;font-size:16px;"> · ' + r.il + '</span>' : '') +
@@ -346,35 +364,36 @@ function _buildMatrixExportDOM() {
       '</td>';
     MV2_COLS.forEach(function(col) {
       var raw = (r[col.key] !== undefined) ? r[col.key] : null;
-      html += eCell(raw, 26, tdH, 'border-left:3px solid ' + MV2_GRID_STRONG + ';');
-      html += eCell(fcV(raw), 22, tdH);
+      /* HGO renksiz, Forecast heatmap'li */
+      html += ePlain(raw, 26, tdH, 'border-left:5px solid ' + MV2_GRID_STRONG + ';');
+      html += eCell(fcV(raw), 22, tdH, 'border-left:3px solid ' + MV2_VLINE + ';');
     });
     return html + '</tr>';
   }).join('');
 
-  /* Benchmark satırları (export) — heatmap yok, ürün renk ailesi zemin */
+  /* Benchmark satırları (export) — 2026-07-05: tüm satır etiket fon renginde,
+     yüzdeler BEYAZ; heatmap yok */
   function eBenchRow(totData, label, isPrimary) {
-    var lblBg  = isPrimary ? '#0C2860' : '#1A3A70';
+    var rowBg  = isPrimary ? '#0C2860' : '#1A3A70';
     var topSep = isPrimary ? 'border-top:4px solid ' + MV2_BENCH_SEP + ';' : '';
     var tdH    = 62;
+    var bCell  = '1px solid rgba(255,255,255,0.20)';
+    var base   = 'background:' + rowBg + ';border:' + bCell + ';' + topSep +
+      'height:' + tdH + 'px;vertical-align:middle;white-space:nowrap;';
     var html   = '<tr>' +
-      '<td colspan="3" style="background:' + lblBg + ';color:#fff;' +
-        'border:1px solid rgba(255,255,255,0.18);' + topSep +
-        'border-right:3px solid ' + MV2_GRID_STRONG + ';' +
-        'height:' + tdH + 'px;vertical-align:middle;padding:0 16px;' +
+      '<td colspan="3" style="' + base +
+        'border-right:5px solid rgba(255,255,255,0.40);' +
+        'color:#fff;padding:0 16px;' +
         'font-size:22px;font-weight:900;text-align:left;letter-spacing:0.8px;">' +
         '&#9646; ' + label + '</td>';
     MV2_COLS.forEach(function(col) {
-      var raw    = (totData && totData[col.key] !== undefined) ? totData[col.key] : null;
-      var fv     = raw !== null ? fcV(raw) : null;
-      var cellBg = isPrimary ? col.benchBg : col.subBg;
-      var base   = 'background:' + cellBg + ';color:' + col.thBg + ';' +
-        'border:' + bOrd + ';' + topSep +
-        'height:' + tdH + 'px;vertical-align:middle;text-align:center;white-space:nowrap;';
-      html += '<td style="' + base + 'border-left:3px solid ' + MV2_GRID_STRONG + ';' +
-        'font-size:27px;font-weight:900;">' +
+      var raw = (totData && totData[col.key] !== undefined) ? totData[col.key] : null;
+      var fv  = raw !== null ? fcV(raw) : null;
+      html += '<td style="' + base + 'border-left:5px solid rgba(255,255,255,0.40);' +
+        'color:#FFFFFF;text-align:center;font-size:27px;font-weight:900;">' +
         ((raw !== null && raw !== undefined) ? '%' + Math.round(raw) : '—') + '</td>';
-      html += '<td style="' + base + 'font-size:23px;font-weight:800;opacity:0.85;">' +
+      html += '<td style="' + base + 'border-left:3px solid rgba(255,255,255,0.25);' +
+        'color:rgba(255,255,255,0.85);text-align:center;font-size:23px;font-weight:800;">' +
         (fv !== null ? '%' + fv : '—') + '</td>';
     });
     return html + '</tr>';
