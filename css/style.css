@@ -2107,3 +2107,89 @@ body.exporting .card { animation: none !important; opacity: 1 !important; transf
 }
 /* WhatsApp/PNG export klonlarında chevron görünmez */
 .export-clone .row-chev { display: none; }
+
+/* ─── SPRINT 21: AKSİYON MOTORU ──────────────────────────────────── */
+/* SY Kıyas kartı — ilk iki SY yan yana */
+.syvs-card {
+  margin: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card-bg);
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(10,31,92,0.05);
+}
+.syvs-head {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  background: var(--navy);
+  padding: 9px 12px;
+}
+.syvs-name {
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.2px;
+}
+.syvs-vs {
+  color: var(--gold);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  padding: 0 10px;
+}
+.syvs-row {
+  display: grid;
+  grid-template-columns: 1fr 84px 1fr;
+  align-items: center;
+  padding: 7px 12px;
+  border-top: 1px solid var(--hairline);
+}
+.syvs-row:first-of-type { border-top: none; }
+.syvs-val {
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.syvs-val.syvs-win { color: var(--green); font-weight: 800; }
+.syvs-val.syvs-win::after { content: ' ●'; font-size: 7px; vertical-align: middle; }
+.syvs-metric {
+  text-align: center;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+/* Risk Radarı v2 — SY sorumlusu ve tempo etiketi */
+.rk-sy {
+  display: inline-block;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 1px 5px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--slate);
+}
+.rk-slow {
+  display: inline-block;
+  background: var(--amber-soft);
+  border-radius: 5px;
+  padding: 1px 5px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--amber);
+}
+
+/* Personel satırı mini trend oku (kümülatif artış) */
+.tr-up-mini {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--green);
+  white-space: nowrap;
+}

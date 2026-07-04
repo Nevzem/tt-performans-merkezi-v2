@@ -186,10 +186,39 @@ function renderEDMHome(el) {
     _edmSyFilterHTML(),
     _edmSyWarnHTML(),
     _edmChips(kpis),
+    _edmDailyTarget(kpis),
     _edmScorecard(kpis),
     _edmLeaders(),
     _edmRiskList(),
   ].join('');
+}
+
+/* ─── GÜNLÜK HEDEF TAKİBİ — Sprint 21 (aktivasyon bazlı progress barlar) ── */
+
+function _edmDailyTarget(kpis) {
+  var kalanGun = gunInfo().kalanGun;
+  var cards = kpis.map(function(k) {
+    if (!k.h) return '';
+    var pct    = Math.min(Math.round(k.a / k.h * 100), 100);
+    var barCls = pct >= 100 ? 'bar-green' : pct >= 70 ? 'bar-amber' : 'bar-red';
+    var gunluk = (kalanGun && kalanGun > 0 && k.kalan > 0) ? Math.ceil(k.kalan / kalanGun) : null;
+    return '<div class="hd-dt-card">' +
+      '<div class="hd-dt-head">' +
+        '<span class="hd-dt-icon">' + k.icon + '</span>' +
+        '<span class="hd-dt-prod">' + k.label + '</span>' +
+        '<span class="hd-dt-hgo">' + k.a.toLocaleString('tr-TR') + ' / ' + k.h.toLocaleString('tr-TR') + '</span>' +
+        (k.fcAktiv !== null ? '<span class="hd-dt-fc-bdg">F ' + k.fcAktiv.toLocaleString('tr-TR') + '</span>' : '') +
+      '</div>' +
+      '<div class="hd-dt-bar-wrap"><div class="hd-dt-bar ' + barCls + '" style="width:' + pct + '%"></div></div>' +
+      '<div class="hd-dt-nums">' +
+        '<span class="hd-dt-lbl">Kalan<strong class="hd-r">' + (k.kalan > 0 ? k.kalan.toLocaleString('tr-TR') : '✓') + '</strong></span>' +
+        (gunluk !== null ? '<div class="hd-dt-gunluk"><div class="hd-dt-gv">' + gunluk + '</div><div class="hd-dt-gl">GÜNLÜK</div></div>' : '') +
+      '</div>' +
+    '</div>';
+  }).join('');
+  if (!cards) return '';
+  return '<div class="hd-section"><div class="hd-sec-title">Günlük Hedef Takibi · Aktivasyon</div>' +
+    '<div class="hd-dt-grid">' + cards + '</div></div>';
 }
 
 /* ─── SAYFA BAŞLIĞI ─────────────────────────────────────────────── */

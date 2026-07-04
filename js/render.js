@@ -6,11 +6,16 @@
    radarı ve sekme/görünüm yönetimi.
    ════════════════════════════════════════════ */
 
+/* Sprint 21: localStorage her satırda parse edilmesin diye bellek içi önbellek */
+let _trendMem = null;
 function trendLoad() {
-  try { const s = localStorage.getItem(TREND_KEY); return s ? JSON.parse(s) : {}; }
-  catch(e) { return {}; }
+  if (_trendMem) return _trendMem;
+  try { const s = localStorage.getItem(TREND_KEY); _trendMem = s ? JSON.parse(s) : {}; }
+  catch(e) { _trendMem = {}; }
+  return _trendMem;
 }
 function trendSave(obj) {
+  _trendMem = obj;
   try { localStorage.setItem(TREND_KEY, JSON.stringify(obj)); return true; }
   catch(e) { return false; }
 }
@@ -167,6 +172,12 @@ function rowHTML(rec, rank, maxV, podium, withFc, prodKey) {
     const fv = rec.g * f.k;
     fhtml = '<span class="fchip' + (fv >= 100 ? " ok" : "") + '">F%' + fv.toFixed(0) + '</span>';
   }
+  /* Sprint 21: personelde son yüklemeler arası HGO artışı (kümülatif — yalnız pozitif gösterilir) */
+  let thtml = "";
+  if (isPers) {
+    const _td = trendDelta('pers', rec.p, prodKey);
+    if (_td !== null && _td > 0) thtml = '<span class="tr-up-mini">▲' + _td.toFixed(1) + '</span>';
+  }
   const w = maxV > 0 ? Math.min(rec.g / maxV * 100, 100) : 0;
   const tick = maxV > 100 ? '<div class="tick" style="left:' + (100 / maxV * 100) + '%"></div>' : "";
   const _eb = (rec.b||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
@@ -178,7 +189,7 @@ function rowHTML(rec, rank, maxV, podium, withFc, prodKey) {
   const nmHtml = '<div class="nm"><div class="p">' + rec.p + '</div><div class="b">' + rec.b + '</div></div>';
   return '<div class="row' + (podium && rank <= 3 ? " r" + rank : "") + '"' + _oc + '>' +
     '<div class="rk">' + rkHTML(rank) + '</div>' + deltaHTML(rec, prodKey) + nmHtml +
-    '<div class="br"><div class="br-top">' + fhtml + '<span class="chip' + (isPers ? ' chip-lg' : '') + ' ' + cls(rec.g) + '">%' + rec.g.toFixed(1) + '</span></div>' +
+    '<div class="br"><div class="br-top">' + thtml + fhtml + '<span class="chip' + (isPers ? ' chip-lg' : '') + ' ' + cls(rec.g) + '">%' + rec.g.toFixed(1) + '</span></div>' +
     '<div class="track' + (isPers ? ' track-lg' : '') + '"><div class="fill ' + cls(rec.g) + '" style="width:' + w + '%"></div>' + tick + '</div></div>' +
     '<span class="row-chev">›</span></div>';
 }
@@ -263,6 +274,55 @@ function cardHTML(prodKey) {
    Matris artık tek motor: matrix-v2.js → renderMatrixV2() / matrixExportV2(). */
 function setMatrixSort(p) { matrixSort = p; render(); }
 
+
+/* ───── SY KIYAS KARTI — Sprint 21 ─────
+   HGO sıralamasında ilk iki SY'nin yan yana karşılaştırması.
+   İyi olan değer altın/yeşil vurgulanır. */
+function _syVsCard(ranked) {
+  if (!ranked || ranked.length < 2) return "";
+  const A = ranked[0], B = ranked[1];
+  const kalanGun = gunInfo().kalanGun;
+
+  function metrics(x) {
+    const hgo   = x.h > 0 ? Math.round(x.a / x.h * 1000) / 10 : null;
+    const kalan = Math.max(Math.round(x.h - x.a), 0);
+    return {
+      hgo: hgo, hedef: x.h, adet: x.a, fcst: x.f, kalan: kalan,
+      gunluk: (kalanGun && kalanGun > 0 && kalan > 0) ? Math.ceil(kalan / kalanGun) : null,
+    };
+  }
+  const a = metrics(A), b = metrics(B);
+  const fmtN = v => v === null || v === undefined ? '—' : v.toLocaleString('tr-TR');
+  const fmtP = v => v === null || v === undefined ? '—' : '%' + (Math.round(v * 10) / 10);
+
+  /* better: 'hi' yüksek iyi · 'lo' düşük iyi · 'none' nötr */
+  function row(lbl, va, vb, fa, fb, better) {
+    let ca = '', cb = '';
+    if (va != null && vb != null && va !== vb && better !== 'none') {
+      const aw = better === 'hi' ? va > vb : va < vb;
+      ca = aw ? ' syvs-win' : ''; cb = aw ? '' : ' syvs-win';
+    }
+    return '<div class="syvs-row">' +
+      '<span class="syvs-val' + ca + '">' + fa + '</span>' +
+      '<span class="syvs-metric">' + lbl + '</span>' +
+      '<span class="syvs-val' + cb + '">' + fb + '</span>' +
+    '</div>';
+  }
+
+  return '<div class="syvs-card">' +
+    '<div class="syvs-head">' +
+      '<span class="syvs-name">' + A.nm.split(' ')[0] + '</span>' +
+      '<span class="syvs-vs">KIYAS</span>' +
+      '<span class="syvs-name">' + B.nm.split(' ')[0] + '</span>' +
+    '</div>' +
+    row('HGO',      a.hgo,    b.hgo,    fmtP(a.hgo),    fmtP(b.hgo),    'hi')   +
+    row('Adet',     a.adet,   b.adet,   fmtN(a.adet),   fmtN(b.adet),   'hi')   +
+    row('Hedef',    a.hedef,  b.hedef,  fmtN(a.hedef),  fmtN(b.hedef),  'none') +
+    row('Forecast', a.fcst,   b.fcst,   fmtP(a.fcst),   fmtP(b.fcst),   'hi')   +
+    row('Kalan',    a.kalan,  b.kalan,  fmtN(a.kalan),  fmtN(b.kalan),  'lo')   +
+    row('Günlük',   a.gunluk, b.gunluk, fmtN(a.gunluk), fmtN(b.gunluk), 'lo')   +
+  '</div>';
+}
 
 /* ───── SY GÖRÜNÜMÜ (mobil kart) ───── */
 function renderSY(onlyNames) {
@@ -355,6 +415,7 @@ function renderSY(onlyNames) {
     '<div class="card" id="sy-card">' +
     hdrHTML((PICO[syProd]||"👔"), syProd + " · Satış Yöneticisi",
       "HGO sıralaması" + (f?" · "+f:"") + cmp) +
+    _syVsCard(ranked) +
     '<div class="sec t"><span>👔 Yöneticiler</span><span class="cnt">' + ranked.length + ' SY</span></div>' +
     rows +
     ftrHTML([[ranked.length, "Yönetici"],
@@ -546,13 +607,15 @@ function renderTrend() {
     '</div>';
 }
 
-/* ───── RİSK RADARI ───── */
+/* ───── RİSK RADARI v2 — Sprint 21 ─────
+   Daraltılmış tanım: Forecast (gün yoksa HGO) %85 altı · yalnızca ilk 10.
+   Her satırda sorumlu SY. HGO kümülatif olduğundan "düşüş" dili kullanılmaz;
+   son yüklemeler arası artışı zayıf olanlara "tempo yavaş" etiketi düşülür. */
 function renderRisk() {
   const cards = document.getElementById("cards");
   cards.className = "cards single"; cards.style.maxWidth = "440px";
   const f = fc();
 
-  // Hem personel hem bayi, tüm ana ürünlerde forecast<100 + düşüş trendi olanları topla
   const PRD = ["Toplam Mobil","DSL","Toplam TV"];
   const risks = [];
   for (const scope of ["pers","bayi"]) {
@@ -560,43 +623,47 @@ function renderRisk() {
     for (const prod of plist) {
       for (const r of (DATA[scope][prod]||[])) {
         if (r.g === null) continue;
-        const fcv = f ? r.g*f.k : r.g; // gün bilgisi yoksa HGO'nun kendisini baz al
+        const fcv = f ? r.g*f.k : r.g;
+        if (fcv >= 85) continue;
         const delta = trendDelta(scope, r.p, prod);
-        const dusus = delta !== null && delta < 0;
-        // Risk: forecast (veya HGO) %100 altında olan herkes. Düşüş trendi varsa öncelik kazanır.
-        if (fcv < 100) {
-          risks.push({ scope, prod, name: r.p, hgo: r.g, fcv: Math.round(fcv), delta, dusus, hasFc: !!f });
-        }
+        const yavas = delta !== null && delta >= 0 && delta < 1.5;
+        risks.push({ scope, prod, name: r.p, loc: r.b || '', sy: r.sy || '',
+                     hgo: r.g, fcv: Math.round(fcv), yavas, hasFc: !!f });
       }
     }
   }
-  // En kritik önce: düşüş trendi olanlar üstte, sonra en düşük forecast
-  risks.sort((a,b) => (b.dusus - a.dusus) || (a.fcv - b.fcv));
-  const top = risks.slice(0, 40);
+  /* En düşük forecast önce; tempo yavaş olanlar eşitlikte öne */
+  risks.sort((a,b) => (a.fcv - b.fcv) || (b.yavas - a.yavas));
+  const top = risks.slice(0, 10);
 
   const PICO = {"Toplam Mobil":"📱","DSL":"🌐","Toplam TV":"📺","Toplam Cihaz":"📦"};
   let rows = "";
   if (!top.length) {
-    rows = '<div class="tr-empty">✅ Risk işareti yok.<br>%100 altında kimse bulunmuyor.</div>';
+    rows = '<div class="tr-empty">✅ Kritik eşiğin (%85) altında kimse yok.</div>';
   } else {
     top.forEach(r => {
-      const sev = r.fcv < 60 ? "rk-hi" : r.fcv < 85 ? "rk-md" : "rk-lo";
-      const dtxt = r.delta===null ? "" : r.dusus ? '<span class="rk-dn">▼ '+Math.abs(r.delta).toFixed(1)+' düşüş</span>' : '';
-      rows += '<div class="rk-row ' + sev + '">' +
+      const sev  = r.fcv < 60 ? "rk-hi" : "rk-md";
+      const syT  = r.sy ? '<span class="rk-sy">SY: ' + r.sy.split(' ')[0] + '</span>' : '';
+      const tmpT = r.yavas ? '<span class="rk-slow">tempo yavaş</span>' : '';
+      const km   = r.scope === 'bayi' && r.loc && r.loc.match(/^(\d+)/);
+      const oc   = km ? ' onclick="openDetay(\'bayi\',\'' + km[1] + '\')" style="cursor:pointer"' : '';
+      rows += '<div class="rk-row ' + sev + '"' + oc + '>' +
         '<div class="rk-ico">' + (r.scope==="bayi"?"🏢":"👤") + '</div>' +
         '<div class="rk-info"><div class="rk-nm">' + r.name + '</div>' +
-        '<div class="rk-meta">' + PICO[r.prod] + ' ' + r.prod + ' · HGO %' + (r.hgo===null?"—":r.hgo.toFixed(0)) + ' ' + dtxt + '</div></div>' +
+        '<div class="rk-meta">' + PICO[r.prod] + ' ' + r.prod + ' · HGO %' + (r.hgo===null?"—":r.hgo.toFixed(0)) +
+          (syT ? ' ' + syT : '') + (tmpT ? ' ' + tmpT : '') + '</div></div>' +
         '<div class="rk-fc"><span class="rk-fcv">' + (r.hasFc?"F ":"") + '%' + r.fcv + '</span><span class="rk-fcl">' + (r.hasFc?"forecast":"HGO") + '</span></div>' +
+        (km ? '<span class="row-chev">›</span>' : '') +
       '</div>';
     });
   }
-  const hiN = top.filter(r=>r.fcv<60).length, mdN = top.filter(r=>r.fcv>=60&&r.fcv<85).length;
+  const hiN = top.filter(r=>r.fcv<60).length, mdN = top.filter(r=>r.fcv>=60).length;
   cards.innerHTML =
     '<div class="card" id="risk-card">' +
-    hdrHTML("🚨", "Risk Radarı", (f?"Forecast %100 altı · "+f.d+"/"+f.t+". gün":"HGO %100 altı · gün bilgisi girilince forecast bazlı olur")) +
-    '<div class="sec b"><span>🚨 Aksiyon Gerekenler</span><span class="cnt">' + top.length + ' uyarı</span></div>' +
+    hdrHTML("🚨", "Risk Radarı", (f ? "Forecast %85 altı · ilk 10 · " + f.d + "/" + f.t + ". gün" : "HGO %85 altı · ilk 10 · gün girilince forecast bazlı")) +
+    '<div class="sec b"><span>Aksiyon Gerekenler</span><span class="cnt">' + top.length + ' kayıt · SY sorumlusuyla</span></div>' +
     rows +
-    ftrHTML([[hiN, "Kritik <%60"], [mdN, "Orta %60-85"], [top.length, "Toplam"]]) +
+    ftrHTML([[hiN, "Kritik <%60"], [mdN, "İzleme %60-85"], [top.length, "Listede"]]) +
     '</div>';
 }
 
