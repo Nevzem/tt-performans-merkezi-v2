@@ -33,8 +33,6 @@ function _hdDetayFiltered() {
 }
 
 /* Ana Sayfa içi ürün filtresi state'leri */
-var _homeRiskProd    = 'Toplam Mobil';
-var _homeAdetProd    = 'Toplam Mobil';
 var _homePersRankProd = 'Toplam Mobil';
 var _homeBayiRankProd = 'Toplam Mobil';
 var _hdInsightProd   = 'Toplam Mobil';
@@ -69,8 +67,6 @@ var _BAYI_RANK_PRODS = [
   { label: 'Cihaz',        key: 'Akıllı Cihaz',   detayKey: 'Akıllı Cihaz' },
 ];
 
-function setHomeRiskProd(k)     { _homeRiskProd    = k; renderHome(); }
-function setHomeAdetProd(k)     { _homeAdetProd    = k; renderHome(); }
 function setHomePersRankProd(k) { _homePersRankProd = k; renderHome(); }
 function setHomeBayiRankProd(k) { _homeBayiRankProd = k; renderHome(); }
 function setHdInsightProd(k)    { _hdInsightProd   = k; renderHome(); }
@@ -104,58 +100,18 @@ function renderHome() {
     return;
   }
   var kpis = _hdKPIs();
+  /* Sprint 18: sadeleştirilmiş executive akış —
+     Hero → SY → 4 Çip → Günlük Hedef → Performans Özeti → Executive Görünüm → Top3 sıralamalar */
   el.innerHTML = [
     _hdHero(),
     _hdSyFilter(),
     _hdChips(kpis),
     _hdDailyTarget(kpis),
-    _hdExecutiveInsights(),
     _hdScorecard(kpis),
-    _hdAutoSummary(kpis),
+    _hdExecutiveInsights(),
     _hdPersRanking(),
     _hdBayiRanking(),
-    _hdRiskCenter(kpis),
   ].join('');
-}
-
-/* ══════════════════════════════════════════
-   1. SAYFA BAŞLIĞI — sade, beyaz
-   ══════════════════════════════════════════ */
-function _hdPageHeader() {
-  var today = new Date().toLocaleDateString('tr-TR', {
-    day: 'numeric', month: 'long', year: 'numeric'
-  });
-  var loadTs = '';
-  try {
-    var ts = (typeof LOAD_KEY_TTM !== 'undefined') ? localStorage.getItem(LOAD_KEY_TTM) : null;
-    if (ts) {
-      var d = new Date(ts);
-      loadTs = d.toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
-    }
-  } catch(_e) {}
-  return (
-    '<div class="hd-page-header">' +
-      '<div class="hd-ph-left">' +
-        '<div class="hd-ph-mark">TT</div>' +
-        '<div>' +
-          '<div class="hd-ph-title">Kuzey Anadolu Performans Merkezi</div>' +
-          '<div class="hd-ph-sub">Bayi Satış Kanalı &nbsp;·&nbsp; ' + today + '</div>' +
-          (loadTs ? '<div class="hd-ph-load">Son yükleme: ' + loadTs + '</div>' : '') +
-        '</div>' +
-      '</div>' +
-      '<div class="hd-ph-period">' + DONEM + '</div>' +
-    '</div>'
-  );
-}
-
-function _hdDataHealth() {
-  if (typeof DATA_HEALTH === 'undefined' || !DATA_HEALTH) return '';
-  var dh = DATA_HEALTH;
-  var cls = dh.ok ? 'dh-ok' : 'dh-warn';
-  var icon = dh.ok ? '✅' : '⚠️';
-  var msg = icon + ' ' + dh.persCount + ' personel · ' + dh.bayiCount + ' bayi · ' + dh.syCount + ' SY';
-  if (!dh.ok && dh.warnings && dh.warnings.length) msg += ' · ' + dh.warnings.length + ' kolon uyarısı';
-  return '<div class="hd-data-health ' + cls + '">' + msg + '</div>';
 }
 
 /* ══════════════════════════════════════════
@@ -166,7 +122,6 @@ function _hdDataHealth() {
 function _hdChips(kpis) {
   var recs    = _hdFilterBySY(DATA.bayi['Toplam Mobil'] || []);
   var bayiSay = recs.length;
-  var persSay = _hdFilterBySY(DATA.pers['Toplam Mobil'] || []).length;
   var riskliN = recs.filter(function(r) { return r.g < 60; }).length;
   var eliteN  = recs.filter(function(r) { return r.g >= 100; }).length;
 
@@ -197,20 +152,18 @@ function _hdChips(kpis) {
     );
   }
 
+  /* Sprint 18: 6 çip → 4 çip.
+     Toplam Personel hero'daki veri kutusunda; Riskli Bayi, Kritik Bayi ile birleşti. */
   return (
-    '<div class="hd-chips hd-anim" style="--i:1">' +
-      chip('OPERASYON SKORU',  String(_opsScore),
-                               _opsCls,            'M40·D25·TV20·C15 − risk cezası') +
-      chip('KRİTİK BAYİ',     String(kritikN),
-                               kritikN > 0 ? 'hdc-red' : 'hdc-green', 'herhangi bir ürün <%70') +
-      chip('ELİTE BAYİ',      String(eliteN),
-                               eliteN  > 0 ? 'hdc-gold' : 'hdc-neutral', 'HGO %100 üstü') +
-      chip('TOPLAM BAYİ',     String(bayiSay),
-                               'hdc-neutral', 'aktif TTM bayisi') +
-      chip('TOPLAM PERSONEL', String(persSay),
-                               'hdc-neutral', 'hedefli personel') +
-      chip('RİSKLİ BAYİ',    String(riskliN),
-                               riskliN > 0 ? 'hdc-red' : 'hdc-green', 'HGO %60 altı') +
+    '<div class="hd-chips hd-chips-4 hd-anim" style="--i:1">' +
+      chip('OPERASYON SKORU', String(_opsScore),
+                              _opsCls, 'M40·D25·TV20·C15 − risk cezası') +
+      chip('KRİTİK BAYİ',    String(kritikN),
+                              kritikN > 0 ? 'hdc-red' : 'hdc-green', 'herhangi bir ürün <%70') +
+      chip('ELİTE BAYİ',     String(eliteN),
+                              eliteN  > 0 ? 'hdc-gold' : 'hdc-neutral', 'HGO %100 üstü') +
+      chip('TOPLAM BAYİ',    String(bayiSay),
+                              'hdc-neutral', 'aktif TTM bayisi') +
     '</div>'
   );
 }
@@ -381,118 +334,10 @@ function _hdGetAksiyon(key, h) {
   return 'Cihaz satış eğitimi verilmeli.';
 }
 
-function _hdAutoSummary(kpis) {
-  function aiCard(k) {
-    var h = k.hgo, fc = k.fcHgo;
-    var icon, msg, acCls;
-    if (h === null) {
-      icon = '📊'; msg = 'Veri bekleniyor.'; acCls = 'ai-neutral';
-    } else if (k.key === 'mobil') {
-      if      (h >= 100) { icon = '✅'; msg = 'Hedefe ulaşıldı.';                        acCls = 'ai-ok'; }
-      else if (h >= 85)  { icon = '📈'; msg = 'Güçlü seyrediyor, kapanış potansiyeli yüksek.'; acCls = 'ai-ok'; }
-      else if (h >= 65)  { icon = '⚠️'; msg = 'Tempo artırılmalı.';                      acCls = 'ai-warn'; }
-      else               { icon = '🔴'; msg = 'Kritik. Acil aksiyon gerekiyor.';         acCls = 'ai-risk'; }
-    } else if (k.key === 'dsl') {
-      if      (h >= 95) { icon = '✅'; msg = 'Hedefine yakın.';                           acCls = 'ai-ok'; }
-      else if (h >= 65) { icon = '📊'; msg = 'Tempo korunursa ay sonuna yaklaşılır.';    acCls = 'ai-warn'; }
-      else              { icon = '⚠️'; msg = 'Riskli. Destek önlemi önerilir.';           acCls = 'ai-risk'; }
-    } else if (k.key === 'tv') {
-      if      (h >= 90) { icon = '✅'; msg = 'Hedefine yakın.';                           acCls = 'ai-ok'; }
-      else if (h >= 60) { icon = '📊'; msg = 'Ek satış fırsatları değerlendirilebilir.'; acCls = 'ai-warn'; }
-      else              { icon = '⚠️'; msg = 'Zayıf. Odak artırılmalı.';                 acCls = 'ai-risk'; }
-    } else {
-      if      (h >= 95) { icon = '✅'; msg = 'Hedef üzerinde, ivme korunmalı.';           acCls = 'ai-ok'; }
-      else if (h >= 65) { icon = '📊'; msg = 'Makul düzeyde.';                            acCls = 'ai-warn'; }
-      else              { icon = '⚠️'; msg = 'Riskli.';                                   acCls = 'ai-risk'; }
-    }
-    var hgoStr  = h !== null ? '%' + h.toFixed(1) : '';
-    var fcStr   = fc !== null ? '<span class="ai-fc">Forecast %' + Math.round(fc) + '</span>' : '';
-    var aksiyon = _hdGetAksiyon(k.key, h);
-    return '<div class="hd-ai-card ' + acCls + '">' +
-      '<div class="hd-ai-head">' +
-        '<span class="hd-ai-icon">' + k.icon + '</span>' +
-        '<span class="hd-ai-prod">' + k.short + '</span>' +
-        (hgoStr ? '<span class="hd-ai-hgo">' + hgoStr + '</span>' : '') +
-      '</div>' +
-      '<div class="hd-ai-msg">' + icon + ' ' + msg + '</div>' +
-      (fcStr ? '<div class="hd-ai-fcrow">' + fcStr + '</div>' : '') +
-      '<div class="hd-ai-aksiyon">→ ' + aksiyon + '</div>' +
-    '</div>';
-  }
-
-  return (
-    '<div class="hd-section">' +
-      '<div class="hd-sec-title">Operasyon Notları</div>' +
-      '<div class="hd-ai-grid">' + kpis.map(aiCard).join('') + '</div>' +
-    '</div>'
-  );
-}
-
-/* ══════════════════════════════════════════
-   5. ÜRÜN LİDERLERİ & RİSKLİ BAYİLER
-   McKinsey Executive · Bloomberg Terminal
-   ══════════════════════════════════════════ */
-
-/* 4 kart için ürün tanımları */
-var _CARD_PRODS = [
-  { icon: '📱', short: 'MOBİL',  dataKey: 'Toplam Mobil', detayKey: 'Toplam Mobil' },
-  { icon: '🌐', short: 'DSL',    dataKey: 'DSL',           detayKey: 'DSL'          },
-  { icon: '📺', short: 'TİVİBU', dataKey: 'Toplam TV',     detayKey: 'Toplam TV'    },
-  { icon: '📦', short: 'CİHAZ',  dataKey: 'Akıllı Cihaz',  detayKey: 'Akıllı Cihaz' },
-];
-
-/* DETAY'dan h/a çek (bayi kodu r.b'den ayıklanır: "4100343 · TOKAT") */
-function _detayProd(rec, detayKey) {
-  if (!DETAY || !rec || !rec.b) return null;
-  var kod  = rec.b.split(' · ')[0].trim();
-  var bayi = DETAY.bayiler[kod];
-  return bayi ? (bayi.prods[detayKey] || null) : null;
-}
-
-/* Tek kart HTML'i — kompakt (lider kartları için) */
-function _plCard(pm, rec, isLeader, f) {
-  if (!rec) {
-    return '<div class="pl-card pl-empty"><span class="pl-empty-txt">Veri yok</span></div>';
-  }
-  var hgoCls = 'hd-' + (hgo3(rec.g) || 'r');
-  var dp     = _detayProd(rec, pm.detayKey);
-  var fcHgo  = (f && rec.g !== null) ? rec.g * f.k : null;
-  var fcCls  = fcHgo === null ? '' : 'hd-' + (hgo3(fcHgo) || 'r');
-
-  var meta = [];
-  meta.push('F&thinsp;<span class="' + fcCls + '">' + (fcHgo !== null ? '%' + Math.round(fcHgo) : '—') + '</span>');
-  if (dp && dp.h > 0)
-    meta.push('<span class="pl-na">' + dp.a.toLocaleString('tr-TR') + '/' + dp.h.toLocaleString('tr-TR') + '</span>');
-
-  return (
-    '<div class="pl-card ' + (isLeader ? 'pl-leader' : 'pl-risk') + '">' +
-      '<div class="pl-head">' +
-        '<span class="pl-icon">' + pm.icon + '</span>' +
-        '<span class="pl-prod">' + pm.short + '</span>' +
-        '<span class="pl-badge">' + (isLeader ? '🏆' : '⚠️') + '</span>' +
-      '</div>' +
-      '<div class="pl-name">' + rec.p + '</div>' +
-      '<div class="pl-loc">' + rec.b + '</div>' +
-      '<div class="pl-hgo ' + hgoCls + '">%' + rec.g.toFixed(1) + '</div>' +
-      '<div class="pl-foot">' + meta.join('<span class="pl-sep">·</span>') + '</div>' +
-    '</div>'
-  );
-}
-
-/* Bölüm: Ürün Liderleri (2×2 kompakt grid) */
-function _hdLeaders() {
-  var f     = fc();
-  var cards = _CARD_PRODS.map(function(pm) {
-    var recs = _hdFilterBySY((DATA.bayi && DATA.bayi[pm.dataKey]) || []);
-    return _plCard(pm, recs[0] || null, true, f);
-  }).join('');
-  return (
-    '<div class="hd-section">' +
-      '<div class="hd-sec-title">Ürün Liderleri</div>' +
-      '<div class="pl-grid">' + cards + '</div>' +
-    '</div>'
-  );
-}
+/* Sprint 18: "Operasyon Notları" bölümü kaldırıldı — aksiyon önerileri
+   artık Günlük Hedef Takibi kartlarının içinde tek satır olarak yaşıyor.
+   Ölü kod temizliği: _hdAutoSummary, _hdLeaders, _plCard, _detayProd,
+   _CARD_PRODS, _hdRiskList, _hdRiskCenter, _hdAdetGrowth silindi. */
 
 /* ── Yardımcı: ürün filtresi sekme HTML'i ── */
 /* prods parametresi verilmezse varsayılan _HP_PRODS kullanılır */
@@ -508,52 +353,14 @@ function _hpTabs(activeKey, setter, small, prods) {
   '</div>';
 }
 
-/* Bölüm: Riskli Ürün Bayileri (filtrelenebilir liste) */
-function _hdRiskList() {
-  var f      = fc();
-  var recs   = _hdFilterBySY((DATA.bayi && DATA.bayi[_homeRiskProd]) || []);
-  var worst5 = recs.slice(-5).slice().reverse(); // en düşük HGO önce
-
-  var rows = worst5.length
-    ? worst5.map(function(r, i) {
-        var rank   = recs.length - i;
-        var hgoCls = 'hd-' + (hgo3(r.g) || 'r');
-        var fcHgo  = (f && r.g !== null) ? r.g * f.k : null;
-        var fcCls  = fcHgo === null ? '' : 'hd-' + (hgo3(fcHgo) || 'r');
-        return (
-          '<div class="hrl-row">' +
-            '<span class="hrl-rank">' + rank + '</span>' +
-            '<div class="hrl-info">' +
-              '<div class="hrl-name">' + r.p + '</div>' +
-              '<div class="hrl-loc">' + r.b + '</div>' +
-            '</div>' +
-            '<div class="hrl-vals">' +
-              '<div class="hrl-fc ' + fcCls + '">F&thinsp;' + (fcHgo !== null ? '%' + Math.round(fcHgo) : '—') + '</div>' +
-              '<div class="hrl-hgo ' + hgoCls + '">%' + r.g.toFixed(1) + '</div>' +
-            '</div>' +
-          '</div>'
-        );
-      }).join('')
-    : '<div class="hrl-empty">Veri yok</div>';
-
-  return (
-    '<div class="hd-section">' +
-      '<div class="hd-sec-head">' +
-        '<div class="hd-sec-title">Riskli Ürün Bayileri</div>' +
-        _hpTabs(_homeRiskProd, 'setHomeRiskProd', false) +
-      '</div>' +
-      '<div class="hrl-card">' + rows + '</div>' +
-    '</div>'
-  );
-}
-
 /* ══════════════════════════════════════════
    7. PERSONEL ÜRÜN SIRALAMASI
    ══════════════════════════════════════════ */
 function _hdPersRanking() {
   var prodKey  = _homePersRankProd;
   var recs     = _hdFilterBySY((DATA.pers && DATA.pers[prodKey]) || []);
-  var top10    = recs.slice(0, 10);
+  /* Sprint 18: ana sayfada ilk 3 — tam liste Personel sekmesinde */
+  var top10    = recs.slice(0, 3);
 
   /* DETAY.pers'den h ve a lookup map'i oluştur */
   var pm = _PERS_RANK_PRODS.find(function(p) { return p.key === prodKey; });
@@ -608,6 +415,7 @@ function _hdPersRanking() {
         _hpTabs(_homePersRankProd, 'setHomePersRankProd', false, _PERS_RANK_PRODS) +
       '</div>' +
       '<div class="rnk-card">' + rows + '</div>' +
+      '<button class="rnk-more" onclick="navTo(\'pers\')">Tüm Personel Sıralaması →</button>' +
     '</div>'
   );
 }
@@ -618,7 +426,8 @@ function _hdPersRanking() {
 function _hdBayiRanking() {
   var prodKey = _homeBayiRankProd;
   var recs    = _hdFilterBySY((DATA.bayi && DATA.bayi[prodKey]) || []);
-  var top5    = recs.slice(0, 5);
+  /* Sprint 18: ana sayfada ilk 3 — tam liste Bayiler sekmesinde */
+  var top5    = recs.slice(0, 3);
 
   /* DETAY.bayiler'den h ve a çek */
   function getDetay(rec) {
@@ -670,77 +479,7 @@ function _hdBayiRanking() {
         _hpTabs(_homeBayiRankProd, 'setHomeBayiRankProd', false, _BAYI_RANK_PRODS) +
       '</div>' +
       '<div class="rnk-card">' + rows + '</div>' +
-    '</div>'
-  );
-}
-
-/* ══════════════════════════════════════════
-   9. RİSK MERKEZİ
-   ══════════════════════════════════════════ */
-
-/* Önceki raporla adet büyümesi hesaplama */
-function _hdAdetGrowth() {
-  var hasPrev = (typeof PREV_DETAY !== "undefined" && PREV_DETAY && DETAY);
-  if (!hasPrev) return null; // null = önceki rapor yok
-
-  var items = [];
-  var _filteredForAdet = _hdDetayFiltered();
-  for (var kod in _filteredForAdet) {
-    var curr = _filteredForAdet[kod];
-    var prev = PREV_DETAY.bayiler[kod];
-    if (!prev) continue;
-    var cProd = curr.prods[_homeAdetProd];
-    var pProd = prev.prods[_homeAdetProd];
-    if (!cProd || !pProd) continue;
-    var delta = cProd.a - pProd.a;
-    if (delta > 0) {
-      items.push({
-        name: curr.b,
-        loc: (curr.kod || '') + (curr.il ? ' · ' + curr.il : ''),
-        delta: delta, prevA: pProd.a, currA: cProd.a,
-        pct: pProd.a > 0 ? Math.round(delta / pProd.a * 1000) / 10 : null,
-      });
-    }
-  }
-  items.sort(function(a, b) { return b.delta - a.delta; });
-  return items.slice(0, 5);
-}
-
-function _hdRiskCenter(kpis) {
-  /* Sadece "Yüksek Adet" bölümü kalıyor. */
-  var adetGrowth = _hdAdetGrowth();
-  var adetTabs   = _hpTabs(_homeAdetProd, 'setHomeAdetProd', true);
-
-  var adetRows = '';
-  if (adetGrowth === null) {
-    adetRows = '<div class="hrl-empty">Önceki rapor yüklenince adetsel büyüme analizi gösterilir.</div>';
-  } else if (!adetGrowth.length) {
-    adetRows = '<div class="hrl-empty">Önceki rapora göre adet artışı bulunamadı.</div>';
-  } else {
-    adetRows = adetGrowth.map(function(r, i) {
-      return (
-        '<div class="hrl-row">' +
-          '<span class="hrl-rank">' + (i + 1) + '</span>' +
-          '<div class="hrl-info">' +
-            '<div class="hrl-name">' + r.name + '</div>' +
-            '<div class="hrl-loc">' + r.loc + '</div>' +
-          '</div>' +
-          '<div class="hrl-vals">' +
-            '<div class="hrl-gain hd-g">+' + r.delta.toLocaleString('tr-TR') + (r.pct ? ' <span class="hrl-pct">+%' + r.pct.toFixed(1) + '</span>' : '') + '</div>' +
-            '<div class="hrl-prev">' + r.prevA.toLocaleString('tr-TR') + '→' + r.currA.toLocaleString('tr-TR') + '</div>' +
-          '</div>' +
-        '</div>'
-      );
-    }).join('');
-  }
-
-  return (
-    '<div class="hd-section">' +
-      '<div class="hd-sec-head">' +
-        '<div class="hd-sec-title">Yüksek Adet</div>' +
-        adetTabs +
-      '</div>' +
-      '<div class="hrl-card">' + adetRows + '</div>' +
+      '<button class="rnk-more" onclick="navTo(\'bayi\')">Tüm Bayi Sıralaması →</button>' +
     '</div>'
   );
 }
@@ -832,6 +571,7 @@ function _hdDailyTarget(kpis) {
           '<span class="hd-dt-lbl">Kalan<strong class="hd-r">' + (k.kalan !== null ? k.kalan.toLocaleString('tr-TR') : '—') + '</strong></span>' +
           (k.gunluk !== null ? '<div class="hd-dt-gunluk"><div class="hd-dt-gv">' + k.gunluk + '</div><div class="hd-dt-gl">GÜNLÜK</div></div>' : '') +
         '</div>' +
+        '<div class="hd-dt-aksiyon">→ ' + _hdGetAksiyon(k.key, k.hgo) + '</div>' +
       '</div>'
     );
   }).join('');

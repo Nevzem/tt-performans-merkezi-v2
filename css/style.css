@@ -2058,3 +2058,37 @@ body.exporting .card { animation: none !important; opacity: 1 !important; transf
   padding: 7px 4px 0;
   line-height: 1.4;
 }
+
+/* ─── SPRINT 18: EXECUTIVE SADELEŞME ─────────────────────────────── */
+/* 4 çipli 2×2 özet ızgarası */
+.hd-chips-4 { grid-template-columns: 1fr 1fr; }
+
+/* Günlük Hedef kartı içi aksiyon önerisi satırı */
+.hd-dt-aksiyon {
+  font-size: 10.5px;
+  color: var(--slate);
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 7px;
+  padding-top: 7px;
+  border-top: 1px dashed var(--line);
+}
+
+/* "Tümünü Gör" bağlantı butonu (sıralama kartları altı) */
+.rnk-more {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--navy);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  transition: all 0.15s;
+}
+.rnk-more:hover { border-color: var(--navy); background: #F7F9FE; }
