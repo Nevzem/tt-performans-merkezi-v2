@@ -16,13 +16,19 @@ function loadScript(src) {
     document.head.appendChild(s);
   });
 }
+/* Sprint 17: önce repo içi kopya (js/vendor/) — çevrimdışı/kısıtlı ağda da çalışır.
+   Yerel dosya yüklenemezse CDN'e düşer. */
 async function ensureXLSX() {
   if (typeof XLSX !== "undefined") return;
-  await loadScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js");
+  try { await loadScript("js/vendor/xlsx.full.min.js"); } catch (e) {}
+  if (typeof XLSX === "undefined")
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js");
 }
 async function ensureH2C() {
   if (typeof html2canvas !== "undefined") return;
-  await loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");
+  try { await loadScript("js/vendor/html2canvas.min.js"); } catch (e) {}
+  if (typeof html2canvas === "undefined")
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");
 }
 
 /* ───── PARSER ───── */

@@ -63,7 +63,7 @@ var _DICONS = {
   'Akıllı Cihaz':'📦','Toplam Cihaz':'📦','Cihaz':'📦','Diğer Cihaz':'🔌'
 };
 function _dIcon(pk) { return _DICONS[pk] || '📊'; }
-function _dCls(g)   { return g >= 100 ? 'g' : g >= 70 ? 'y' : 'r'; }
+function _dCls(g)   { return hgo3(g) || 'r'; } /* Sprint 17: merkezi eşik */
 
 /* ─── Router ─── */
 function _detayHTML(type, id, id2) {

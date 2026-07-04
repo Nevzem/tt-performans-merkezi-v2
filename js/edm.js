@@ -120,6 +120,22 @@ function _edmFilt(recs) {
   return r;
 }
 
+/* Sprint 17: Seçili SY hiçbir EDM kaydıyla eşleşmiyorsa (sessiz fallback yerine)
+   kullanıcıya görünür uyarı üretilir. */
+function _edmSyHasMatch() {
+  if (!EDM_SY_FILTER || EDM_SY_FILTER === 'Tümü') return true;
+  if (!EDM_DATA || !EDM_DATA.bayi) return true;
+  var recs = EDM_DATA.bayi['Toplam Mobil'] || [];
+  if (!recs.length) return true;
+  return recs.some(function(x) { return matchEdmSy(x, EDM_SY_FILTER); });
+}
+
+function _edmSyWarnHTML() {
+  if (_edmSyHasMatch()) return '';
+  return '<div class="edm-sy-warn">⚠️ "' + EDM_SY_FILTER +
+    '" için eşleşen EDM bayisi bulunamadı — filtre uygulanamadı, tüm bayiler gösteriliyor.</div>';
+}
+
 function activeBayiData(prodKey) {
   if (KANAL === 'EDM')
     return _edmFilt((EDM_DATA && EDM_DATA.bayi && EDM_DATA.bayi[prodKey]) || []);
@@ -168,6 +184,7 @@ function renderEDMHome(el) {
   el.innerHTML = [
     _edmPageHeader(),
     _edmSyFilterHTML(),
+    _edmSyWarnHTML(),
     _edmChips(kpis),
     _edmScorecard(kpis),
     _edmLeaders(),
@@ -460,7 +477,8 @@ function renderEDMBayi(prodKey) {
     recs.forEach(function(r, i) { rows += mkRow(r, i); });
   }
 
-  return hdrHTML(icon, prodKey + ' — EDM (' + btLabel + ')', sub) +
+  return _edmSyWarnHTML() +
+    hdrHTML(icon, prodKey + ' — EDM (' + btLabel + ')', sub) +
     toggleHTML +
     '<div class="sec t"><span>🏢 EDM Bayileri</span><span class="cnt">Aktivasyon bazlı sıralama</span></div>' +
     rows +
@@ -533,7 +551,8 @@ function renderEDMPers(prodKey) {
 
   var rows   = shown.map(function(name, i) { return mkRow(name, i); }).join('');
   var leader = groups[order[0]];
-  return hdrHTML(icon, 'Satış Temsilcisi Sıralaması — EDM', sub) +
+  return _edmSyWarnHTML() +
+    hdrHTML(icon, 'Satış Temsilcisi Sıralaması — EDM', sub) +
     '<div class="sec t"><span>👤 ' + (hasST ? 'Satış Temsilcileri' : 'Bayiler (fallback)') + '</span>' +
     '<span class="cnt">Aktivasyon bazlı</span></div>' +
     rows +
@@ -565,8 +584,8 @@ function renderEDMSY() {
     return;
   }
 
-  /* Mevcut renderSY ama EDM SY adlarıyla */
-  renderSY();
+  /* Sprint 17: yalnızca EDM SY adları listelenir (önceden filtresiz çağrılıyordu) */
+  renderSY(found);
 }
 
 /* ─── AYARLAR: EDM DURUM & DEBUG ────────────────────────────────── */

@@ -567,7 +567,7 @@ input[type=file] { display: none; }
   box-shadow: 0 2px 8px rgba(212,5,17,0.35);
 }
 .brand-txt { color: #fff; font-size: 12.5px; font-weight: 700; line-height: 1.2; letter-spacing: 0.2px; }
-.brand-txt small { display: block; font-size: 7.5px; font-weight: 600; color: var(--gold-line); letter-spacing: 2.2px; margin-top: 2px; }
+.brand-txt small { display: block; font-size: 9px; font-weight: 600; color: var(--gold-line); letter-spacing: 2.2px; margin-top: 2px; }
 .donem {
   color: #fff; font-size: 10.5px; font-weight: 700;
   padding: 4px 11px; border-radius: 6px; letter-spacing: 1px;
@@ -644,11 +644,11 @@ input[type=file] { display: none; }
 }
 .fs { text-align: center; }
 .fs .v { font-size: 13.5px; font-weight: 800; color: var(--navy); }
-.fs .l { font-size: 7.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; font-weight: 700; }
+.fs .l { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; font-weight: 700; }
 .fsep { width: 3px; height: 3px; border-radius: 50%; background: var(--gold-line); }
 .tagline {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 7px 16px; font-size: 7.5px; color: #AEB7C8;
+  padding: 7px 16px; font-size: 9px; color: #AEB7C8;
   letter-spacing: 2px; font-weight: 700; border-top: 1px solid var(--hairline); text-transform: uppercase;
 }
 .tagline .dot { color: var(--gold-line); }
@@ -681,7 +681,7 @@ table.mx tbody td.bn  { text-align: left; font-weight: 700; color: var(--ink); p
 table.mx tbody td.bn small { color: var(--muted); font-weight: 600; font-size: 8.5px; }
 table.mx tbody tr:hover td { filter: brightness(0.97); }
 table.mx td.val { font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.15; }
-table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-top: 1px; }
+table.mx td.val .raw { font-size: 9px; font-weight: 600; opacity: 0.6; margin-top: 1px; }
 .mx-foot td { font-weight: 800; color: #fff; padding: 8px 4px; font-size: 11.5px; letter-spacing: 0.3px; }
 .mx-foot.kuzey td  { background: #2C4A8A; }
 .mx-foot.anadolu td { background: var(--navy); }
@@ -703,13 +703,13 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 .sy-m   { flex: 1; background: #F7F9FC; border: 1.5px solid #DCE2EC; border-radius: 6px; padding: 3px 3px; text-align: center; }
 .sy-mv  { font-size: 12px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
 .sy-mv.g-t { color: var(--green); } .sy-mv.y-t { color: var(--amber); } .sy-mv.r-t { color: var(--crimson); }
-.sy-ml  { font-size: 6.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 1px; }
+.sy-ml  { font-size: 8.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 1px; }
 .sy-need { display: flex; gap: 5px; margin-top: 4px; }
 .sy-n   { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0px; background: #FBFCFE; border: 1.5px solid #DCE2EC; border-radius: 7px; padding: 3px 4px; }
 .sy-n.accent-box { background: linear-gradient(135deg, #EFF4FC, #E4ECFA); border-color: #C5D4EE; }
 .sy-n .sy-nv { font-size: 14px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1; }
 .sy-n .sy-nv.accent { color: var(--navy-3); }
-.sy-n .sy-nl { font-size: 6.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2px; text-align: center; margin-top: 1px; }
+.sy-n .sy-nl { font-size: 8.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2px; text-align: center; margin-top: 1px; }
 .sy-n.accent-box .sy-nl { color: var(--navy-3); }
 .sy-chg { display: flex; gap: 5px; margin-top: 4px; }
 .sy-chg .cg { flex: 1; text-align: center; font-size: 9.5px; font-weight: 800; padding: 3px; border-radius: 6px; }
@@ -743,13 +743,13 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 .kp-name small { display: block; font-size: 8px; color: var(--muted); font-weight: 600; margin-top: 1px; }
 .kp-pts  { text-align: center; flex-shrink: 0; background: var(--navy); border-radius: 8px; padding: 4px 9px; }
 .kp-pv   { display: block; font-size: 14px; font-weight: 900; color: #fff; font-variant-numeric: tabular-nums; line-height: 1; }
-.kp-pl   { display: block; font-size: 7px; font-weight: 700; color: var(--gold-line); letter-spacing: 1px; margin-top: 1px; }
+.kp-pl   { display: block; font-size: 9px; font-weight: 700; color: var(--gold-line); letter-spacing: 1px; margin-top: 1px; }
 .kp-card.kp-p1 .kp-pts { background: linear-gradient(135deg, #C9A227, #9C7A1A); }
 .kp-bonus { margin-top: 7px; background: linear-gradient(90deg, #E7F6ED, #F4FBF7); border: 1px solid #BFE5CD; color: var(--green); font-size: 9.5px; font-weight: 800; text-align: center; padding: 5px; border-radius: 7px; letter-spacing: 0.3px; }
 .kp-break { display: flex; gap: 4px; margin-top: 7px; }
 .kp-b    { flex: 1; background: #F7F9FC; border: 1px solid var(--line); border-radius: 6px; padding: 4px 2px; text-align: center; display: flex; flex-direction: column; gap: 1px; }
 .kp-bv   { font-size: 11px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
-.kp-bl   { font-size: 6.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
+.kp-bl   { font-size: 8.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
 .kp-bp   { font-size: 9px; font-weight: 800; color: var(--navy-3); margin-top: 1px; }
 .kp-foot { display: flex; justify-content: space-between; margin-top: 7px; font-size: 8.5px; font-weight: 700; color: var(--slate); }
 
@@ -763,7 +763,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 .dt-cv   { font-size: 11px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.1; }
 .dt-cv.g-t { color: var(--green); } .dt-cv.y-t { color: var(--amber); } .dt-cv.r-t { color: var(--crimson); }
 .dt-cv.accent { color: var(--navy-3); } .dt-cv.hot { color: var(--red); }
-.dt-cl   { font-size: 6.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2px; }
+.dt-cl   { font-size: 8.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2px; }
 .dt-pp   { display: flex; gap: 4px; flex-wrap: wrap; padding: 8px 11px; background: #FAFBFD; border-bottom: 1px solid var(--hairline); }
 .dt-pp .tab { font-size: 10px; padding: 5px 8px; }
 .dt-prow { display: flex; align-items: center; gap: 9px; padding: 6px 11px; border-bottom: 1px solid var(--hairline); }
@@ -775,11 +775,11 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 .dt-ps   { font-size: 9.5px; color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
 .dt-pgrid { display: flex; gap: 3px; flex-shrink: 0; }
 .dt-gc   { width: 40px; text-align: center; font-size: 9.5px; font-weight: 800; font-variant-numeric: tabular-nums; padding: 3px 0 2px; border-radius: 5px; color: var(--ink); display: flex; flex-direction: column; line-height: 1.1; }
-.dt-gc small { font-size: 6.5px; font-weight: 700; opacity: 0.65; margin-top: 1px; }
+.dt-gc small { font-size: 8.5px; font-weight: 700; opacity: 0.65; margin-top: 1px; }
 .dt-gc.g-bg { color: var(--green);   background: var(--green-soft); }
 .dt-gc.y-bg { color: var(--amber);   background: var(--amber-soft); }
 .dt-gc.r-bg { color: var(--crimson); background: var(--crimson-soft); }
-.dt-gh   { width: 40px; text-align: center; font-size: 7.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2px; }
+.dt-gh   { width: 40px; text-align: center; font-size: 9px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2px; }
 .dt-phead { background: #FAFBFD !important; padding-top: 4px; padding-bottom: 4px; }
 .dt-phead .dt-pgrid { align-items: flex-end; }
 
@@ -811,7 +811,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 .rk-dn   { color: var(--crimson); font-weight: 800; }
 .rk-fc   { text-align: center; flex-shrink: 0; background: var(--crimson-soft); border: 1px solid #F0CDD2; border-radius: 8px; padding: 4px 9px; }
 .rk-fcv  { display: block; font-size: 13px; font-weight: 800; color: var(--crimson); }
-.rk-fcl  { display: block; font-size: 6.5px; font-weight: 700; color: var(--crimson); text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; }
+.rk-fcl  { display: block; font-size: 8.5px; font-weight: 700; color: var(--crimson); text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; }
 
 /* ─── STAGE (eski uyumluluk, kullanılmıyor ama zarar vermez) ─────── */
 .hint-foot { font-size: 10px; color: var(--slate); max-width: 1100px; width: 100%; text-align: center; padding: 4px 0 8px; }
@@ -919,7 +919,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
   transform: translateY(-1px);
 }
 .hd-chip-lbl {
-  font-size: 7.5px; font-weight: 800; color: var(--muted);
+  font-size: 9px; font-weight: 800; color: var(--muted);
   text-transform: uppercase; letter-spacing: 1.1px;
 }
 .hd-chip-val {
@@ -1103,7 +1103,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
   display: flex; align-items: center; gap: 4px; margin-bottom: 3px;
 }
 .pl-icon  { font-size: 12px; flex-shrink: 0; }
-.pl-prod  { flex: 1; font-size: 7.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; }
+.pl-prod  { flex: 1; font-size: 9px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; }
 .pl-badge { font-size: 12px; flex-shrink: 0; }
 
 .pl-name {
@@ -1123,7 +1123,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
   border-top: 1px solid var(--hairline); padding-top: 5px; margin-top: 2px;
   font-size: 8.5px; font-weight: 700; color: var(--muted);
 }
-.pl-sep { font-size: 7px; color: var(--line); }
+.pl-sep { font-size: 9px; color: var(--line); }
 .pl-na  { color: var(--muted); }
 
 /* ─── HOME PAGE ÜRÜN FİLTRE SEKMELERİ ────────────────────────────── */
@@ -1374,7 +1374,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 .gecm-m-arr  { font-size: 8px; color: var(--line); }
 .gecm-m-c    { font-size: 10px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
 .gecm-m-diff { font-size: 11px; font-weight: 900; font-variant-numeric: tabular-nums; }
-.gecm-m-lbl  { font-size: 7.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.gecm-m-lbl  { font-size: 9px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
 /* Renk sınıfları */
 .gecm-pos   { color: var(--green); }
@@ -1463,7 +1463,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 }
 .edm-trio-cell + .edm-trio-cell { border-left: 1px solid var(--hairline); }
 .edm-trio-lbl {
-  font-size: 6.5px; font-weight: 800; color: var(--muted);
+  font-size: 8.5px; font-weight: 800; color: var(--muted);
   text-transform: uppercase; letter-spacing: 0.8px; line-height: 1;
 }
 .edm-trio-val {
@@ -1539,7 +1539,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
   box-shadow: 0 4px 12px rgba(10,31,92,0.25);
 }
 .hd-hero-kalan-val { font-size: 26px; font-weight: 900; line-height: 1; letter-spacing: -1px; }
-.hd-hero-kalan-lbl { font-size: 7px; font-weight: 700; opacity: 0.8; margin-top: 3px; letter-spacing: 0.8px; text-transform: uppercase; }
+.hd-hero-kalan-lbl { font-size: 9px; font-weight: 700; opacity: 0.8; margin-top: 3px; letter-spacing: 0.8px; text-transform: uppercase; }
 .hd-hero-period {
   font-size: 11px; font-weight: 700; color: var(--navy);
   border: 1.5px solid var(--line); border-radius: 6px; padding: 3px 9px; flex-shrink: 0;
@@ -1611,7 +1611,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
   flex: 1; min-width: 0; font-size: 10px; font-weight: 700; color: var(--ink);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.hd-ins-sub  { font-size: 7.5px; color: var(--muted); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hd-ins-sub  { font-size: 9px; color: var(--muted); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hd-ins-right { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
 .hd-ins-hgo   { font-size: 12px; font-weight: 900; flex-shrink: 0; }
 .hd-ins-delta { font-size: 9px; font-weight: 800; }
@@ -1743,7 +1743,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 
 /* 4. Günlük Hedef — forecast badge */
 .hd-dt-fc-bdg {
-  font-size: 7.5px; font-weight: 800; margin-left: auto;
+  font-size: 9px; font-weight: 800; margin-left: auto;
   background: rgba(10,31,92,0.06); color: var(--navy-3);
   border-radius: 6px; padding: 1px 5px; flex-shrink: 0;
 }
@@ -1757,7 +1757,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 }
 .hd-dt-gv { font-size: 11px; font-weight: 900; color: var(--ink); line-height: 1; }
 .hd-dt-gl {
-  font-size: 5.5px; font-weight: 800; color: var(--muted);
+  font-size: 8px; font-weight: 800; color: var(--muted);
   text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1px;
 }
 /* DT nums — flex wrap için align */
@@ -1832,7 +1832,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 .hd-vk-sayi div, .hd-vk-ts div { line-height: 1.5; }
 
 /* 4. Günlük Hedef etiket genişliği */
-.hd-dt-lbl { font-size: 6.5px !important; white-space: nowrap; }
+.hd-dt-lbl { font-size: 8.5px !important; white-space: nowrap; }
 
 /* 5. Executive panel başlık ikonları belirgin */
 .hd-ins-title { font-size: 11.5px !important; letter-spacing: 0; }
@@ -1897,7 +1897,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 .hdr-row         { margin-bottom: 7px !important; }
 .brand-mark      { width: 28px !important; height: 28px !important; font-size: 11px !important; }
 .brand-txt       { font-size: 11px !important; }
-.brand-txt small { font-size: 7px !important; }
+.brand-txt small { font-size: 9px !important; }
 .donem           { font-size: 9px !important; padding: 3px 8px !important; }
 .title           { font-size: 15px !important; }
 .subtitle        { font-size: 9px !important; margin-top: 2px !important; }
@@ -1905,7 +1905,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 /* 3. Liste satırı yüksekliği — %13 azalt */
 .row   { padding: 3px 12px !important; }
 .nm .p { font-size: 10.5px !important; }
-.nm .b { font-size: 7.5px !important; }
+.nm .b { font-size: 9px !important; }
 
 /* 4. HGO 4-seviye renk (≥100 yeşil · ≥80 amber · ≥70 turuncu · <70 kırmızı) */
 .chip.o { color: #92400e; background: #fff7ed; border-color: #fed7aa; }
@@ -1923,7 +1923,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 /* 7. Ftr — kompakt, lider tam adı */
 .ftr   { padding: 7px 12px !important; }
 .fs .v { font-size: 12px !important; }
-.fs .l { font-size: 7px !important; }
+.fs .l { font-size: 9px !important; }
 
 /* 8. Sayfa alt başlık — dinamik içerik için uygun boyut */
 .page-hdr-sub { font-size: 10px; letter-spacing: 0; }
@@ -1945,7 +1945,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 /* 2. Forecast rozet artık personelde de çalışır (fchip zaten var) */
 
 /* 3. İl satırı (personel altında) */
-.nm-il { font-size: 7px; color: var(--muted); font-weight: 600; letter-spacing: 0.3px; margin-top: 1px; }
+.nm-il { font-size: 9px; color: var(--muted); font-weight: 600; letter-spacing: 0.3px; margin-top: 1px; }
 
 /* 4. Progress bar — %100 tik daha belirgin */
 .tick { width: 2px !important; opacity: 0.7 !important; box-shadow: 0 0 3px rgba(10,31,92,0.35); }
@@ -1955,7 +1955,7 @@ table.mx td.val .raw { font-size: 7.5px; font-weight: 600; opacity: 0.6; margin-
 /* 6. Performans filtresi — fbar chip yoksa CSS gerekmez */
 
 /* 8. AI rozetleri */
-.ai-bdg { font-size: 7.5px; font-weight: 800; padding: 1px 4px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+.ai-bdg { font-size: 9px; font-weight: 800; padding: 1px 4px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
 .ai-bdg.ai-gg { color: #064e3b; background: #d1fae5; }
 .ai-bdg.ai-g  { color: #065f46; background: #ecfdf5; }
 .ai-bdg.ai-y  { color: #92400e; background: #fffbeb; }
@@ -2035,3 +2035,26 @@ body.exporting .card { animation: none !important; opacity: 1 !important; transf
 
 /* Sprint 11 — Güncel Veri kartı: kompakt tek satır */
 .hd-vk-compact { font-size: 10.5px; font-weight: 700; color: var(--ink); margin-top: 2px; }
+
+/* ─── SPRINT 17: GÜVEN DİLİ ──────────────────────────────────────── */
+/* EDM SY filtresi eşleşmeyince görünen uyarı şeridi */
+.edm-sy-warn {
+  background: var(--amber-soft);
+  color: var(--amber);
+  border: 1px solid #EFDCB8;
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  margin: 8px 0;
+  line-height: 1.4;
+}
+
+/* Forecast metodolojisi dipnotu (Performans Özeti altı) */
+.hd-fc-note {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 7px 4px 0;
+  line-height: 1.4;
+}

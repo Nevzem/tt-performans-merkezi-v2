@@ -200,7 +200,7 @@ function _hdChips(kpis) {
   return (
     '<div class="hd-chips hd-anim" style="--i:1">' +
       chip('OPERASYON SKORU',  String(_opsScore),
-                               _opsCls,            '4 ürün · risk ağırlıklı') +
+                               _opsCls,            'M40·D25·TV20·C15 − risk cezası') +
       chip('KRİTİK BAYİ',     String(kritikN),
                                kritikN > 0 ? 'hdc-red' : 'hdc-green', 'herhangi bir ürün <%70') +
       chip('ELİTE BAYİ',      String(eliteN),
@@ -271,7 +271,7 @@ function _hdKPIs() {
 }
 
 function _hdScorecard(kpis) {
-  function hgoCls(v) { return v===null?'':v>=100?'hd-g':v>=70?'hd-y':'hd-r'; }
+  function hgoCls(v) { var b = hgo3(v); return b ? 'hd-' + b : ''; }
   function fmtN(v)   { return (v > 0) ? v.toLocaleString('tr-TR') : '—'; }
 
   var hasDetay = kpis[0].hasDetay;
@@ -350,6 +350,7 @@ function _hdScorecard(kpis) {
           '</tbody>' +
         '</table>' +
       '</div>' +
+      (hasF ? '<div class="hd-fc-note">Forecast, mevcut tempoya göre doğrusal ay sonu tahminidir (HGO × ay günü ÷ geçen gün).</div>' : '') +
     '</div>'
   );
 }
@@ -421,7 +422,7 @@ function _hdAutoSummary(kpis) {
 
   return (
     '<div class="hd-section">' +
-      '<div class="hd-sec-title">AI Operasyon Özeti</div>' +
+      '<div class="hd-sec-title">Operasyon Notları</div>' +
       '<div class="hd-ai-grid">' + kpis.map(aiCard).join('') + '</div>' +
     '</div>'
   );
@@ -453,10 +454,10 @@ function _plCard(pm, rec, isLeader, f) {
   if (!rec) {
     return '<div class="pl-card pl-empty"><span class="pl-empty-txt">Veri yok</span></div>';
   }
-  var hgoCls = rec.g >= 100 ? 'hd-g' : rec.g >= 70 ? 'hd-y' : 'hd-r';
+  var hgoCls = 'hd-' + (hgo3(rec.g) || 'r');
   var dp     = _detayProd(rec, pm.detayKey);
   var fcHgo  = (f && rec.g !== null) ? rec.g * f.k : null;
-  var fcCls  = fcHgo === null ? '' : fcHgo >= 100 ? 'hd-g' : fcHgo >= 70 ? 'hd-y' : 'hd-r';
+  var fcCls  = fcHgo === null ? '' : 'hd-' + (hgo3(fcHgo) || 'r');
 
   var meta = [];
   meta.push('F&thinsp;<span class="' + fcCls + '">' + (fcHgo !== null ? '%' + Math.round(fcHgo) : '—') + '</span>');
@@ -516,9 +517,9 @@ function _hdRiskList() {
   var rows = worst5.length
     ? worst5.map(function(r, i) {
         var rank   = recs.length - i;
-        var hgoCls = r.g >= 100 ? 'hd-g' : r.g >= 70 ? 'hd-y' : 'hd-r';
+        var hgoCls = 'hd-' + (hgo3(r.g) || 'r');
         var fcHgo  = (f && r.g !== null) ? r.g * f.k : null;
-        var fcCls  = fcHgo === null ? '' : fcHgo >= 100 ? 'hd-g' : fcHgo >= 70 ? 'hd-y' : 'hd-r';
+        var fcCls  = fcHgo === null ? '' : 'hd-' + (hgo3(fcHgo) || 'r');
         return (
           '<div class="hrl-row">' +
             '<span class="hrl-rank">' + rank + '</span>' +
@@ -576,7 +577,7 @@ function _hdPersRanking() {
   }
 
   var rows = top10.length ? top10.map(function(r, i) {
-    var hgoCls = r.g >= 100 ? 'hd-g' : r.g >= 70 ? 'hd-y' : 'hd-r';
+    var hgoCls = 'hd-' + (hgo3(r.g) || 'r');
     var d      = detMap[r.p];
     var meta   = d && d.h > 0
       ? d.a.toLocaleString('tr-TR') + '/' + d.h.toLocaleString('tr-TR')
@@ -638,7 +639,7 @@ function _hdBayiRanking() {
   }
 
   var rows = top5.length ? top5.map(function(r, i) {
-    var hgoCls = r.g >= 100 ? 'hd-g' : r.g >= 70 ? 'hd-y' : 'hd-r';
+    var hgoCls = 'hd-' + (hgo3(r.g) || 'r');
     var d      = getDetay(r);
     var meta   = d && d.h > 0
       ? d.a.toLocaleString('tr-TR') + '/' + d.h.toLocaleString('tr-TR')
@@ -815,7 +816,7 @@ function _hdDailyTarget(kpis) {
   var cards = kpis.map(function(k) {
     var pct = k.hgo !== null ? Math.min(Math.round(k.hgo), 100) : 0;
     var barCls = pct >= 100 ? 'bar-green' : pct >= 70 ? 'bar-amber' : 'bar-red';
-    var hgoCls = k.hgo !== null ? (k.hgo >= 100 ? 'hd-g' : k.hgo >= 70 ? 'hd-y' : 'hd-r') : '';
+    var hgoCls = k.hgo !== null ? 'hd-' + (hgo3(k.hgo) || 'r') : '';
     return (
       '<div class="hd-dt-card">' +
         '<div class="hd-dt-head">' +
@@ -854,7 +855,7 @@ function _hdExecutiveInsights() {
   var risk5    = recs.slice(-5).slice().reverse();
 
   function insRow(r, i, isPod) {
-    var cls    = r.g >= 100 ? 'hd-g' : r.g >= 70 ? 'hd-y' : 'hd-r';
+    var cls    = 'hd-' + (hgo3(r.g) || 'r');
     var podCls = isPod && i < 3 ? ' hd-ins-p' + (i + 1) : '';
     var km     = r.b && r.b.match(/^(\d+)/);
     var oc     = km ? ' onclick="openDetay(\'bayi\',\'' + km[1] + '\')" style="cursor:pointer"' : '';
@@ -886,7 +887,7 @@ function _hdExecutiveInsights() {
     changes.sort(function(a, b) { return b.delta - a.delta; });
     function chgRow(c, i) {
       var isDrop = c.delta < 0;
-      var hgoCls = c.hgo >= 100 ? 'hd-g' : c.hgo >= 70 ? 'hd-y' : 'hd-r';
+      var hgoCls = 'hd-' + (hgo3(c.hgo) || 'r');
       var oc     = c.kod ? ' onclick="openDetay(\'bayi\',\'' + c.kod + '\')" style="cursor:pointer"' : '';
       return '<div class="hd-ins-row"' + oc + '>' +
         '<span class="hd-ins-n">' + (i + 1) + '</span>' +
@@ -897,10 +898,11 @@ function _hdExecutiveInsights() {
         '</div>' +
       '</div>';
     }
-    var rising      = changes.filter(function(c) { return c.delta > 0; }).slice(0, 5);
-    var leastRising = changes.slice().reverse().slice(0, 5);
-    risingHTML  = rising.length      ? rising.map(function(c, i)      { return chgRow(c, i); }).join('') : '<div class="hd-ins-empty">Artış bulunamadı.</div>';
-    fallingHTML = leastRising.length ? leastRising.map(function(c, i) { return chgRow(c, i); }).join('') : '';
+    var rising  = changes.filter(function(c) { return c.delta > 0; }).slice(0, 5);
+    /* Sprint 17: yalnızca gerçekten düşenler listelenir (başlıkla tutarlı) */
+    var falling = changes.slice().reverse().filter(function(c) { return c.delta < 0; }).slice(0, 5);
+    risingHTML  = rising.length  ? rising.map(function(c, i)  { return chgRow(c, i); }).join('') : '<div class="hd-ins-empty">Artış bulunamadı.</div>';
+    fallingHTML = falling.length ? falling.map(function(c, i) { return chgRow(c, i); }).join('') : '<div class="hd-ins-empty">Düşüş yok — tüm bayiler artıda.</div>';
   }
 
   function panel(title, rows, idx) {
@@ -920,7 +922,7 @@ function _hdExecutiveInsights() {
         panel('🔥 En İyi 5 Bayi',    top5HTML,    4) +
         panel('⚠️ Riskli 5 Bayi',   risk5HTML,   5) +
         panel('📈 En Çok Yükselen', risingHTML,  6) +
-        panel('📉 En Az Yükselen',   fallingHTML, 7) +
+        panel('📉 En Çok Düşen',    fallingHTML, 7) +
       '</div>' +
     '</div>'
   );

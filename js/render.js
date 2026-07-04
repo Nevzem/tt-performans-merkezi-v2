@@ -95,7 +95,19 @@ function filt(recs) {
 function setSy(s) { sy = s; buildTabs(); render(); }
 
 /* ───── YARDIMCILAR ───── */
-const cls = g => g >= 120 ? "gg" : g >= 100 ? "g" : g >= 80 ? "y" : g >= 70 ? "o" : "r";
+/* Sprint 17: MERKEZİ HGO RENK EŞİĞİ — tüm ekranlar bu iki fonksiyonu kullanır.
+   ≥120 gg (koyu yeşil) · ≥100 g (yeşil) · ≥80 y (sarı) · ≥70 o (turuncu) · <70 r (kırmızı) */
+function hgoBand(g) {
+  if (g === null || g === undefined || isNaN(g)) return null;
+  return g >= 120 ? "gg" : g >= 100 ? "g" : g >= 80 ? "y" : g >= 70 ? "o" : "r";
+}
+/* 3 seviyeli sadeleştirme: g / y / r (null → "") */
+function hgo3(g) {
+  const b = hgoBand(g);
+  if (b === null) return "";
+  return (b === "gg" || b === "g") ? "g" : (b === "y" || b === "o") ? "y" : "r";
+}
+const cls = g => hgoBand(g) || "r";
 function fc() {
   const d = parseInt(document.getElementById("day-now").value);
   const t = parseInt(document.getElementById("day-total").value);
@@ -311,14 +323,15 @@ function renderMatrix() {
 
 
 /* ───── SY GÖRÜNÜMÜ (mobil kart) ───── */
-function renderSY() {
+function renderSY(onlyNames) {
   const S = SYDATA;
   const prods = S.products && S.products.length ? S.products : ["Mobil Toplam"];
   if (!prods.includes(syProd)) syProd = prods[0];
-  const names = Object.keys(S.sy);
+  /* Sprint 17: onlyNames verilirse (EDM SY görünümü) yalnız o SY'ler listelenir */
+  const names = (onlyNames && onlyNames.length) ? onlyNames : Object.keys(S.sy);
 
   const PICO = { "Mobil Toplam":"📱","Faturalı":"📄","Faturasız":"📲","Evde İnternet":"🌐","IPTV":"📺","Uydu":"📡","Tivibu Toplam":"📺","Cihaz":"📦","Cihaz Diğer":"🔌" };
-  const cls = g => g === null ? "" : g >= 100 ? "g" : g >= 80 ? "y" : "r";
+  const cls = g => hgo3(g);
 
   /* HGO'ya göre sırala */
   let ranked = names
@@ -475,7 +488,7 @@ function renderDetay() {
   const sel = '<select class="detay-sel" onchange="setDetayKod(this.value)">' +
     kodlar.map(k => '<option value="' + k + '"' + (k === detayKod ? " selected" : "") + '>' + D.bayiler[k].b + ' · ' + D.bayiler[k].il + '</option>').join("") + '</select>';
 
-  const cls = g => g===null?"":g>=100?"g":g>=60?"y":"r";
+  const cls = g => hgo3(g);
   // Çalışma günü (SY ÖZET'ten)
   const _gA = (SYDATA.calismaGun)||0, _gB = (SYDATA.calisilanGun)||0;
   const ayGun = Math.max(_gA,_gB), gecenGun = Math.min(_gA,_gB);
@@ -560,7 +573,7 @@ function renderTrend() {
 
   // Mevcut günkü liste (DATA'dan) + her birinin trendi
   const list = (DATA[trendScope][trendProd] || []).slice();
-  const cls = g => g===null?"":g>=100?"g":g>=60?"y":"r";
+  const cls = g => hgo3(g);
 
   let rows = "";
   const infoBar = days.length < 2
