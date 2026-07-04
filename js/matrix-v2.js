@@ -66,11 +66,13 @@ function buildMatrixHeader() {
     '<th rowspan="2" style="' + thS + 'font-size:11px;width:' + MV2_W.ad   + 'px;text-align:left;padding-left:8px;">Bayi Adı</th>';
 
   MV2_COLS.forEach(function(col) {
-    var span = col.single ? 1 : 2;
-    r1 += '<th colspan="' + span + '" style="background:' + col.thBg + ';color:#fff;' +
+    /* Aktif sıralama kolonu altın alt çizgiyle vurgulanır */
+    var on = (typeof matrixSort !== 'undefined' && matrixSort === col.key);
+    r1 += '<th colspan="2" style="background:' + col.thBg + ';color:#fff;' +
       'border:' + bNav + ';padding:7px 4px;font-size:12px;font-weight:900;text-align:center;' +
-      'letter-spacing:0.3px;cursor:pointer;" onclick="setMatrixSort(\'' + col.key + '\')">' +
-      col.label + '</th>';
+      'letter-spacing:0.3px;cursor:pointer;' +
+      (on ? 'border-bottom:3px solid #C9A227;' : '') +
+      '" onclick="setMatrixSort(\'' + col.key + '\')">' + col.label + '</th>';
   });
   r1 += '</tr>';
 
@@ -117,7 +119,7 @@ function buildMatrixGrid() {
     MV2_COLS.forEach(function(col) {
       var raw = (r[col.key] !== undefined) ? r[col.key] : null;
       html += matrixCell(raw, 13);
-      if (!col.single) html += matrixCell(fcV(raw), 12);
+      html += matrixCell(fcV(raw), 12);
     });
 
     return html + '</tr>';
@@ -132,30 +134,24 @@ function buildMatrixFooter() {
   var f  = (typeof fc === 'function') ? fc() : null;
   var fcV = function(v) { return (f && v !== null && v !== undefined) ? Math.round(v * f.k) : null; };
 
+  /* Toplam satırları performans rengi ALMAZ — başlık lacivertleri zemin olur,
+     değerler beyaz yazılır. KUZEY satırının üstünde altın ayrım çizgisi. */
   function totRow(totData, label, isDark) {
-    var rowBg = isDark ? '#0C2860' : '#1A3A70';
-    var bOrd  = '1px solid rgba(255,255,255,0.12)';
-    var tdBase = 'background:' + rowBg + ';border:' + bOrd + ';height:45px;vertical-align:middle;';
+    var rowBg  = isDark ? '#0C2860' : '#1A3A70';
+    var bOrd   = '1px solid rgba(255,255,255,0.16)';
+    var topL   = isDark ? 'border-top:2px solid #C9A227;' : '';
+    var tdBase = 'background:' + rowBg + ';border:' + bOrd + ';' + topL + 'height:45px;vertical-align:middle;';
     var html   = '<tr>' +
       '<td colspan="3" style="' + tdBase + 'padding:0 10px;font-size:12px;font-weight:900;' +
-        'color:#fff;text-align:left;">&#9646; ' + label + '</td>';
+        'color:#fff;text-align:left;letter-spacing:0.4px;">&#9646; ' + label + '</td>';
 
     MV2_COLS.forEach(function(col) {
       var raw = (totData && totData[col.key] !== undefined) ? totData[col.key] : null;
-      var fv  = (!col.single && raw !== null) ? fcV(raw) : null;
-      var c   = matrixColorScale(raw);
-      var cs  = matrixColorScale(fv);
+      var fv  = raw !== null ? fcV(raw) : null;
       var str = (raw !== null && raw !== undefined) ? '%' + Math.round(raw) : '—';
       var fs  = fv !== null ? '%' + fv : '—';
-
-      html += '<td style="' + tdBase + 'background:' + (raw !== null ? c.bg : 'rgba(255,255,255,0.06)') + ';' +
-        'color:' + (raw !== null ? c.fg : '#8899B4') + ';' +
-        'text-align:center;font-size:13px;font-weight:800;">' + str + '</td>';
-      if (!col.single) {
-        html += '<td style="' + tdBase + 'background:' + (fv !== null ? cs.bg : 'rgba(255,255,255,0.06)') + ';' +
-          'color:' + (fv !== null ? cs.fg : '#8899B4') + ';' +
-          'text-align:center;font-size:12px;font-weight:700;">' + fs + '</td>';
-      }
+      html += '<td style="' + tdBase + 'text-align:center;font-size:13px;font-weight:800;color:#FFFFFF;">' + str + '</td>';
+      html += '<td style="' + tdBase + 'text-align:center;font-size:12px;font-weight:700;color:rgba(255,255,255,0.72);">' + fs + '</td>';
     });
 
     return html + '</tr>';
@@ -286,9 +282,12 @@ function _buildMatrixExportDOM() {
     '<th rowspan="2" style="' + thS + 'font-size:18px;width:' + W.kod  + 'px;">Kodu</th>' +
     '<th rowspan="2" style="' + thS + 'font-size:18px;width:' + W.ad + 'px;text-align:left;padding-left:14px;">Bayi Adı</th>';
   MV2_COLS.forEach(function(col) {
-    h1 += '<th colspan="' + (col.single ? 1 : 2) + '" style="background:' + col.thBg + ';color:#fff;' +
+    var on = (col.key === sKey);
+    h1 += '<th colspan="2" style="background:' + col.thBg + ';color:#fff;' +
       'border:' + bNav + ';padding:12px 6px;font-size:24px;font-weight:900;' +
-      'text-align:center;letter-spacing:0.3px;">' + col.label + '</th>';
+      'text-align:center;letter-spacing:0.3px;' +
+      (on ? 'border-bottom:5px solid #C9A227;' : '') +
+      '">' + col.label + '</th>';
   });
   h1 += '</tr>';
 
@@ -320,36 +319,30 @@ function _buildMatrixExportDOM() {
     MV2_COLS.forEach(function(col) {
       var raw = (r[col.key] !== undefined) ? r[col.key] : null;
       html += eCell(raw, 22, tdH);
-      if (!col.single) html += eCell(fcV(raw), 20, tdH);
+      html += eCell(fcV(raw), 20, tdH);
     });
     return html + '</tr>';
   }).join('');
 
   /* Toplam satırları (export) */
+  /* Toplam satırları (export) — heatmap yok, başlık lacivertleri zemin, beyaz değerler */
   function eTotRow(totData, label, isDark) {
     var rowBg  = isDark ? '#0C2860' : '#1A3A70';
-    var bOrd2  = '1px solid rgba(255,255,255,0.12)';
+    var bOrd2  = '1px solid rgba(255,255,255,0.16)';
+    var topL   = isDark ? 'border-top:3px solid #C9A227;' : '';
     var tdH    = 56;
-    var tdBase = 'border:' + bOrd2 + ';height:' + tdH + 'px;vertical-align:middle;';
+    var tdBase = 'background:' + rowBg + ';border:' + bOrd2 + ';' + topL + 'height:' + tdH + 'px;vertical-align:middle;';
     var html   = '<tr>' +
-      '<td colspan="3" style="background:' + rowBg + ';' + tdBase + ';' +
-        'padding:0 14px;font-size:20px;font-weight:900;color:#fff;text-align:left;">' +
+      '<td colspan="3" style="' + tdBase +
+        'padding:0 14px;font-size:20px;font-weight:900;color:#fff;text-align:left;letter-spacing:0.5px;">' +
         '&#9646; ' + label + '</td>';
     MV2_COLS.forEach(function(col) {
       var raw = (totData && totData[col.key] !== undefined) ? totData[col.key] : null;
-      var fv  = (!col.single && raw !== null) ? fcV(raw) : null;
-      var c   = matrixColorScale(raw);
-      var cs  = matrixColorScale(fv);
+      var fv  = raw !== null ? fcV(raw) : null;
       var str = (raw !== null && raw !== undefined) ? '%' + Math.round(raw) : '—';
       var fs  = fv !== null ? '%' + fv : '—';
-      html += '<td style="background:' + (raw !== null ? c.bg : 'rgba(255,255,255,0.06)') + ';' +
-        'color:' + (raw !== null ? c.fg : '#8899B4') + ';' +
-        'text-align:center;font-size:24px;font-weight:900;' + tdBase + '">' + str + '</td>';
-      if (!col.single) {
-        html += '<td style="background:' + (fv !== null ? cs.bg : 'rgba(255,255,255,0.06)') + ';' +
-          'color:' + (fv !== null ? cs.fg : '#8899B4') + ';' +
-          'text-align:center;font-size:22px;font-weight:800;' + tdBase + '">' + fs + '</td>';
-      }
+      html += '<td style="' + tdBase + 'text-align:center;font-size:24px;font-weight:900;color:#FFFFFF;">' + str + '</td>';
+      html += '<td style="' + tdBase + 'text-align:center;font-size:20px;font-weight:700;color:rgba(255,255,255,0.72);">' + fs + '</td>';
     });
     return html + '</tr>';
   }
