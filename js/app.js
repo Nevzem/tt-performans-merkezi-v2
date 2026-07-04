@@ -101,7 +101,30 @@ function _setDataHeader(title, sub) {
   };
 })();
 
+/* ─── SÜRÜM & GÜNCELLEME ─────────────────── */
+/* Güncelle butonu: SW kaydını ve tüm önbellekleri temizler,
+   benzersiz sorgu ile sayfayı yeniden yükler — CDN/tarayıcı
+   önbelleğini atlayıp en son yayını garanti eder. */
+async function forceUpdate() {
+  try {
+    if ('serviceWorker' in navigator) {
+      var regs = await navigator.serviceWorker.getRegistrations();
+      for (var i = 0; i < regs.length; i++) await regs[i].unregister();
+    }
+    if (window.caches) {
+      var keys = await caches.keys();
+      for (var j = 0; j < keys.length; j++) await caches.delete(keys[j]);
+    }
+  } catch (e) {}
+  location.replace(location.origin + location.pathname + '?upd=' + Date.now());
+}
+
 /* ─── BAŞLANGIÇ ──────────────────────────── */
+/* Sürüm damgası — Ayarlar > Sürüm kartı */
+(function() {
+  var v = document.getElementById('version-info');
+  if (v && typeof APP_BUILD !== 'undefined') v.textContent = APP_BUILD;
+})();
 buildTabs();
 try { trendCapture(); } catch(e) {}
 render();

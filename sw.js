@@ -5,12 +5,13 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-v1';
+const CACHE = 'ttpm-v2';
 
 const ASSETS = [
   '.',
   'index.html',
   'manifest.webmanifest',
+  'js/version.js',
   'css/style.css',
   'css/matrix-v2.css',
   'js/data.js',
@@ -52,7 +53,10 @@ self.addEventListener('activate', function (e) {
 self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET') return;
   e.respondWith(
-    fetch(e.request)
+    /* cache:'no-cache' — tarayıcının HTTP disk önbelleğini atlayıp sunucuyla
+       doğrular (ETag ile ucuz). GitHub Pages'in 10 dakikalık max-age'i yüzünden
+       güncellemelerin geç görünmesini engeller. */
+    fetch(e.request, { cache: 'no-cache' })
       .then(function (res) {
         /* Aynı origin'den başarılı yanıtları önbelleğe yaz */
         if (res.ok && e.request.url.indexOf(self.location.origin) === 0) {
