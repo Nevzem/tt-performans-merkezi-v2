@@ -42,20 +42,7 @@ function _detayFromB(b) {
 function _detayPers(p, b) { openDetay('pers', p, b); }
 
 /* ─── Yardımcılar ─── */
-function _dKalanGun() {
-  if (typeof SYDATA !== 'undefined' && SYDATA && SYDATA.calismaGun && SYDATA.calisilanGun) {
-    var ay = Math.max(SYDATA.calismaGun, SYDATA.calisilanGun);
-    var gc = Math.min(SYDATA.calismaGun, SYDATA.calisilanGun);
-    if (ay > gc) return ay - gc;
-  }
-  var dn = document.getElementById('day-now');
-  var dt = document.getElementById('day-total');
-  if (dn && dt && dn.value && dt.value) {
-    var k = parseInt(dt.value) - parseInt(dn.value);
-    if (k > 0) return k;
-  }
-  return null;
-}
+function _dKalanGun() { return gunInfo().kalanGun; } /* Sprint 19: merkezi gün hesabı */
 
 var _DICONS = {
   'Toplam Mobil':'📱','Postpaid':'📄','Faturalı':'📄','Prepaid':'📲','Faturasız':'📲',

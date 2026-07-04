@@ -55,6 +55,9 @@ let DATA_HEALTH   = null;    /* { bayiCount, persCount, syCount, warnings[], ok 
 const EDM_SY_NAMES = ['Tümü', ...APP_CONFIG.edmSY];
 
 /* ───── ANA STATE DEĞİŞKENLERİ ───── */
+/* Sprint 19: Forecast gün bilgisi state'te tutulur (fc() artık DOM okumaz) */
+let DAY_NOW   = null;  /* Ayarlar > Forecast "Geçen gün"  */
+let DAY_TOTAL = null;  /* Ayarlar > Forecast "Ay toplam"  */
 let PREV = null;
 let DONEM = "2026/06";
 let section = "pers";

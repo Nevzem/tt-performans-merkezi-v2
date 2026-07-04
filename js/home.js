@@ -182,11 +182,7 @@ var _HD_PRODS = [
 
 function _hdKPIs() {
   var f        = fc();
-  var _gA      = (SYDATA && SYDATA.calismaGun)  || 0;
-  var _gB      = (SYDATA && SYDATA.calisilanGun) || 0;
-  var ayGun    = Math.max(_gA, _gB);
-  var gecenGun = Math.min(_gA, _gB);
-  var kalanGun = (ayGun > 0 && gecenGun > 0 && ayGun > gecenGun) ? ayGun - gecenGun : null;
+  var kalanGun = gunInfo().kalanGun;
   var _filteredBayiler = _hdDetayFiltered();
   var hasDetay = DETAY && Object.keys(_filteredBayiler).length > 0;
 
@@ -353,6 +349,14 @@ function _hpTabs(activeKey, setter, small, prods) {
   '</div>';
 }
 
+/* Sprint 19: ortak madalya/rozet üretici (Personel + Bayi sıralamaları) */
+function _rnkBadge(i) {
+  if (i === 0) return '<span class="rnk-badge">🥇</span>';
+  if (i === 1) return '<span class="rnk-badge">🥈</span>';
+  if (i === 2) return '<span class="rnk-badge">🥉</span>';
+  return '<span class="rnk-n">' + (i + 1) + '</span>';
+}
+
 /* ══════════════════════════════════════════
    7. PERSONEL ÜRÜN SIRALAMASI
    ══════════════════════════════════════════ */
@@ -376,13 +380,6 @@ function _hdPersRanking() {
     }
   }
 
-  function rkBadge(i) {
-    if (i === 0) return '<span class="rnk-badge">🥇</span>';
-    if (i === 1) return '<span class="rnk-badge">🥈</span>';
-    if (i === 2) return '<span class="rnk-badge">🥉</span>';
-    return '<span class="rnk-n">' + (i + 1) + '</span>';
-  }
-
   var rows = top10.length ? top10.map(function(r, i) {
     var hgoCls = 'hd-' + (hgo3(r.g) || 'r');
     var d      = detMap[r.p];
@@ -392,7 +389,7 @@ function _hdPersRanking() {
     return (
       '<div class="rnk-row' + (i < 3 ? ' rnk-pod rnk-p' + (i + 1) : '') + '">' +
         '<div class="rnk-lft">' +
-          rkBadge(i) +
+          _rnkBadge(i) +
           '<div class="rnk-txt">' +
             '<div class="rnk-name">' + r.p + '</div>' +
             '<div class="rnk-sub">' + r.b + '</div>' +
@@ -440,13 +437,6 @@ function _hdBayiRanking() {
     return bayi.prods[dk] || null;
   }
 
-  function rkBadge(i) {
-    if (i === 0) return '<span class="rnk-badge">🥇</span>';
-    if (i === 1) return '<span class="rnk-badge">🥈</span>';
-    if (i === 2) return '<span class="rnk-badge">🥉</span>';
-    return '<span class="rnk-n">' + (i + 1) + '</span>';
-  }
-
   var rows = top5.length ? top5.map(function(r, i) {
     var hgoCls = 'hd-' + (hgo3(r.g) || 'r');
     var d      = getDetay(r);
@@ -456,7 +446,7 @@ function _hdBayiRanking() {
     return (
       '<div class="rnk-row' + (i < 3 ? ' rnk-pod rnk-p' + (i + 1) : '') + '">' +
         '<div class="rnk-lft">' +
-          rkBadge(i) +
+          _rnkBadge(i) +
           '<div class="rnk-txt">' +
             '<div class="rnk-name">' + r.p + '</div>' +
             '<div class="rnk-sub">' + r.b + '</div>' +
@@ -495,17 +485,7 @@ function _hdHero() {
     if (_ts) { var _d = new Date(_ts); loadTs = _d.toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
   } catch(_e) {}
 
-  var kalanGun = null;
-  var _gA = (typeof SYDATA !== 'undefined' && SYDATA && SYDATA.calismaGun)  || 0;
-  var _gB = (typeof SYDATA !== 'undefined' && SYDATA && SYDATA.calisilanGun) || 0;
-  if (_gA > 0 && _gB > 0) kalanGun = Math.max(_gA - _gB, 0);
-  if (kalanGun === null) {
-    try {
-      var _dnEl = document.getElementById('day-now');
-      var _dtEl = document.getElementById('day-total');
-      if (_dnEl && _dtEl && _dnEl.value && _dtEl.value) kalanGun = Math.max(parseInt(_dtEl.value) - parseInt(_dnEl.value), 0);
-    } catch(_e2) {}
-  }
+  var kalanGun = gunInfo().kalanGun;
 
   var dhHtml = '';
   if (typeof DATA_HEALTH !== 'undefined' && DATA_HEALTH) {

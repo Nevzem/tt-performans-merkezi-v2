@@ -108,10 +108,26 @@ function hgo3(g) {
   return (b === "gg" || b === "g") ? "g" : (b === "y" || b === "o") ? "y" : "r";
 }
 const cls = g => hgoBand(g) || "r";
+/* Sprint 19: gün bilgisi state'ten okunur; input değişince syncDayInputs() günceller */
+function syncDayInputs() {
+  const dn = document.getElementById("day-now");
+  const dt = document.getElementById("day-total");
+  DAY_NOW   = (dn && dn.value) ? parseInt(dn.value) : null;
+  DAY_TOTAL = (dt && dt.value) ? parseInt(dt.value) : null;
+}
 function fc() {
-  const d = parseInt(document.getElementById("day-now").value);
-  const t = parseInt(document.getElementById("day-total").value);
+  const d = DAY_NOW, t = DAY_TOTAL;
   return (d > 0 && t > 0 && d <= t) ? { d, t, k: t / d } : null;
+}
+/* Sprint 19: MERKEZİ GÜN HESABI — SY ÖZET öncelikli, yoksa manuel forecast girdisi.
+   6 farklı yerde tekrarlanan kalan-gün mantığının tek kaynağı. */
+function gunInfo() {
+  var a = (typeof SYDATA !== 'undefined' && SYDATA && SYDATA.calismaGun)   || 0;
+  var b = (typeof SYDATA !== 'undefined' && SYDATA && SYDATA.calisilanGun) || 0;
+  var ayGun = Math.max(a, b), gecenGun = Math.min(a, b);
+  var kalanGun = (ayGun > 0 && gecenGun > 0 && ayGun > gecenGun) ? ayGun - gecenGun : null;
+  if (kalanGun === null) { var f = fc(); if (f && f.t > f.d) kalanGun = f.t - f.d; }
+  return { ayGun: ayGun, gecenGun: gecenGun, kalanGun: kalanGun };
 }
 /* ── Sprint 9: Performans filtre yardımcısı ── */
 function _applyPerfF(r, pf) {
@@ -241,85 +257,10 @@ function cardHTML(prodKey) {
 }
 
 
-/* ───── MATRİS RENK + RENDER ───── */
-function heat(v) {
-  if (v === null || v === undefined) return "background:#F4F6FA;color:#B0B8C8";
-  // 0..150 arası yeşil-sarı-kırmızı skala (100 = nötr yeşilimsi)
-  let h;
-  if (v >= 100) h = 130;
-  else if (v >= 80) h = 90 + (v - 80);
-  else if (v >= 60) h = 45 + (v - 60) * 2.25;
-  else if (v >= 40) h = 20 + (v - 40) * 1.25;
-  else h = Math.max(0, v * 0.5);
-  const sat = 62, lig = v >= 100 ? 70 : 72;
-  const txt = (h < 30 && v < 55) ? "#7A1212" : "#143A1E";
-  return "background:hsl(" + h + "," + sat + "%," + lig + "%);color:" + txt;
-}
-function mxCell(v, isFc) {
-  if (v === null || v === undefined) return '<td class="val" style="' + heat(null) + '">—</td>';
-  return '<td class="val" style="' + heat(v) + '">%' + Math.round(v) + '</td>';
-}
+/* ───── MATRİS ─────
+   Sprint 19: eski renderMatrix() + heat() + mxCell() silindi.
+   Matris artık tek motor: matrix-v2.js → renderMatrixV2() / matrixExportV2(). */
 function setMatrixSort(p) { matrixSort = p; render(); }
-function renderMatrix() {
-  const M = MATRIX;
-  const f = fc();
-  const k = f ? f.k : null;
-  const PCOLS = [
-    { key: "mobil", lbl: "MOBİL", c: "grp-mobil" },
-    { key: "dsl", lbl: "DSL", c: "grp-dsl" },
-    { key: "iptv", lbl: "İP TV", c: "grp-iptv" },
-    { key: "ipdsl", lbl: "İP/DSL", c: "grp-ipdsl" },
-    { key: "uydu", lbl: "UYDU", c: "grp-uydu" },
-    { key: "tv", lbl: "TV", c: "grp-tv" },
-    { key: "cihaz", lbl: "CİHAZ", c: "grp-cihaz" },
-  ];
-  const sortLbl = (PCOLS.find(p => p.key === matrixSort) || {lbl:"MOBİL"}).lbl;
-  let head1 = '<th colspan="3" style="background:#0A1733;color:#fff" class="grp">' + sortLbl + ' SIRALAMA</th>';
-  let head2 = '<th class="sub">Sıra</th><th class="sub">Bayi Kodu</th><th class="sub">Bayi Adı</th>';
-  for (const p of PCOLS) {
-    head1 += '<th class="grp ' + p.c + '">' + p.lbl + '</th>';
-    head2 += '<th class="sub">Forecast</th>';
-  }
-  const fcVal = (v) => (k && v !== null && v !== undefined) ? v * k : null;
-  const sortedRows = M.rows.slice().sort((a, b) => {
-    const av = a[matrixSort], bv = b[matrixSort];
-    return (bv == null ? -1 : bv) - (av == null ? -1 : av);
-  });
-  let body = "";
-  sortedRows.forEach((r, i) => {
-    let tds = '<td class="idx">' + (i + 1) + '</td><td class="kod">' + r.kod + '</td>' +
-      '<td class="bn">' + r.b + '<small> · ' + r.il + '</small></td>';
-    for (const p of PCOLS) {
-      const raw = r[p.key];
-      const fv = fcVal(raw);
-      if (fv === null) tds += '<td class="val" style="' + heat(raw) + '">' + (raw === null ? "—" : "%" + Math.round(raw)) + '<div class="raw">HGO</div></td>';
-      else tds += '<td class="val" style="' + heat(fv) + '">%' + Math.round(fv) + '<div class="raw">HGO %' + Math.round(raw) + '</div></td>';
-    }
-    body += '<tr>' + tds + '</tr>';
-  });
-  function totRow(t, lbl, klass) {
-    let tds = '<td class="lbl" colspan="3">' + lbl + '</td>';
-    for (const p of PCOLS) {
-      const raw = t[p.key];
-      const fv = fcVal(raw);
-      const st = fv === null ? "background:rgba(255,255,255,0.1)" : "";
-      tds += '<td style="' + st + '">' + (fv === null ? (raw === null ? "—" : "%" + Math.round(raw)) : "%" + Math.round(fv)) + '<div style="font-size:7.5px;opacity:0.7;font-weight:600">' + (raw === null ? "" : "HGO %" + Math.round(raw)) + '</div></td>';
-    }
-    return '<tr class="mx-foot ' + klass + '">' + tds + '</tr>';
-  }
-  const sub = sortLbl + " HGO sıralaması · " + M.rows.length + " bayi · Forecast HGO" + (f ? " · " + f.d + "/" + f.t + ". gün" : " — gün bilgisi girilmeli");
-  document.getElementById("cards").className = "cards";
-  document.getElementById("cards").style.maxWidth = "1500px";
-  const sortSel = '<div class="mx-sortbar">📊 Sıralama: ' + PCOLS.map(p =>
-    '<button class="tab' + (p.key === matrixSort ? " on-prod" : "") + '" onclick="setMatrixSort(\'' + p.key + '\')">' + p.lbl + '</button>').join("") + '</div>';
-  document.getElementById("cards").innerHTML = sortSel +
-    '<div class="matrix-wrap" id="matrix-card"><div class="matrix-hd"><div class="ttl">📋 Konsolide Forecast Matrisi<small>Kuzey Anadolu · Tüm Ürünler · Ay Sonu Tahmini</small></div><div class="dn">' + DONEM + '</div></div>' +
-    (f ? '' : '<div style="background:#FBF2E2;color:#B26B00;font-size:11px;font-weight:600;padding:8px 16px;border-bottom:1px solid #EFDCB8">⚠️ Forecast için sol panele "Geçen gün" ve "Ay toplam" bilgisini girin</div>') +
-    '<div style="overflow-x:auto"><table class="mx"><thead><tr>' + head1 + '</tr><tr>' + head2 + '</tr></thead>' +
-    '<tbody>' + body + '</tbody>' +
-    '<tfoot>' + totRow(M.kuzey, "KUZEY ANADOLU", "kuzey") + totRow(M.anadolu, "ANADOLU", "anadolu") + '</tfoot>' +
-    '</table></div></div>';
-}
 
 
 /* ───── SY GÖRÜNÜMÜ (mobil kart) ───── */
@@ -369,9 +310,8 @@ function renderSY(onlyNames) {
   }
 
   let rows = "";
-  const _gA = S.calismaGun || 0, _gB = S.calisilanGun || 0;
-  const ayGun = Math.max(_gA, _gB), gecenGun = Math.min(_gA, _gB);
-  const kalanGun = (ayGun > 0 && gecenGun > 0 && ayGun > gecenGun) ? (ayGun - gecenGun) : null;
+  const _gi = gunInfo();
+  const ayGun = _gi.ayGun, gecenGun = _gi.gecenGun, kalanGun = _gi.kalanGun;
 
   ranked.forEach((r, i) => {
     const hgo     = r.h > 0 ? Math.round(r.a / r.h * 1000) / 10 : null;
@@ -489,10 +429,7 @@ function renderDetay() {
     kodlar.map(k => '<option value="' + k + '"' + (k === detayKod ? " selected" : "") + '>' + D.bayiler[k].b + ' · ' + D.bayiler[k].il + '</option>').join("") + '</select>';
 
   const cls = g => hgo3(g);
-  // Çalışma günü (SY ÖZET'ten)
-  const _gA = (SYDATA.calismaGun)||0, _gB = (SYDATA.calisilanGun)||0;
-  const ayGun = Math.max(_gA,_gB), gecenGun = Math.min(_gA,_gB);
-  const kalanGun = (ayGun>0 && gecenGun>0 && ayGun>gecenGun) ? ayGun-gecenGun : null;
+  const kalanGun = gunInfo().kalanGun;
 
   // Bayi ürün satırları
   let prows = "";
@@ -613,9 +550,6 @@ function renderRisk() {
   const cards = document.getElementById("cards");
   cards.className = "cards single"; cards.style.maxWidth = "440px";
   const f = fc();
-  const _gA=(SYDATA.calismaGun)||0,_gB=(SYDATA.calisilanGun)||0;
-  const ayGun=Math.max(_gA,_gB),gecenGun=Math.min(_gA,_gB);
-  const kalanGun=(ayGun>0&&gecenGun>0&&ayGun>gecenGun)?ayGun-gecenGun:null;
 
   // Hem personel hem bayi, tüm ana ürünlerde forecast<100 + düşüş trendi olanları topla
   const PRD = ["Toplam Mobil","DSL","Toplam TV"];
@@ -698,7 +632,7 @@ function setLayout(l) {
 
 function render() {
   const cards = document.getElementById("cards");
-  if (section === "matrix") { cards.style.maxWidth = "1500px"; renderMatrix(); return; }
+  if (section === "matrix") { cards.style.maxWidth = "100%"; renderMatrixV2(); return; }
   if (section === "sy") { renderSY(); return; }
   if (section === "kupa") { cards.style.maxWidth = "330px"; renderKupa(); return; }
   if (section === "detay") { cards.style.maxWidth = "490px"; renderDetay(); return; }

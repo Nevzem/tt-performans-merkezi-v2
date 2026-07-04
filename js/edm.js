@@ -206,14 +206,7 @@ function _edmPageHeader() {
     if (_ts) { var _d = new Date(_ts); loadTs = _d.toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
   } catch(_e) {}
 
-  var kalanGun = null;
-  try {
-    var _dnEl = document.getElementById('day-now');
-    var _dtEl = document.getElementById('day-total');
-    if (_dnEl && _dtEl && _dnEl.value && _dtEl.value) kalanGun = Math.max(parseInt(_dtEl.value) - parseInt(_dnEl.value), 0);
-  } catch(_e2) {}
-  if (kalanGun === null && typeof SYDATA !== 'undefined' && SYDATA && SYDATA.calismaGun && SYDATA.calisilanGun)
-    kalanGun = Math.max(SYDATA.calismaGun - SYDATA.calisilanGun, 0);
+  var kalanGun = gunInfo().kalanGun;
 
   var kalanBlock = kalanGun !== null
     ? '<div class="hd-hero-kalan"><div class="hd-hero-kalan-val">' + kalanGun + '</div><div class="hd-hero-kalan-lbl">Kalan Gün</div></div>'
@@ -435,7 +428,7 @@ function renderEDMBayi(prodKey) {
     var fcCls = fcAktiv !== null && r.h > 0 && fcAktiv >= r.h ? 'edm-trio-ok' : 'edm-trio-warn';
     var btCls = r.bt === 'TTBN' ? 'edm-bt-ttbn' : r.bt === 'ESN' ? 'edm-bt-esn' : 'edm-bt-other';
     var btTag = r.bt ? '<span class="edm-bt-tag ' + btCls + '">' + r.bt + '</span>' : '';
-    var rk = i < 3 ? '<span class="badge b' + (i+1) + '">' + (i+1) + '</span>' : '<span class="n">' + (i+1) + '</span>';
+    var rk = rkHTML(i + 1);
     var _km = r.b && r.b.match(/^(\d+)/);
     var _oc = _km ? ' onclick="openDetay(\'bayi\',\'' + _km[1] + '\')" style="cursor:pointer"' : '';
     return '<div class="row' + (i < 3 ? ' r' + (i+1) : '') + '"' + _oc + '>' +
@@ -534,7 +527,7 @@ function renderEDMPers(prodKey) {
     var g       = groups[name];
     var fcAktiv = (f && g.a > 0) ? Math.round(g.a * f.k) : null;
     var fcCls   = fcAktiv !== null && g.h > 0 && fcAktiv >= g.h ? 'edm-trio-ok' : 'edm-trio-warn';
-    var rk = i < 3 ? '<span class="badge b' + (i+1) + '">' + (i+1) + '</span>' : '<span class="n">' + (i+1) + '</span>';
+    var rk = rkHTML(i + 1);
     return '<div class="row' + (i < 3 ? ' r' + (i+1) : '') + '">' +
       '<div class="rk">' + rk + '</div>' +
       '<div class="nm">' +

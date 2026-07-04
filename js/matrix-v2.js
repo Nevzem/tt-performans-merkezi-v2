@@ -1,6 +1,6 @@
 /* ════════════════════════════════════════════════════════════════════
    js/matrix-v2.js  —  Matrix Engine V2 (Premium Excel Edition)
-   Sprint 16  |  Eski renderMatrix() koduna dokunulmaz.
+   Sprint 16  |  Sprint 19'dan itibaren matrisin TEK motoru (eski renderMatrix silindi).
    ════════════════════════════════════════════════════════════════════ */
 
 /* ─── ÜRÜN TANIMI ─────────────────────────────────────────────────── */
@@ -480,19 +480,5 @@ async function matrixExportV2() {
   if (valEl) valEl.textContent = orig;
 }
 
-/* ─── RENDER OVERRIDE ─────────────────────────────────────────────── */
-
-(function() {
-  /* render() app.js tarafından zaten sarmalanmış; üzerine bir kat daha */
-  var __prevRender = render;
-  render = function() {
-    if ((typeof section !== 'undefined') && section === 'matrix') {
-      var cards = document.getElementById('cards');
-      if (cards) cards.style.maxWidth = '100%';
-      renderMatrixV2();
-      if (typeof buildFilterBar === 'function') buildFilterBar();
-      return;
-    }
-    __prevRender();
-  };
-})();
+/* Sprint 19: render override kaldırıldı — render.js'in matrix dalı
+   artık renderMatrixV2()'yi doğrudan çağırıyor (eski renderMatrix silindi). */

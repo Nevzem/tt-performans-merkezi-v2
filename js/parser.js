@@ -566,6 +566,8 @@ function wire(boxId, inputId, isPrev) {
             var _dtEl = document.getElementById('day-total');
             if (_dnEl && _dtEl && !_dnEl.value) { _dnEl.value = parsed.syData.calisilanGun; _dtEl.value = parsed.syData.calismaGun; }
           }
+          /* Sprint 19: input değerlerini state'e senkronla */
+          if (typeof syncDayInputs === 'function') syncDayInputs();
           /* EDM BUAY parse (mevcut Excel'den) */
           try {
             const wb2 = XLSX.read(new Uint8Array(e.target.result), { type: "array" });

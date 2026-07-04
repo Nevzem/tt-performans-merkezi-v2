@@ -168,9 +168,9 @@
           <div class="settings-card-title">📅 Forecast (manuel)</div>
           <div class="day-row">
             <label>Geçen gün</label>
-            <input type="number" class="day-inp" id="day-now" min="1" max="31" placeholder="—" oninput="render()">
+            <input type="number" class="day-inp" id="day-now" min="1" max="31" placeholder="—" oninput="syncDayInputs(); render()">
             <label>Ay toplam</label>
-            <input type="number" class="day-inp" id="day-total" min="28" max="31" placeholder="—" oninput="render()">
+            <input type="number" class="day-inp" id="day-total" min="28" max="31" placeholder="—" oninput="syncDayInputs(); render()">
           </div>
           <div class="day-hint">İkisi de girilirse bayi kartlarında ay sonu Forecast HGO görünür. %100+ olanlar yeşil.</div>
         </div>
