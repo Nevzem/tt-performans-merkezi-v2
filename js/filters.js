@@ -772,20 +772,20 @@ async function _shareSPM() {
   var dataUrl = m._spmData;
   var fname   = m._spmFname;
 
-  /* Önce Web Share API ile dosya paylaşımı (iOS Safari ✓) */
+  /* Önce Web Share API ile dosya paylaşımı (iOS Safari ✓)
+     Not: title/text bilinçli olarak YOK — WhatsApp bunları görselin yanına
+     mesaj metni olarak ekliyordu; artık yalnızca görsel paylaşılır (2026-07-05). */
   if (navigator.share) {
     try {
       var blob = _spmBlob(dataUrl);
       var file = new File([blob], fname, { type: 'image/png' });
-      var sharePayload = { files: [file], title: 'TT Kuzey Anadolu', text: 'Performans raporu' };
+      var sharePayload = { files: [file] };
 
       if (navigator.canShare && navigator.canShare(sharePayload)) {
         await navigator.share(sharePayload);
         return;
       }
-      /* Dosya paylaşımı desteklenmiyorsa başlık+metin ile dene */
-      await navigator.share({ title: 'TT Kuzey Anadolu', text: 'Performans raporu' });
-      return;
+      /* Dosya paylaşımı desteklenmiyorsa indirme fallback'ine düş */
     } catch (e) {
       if (e.name === 'AbortError') return; /* Kullanıcı iptal etti */
       /* Diğer hatalarda dosya indirmeye düş */
