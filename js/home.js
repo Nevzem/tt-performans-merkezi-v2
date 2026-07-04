@@ -638,11 +638,11 @@ function _hdExecutiveInsights() {
         '</div>' +
       '</div>';
     }
-    var rising  = changes.filter(function(c) { return c.delta > 0; }).slice(0, 5);
-    /* Sprint 17: yalnızca gerçekten düşenler listelenir (başlıkla tutarlı) */
-    var falling = changes.slice().reverse().filter(function(c) { return c.delta < 0; }).slice(0, 5);
-    risingHTML  = rising.length  ? rising.map(function(c, i)  { return chgRow(c, i); }).join('') : '<div class="hd-ins-empty">Artış bulunamadı.</div>';
-    fallingHTML = falling.length ? falling.map(function(c, i) { return chgRow(c, i); }).join('') : '<div class="hd-ins-empty">Düşüş yok — tüm bayiler artıda.</div>';
+    var rising      = changes.filter(function(c) { return c.delta > 0; }).slice(0, 5);
+    /* Kümülatif aylık HGO'da düşüş olmaz — en düşük artış gösterenler listelenir */
+    var leastRising = changes.slice().reverse().slice(0, 5);
+    risingHTML  = rising.length      ? rising.map(function(c, i)      { return chgRow(c, i); }).join('') : '<div class="hd-ins-empty">Artış bulunamadı.</div>';
+    fallingHTML = leastRising.length ? leastRising.map(function(c, i) { return chgRow(c, i); }).join('') : '<div class="hd-ins-empty">Kıyas verisi yok.</div>';
   }
 
   function panel(title, rows, idx) {
@@ -662,7 +662,7 @@ function _hdExecutiveInsights() {
         panel('🔥 En İyi 5 Bayi',    top5HTML,    4) +
         panel('⚠️ Riskli 5 Bayi',   risk5HTML,   5) +
         panel('📈 En Çok Yükselen', risingHTML,  6) +
-        panel('📉 En Çok Düşen',    fallingHTML, 7) +
+        panel('📉 En Az Yükselen',  fallingHTML, 7) +
       '</div>' +
     '</div>'
   );
