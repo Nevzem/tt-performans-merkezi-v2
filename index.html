@@ -6,7 +6,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#0A1F5C">
 <title>TT Kuzey Anadolu · Performans Merkezi</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -56,11 +59,11 @@
       </div>
 
       <div class="perf-sub-strip" id="perf-sub-strip" style="display:none">
-        <button class="psub-tab" data-sec="matrix" onclick="perfSec('matrix')">📋 Matris</button>
-        <button class="psub-tab" data-sec="kupa"   onclick="perfSec('kupa')">🏆 Kupa</button>
-        <button class="psub-tab" data-sec="detay"  onclick="perfSec('detay')">🔍 Detay</button>
-        <button class="psub-tab" data-sec="trend"  onclick="perfSec('trend')">📈 Trend</button>
-        <button class="psub-tab" data-sec="risk"   onclick="perfSec('risk')">🚨 Risk</button>
+        <button class="psub-tab" data-sec="matrix" onclick="perfSec('matrix')">Matris</button>
+        <button class="psub-tab" data-sec="kupa"   onclick="perfSec('kupa')">Kupa</button>
+        <button class="psub-tab" data-sec="detay"  onclick="perfSec('detay')">Detay</button>
+        <button class="psub-tab" data-sec="trend"  onclick="perfSec('trend')">Trend</button>
+        <button class="psub-tab" data-sec="risk"   onclick="perfSec('risk')">Risk</button>
       </div>
 
       <div class="filter-bar" id="compact-filter-bar" style="display:none"></div>
@@ -273,5 +276,13 @@
 <script src="js/app.js"></script>
 <link rel="stylesheet" href="css/matrix-v2.css">
 <script src="js/matrix-v2.js"></script>
+<script>
+/* Sprint 20: PWA — service worker kaydı (çevrimdışı açılış + ana ekrana ekleme) */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function() {});
+  });
+}
+</script>
 </body>
 </html>

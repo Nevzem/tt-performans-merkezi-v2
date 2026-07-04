@@ -1,0 +1,16 @@
+{
+  "name": "TT Kuzey Anadolu Performans Merkezi",
+  "short_name": "TT Performans",
+  "description": "Türk Telekom Kuzey Anadolu bayi ve personel performans yönetim platformu",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A1F5C",
+  "theme_color": "#0A1F5C",
+  "lang": "tr",
+  "icons": [
+    { "src": "icons/icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

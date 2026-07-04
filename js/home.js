@@ -583,6 +583,7 @@ function _hdExecutiveInsights() {
       '<span class="hd-ins-n">' + (i + 1) + '</span>' +
       '<div class="hd-ins-name">' + r.p + '<div class="hd-ins-sub">' + r.b + '</div></div>' +
       '<span class="hd-ins-hgo ' + cls + '">%' + r.g.toFixed(1) + '</span>' +
+      (km ? '<span class="row-chev">›</span>' : '') +
     '</div>';
   }
 
@@ -616,6 +617,7 @@ function _hdExecutiveInsights() {
           '<span class="hd-ins-delta ' + (isDrop ? 'hd-r' : 'hd-g') + '">' + (isDrop ? '▼ ' : '▲ +') + Math.abs(c.delta).toFixed(1) + ' HGO</span>' +
           '<span class="hd-ins-hgo ' + hgoCls + '">%' + c.hgo.toFixed(1) + '</span>' +
         '</div>' +
+        (c.kod ? '<span class="row-chev">›</span>' : '') +
       '</div>';
     }
     var rising      = changes.filter(function(c) { return c.delta > 0; }).slice(0, 5);
@@ -639,10 +641,10 @@ function _hdExecutiveInsights() {
         _hpTabs(_hdInsightProd, 'setHdInsightProd', true) +
       '</div>' +
       '<div class="hd-insights-grid">' +
-        panel('🔥 En İyi 5 Bayi',    top5HTML,    4) +
-        panel('⚠️ Riskli 5 Bayi',   risk5HTML,   5) +
-        panel('📈 En Çok Yükselen', risingHTML,  6) +
-        panel('📉 En Az Yükselen',  fallingHTML, 7) +
+        panel('En İyi 5 Bayi',    top5HTML,    4) +
+        panel('Riskli 5 Bayi',    risk5HTML,   5) +
+        panel('En Çok Yükselen',  risingHTML,  6) +
+        panel('En Az Yükselen',   fallingHTML, 7) +
       '</div>' +
     '</div>'
   );

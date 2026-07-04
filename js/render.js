@@ -179,7 +179,8 @@ function rowHTML(rec, rank, maxV, podium, withFc, prodKey) {
   return '<div class="row' + (podium && rank <= 3 ? " r" + rank : "") + '"' + _oc + '>' +
     '<div class="rk">' + rkHTML(rank) + '</div>' + deltaHTML(rec, prodKey) + nmHtml +
     '<div class="br"><div class="br-top">' + fhtml + '<span class="chip' + (isPers ? ' chip-lg' : '') + ' ' + cls(rec.g) + '">%' + rec.g.toFixed(1) + '</span></div>' +
-    '<div class="track' + (isPers ? ' track-lg' : '') + '"><div class="fill ' + cls(rec.g) + '" style="width:' + w + '%"></div>' + tick + '</div></div></div>';
+    '<div class="track' + (isPers ? ' track-lg' : '') + '"><div class="fill ' + cls(rec.g) + '" style="width:' + w + '%"></div>' + tick + '</div></div>' +
+    '<span class="row-chev">›</span></div>';
 }
 function hdrHTML(icon, t, sub) {
   return '<div class="hdr"><div class="hdr-stripe"></div><div class="hdr-gold"></div><div class="hdr-body">' +
