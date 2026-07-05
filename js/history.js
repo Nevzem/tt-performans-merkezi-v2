@@ -1,525 +1,484 @@
 /* ════════════════════════════════════════════════════════════════════
-   js/history.js  —  Geçmiş Kıyas ve Trend Merkezi
-   Mevcut: parseWB(), ensureXLSX(), ensureH2C(), trendCapture(),
-           _openSharePreview(), DATA, SYDATA, DETAY  kullanılır.
+   js/history.js  —  Sprint 18 (Geçmiş): Geçmiş Performans Ekranı
+   Bayi bazlı YTD · YoY · Aylık Trend.
+   Veri katmanı: js/history-loader.js (manifest + aylık JSON dosyaları).
+   Eski XLSX-kıyas ekranı bu sürümle emekliye ayrıldı (2026-07-05).
+   Kullanılan mevcut altyapı: hgo3() (render.js), sparkline() (render.js),
+   ensureH2C()/_openSharePreview() (parser/filters), bottom-sheet (filters.js).
    ════════════════════════════════════════════════════════════════════ */
 
-/* ─── STATE ───────────────────────────────────────────────────────── */
-var HIST_DATA       = null;   /* Geçmiş Excel'den elde edilen DATA     */
-var HIST_SYDATA     = null;   /* Geçmiş Excel'den elde edilen SYDATA   */
-var HIST_DETAY      = null;   /* Geçmiş Excel'den elde edilen DETAY    */
-var HIST_DONEM      = null;   /* Geçmiş dönem string'i                 */
-var HIST_DATE_LABEL = null;   /* Görüntüleme için tarih etiketi        */
-var HIST_FNAME      = null;   /* Seçilen dosya adı                     */
-var _histManifest   = null;   /* data/history/manifest.json içeriği    */
+/* ─── EKRAN STATE ─────────────────────────────────────────────────── */
+var _h2Bayi  = null;      /* seçili bayi kodu                       */
+var _h2Year  = null;      /* seçili yıl (manifest'ten en yenisi)    */
+var _h2Prod  = 'all';     /* 'all' | 'mobil' | 'dsl' | 'tv' | 'cihaz' */
+var _h2Kanal = 'Tümü';    /* 'Tümü' | 'TTM' | 'EDM'                 */
+var _h2Sy    = 'Tümü';
 
-var _gecmKiyas   = 'bayi';
-var _gecmProd    = 'Toplam Mobil';
-var _gecmGorunum = 'all';     /* 'all' | 'growth' | 'decline' */
-var _gecmView    = 'kiyas';   /* 'kiyas' | 'trend' */
+var _H2_AYLAR = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
 
-/* ─── ÜRÜN TANIMLARI ──────────────────────────────────────────────── */
-var _GECM_PRODS = [
-  { label: 'Toplam Mobil', key: 'Toplam Mobil', bayiKey: 'Toplam Mobil', syKey: 'Mobil Toplam',  detayKey: 'Toplam Mobil' },
-  { label: 'DSL',          key: 'DSL',           bayiKey: 'DSL',           syKey: 'Evde İnternet', detayKey: 'DSL'           },
-  { label: 'Toplam TV',    key: 'Toplam TV',     bayiKey: 'Toplam TV',     syKey: 'Tivibu Toplam', detayKey: 'Toplam TV'     },
-  { label: 'Akıllı Cihaz', key: 'Akıllı Cihaz',  bayiKey: 'Akıllı Cihaz',  syKey: 'Cihaz',         detayKey: 'Akıllı Cihaz'  },
-  { label: 'Diğer Cihaz',  key: 'Diğer Cihaz',   bayiKey: 'Diğer Cihaz',   syKey: 'Cihaz Diğer',   detayKey: 'Diğer Cihaz'   },
-];
-
-function _gecmPM() {
-  return _GECM_PRODS.find(function(p) { return p.key === _gecmProd; }) || _GECM_PRODS[0];
-}
-
-/* ─── MANİFEST YÜKLEME ────────────────────────────────────────────── */
-async function loadHistManifest() {
-  try {
-    var resp = await fetch('data/history/manifest.json?_=' + Date.now());
-    if (!resp.ok) { _histManifest = { files: [] }; return; }
-    _histManifest = await resp.json();
-    if (!Array.isArray(_histManifest.files)) _histManifest.files = [];
-    /* Dosyaları baştaki sayıya göre sırala */
-    _histManifest.files.sort(function(a, b) {
-      var dA = parseInt((a.match(/^(\d+)/) || [0, 999])[1]);
-      var dB = parseInt((b.match(/^(\d+)/) || [0, 999])[1]);
-      return dA - dB;
-    });
-  } catch (e) {
-    _histManifest = { files: [] };
+/* ─── KANAL FİLTRELİ DÖNEM HARİTASI ──────────────────────────────── */
+function _h2Map() {
+  if (_h2Kanal === 'Tümü') return HIST2_DATA;
+  var out = {};
+  for (var p in HIST2_DATA) {
+    var doc = HIST2_DATA[p];
+    out[p] = (doc && doc.channel === _h2Kanal) ? doc : null;
   }
+  return out;
 }
 
-/* ─── GEÇMİŞ DOSYA YÜKLEME ───────────────────────────────────────── */
-async function loadHistFile(filename) {
-  var loadEl  = document.getElementById('gecm-loading');
-  var contEl  = document.getElementById('gecm-content');
-  var emptyEl = document.getElementById('gecm-empty');
+/* Yüklü dönemler (kanal filtreli, dosyası var olanlar) */
+function _h2Periods() {
+  var map = _h2Map();
+  return Object.keys(map).sort().filter(function(p) { return !!map[p]; });
+}
 
-  if (loadEl)  { loadEl.style.display = ''; }
-  if (contEl)  { contEl.style.display = 'none'; }
-  if (emptyEl) { emptyEl.style.display = 'none'; }
+function _h2Years() {
+  var ys = {};
+  ((HIST2_MANIFEST && HIST2_MANIFEST.periods) || []).forEach(function(p) { ys[p.slice(0, 4)] = 1; });
+  return Object.keys(ys).sort();
+}
 
-  try {
-    await ensureXLSX();
-    var resp = await fetch('data/history/' + encodeURIComponent(filename));
-    if (!resp.ok) throw new Error(filename + ' yüklenemedi (HTTP ' + resp.status + ')');
+/* Bayi listesi: kanal filtreli dönemlerin birleşimi, SY filtresi uygulanır.
+   En güncel dönemdeki bilgi esas alınır. */
+function _h2Dealers() {
+  var map = _h2Map(), seen = {};
+  Object.keys(map).sort().forEach(function(p) {
+    var doc = map[p];
+    if (!doc) return;
+    doc.dealers.forEach(function(d) { seen[String(d.bayiKodu)] = d; });
+  });
+  var list = Object.keys(seen).map(function(k) { return seen[k]; });
+  if (_h2Sy !== 'Tümü') list = list.filter(function(d) { return d.sy === _h2Sy; });
+  list.sort(function(a, b) { return (a.bayiAdi || '').localeCompare(b.bayiAdi || '', 'tr'); });
+  return list;
+}
 
-    var buf    = await resp.arrayBuffer();
-    var wb     = XLSX.read(new Uint8Array(buf), { type: 'array' });
-    var parsed = parseWB(wb);
+function _h2SyList() {
+  var map = _h2Map(), s = {};
+  for (var p in map) {
+    if (!map[p]) continue;
+    map[p].dealers.forEach(function(d) { if (d.sy) s[d.sy] = 1; });
+  }
+  return ['Tümü'].concat(Object.keys(s).sort(function(a, b) { return a.localeCompare(b, 'tr'); }));
+}
 
-    HIST_DATA       = parsed.data;
-    HIST_SYDATA     = parsed.syData;
-    HIST_DETAY      = parsed.detay;
-    HIST_DONEM      = parsed.donem;
-    HIST_FNAME      = filename;
-    HIST_DATE_LABEL = _histLabel(wb, filename, parsed.donem);
+function _h2ProdLabel() {
+  if (_h2Prod === 'all') return 'Tüm Ürünler';
+  var pm = HIST2_PRODS.find(function(x) { return x.key === _h2Prod; });
+  return pm ? pm.label : _h2Prod;
+}
 
-    /* Geçmiş veriyi trend deposuna ekle */
-    try { trendCapture(_histISODate(wb, filename, parsed.donem), parsed.data, parsed.donem); } catch (e) {}
+/* Seçili yıl için verisi olan son dönem (YoY ve "Bu Ay" bunu kullanır) */
+function _h2LastPeriodOfYear() {
+  var ps = _h2Periods().filter(function(p) { return p.slice(0, 4) === String(_h2Year); });
+  return ps.length ? ps[ps.length - 1] : null;
+}
 
-    /* Tarih filtre butonunu güncelle */
-    var tv = document.getElementById('gecm-tarih-val');
-    if (tv) tv.textContent = _truncGecm(HIST_DATE_LABEL, 13);
-
-    renderGecmisPage();
-
-  } catch (e) {
-    if (emptyEl) {
-      emptyEl.style.display = '';
-      emptyEl.innerHTML = '<div class="gecm-err">⚠️ ' + e.message + '</div>';
-    }
-  } finally {
+/* ─── SAYFA INIT (app.js navTo'dan çağrılır) ─────────────────────── */
+async function initHistoryPage() {
+  var loadEl = document.getElementById('gecm-loading');
+  var contEl = document.getElementById('gecm-content');
+  var emptEl = document.getElementById('gecm-empty');
+  if (!HIST2_LOADED) {
+    if (loadEl) loadEl.style.display = '';
+    if (contEl) contEl.style.display = 'none';
+    if (emptEl) emptEl.style.display = 'none';
+    try { await loadAllHistory(); } catch (e) {}
     if (loadEl) loadEl.style.display = 'none';
-    if (contEl) contEl.style.display = '';
   }
+  /* Varsayılanlar */
+  var years = _h2Years();
+  if (!_h2Year) _h2Year = years.length ? years[years.length - 1] : String(new Date().getFullYear());
+  if (!_h2Bayi) {
+    var ds = _h2Dealers();
+    if (ds.length) _h2Bayi = String(ds[0].bayiKodu);
+  }
+  renderGecmisPage();
 }
 
-/* ─── TARİH YARDIMCILARI ──────────────────────────────────────────── */
-function _histLabel(wb, filename, donem) {
-  /* 1. Excel metadata */
-  if (wb.Props && wb.Props.ModifiedDate) {
-    try {
-      var d = new Date(wb.Props.ModifiedDate);
-      if (!isNaN(d.getTime()) && d.getFullYear() > 2020)
-        return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-    } catch (e) {}
+/* app.js açılışta loadHistManifest() çağırır — arka planda tüm geçmişi ısıt */
+function loadHistManifest() { return loadAllHistory(); }
+
+/* ─── FİLTRE ÇUBUĞU ──────────────────────────────────────────────── */
+function _h2FilterBar() {
+  var bar = document.getElementById('gecm-filter-bar');
+  if (!bar) return;
+  var ds = _h2Dealers();
+  var cur = ds.find(function(d) { return String(d.bayiKodu) === String(_h2Bayi); });
+  function chip(type, lbl, val) {
+    return '<button class="fbar-chip" onclick="openSheet(\'' + type + '\')">' +
+      '<span class="fbar-chip-lbl">' + lbl + '</span>' +
+      '<span class="fbar-chip-val">' + val + '</span></button>';
   }
-  /* 2. Dosya adından gün numarası + donem */
-  var m = filename.match(/^(\d{1,2})\s/);
-  if (m && donem && /\d{4}\/\d{2}/.test(donem)) {
-    try {
-      var pts = donem.split('/');
-      var d2  = new Date(parseInt(pts[0]), parseInt(pts[1]) - 1, parseInt(m[1]));
-      if (!isNaN(d2.getTime()))
-        return d2.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-    } catch (e) {}
-  }
-  /* 3. Dosya adı */
-  return filename.replace(/\.xlsx?$/i, '');
+  function tr9(s) { return s && s.length > 11 ? s.slice(0, 11) + '…' : (s || 'Seç'); }
+  bar.innerHTML =
+    chip('h2-bayi',  'Bayi',  tr9(cur ? cur.bayiAdi : null)) +
+    chip('h2-yil',   'Yıl',   _h2Year || 'Seç') +
+    chip('h2-prod',  'Ürün',  tr9(_h2ProdLabel())) +
+    chip('h2-kanal', 'Kanal', _h2Kanal) +
+    chip('h2-sy',    'SY',    _h2Sy === 'Tümü' ? 'Tümü' : tr9(_h2Sy.split(' ')[0])) +
+    '<button class="fbar-chip fbar-dl" onclick="downloadGecmisPNG()">' +
+      '<span class="fbar-chip-lbl">Görsel</span>' +
+      '<span class="fbar-chip-val">Oluştur ↗</span></button>';
 }
 
-function _histISODate(wb, filename, donem) {
-  if (wb.Props && wb.Props.ModifiedDate) {
-    try {
-      var d = new Date(wb.Props.ModifiedDate);
-      if (!isNaN(d.getTime()) && d.getFullYear() > 2020) return d.toISOString().slice(0, 10);
-    } catch (e) {}
-  }
-  var m = filename.match(/^(\d{1,2})\s/);
-  if (m && donem && /\d{4}\/\d{2}/.test(donem)) {
-    try {
-      var pts = donem.split('/');
-      var d2  = new Date(parseInt(pts[0]), parseInt(pts[1]) - 1, parseInt(m[1]));
-      if (!isNaN(d2.getTime())) return d2.toISOString().slice(0, 10);
-    } catch (e) {}
-  }
-  return new Date().toISOString().slice(0, 10);
-}
+/* Filtre setter'ları (filters.js _pick çağırır) */
+function h2SetBayi(k)  { _h2Bayi  = String(k); renderGecmisPage(); }
+function h2SetYear(y)  { _h2Year  = String(y); renderGecmisPage(); }
+function h2SetProd(p)  { _h2Prod  = p;         renderGecmisPage(); }
+function h2SetKanal(k) { _h2Kanal = k; _h2Bayi = null; var d = _h2Dealers(); if (d.length) _h2Bayi = String(d[0].bayiKodu); renderGecmisPage(); }
+function h2SetSy(s)    { _h2Sy    = s; var d = _h2Dealers(); if (!d.some(function(x){ return String(x.bayiKodu) === String(_h2Bayi); })) _h2Bayi = d.length ? String(d[0].bayiKodu) : null; renderGecmisPage(); }
 
-function _truncGecm(s, n) { return s && s.length > n ? s.slice(0, n) + '…' : (s || ''); }
-
-/* ─── ANA RENDER ──────────────────────────────────────────────────── */
+/* ─── ANA RENDER ─────────────────────────────────────────────────── */
 function renderGecmisPage() {
-  var contEl  = document.getElementById('gecm-content');
-  var emptyEl = document.getElementById('gecm-empty');
+  _h2FilterBar();
+  var contEl = document.getElementById('gecm-content');
+  var emptEl = document.getElementById('gecm-empty');
+  if (!contEl) return;
 
-  if (!HIST_DATA) {
-    if (contEl)  contEl.style.display  = 'none';
-    if (emptyEl) { emptyEl.style.display = ''; emptyEl.innerHTML = _gecmWelcomeHTML(); }
+  var periods = _h2Periods();
+  if (!periods.length) {
+    contEl.style.display = 'none';
+    if (emptEl) {
+      emptEl.style.display = '';
+      emptEl.innerHTML = '<div class="gecm-welcome"><div class="gecm-wl-icon">📊</div>' +
+        '<div class="gecm-wl-title">Geçmiş Performans</div>' +
+        '<div class="gecm-wl-sub">' + (_h2Kanal !== 'Tümü'
+          ? _h2Kanal + ' kanalı için geçmiş veri bulunamadı.'
+          : 'Bu dönem için geçmiş veri bulunamadı.') + '</div>' +
+        '<div class="gecm-wl-hint">Aylık dosyaları <code>data/history/</code> klasörüne ekleyin ve <code>manifest.json</code> → <code>periods</code> listesini güncelleyin.</div></div>';
+    }
+    return;
+  }
+  if (emptEl) emptEl.style.display = 'none';
+  contEl.style.display = '';
+
+  if (!_h2Bayi) {
+    contEl.innerHTML = '<div class="gecm-empty-msg">Seçilen filtrelerle bayi bulunamadı.</div>';
     return;
   }
 
-  if (emptyEl) emptyEl.style.display = 'none';
-  if (contEl)  contEl.style.display  = '';
+  var map  = _h2Map();
+  var hist = histCalcDealerHistory(map, _h2Bayi);
+  if (!hist.length) {
+    contEl.innerHTML = '<div class="gecm-empty-msg">Bu bayi için geçmiş veri bulunamadı.</div>';
+    return;
+  }
 
-  if (_gecmView === 'trend') {
-    contEl.innerHTML = _renderTrendView();
+  var lastPer = _h2LastPeriodOfYear();
+  var ytd     = histCalcYTD(map, _h2Bayi, _h2Year);
+  var yoy     = lastPer ? histCalcYoY(map, _h2Bayi, lastPer) : null;
+  var info    = hist[hist.length - 1].dealer;
+  var isDemo  = periods.some(function(p) { return map[p] && map[p].demo; });
+
+  contEl.innerHTML =
+    '<div id="gecm-card" class="h2-wrap">' +
+      (isDemo ? '<div class="h2-demo-note">Örnek geçmiş verisi görüntüleniyor — gerçek dosyaları <code>data/history/</code> klasörüne ekleyin.</div>' : '') +
+      _h2DealerCard(info, ytd) +
+      _h2CompareCards(hist, ytd, yoy, lastPer) +
+      _h2TrendSection(hist) +
+      _h2YoYSection(yoy) +
+      _h2CommentSection(hist, ytd, yoy) +
+    '</div>';
+}
+
+/* ─── 1. BAYİ ÖZET + YTD KARTI ───────────────────────────────────── */
+function _h2DealerCard(info, ytd) {
+  var head =
+    '<div class="h2-dealer-head">' +
+      '<div>' +
+        '<div class="h2-dealer-name">' + (info.bayiAdi || _h2Bayi) + '</div>' +
+        '<div class="h2-dealer-meta">' + info.bayiKodu +
+          (info.il ? ' · ' + info.il : '') +
+          (info.sy ? ' · SY: ' + info.sy : '') + '</div>' +
+      '</div>' +
+      '<div class="h2-dealer-year">' + _h2Year + '</div>' +
+    '</div>';
+
+  var body;
+  if (!ytd) {
+    body = '<div class="gecm-empty-msg">' + _h2Year + ' için geçmiş veri bulunamadı.</div>';
   } else {
-    contEl.innerHTML = _renderKiyasView();
+    var cells = HIST2_PRODS.map(function(pm) {
+      var d = ytd.prods[pm.key];
+      var cls = d && d.hgo !== null ? hgo3(d.hgo) : '';
+      return '<div class="h2-ytd-cell">' +
+        '<div class="h2-ytd-lbl">' + pm.label + '</div>' +
+        '<div class="h2-ytd-val ' + (cls ? 'hd-' + cls : '') + '">' +
+          (d && d.hgo !== null ? '%' + d.hgo.toFixed(1) : '—') + '</div>' +
+        '<div class="h2-ytd-sub">' + (d ? d.adet.toLocaleString('tr-TR') + '/' + d.hedef.toLocaleString('tr-TR') : '—') + '</div>' +
+      '</div>';
+    }).join('');
+    var lastFc = ytd.prods.mobil ? ytd.prods.mobil.lastFc : null;
+    body =
+      '<div class="h2-ytd-title">' + _h2Year + ' YTD · ' + ytd.months.length + ' ay (' + ytd.months[0] + ' → ' + ytd.months[ytd.months.length - 1] + ')</div>' +
+      '<div class="h2-ytd-grid">' + cells + '</div>' +
+      '<div class="h2-ytd-tot">' +
+        '<span>Toplam Hedef <strong>' + ytd.toplamHedef.toLocaleString('tr-TR') + '</strong></span>' +
+        '<span>Gerçekleşen <strong>' + ytd.toplamAdet.toLocaleString('tr-TR') + '</strong></span>' +
+        '<span>YTD HGO <strong class="' + (ytd.toplamHgo !== null ? 'hd-' + hgo3(ytd.toplamHgo) : '') + '">' +
+          (ytd.toplamHgo !== null ? '%' + ytd.toplamHgo.toFixed(1) : '—') + '</strong></span>' +
+        (lastFc !== null ? '<span>Son Dönem Mobil Fc <strong>%' + lastFc + '</strong></span>' : '') +
+      '</div>';
   }
+
+  return '<div class="h2-card">' + head + body + '</div>';
 }
 
-/* ─── KIYAŞ GÖRÜNÜMÜ ─────────────────────────────────────────────── */
-function _renderKiyasView() {
-  var rows = _gecmKiyas === 'sy' ? _buildSYComp() : _buildBayiComp();
-
-  /* Görünüm filtresi */
-  if (_gecmGorunum === 'growth')  rows = rows.filter(function(r) { return r.hgoDiff !== null && r.hgoDiff > 0; });
-  else if (_gecmGorunum === 'decline') rows = rows.filter(function(r) { return r.hgoDiff !== null && r.hgoDiff < 0; });
-
-  /* Sıralama */
-  rows.sort(function(a, b) {
-    var aD = a.hgoDiff !== null ? a.hgoDiff : 0;
-    var bD = b.hgoDiff !== null ? b.hgoDiff : 0;
-    return _gecmGorunum === 'decline' ? aD - bD : bD - aD;
-  });
-
-  return _renderSummary(rows) + _renderCompCard(rows) + _renderExportBtn();
-}
-
-/* ─── BAYİ KARŞILAŞTIRMA VERİSİ ──────────────────────────────────── */
-function _buildBayiComp() {
-  var pm      = _gecmPM();
-  var currRec = (DATA.bayi && DATA.bayi[pm.bayiKey]) || [];
-  var histRec = (HIST_DATA && HIST_DATA.bayi && HIST_DATA.bayi[pm.bayiKey]) || [];
-
-  /* İsme göre geçmiş harita */
-  var histByName = {};
-  histRec.forEach(function(r) { histByName[r.p] = r; });
-
-  /* Detay h/a lookup'ları */
-  var currDet = _detayLookup(DETAY, pm.detayKey);
-  var histDet = _detayLookup(HIST_DETAY, pm.detayKey);
-
-  return currRec.map(function(r) {
-    var h       = histByName[r.p];
-    var cD      = currDet[r.b];
-    var hD      = h ? histDet[r.b] : null;
-
-    var currA   = cD ? cD.a : null;
-    var histA   = hD ? hD.a : null;
-    var aDiff   = (currA !== null && histA !== null) ? currA - histA : null;
-    var hgoDiff = h !== undefined ? Math.round((r.g - h.g) * 10) / 10 : null;
-
-    return {
-      name: r.p, sub: r.b, sy: r.sy,
-      currHgo: r.g, histHgo: h ? h.g : null, hgoDiff: hgoDiff,
-      currA: currA, histA: histA, aDiff: aDiff,
-    };
-  });
-}
-
-/* ─── SY KARŞILAŞTIRMA VERİSİ ────────────────────────────────────── */
-function _buildSYComp() {
-  if (!SYDATA || !SYDATA.sy) return [];
-  var pm     = _gecmPM();
-  var syKey  = pm.syKey;
-  var currSY = SYDATA.sy;
-  var histSY = (HIST_SYDATA && HIST_SYDATA.sy) ? HIST_SYDATA.sy : {};
-
-  return Object.keys(currSY).map(function(nm) {
-    var cur = currSY[nm][syKey] || {};
-    var hst = (histSY[nm] && histSY[nm][syKey]) || null;
-
-    var currA   = cur.a || 0;
-    var histA   = hst ? (hst.a || 0) : null;
-    var aDiff   = histA !== null ? currA - histA : null;
-    var currH   = cur.h || 0;
-    var currHgo = currH > 0 ? Math.round(currA / currH * 1000) / 10 : null;
-    var histHgo = (hst && hst.h > 0) ? Math.round(hst.a / hst.h * 1000) / 10 : null;
-    var hgoDiff = (currHgo !== null && histHgo !== null) ? Math.round((currHgo - histHgo) * 10) / 10 : null;
-
-    return {
-      name: nm, sub: '', sy: '',
-      currHgo: currHgo, histHgo: histHgo, hgoDiff: hgoDiff,
-      currA: currA, histA: histA, aDiff: aDiff,
-    };
-  });
-}
-
-function _detayLookup(detay, detayKey) {
-  var map = {};
-  if (!detay || !detay.bayiler) return map;
-  for (var kod in detay.bayiler) {
-    var b  = detay.bayiler[kod];
-    var pd = b.prods[detayKey];
-    if (pd) map[b.b] = pd; /* b.b = "4100343 · TOKAT" */
+/* ─── Seçili ürün için dönem toplamı (all = 4 ürün toplamı) ─────── */
+function _h2Agg(dealer) {
+  if (!dealer) return null;
+  if (_h2Prod !== 'all') {
+    var d = dealer[_h2Prod];
+    return d ? { hedef: d.hedef, adet: d.adet, hgo: d.hgo, fc: d.forecast } : null;
   }
-  return map;
+  var h = 0, a = 0;
+  HIST2_PRODS.forEach(function(pm) {
+    var d = dealer[pm.key];
+    if (d) { h += d.hedef || 0; a += d.adet || 0; }
+  });
+  return h > 0 ? { hedef: h, adet: a, hgo: Math.round(a / h * 1000) / 10, fc: null } : null;
 }
 
-/* ─── EXECUTIVE ÖZET ─────────────────────────────────────────────── */
-function _renderSummary(rows) {
-  var pm        = _gecmPM();
-  var label     = HIST_DATE_LABEL || (HIST_FNAME || '').replace(/\.xlsx?$/i, '');
-  var today     = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
-  var entity    = _gecmKiyas === 'sy' ? 'satış yöneticisi' : 'bayi';
+/* ─── 2. KARŞILAŞTIRMA KARTLARI: Bu Ay · YTD · YoY · Son 3 Ay ────── */
+function _h2CompareCards(hist, ytd, yoy, lastPer) {
+  var yearHist = hist.filter(function(x) { return x.period.slice(0, 4) === String(_h2Year); });
+  var pl = _h2ProdLabel();
 
-  var growing   = rows.filter(function(r) { return r.hgoDiff !== null && r.hgoDiff > 0; });
-  var declining = rows.filter(function(r) { return r.hgoDiff !== null && r.hgoDiff < 0; });
+  function card(lbl, val, cls, sub) {
+    return '<div class="h2-cmp-card">' +
+      '<div class="h2-cmp-lbl">' + lbl + '</div>' +
+      '<div class="h2-cmp-val ' + (cls || '') + '">' + val + '</div>' +
+      '<div class="h2-cmp-sub">' + sub + '</div></div>';
+  }
 
-  var bestRow = rows.reduce(function(max, r) {
-    return (r.hgoDiff !== null && r.hgoDiff > (max.hgoDiff || -Infinity)) ? r : max;
-  }, rows[0] || {});
-  var worstRow = rows.reduce(function(min, r) {
-    return (r.hgoDiff !== null && r.hgoDiff < (min.hgoDiff || Infinity)) ? r : min;
-  }, rows[0] || {});
+  /* Bu Ay */
+  var c1;
+  var last = yearHist.length ? yearHist[yearHist.length - 1] : null;
+  var lagg = last ? _h2Agg(last.dealer) : null;
+  if (lagg && lagg.hgo !== null) {
+    c1 = card('BU DÖNEM', '%' + lagg.hgo.toFixed(1), 'hd-' + hgo3(lagg.hgo),
+      last.period + ' · ' + lagg.adet.toLocaleString('tr-TR') + '/' + lagg.hedef.toLocaleString('tr-TR'));
+  } else c1 = card('BU DÖNEM', '—', '', 'veri yok');
 
+  /* YTD (seçili ürün) */
+  var c2;
+  if (ytd) {
+    var yagg;
+    if (_h2Prod === 'all') yagg = { hgo: ytd.toplamHgo, adet: ytd.toplamAdet, hedef: ytd.toplamHedef };
+    else { var pd = ytd.prods[_h2Prod]; yagg = pd ? { hgo: pd.hgo, adet: pd.adet, hedef: pd.hedef } : null; }
+    c2 = (yagg && yagg.hgo !== null)
+      ? card('YTD', '%' + yagg.hgo.toFixed(1), 'hd-' + hgo3(yagg.hgo),
+          ytd.months.length + ' ay · ' + yagg.adet.toLocaleString('tr-TR') + '/' + yagg.hedef.toLocaleString('tr-TR'))
+      : card('YTD', '—', '', 'veri yok');
+  } else c2 = card('YTD', '—', '', _h2Year + ' verisi yok');
+
+  /* YoY (seçili ürün; all → mobil temel gösterge) */
+  var c3;
+  var yKey = _h2Prod === 'all' ? 'mobil' : _h2Prod;
+  var yp = yoy && yoy.prods[yKey];
+  if (yp && yp.dHgo !== null) {
+    var up = yp.dHgo >= 0;
+    c3 = card('YoY' + (_h2Prod === 'all' ? ' · Mobil' : ''),
+      (up ? '▲ +' : '▼ −') + Math.abs(yp.dHgo).toFixed(1) + ' pn',
+      up ? 'hd-g' : 'hd-r',
+      yoy.prevPeriod + ' %' + yp.prev.hgo.toFixed(0) + ' → ' + yoy.period + ' %' + yp.curr.hgo.toFixed(0));
+  } else {
+    c3 = card('YoY', '—', '', yoy && yoy.prevMissing ? 'önceki yıl verisi yok' : 'veri yok');
+  }
+
+  /* Son 3 Ay Trend: son 3 ay HGO ort. − önceki 3 ay HGO ort. */
+  var c4;
+  var series = yearHist.map(function(x) { var g = _h2Agg(x.dealer); return g ? g.hgo : null; })
+                       .filter(function(v) { return v !== null; });
+  if (series.length >= 4) {
+    var last3 = series.slice(-3), prev3 = series.slice(-6, -3);
+    var avg = function(arr) { return arr.reduce(function(s, v) { return s + v; }, 0) / arr.length; };
+    var d34 = Math.round((avg(last3) - avg(prev3)) * 10) / 10;
+    c4 = card('SON 3 AY', (d34 >= 0 ? '▲ +' : '▼ −') + Math.abs(d34).toFixed(1) + ' pn',
+      d34 >= 0 ? 'hd-g' : 'hd-r', 'önceki 3 aya göre ort. HGO');
+  } else if (series.length >= 2) {
+    var dd = Math.round((series[series.length - 1] - series[series.length - 2]) * 10) / 10;
+    c4 = card('SON DEĞİŞİM', (dd >= 0 ? '▲ +' : '▼ −') + Math.abs(dd).toFixed(1) + ' pn',
+      dd >= 0 ? 'hd-g' : 'hd-r', 'bir önceki aya göre');
+  } else c4 = card('SON 3 AY', '—', '', 'yeterli ay yok');
+
+  return '<div class="h2-sec-title">' + pl + ' · Özet Karşılaştırma</div>' +
+    '<div class="h2-cmp-grid">' + c1 + c2 + c3 + c4 + '</div>';
+}
+
+/* ─── 3. AYLIK TREND ─────────────────────────────────────────────── */
+function _h2TrendSection(hist) {
+  var yearHist = hist.filter(function(x) { return x.period.slice(0, 4) === String(_h2Year); });
+  if (!yearHist.length) {
+    return '<div class="h2-sec-title">Aylık Trend · ' + _h2Year + '</div>' +
+      '<div class="gecm-empty-msg">Bu dönem için geçmiş veri bulunamadı.</div>';
+  }
+
+  /* Tüm Ürünler: ürün başına sparkline satırı */
+  if (_h2Prod === 'all') {
+    var rows = HIST2_PRODS.map(function(pm) {
+      var pts = [];
+      yearHist.forEach(function(x) {
+        var d = x.dealer[pm.key];
+        if (d && d.hgo !== null) pts.push({ d: x.period, v: d.hgo });
+      });
+      if (!pts.length) return '';
+      var lastV = pts[pts.length - 1].v;
+      var color = lastV >= 100 ? '#0E7A40' : lastV >= 70 ? '#B26B00' : '#C11421';
+      return '<div class="h2-tr-row">' +
+        '<div class="h2-tr-prod">' + pm.label + '</div>' +
+        '<div class="h2-tr-spark">' + sparkline(pts, 120, 30, color) + '</div>' +
+        '<div class="h2-tr-last hd-' + hgo3(lastV) + '">%' + lastV.toFixed(1) + '</div>' +
+      '</div>';
+    }).join('');
+    return '<div class="h2-sec-title">Aylık HGO Trendi · ' + _h2Year + ' · 4 Ürün</div>' +
+      '<div class="h2-card">' + rows + '</div>';
+  }
+
+  /* Tek ürün: aylık bar (adet) + HGO + Fc kolonları */
+  var maxAdet = 1;
+  yearHist.forEach(function(x) {
+    var d = x.dealer[_h2Prod];
+    if (d && d.adet > maxAdet) maxAdet = d.adet;
+  });
+  var cols = yearHist.map(function(x) {
+    var d = x.dealer[_h2Prod];
+    var m = parseInt(x.period.slice(5), 10);
+    if (!d) return '<div class="h2-bar-col"><div class="h2-bar-empty">—</div>' +
+      '<div class="h2-bar-ay">' + _H2_AYLAR[m - 1] + '</div></div>';
+    var hPx = Math.max(Math.round(d.adet / maxAdet * 64), 3);
+    return '<div class="h2-bar-col">' +
+      '<div class="h2-bar-hgo hd-' + hgo3(d.hgo) + '">%' + Math.round(d.hgo) + '</div>' +
+      '<div class="h2-bar-wrap"><div class="h2-bar hd-bar-' + hgo3(d.hgo) + '" style="height:' + hPx + 'px"></div></div>' +
+      '<div class="h2-bar-adet">' + d.adet.toLocaleString('tr-TR') + '</div>' +
+      '<div class="h2-bar-fc">F%' + (d.forecast != null ? d.forecast : '—') + '</div>' +
+      '<div class="h2-bar-ay">' + _H2_AYLAR[m - 1] + '</div>' +
+    '</div>';
+  }).join('');
+  return '<div class="h2-sec-title">Aylık Trend · ' + _h2ProdLabel() + ' · ' + _h2Year + '</div>' +
+    '<div class="h2-card"><div class="h2-bars">' + cols + '</div>' +
+    '<div class="h2-bars-legend">Sütun: gerçekleşen adet · Üst: HGO · Alt: ay sonu forecast</div></div>';
+}
+
+/* ─── 4. YoY DETAY ───────────────────────────────────────────────── */
+function _h2YoYSection(yoy) {
+  var title = '<div class="h2-sec-title">Geçen Yıl Aynı Dönem (YoY)</div>';
+  if (!yoy) return title + '<div class="gecm-empty-msg">Bu dönem için geçmiş veri bulunamadı.</div>';
+  if (yoy.prevMissing)
+    return title + '<div class="gecm-empty-msg">YoY karşılaştırması için önceki yıl verisi bulunamadı (' + yoy.prevPeriod + ').</div>';
+
+  var rows = HIST2_PRODS.map(function(pm) {
+    var d = yoy.prods[pm.key];
+    if (!d || !d.prev) return '';
+    var up = d.dHgo !== null && d.dHgo >= 0;
+    return '<div class="h2-yoy-row">' +
+      '<div class="h2-yoy-prod">' + pm.label + '</div>' +
+      '<div class="h2-yoy-flow">' +
+        '<span class="h2-yoy-old">%' + d.prev.hgo.toFixed(1) + '</span>' +
+        '<span class="h2-yoy-arr">→</span>' +
+        '<span class="h2-yoy-new hd-' + hgo3(d.curr.hgo) + '">%' + d.curr.hgo.toFixed(1) + '</span>' +
+      '</div>' +
+      '<div class="h2-yoy-delta ' + (up ? 'hd-g' : 'hd-r') + '">' +
+        (d.dHgo !== null ? (up ? '▲ +' : '▼ −') + Math.abs(d.dHgo).toFixed(1) + ' pn' : '—') + '</div>' +
+      '<div class="h2-yoy-mini">' +
+        'Adet ' + _h2Sgn(d.dAdet) + ' · Hedef ' + _h2Sgn(d.dHedef) + ' · Fc ' + _h2Sgn(d.dFc) +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  return title + '<div class="h2-card">' +
+    '<div class="h2-yoy-head">' + yoy.prevPeriod + ' → ' + yoy.period + '</div>' + rows + '</div>';
+}
+
+function _h2Sgn(v) {
+  if (v === null || v === undefined) return '—';
+  return (v > 0 ? '+' : '') + v.toLocaleString('tr-TR');
+}
+
+/* ─── 5. OPERASYON YORUMU (kural tabanlı) ────────────────────────── */
+function _h2CommentSection(hist, ytd, yoy) {
   var lines = [];
-  lines.push(pm.label + ' ürününde <strong>' + label + '</strong> ile <strong>' + today + '</strong> arasında ' + rows.length + ' ' + entity + ' analiz edilmiştir.');
 
-  if (growing.length > 0) {
-    var l2 = '<span class="gecm-pos-txt">▲ ' + growing.length + ' ' + entity + ' büyüme göstermiştir.</span>';
-    if (bestRow && bestRow.name && bestRow.aDiff > 0) {
-      l2 += ' En yüksek artış <strong>' + bestRow.name + '</strong> için +' + bestRow.aDiff.toLocaleString('tr-TR') + ' adet olarak gerçekleşmiştir.';
-    } else if (bestRow && bestRow.name && bestRow.hgoDiff > 0) {
-      l2 += ' En yüksek HGO artışı <strong>' + bestRow.name + '</strong> için +%' + bestRow.hgoDiff.toFixed(1) + ' olmuştur.';
-    }
-    lines.push(l2);
+  /* YoY mobil gelişimi */
+  var ym = yoy && yoy.prods.mobil;
+  if (ym && ym.dHgo !== null) {
+    if (ym.dHgo >= 3)       lines.push('Bayi mobil tarafta geçen yıla göre <strong>+' + ym.dHgo.toFixed(1) + ' puan</strong> gelişim göstermiştir.');
+    else if (ym.dHgo <= -3) lines.push('Bayi mobil tarafta geçen yılın <strong>' + Math.abs(ym.dHgo).toFixed(1) + ' puan</strong> gerisindedir.');
+    else                     lines.push('Mobil performans geçen yıl aynı dönemle benzer seviyededir (' + (ym.dHgo >= 0 ? '+' : '') + ym.dHgo.toFixed(1) + ' puan).');
   }
 
-  if (declining.length > 0) {
-    var l3 = '<span class="gecm-neg-txt">▼ ' + declining.length + ' ' + entity + ' gerileme yaşamıştır.</span>';
-    if (worstRow && worstRow.name && worstRow.hgoDiff < 0) {
-      l3 += ' En belirgin düşüş <strong>' + worstRow.name + '</strong> için -%' + Math.abs(worstRow.hgoDiff).toFixed(1) + ' HGO kaybı şeklindedir.';
-    }
-    lines.push(l3);
+  /* YTD hedef altı ürünler */
+  if (ytd) {
+    var weak = HIST2_PRODS.filter(function(pm) {
+      var d = ytd.prods[pm.key];
+      return d && d.hgo !== null && d.hgo < 90;
+    }).map(function(pm) { return pm.label; });
+    if (weak.length) lines.push('<strong>' + weak.join(', ') + '</strong> tarafında YTD performansı hedefin altında kalmaktadır.');
+    else if (ytd.toplamHgo !== null && ytd.toplamHgo >= 100) lines.push('Tüm ürünlerde YTD performans hedef seviyesinde veya üzerindedir.');
   }
 
-  if (!growing.length && !declining.length) lines.push('Anlamlı bir değişim tespit edilememiştir.');
-
-  return (
-    '<div class="gecm-summary-card">' +
-      '<div class="gecm-sum-hdr">Executive Özet &nbsp;·&nbsp; ' + pm.label + '</div>' +
-      lines.map(function(l) { return '<div class="gecm-sum-line">' + l + '</div>'; }).join('') +
-      '<div class="gecm-sum-meta">' + label + ' → ' + today + ' · ' + rows.length + ' ' + entity + '</div>' +
-    '</div>'
-  );
-}
-
-/* ─── KARŞILAŞTIRMA KARTI ─────────────────────────────────────────── */
-function _renderCompCard(rows) {
-  var pm    = _gecmPM();
-  var kiyas = _gecmKiyas === 'sy' ? 'Satış Yöneticisi' : 'Bayi';
-  var label = HIST_DATE_LABEL || '';
-
-  var html = '<div class="gecm-comp-card" id="gecm-card">' +
-    '<div class="gecm-comp-hdr">' +
-      '<div class="gecm-ch-title">' + kiyas + ' Kıyası &nbsp;·&nbsp; ' + pm.label + '</div>' +
-      '<div class="gecm-ch-sub">' + label + ' → Güncel</div>' +
-    '</div>';
-
-  if (!rows.length) {
-    html += '<div class="gecm-empty-msg">Seçilen ürün için kıyas verisi bulunamadı.</div>';
-    return html + '</div>';
-  }
-
-  rows.forEach(function(r, i) {
-    var hgoCls  = r.hgoDiff === null ? '' : r.hgoDiff > 0 ? 'gecm-pos' : r.hgoDiff < 0 ? 'gecm-neg' : '';
-    var aCls    = r.aDiff === null   ? '' : r.aDiff > 0   ? 'gecm-pos' : r.aDiff < 0   ? 'gecm-neg' : '';
-
-    function fmtDiff(v, isHgo) {
-      if (v === null) return '—';
-      var prefix = v > 0 ? '+' : '';
-      return prefix + (isHgo ? '%' + Math.abs(v).toFixed(1) : Math.abs(v).toLocaleString('tr-TR'));
-    }
-    function arrow(v) { return v === null ? '' : v > 0 ? ' ▲' : v < 0 ? ' ▼' : ''; }
-
-    var podCls = (i < 3 && _gecmGorunum !== 'decline') ? ' gecm-row-p' + (i + 1) : '';
-
-    html += '<div class="gecm-row' + podCls + '">' +
-      '<div class="gecm-row-lft">' +
-        '<span class="gecm-row-rank">' + (i + 1) + '</span>' +
-        '<div class="gecm-row-info">' +
-          '<div class="gecm-row-name">' + r.name + '</div>' +
-          (r.sub ? '<div class="gecm-row-sub">' + r.sub + '</div>' : '') +
-        '</div>' +
-      '</div>' +
-      '<div class="gecm-row-rgt">' +
-        /* Aktivasyon */
-        '<div class="gecm-metric">' +
-          '<div class="gecm-m-flow">' +
-            '<span class="gecm-m-h">' + (r.histA !== null ? r.histA.toLocaleString('tr-TR') : '—') + '</span>' +
-            '<span class="gecm-m-arr">→</span>' +
-            '<span class="gecm-m-c">' + (r.currA !== null ? r.currA.toLocaleString('tr-TR') : '—') + '</span>' +
-          '</div>' +
-          '<div class="gecm-m-diff ' + aCls + '">' + fmtDiff(r.aDiff, false) + arrow(r.aDiff) + '</div>' +
-          '<div class="gecm-m-lbl">Aktiv.</div>' +
-        '</div>' +
-        /* HGO */
-        '<div class="gecm-metric">' +
-          '<div class="gecm-m-flow">' +
-            '<span class="gecm-m-h">' + (r.histHgo !== null ? '%' + r.histHgo.toFixed(1) : '—') + '</span>' +
-            '<span class="gecm-m-arr">→</span>' +
-            '<span class="gecm-m-c ' + hgoCls + '">' + (r.currHgo !== null ? '%' + r.currHgo.toFixed(1) : '—') + '</span>' +
-          '</div>' +
-          '<div class="gecm-m-diff ' + hgoCls + '">' + fmtDiff(r.hgoDiff, true) + arrow(r.hgoDiff) + '</div>' +
-          '<div class="gecm-m-lbl">HGO</div>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  });
-
-  html += '</div>'; /* gecm-comp-card */
-  return html;
-}
-
-/* ─── TREND GÖRÜNÜMÜ ─────────────────────────────────────────────── */
-function _renderTrendView() {
-  var pm    = _gecmPM();
-  var store = trendLoad();
-  var days  = Object.keys(store).sort();
-
-  if (days.length < 2) {
-    return '<div class="gecm-empty-msg">Trend için en az 2 günlük veri gerekiyor. Geçmiş raporları yükleyerek trend verisini zenginleştirin.</div>';
-  }
-
-  /* Bayi bazında son değişim */
-  var scope  = _gecmKiyas === 'sy' ? 'bayi' : 'bayi'; /* her ikisi de bayi trend kullanır */
-  var prodKey = pm.bayiKey;
-
-  var entities = {};
-  days.forEach(function(d) {
-    var src = store[d] && store[d].bayi;
-    if (!src) return;
-    for (var nm in src) {
-      if (src[nm][prodKey] !== undefined) {
-        if (!entities[nm]) entities[nm] = [];
-        entities[nm].push({ d: d, v: src[nm][prodKey] });
+  /* Son 3 ay eğilimi (ürün bazlı tarama) */
+  var yearHist = hist.filter(function(x) { return x.period.slice(0, 4) === String(_h2Year); });
+  if (yearHist.length >= 3) {
+    HIST2_PRODS.forEach(function(pm) {
+      var s = yearHist.map(function(x) { var d = x.dealer[pm.key]; return d ? d.hgo : null; })
+                      .filter(function(v) { return v !== null; }).slice(-3);
+      if (s.length === 3) {
+        if (s[0] > s[1] && s[1] > s[2]) lines.push('<strong>' + pm.label + '</strong> tarafında son 3 ayda düşüş eğilimi vardır.');
+        else if (s[0] < s[1] && s[1] < s[2] && s[2] - s[0] >= 5) lines.push('<strong>' + pm.label + '</strong> tarafında son 3 ayda güçlü yükseliş vardır.');
       }
-    }
-  });
-
-  var items = Object.keys(entities).map(function(nm) {
-    var pts   = entities[nm];
-    var first = pts[0].v, last = pts[pts.length - 1].v;
-    return { name: nm, first: first, last: last, diff: Math.round((last - first) * 10) / 10 };
-  }).sort(function(a, b) { return b.diff - a.diff; });
-
-  var top5    = items.slice(0, 5);
-  var bottom5 = items.slice(-5).reverse();
-
-  function tRow(r, i) {
-    var cls = r.diff > 0 ? 'gecm-pos' : r.diff < 0 ? 'gecm-neg' : '';
-    var arrow = r.diff > 0 ? '▲' : r.diff < 0 ? '▼' : '—';
-    return '<div class="gecm-t-row">' +
-      '<span class="gecm-t-rank">' + (i + 1) + '</span>' +
-      '<div class="gecm-t-nm">' + r.name + '</div>' +
-      '<div class="gecm-t-val ' + cls + '">' + arrow + '&thinsp;' + (r.diff > 0 ? '+' : '') + '%' + Math.abs(r.diff).toFixed(1) + '</div>' +
-    '</div>';
+    });
   }
 
-  var firstDay = days[0], lastDay = days[days.length - 1];
+  if (!lines.length) lines.push('Değerlendirme için yeterli geçmiş veri bulunmamaktadır.');
 
-  return (
-    '<div class="gecm-trend-info">' +
-      '<span class="gecm-t-period">' + firstDay + ' → ' + lastDay + '</span>' +
-      '<span class="gecm-t-cnt">' + days.length + ' gün &nbsp;·&nbsp; ' + pm.label + '</span>' +
-    '</div>' +
-    '<div class="gecm-comp-card">' +
-      '<div class="gecm-comp-hdr"><div class="gecm-ch-title">▲ En Çok Büyüyen</div></div>' +
-      top5.map(tRow).join('') +
-    '</div>' +
-    '<div class="gecm-comp-card" style="margin-top:8px">' +
-      '<div class="gecm-comp-hdr"><div class="gecm-ch-title">▼ En Çok Düşen</div></div>' +
-      bottom5.map(tRow).join('') +
-    '</div>' +
-    _renderExportBtn()
-  );
+  return '<div class="h2-sec-title">Operasyon Yorumu</div>' +
+    '<div class="h2-card h2-comment">' +
+      lines.map(function(l) { return '<div class="h2-comment-line">• ' + l + '</div>'; }).join('') +
+    '</div>';
 }
 
-/* ─── EXPORT BUTONU ───────────────────────────────────────────────── */
-function _renderExportBtn() {
-  var shareIco = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>';
-  return (
-    '<div class="gecm-export-row">' +
-      '<button class="gecm-export-btn" onclick="downloadGecmisPNG()">' +
-        shareIco + '&nbsp;Paylaşım Görseli Oluştur' +
-      '</button>' +
-    '</div>'
-  );
-}
-
-/* ─── PNG EXPORT ──────────────────────────────────────────────────── */
+/* ─── GÖRSEL OLUŞTUR ─────────────────────────────────────────────── */
 async function downloadGecmisPNG() {
-  var btn = document.querySelector('.gecm-export-btn');
-  var origHTML = btn ? btn.innerHTML : '';
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Oluşturuluyor…'; }
-
   try {
     await ensureH2C();
-    var el = document.getElementById('gecm-card') || document.getElementById('gecm-content');
-    if (!el) throw new Error('Kıyas kartı bulunamadı');
-
-    var pm      = _gecmPM();
-    var kiyas   = _gecmKiyas === 'sy' ? 'SY' : 'Bayi';
-    var prodKey = pm.key.replace(/[^a-zA-ZçğıöşüÇĞİÖŞÜ0-9]/g, '');
-    var dateStr = new Date().toLocaleDateString('tr-TR').replace(/\./g, '');
-    var fname   = 'TT_GecmisKiyas_' + kiyas + '_' + prodKey + '_' + dateStr + '.png';
-
+    var el = document.getElementById('gecm-card');
+    if (!el) throw new Error('Geçmiş kartı bulunamadı');
+    var ds  = _h2Dealers();
+    var cur = ds.find(function(d) { return String(d.bayiKodu) === String(_h2Bayi); });
+    var nm  = ((cur && cur.bayiAdi) || _h2Bayi || '').replace(/[^a-zA-ZçğıöşüÇĞİÖŞÜ0-9]/g, '').slice(0, 15);
+    var fname = 'TT_GecmisPerformans_' + nm + '_' + _h2Year + '.png';
     var canvas = await html2canvas(el, {
-      scale: 2.5, backgroundColor: '#ffffff',
+      scale: 2.5, backgroundColor: '#F0F3FA',
       useCORS: true, logging: false, scrollX: 0, scrollY: 0,
     });
-
     _openSharePreview(canvas.toDataURL('image/png'), fname);
   } catch (e) {
     alert('Görsel hatası: ' + e.message);
   }
-
-  if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
 }
 
-/* ─── WELCOME EKRANI ─────────────────────────────────────────────── */
-function _gecmWelcomeHTML() {
-  var files = (_histManifest && _histManifest.files) || [];
-  var hasFiles = files.length > 0;
-
-  return (
-    '<div class="gecm-welcome">' +
-      '<div class="gecm-wl-icon">📊</div>' +
-      '<div class="gecm-wl-title">Geçmiş Kıyas ve Trend Merkezi</div>' +
-      (hasFiles
-        ? '<div class="gecm-wl-sub">' + files.length + ' geçmiş rapor mevcut. Üstteki <strong>Tarih</strong> filtresinden bir rapor seçin.</div>'
-        : '<div class="gecm-wl-sub">Karşılaştırma için geçmiş rapor bulunamadı.</div>' +
-          '<div class="gecm-wl-hint">' +
-            'Günlük raporları <code>data/history/</code> klasörüne ekleyin, ardından <code>manifest.json</code> dosyasında dosya adını listeleyin.' +
-          '</div>') +
-    '</div>'
-  );
-}
-
-/* ─── AYARLAR: GEÇMİŞ RAPOR YÖNETİMİ ────────────────────────────── */
+/* ─── AYARLAR: GEÇMİŞ VERİ YÖNETİMİ ──────────────────────────────── */
 function renderHistorySettings() {
   var el = document.getElementById('hist-settings-content');
   if (!el) return;
-
-  var files = (_histManifest && _histManifest.files) || [];
-
-  if (!files.length) {
-    el.innerHTML = '<div class="hist-s-empty">data/history/ klasöründe rapor bulunamadı.<br>manifest.json dosyasına dosya adlarını ekleyin.</div>';
+  var periods = (HIST2_MANIFEST && HIST2_MANIFEST.periods) || [];
+  if (!periods.length) {
+    el.innerHTML = '<div class="hist-s-empty">data/history/ klasöründe dönem bulunamadı.<br>manifest.json → periods listesine "YYYY-AA" ekleyin.</div>';
     return;
   }
-
-  el.innerHTML = files.map(function(fname) {
-    var isLoaded = HIST_FNAME === fname;
-    var label    = fname.replace(/\.xlsx?$/i, '');
-    return (
-      '<div class="hist-s-row' + (isLoaded ? ' hist-s-active' : '') + '">' +
-        '<span class="hist-s-icon">' + (isLoaded ? '✅' : '📄') + '</span>' +
-        '<div class="hist-s-info">' +
-          '<div class="hist-s-name">' + label + '</div>' +
-          '<div class="hist-s-file">' + fname + '</div>' +
-        '</div>' +
-        (isLoaded ? '<span class="hist-s-badge">Yüklü</span>' : '') +
-      '</div>'
-    );
+  el.innerHTML = periods.map(function(p) {
+    var doc = HIST2_DATA[p];
+    var ok  = !!doc;
+    return '<div class="hist-s-row' + (ok ? ' hist-s-active' : '') + '">' +
+      '<span class="hist-s-icon">' + (ok ? '✅' : '⚠️') + '</span>' +
+      '<div class="hist-s-info">' +
+        '<div class="hist-s-name">' + p + (doc && doc.demo ? ' · örnek veri' : '') + '</div>' +
+        '<div class="hist-s-file">' + (ok ? (doc.dealers.length + ' bayi · ' + (doc.channel || '—')) : 'dosya bulunamadı') + '</div>' +
+      '</div>' +
+      (ok ? '<span class="hist-s-badge">Yüklü</span>' : '') +
+    '</div>';
   }).join('');
-}
-
-/* ─── SAYFA INIT ──────────────────────────────────────────────────── */
-async function initHistoryPage() {
-  if (!_histManifest) await loadHistManifest();
-  renderGecmisPage();
 }

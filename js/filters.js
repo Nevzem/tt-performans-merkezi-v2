@@ -248,8 +248,9 @@ function openSheet(type) {
   var cfg = _sheetConfig(type);
   titleEl.textContent = cfg.title;
 
-  /* Bayi seçimi için arama alanı göster */
-  if (type === 'bayi' && navPage === 'pers') {
+  /* Bayi seçimi için arama alanı göster (personel + geçmiş ekranı) */
+  var _needsSearch = (type === 'bayi' && navPage === 'pers') || type === 'h2-bayi';
+  if (_needsSearch) {
     searchW.style.display = '';
     searchI.oninput = function() { _renderOpts(type, this.value); };
   }
@@ -262,7 +263,7 @@ function openSheet(type) {
   document.body.style.overflow = 'hidden';
 
   /* Arama alanına odaklan */
-  if (type === 'bayi' && searchI) {
+  if (_needsSearch && searchI) {
     setTimeout(function() { searchI.focus(); }, 350);
   }
 }
@@ -439,61 +440,61 @@ function _sheetConfig(type) {
     };
   }
 
-  /* ── Geçmiş Kıyas filtreleri ── */
-  if (type === 'gecm-tarih') {
-    var files = (_histManifest && _histManifest.files) || [];
-    if (!files.length) return { title: 'Geçmiş Rapor Seç', items: [{ key: '__none', label: 'Henüz rapor yüklenmedi' }], active: HIST_FNAME };
+  /* ── Geçmiş Performans filtreleri (Sprint 18 Geçmiş) ── */
+  if (type === 'h2-bayi') {
+    var h2ds = (typeof _h2Dealers === 'function') ? _h2Dealers() : [];
+    if (!h2ds.length) return { title: 'Bayi Seç', items: [{ key: '__none', label: 'Bayi bulunamadı' }], active: null };
     return {
-      title: 'Geçmiş Rapor Seç',
-      items: files.map(function(f) {
-        var lbl = f.replace(/\.xlsx?$/i, '');
-        return { key: f, label: '📄 ' + lbl };
+      title: 'Bayi Seç',
+      items: h2ds.map(function(d) {
+        return { key: String(d.bayiKodu), label: d.bayiAdi + ' · ' + (d.il || '') };
       }),
-      active: HIST_FNAME,
+      active: String(_h2Bayi),
     };
   }
 
-  if (type === 'gecm-kiyas') {
+  if (type === 'h2-yil') {
+    var yrs = (typeof _h2Years === 'function') ? _h2Years() : [];
     return {
-      title: 'Kıyas Türü',
-      items: [
-        { key: 'bayi', label: '🏢 Bayi' },
-        { key: 'sy',   label: '👔 Satış Yöneticisi' },
-      ],
-      active: _gecmKiyas,
+      title: 'Yıl Seç',
+      items: (yrs.length ? yrs : [String(new Date().getFullYear())]).map(function(y) {
+        return { key: y, label: y };
+      }),
+      active: String(_h2Year),
     };
   }
 
-  if (type === 'gecm-prod') {
+  if (type === 'h2-prod') {
     return {
       title: 'Ürün Seç',
-      items: (typeof _GECM_PRODS !== 'undefined' ? _GECM_PRODS : []).map(function(p) {
-        return { key: p.key, label: p.label };
+      items: [{ key: 'all', label: 'Tüm Ürünler' }].concat(
+        (typeof HIST2_PRODS !== 'undefined' ? HIST2_PRODS : []).map(function(p) {
+          return { key: p.key, label: p.label };
+        })),
+      active: _h2Prod,
+    };
+  }
+
+  if (type === 'h2-kanal') {
+    return {
+      title: 'Kanal',
+      items: [
+        { key: 'Tümü', label: 'Tümü' },
+        { key: 'TTM',  label: 'TTM' },
+        { key: 'EDM',  label: 'EDM' },
+      ],
+      active: _h2Kanal,
+    };
+  }
+
+  if (type === 'h2-sy') {
+    var h2sy = (typeof _h2SyList === 'function') ? _h2SyList() : ['Tümü'];
+    return {
+      title: 'Satış Yöneticisi',
+      items: h2sy.map(function(s) {
+        return { key: s, label: s === 'Tümü' ? '👥 Tümü' : '👔 ' + s };
       }),
-      active: _gecmProd,
-    };
-  }
-
-  if (type === 'gecm-gorunum') {
-    return {
-      title: 'Görünüm',
-      items: [
-        { key: 'all',     label: 'Tümü' },
-        { key: 'growth',  label: '▲ En Çok Büyüyen' },
-        { key: 'decline', label: '▼ En Çok Düşen' },
-      ],
-      active: _gecmGorunum,
-    };
-  }
-
-  if (type === 'gecm-view') {
-    return {
-      title: 'Mod',
-      items: [
-        { key: 'kiyas', label: '⚖️ Kıyas (2 rapor karşılaştırma)' },
-        { key: 'trend', label: '📈 Trend Merkezi (günlük trend)' },
-      ],
-      active: _gecmView,
+      active: _h2Sy,
     };
   }
 
@@ -559,33 +560,21 @@ function _pick(type, key) {
   } else if (type === 'edm-il') {
     if (typeof setEdmIl === 'function') setEdmIl(key);
 
-  /* ── Geçmiş Kıyas picks ── */
-  } else if (type === 'gecm-tarih') {
-    if (key !== '__none') loadHistFile(key);
+  /* ── Geçmiş Performans picks (Sprint 18 Geçmiş) ── */
+  } else if (type === 'h2-bayi') {
+    if (key !== '__none') h2SetBayi(key);
 
-  } else if (type === 'gecm-kiyas') {
-    _gecmKiyas = key;
-    var kv = document.getElementById('gecm-kiyas-val');
-    if (kv) kv.textContent = key === 'sy' ? 'Sat. Yön.' : 'Bayi';
-    if (typeof renderGecmisPage === 'function') renderGecmisPage();
+  } else if (type === 'h2-yil') {
+    h2SetYear(key);
 
-  } else if (type === 'gecm-prod') {
-    _gecmProd = key;
-    var pv = document.getElementById('gecm-prod-val');
-    if (pv) pv.textContent = _truncate(key, 12);
-    if (typeof renderGecmisPage === 'function') renderGecmisPage();
+  } else if (type === 'h2-prod') {
+    h2SetProd(key);
 
-  } else if (type === 'gecm-gorunum') {
-    _gecmGorunum = key;
-    var gv = document.getElementById('gecm-gorunum-val');
-    if (gv) gv.textContent = key === 'growth' ? 'Büyüyen' : key === 'decline' ? 'Düşen' : 'Tümü';
-    if (typeof renderGecmisPage === 'function') renderGecmisPage();
+  } else if (type === 'h2-kanal') {
+    h2SetKanal(key);
 
-  } else if (type === 'gecm-view') {
-    _gecmView = key;
-    var vv = document.getElementById('gecm-view-val');
-    if (vv) vv.textContent = key === 'trend' ? 'Trend' : 'Kıyas';
-    if (typeof renderGecmisPage === 'function') renderGecmisPage();
+  } else if (type === 'h2-sy') {
+    h2SetSy(key);
 
   } else if (type === 'sy-prod') {
     setSyProd(key);                    /* render() setSyProd içinde çağrılır */

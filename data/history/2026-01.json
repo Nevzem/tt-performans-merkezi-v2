@@ -1,0 +1,188 @@
+{
+ "period": "2026-01",
+ "reportDate": "2026-01-28",
+ "channel": "TTM",
+ "demo": true,
+ "dealers": [
+  {
+   "bayiKodu": "4100785",
+   "bayiAdi": "İBRAHİM BAKAN-BAKAN",
+   "il": "AMASYA",
+   "sy": "Yusuf Dilki",
+   "mobil": {
+    "hedef": 292,
+    "adet": 275,
+    "hgo": 94.2,
+    "forecast": 97
+   },
+   "dsl": {
+    "hedef": 45,
+    "adet": 38,
+    "hgo": 84.4,
+    "forecast": 91
+   },
+   "tv": {
+    "hedef": 27,
+    "adet": 23,
+    "hgo": 85.2,
+    "forecast": 90
+   },
+   "cihaz": {
+    "hedef": 65,
+    "adet": 54,
+    "hgo": 83.1,
+    "forecast": 89
+   }
+  },
+  {
+   "bayiKodu": "4100343",
+   "bayiAdi": "TOKAT İLETİŞİM",
+   "il": "TOKAT",
+   "sy": "Koray Yeşilördek",
+   "mobil": {
+    "hedef": 340,
+    "adet": 350,
+    "hgo": 102.9,
+    "forecast": 111
+   },
+   "dsl": {
+    "hedef": 62,
+    "adet": 62,
+    "hgo": 100.0,
+    "forecast": 107
+   },
+   "tv": {
+    "hedef": 33,
+    "adet": 32,
+    "hgo": 97.0,
+    "forecast": 103
+   },
+   "cihaz": {
+    "hedef": 80,
+    "adet": 64,
+    "hgo": 80.0,
+    "forecast": 86
+   }
+  },
+  {
+   "bayiKodu": "4100512",
+   "bayiAdi": "ÇORUM YILDIZ TELEKOM",
+   "il": "ÇORUM",
+   "sy": "Yusuf Dilki",
+   "mobil": {
+    "hedef": 205,
+    "adet": 193,
+    "hgo": 94.1,
+    "forecast": 101
+   },
+   "dsl": {
+    "hedef": 38,
+    "adet": 28,
+    "hgo": 73.7,
+    "forecast": 76
+   },
+   "tv": {
+    "hedef": 21,
+    "adet": 19,
+    "hgo": 90.5,
+    "forecast": 93
+   },
+   "cihaz": {
+    "hedef": 48,
+    "adet": 46,
+    "hgo": 95.8,
+    "forecast": 103
+   }
+  },
+  {
+   "bayiKodu": "4100678",
+   "bayiAdi": "SAMSUN ATAKUM GSM",
+   "il": "SAMSUN",
+   "sy": "Koray Yeşilördek",
+   "mobil": {
+    "hedef": 410,
+    "adet": 419,
+    "hgo": 102.2,
+    "forecast": 109
+   },
+   "dsl": {
+    "hedef": 74,
+    "adet": 63,
+    "hgo": 85.1,
+    "forecast": 88
+   },
+   "tv": {
+    "hedef": 41,
+    "adet": 41,
+    "hgo": 100.0,
+    "forecast": 103
+   },
+   "cihaz": {
+    "hedef": 95,
+    "adet": 85,
+    "hgo": 89.5,
+    "forecast": 92
+   }
+  },
+  {
+   "bayiKodu": "4100901",
+   "bayiAdi": "SİNOP MAVİ İLETİŞİM",
+   "il": "SİNOP",
+   "sy": "Yusuf Dilki",
+   "mobil": {
+    "hedef": 150,
+    "adet": 126,
+    "hgo": 84.0,
+    "forecast": 90
+   },
+   "dsl": {
+    "hedef": 28,
+    "adet": 28,
+    "hgo": 100.0,
+    "forecast": 104
+   },
+   "tv": {
+    "hedef": 15,
+    "adet": 15,
+    "hgo": 100.0,
+    "forecast": 104
+   },
+   "cihaz": {
+    "hedef": 34,
+    "adet": 29,
+    "hgo": 85.3,
+    "forecast": 90
+   }
+  },
+  {
+   "bayiKodu": "4100234",
+   "bayiAdi": "ORDU KARADENİZ TELEKOM",
+   "il": "ORDU",
+   "sy": "Koray Yeşilördek",
+   "mobil": {
+    "hedef": 265,
+    "adet": 279,
+    "hgo": 105.3,
+    "forecast": 108
+   },
+   "dsl": {
+    "hedef": 51,
+    "adet": 52,
+    "hgo": 102.0,
+    "forecast": 105
+   },
+   "tv": {
+    "hedef": 26,
+    "adet": 24,
+    "hgo": 92.3,
+    "forecast": 96
+   },
+   "cihaz": {
+    "hedef": 60,
+    "adet": 48,
+    "hgo": 80.0,
+    "forecast": 84
+   }
+  }
+ ]
+}

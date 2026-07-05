@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-07-05 22:24 · Tum TT kutulari yeni logoyla degistirildi (paylasim gorselleri dahil)';
+const APP_BUILD = '2026-07-05 23:37 · Gecmis Performans ekrani: YTD, YoY, aylik trend (data/history)';

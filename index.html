@@ -10,7 +10,7 @@
 <title>TT Kuzey Anadolu · Performans Merkezi</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="stylesheet" href="css/style.css?v=20260705d">
+<link rel="stylesheet" href="css/style.css?v=20260705e">
 </head>
 <body>
 <div class="app">
@@ -96,33 +96,12 @@
     <!-- ── GEÇMİŞ KIYAS VE TREND ── -->
     <div class="page" id="page-gecmis" style="display:none">
       <div class="page-hdr">
-        <div class="page-hdr-title">Geçmiş Kıyas</div>
-        <div class="page-hdr-sub">Tarihsel karşılaştırma ve trend analizi</div>
+        <div class="page-hdr-title">Geçmiş Performans</div>
+        <div class="page-hdr-sub">Bayi Bazlı YTD · YoY · Aylık Trend</div>
       </div>
 
-      <!-- Filtre çubuğu -->
-      <div class="filter-bar gecm-fbar" id="gecm-filter-bar">
-        <button class="fbar-chip" onclick="openSheet('gecm-tarih')">
-          <span class="fbar-chip-lbl">Tarih</span>
-          <span class="fbar-chip-val" id="gecm-tarih-val">Seç</span>
-        </button>
-        <button class="fbar-chip" onclick="openSheet('gecm-kiyas')">
-          <span class="fbar-chip-lbl">Kıyas</span>
-          <span class="fbar-chip-val" id="gecm-kiyas-val">Bayi</span>
-        </button>
-        <button class="fbar-chip" onclick="openSheet('gecm-prod')">
-          <span class="fbar-chip-lbl">Ürün</span>
-          <span class="fbar-chip-val" id="gecm-prod-val">Toplam Mobil</span>
-        </button>
-        <button class="fbar-chip" onclick="openSheet('gecm-gorunum')">
-          <span class="fbar-chip-lbl">Görünüm</span>
-          <span class="fbar-chip-val" id="gecm-gorunum-val">Tümü</span>
-        </button>
-        <button class="fbar-chip" onclick="openSheet('gecm-view')">
-          <span class="fbar-chip-lbl">Mod</span>
-          <span class="fbar-chip-val" id="gecm-view-val">Kıyas</span>
-        </button>
-      </div>
+      <!-- Filtre çubuğu — history.js _h2FilterBar() doldurur -->
+      <div class="filter-bar gecm-fbar" id="gecm-filter-bar"></div>
 
       <!-- Yükleniyor -->
       <div id="gecm-loading" style="display:none">
@@ -272,19 +251,20 @@
 
 </div>
 
-<script src="js/version.js?v=20260705d"></script>
-<script src="js/data.js?v=20260705d"></script>
-<script src="js/parser.js?v=20260705d"></script>
-<script src="js/render.js?v=20260705d"></script>
-<script src="js/export.js?v=20260705d"></script>
-<script src="js/home.js?v=20260705d"></script>
-<script src="js/edm.js?v=20260705d"></script>
-<script src="js/detay.js?v=20260705d"></script>
-<script src="js/history.js?v=20260705d"></script>
-<script src="js/filters.js?v=20260705d"></script>
-<script src="js/app.js?v=20260705d"></script>
-<link rel="stylesheet" href="css/matrix-v2.css?v=20260705d">
-<script src="js/matrix-v2.js?v=20260705d"></script>
+<script src="js/version.js?v=20260705e"></script>
+<script src="js/data.js?v=20260705e"></script>
+<script src="js/parser.js?v=20260705e"></script>
+<script src="js/render.js?v=20260705e"></script>
+<script src="js/export.js?v=20260705e"></script>
+<script src="js/home.js?v=20260705e"></script>
+<script src="js/edm.js?v=20260705e"></script>
+<script src="js/detay.js?v=20260705e"></script>
+<script src="js/history-loader.js?v=20260705e"></script>
+<script src="js/history.js?v=20260705e"></script>
+<script src="js/filters.js?v=20260705e"></script>
+<script src="js/app.js?v=20260705e"></script>
+<link rel="stylesheet" href="css/matrix-v2.css?v=20260705e">
+<script src="js/matrix-v2.js?v=20260705e"></script>
 <script>
 /* Sprint 20: PWA — service worker kaydı (çevrimdışı açılış + ana ekrana ekleme) */
 if ('serviceWorker' in navigator) {

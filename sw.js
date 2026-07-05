@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-v2';
+const CACHE = 'ttpm-v3';
 
 const ASSETS = [
   '.',
@@ -21,6 +21,7 @@ const ASSETS = [
   'js/home.js',
   'js/edm.js',
   'js/detay.js',
+  'js/history-loader.js',
   'js/history.js',
   'js/filters.js',
   'js/app.js',
