@@ -39,26 +39,28 @@ function _h2Years() {
   return Object.keys(ys).sort();
 }
 
-/* Bayi listesi: kanal filtreli dönemlerin birleşimi, SY filtresi uygulanır.
-   En güncel dönemdeki bilgi esas alınır. */
+/* Bayi listesi: yalnızca GÜNCEL bayiler — en son dönem dosyasındakiler
+   (2026-07-06 kullanıcı isteği: kapanmış/eski bayiler listede görünmesin).
+   SY filtresi uygulanır. */
 function _h2Dealers() {
-  var map = _h2Map(), seen = {};
-  Object.keys(map).sort().forEach(function(p) {
-    var doc = map[p];
-    if (!doc) return;
-    doc.dealers.forEach(function(d) { seen[String(d.bayiKodu)] = d; });
-  });
-  var list = Object.keys(seen).map(function(k) { return seen[k]; });
+  var map = _h2Map();
+  var ps  = _h2Periods();
+  if (!ps.length) return [];
+  var doc  = map[ps[ps.length - 1]];   /* en güncel dönem */
+  var list = (doc && doc.dealers) ? doc.dealers.slice() : [];
   if (_h2Sy !== 'Tümü') list = list.filter(function(d) { return d.sy === _h2Sy; });
   list.sort(function(a, b) { return (a.bayiAdi || '').localeCompare(b.bayiAdi || '', 'tr'); });
   return list;
 }
 
+/* SY listesi de güncel bayilerden türetilir (listeyle tutarlı) */
 function _h2SyList() {
-  var map = _h2Map(), s = {};
-  for (var p in map) {
-    if (!map[p]) continue;
-    map[p].dealers.forEach(function(d) { if (d.sy) s[d.sy] = 1; });
+  var map = _h2Map();
+  var ps  = _h2Periods();
+  var s = {};
+  if (ps.length) {
+    var doc = map[ps[ps.length - 1]];
+    if (doc) doc.dealers.forEach(function(d) { if (d.sy) s[d.sy] = 1; });
   }
   return ['Tümü'].concat(Object.keys(s).sort(function(a, b) { return a.localeCompare(b, 'tr'); }));
 }

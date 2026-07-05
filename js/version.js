@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-07-06 00:25 · Gecmis: 2024-2026 tam veri seti (29 ay) — YoY aktif';
+const APP_BUILD = '2026-07-06 00:32 · Gecmis bayi listesi yalnizca guncel bayiler';
