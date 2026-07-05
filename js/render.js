@@ -195,7 +195,7 @@ function rowHTML(rec, rank, maxV, podium, withFc, prodKey) {
 }
 function hdrHTML(icon, t, sub) {
   return '<div class="hdr"><div class="hdr-stripe"></div><div class="hdr-gold"></div><div class="hdr-body">' +
-    '<div class="hdr-row"><div class="brand"><div class="brand-mark">TT</div>' +
+    '<div class="hdr-row"><div class="brand"><img class="brand-mark app-logo" src="icons/icon-180.png" alt="TT">' +
     '<div class="brand-txt">Türk Telekom<small>KUZEY ANADOLU BÖLGE</small></div></div>' +
     '<div class="donem">' + DONEM + '</div></div>' +
     '<div class="title">' + icon + ' ' + t + '</div><div class="subtitle">' + sub + '</div></div></div>';
@@ -411,7 +411,7 @@ function renderKupa() {
     '<div class="card" id="kupa-card">' +
     '<div class="kp-hero"><div class="kp-hero-stripe"></div><div class="kp-hero-gold"></div>' +
       '<div class="kp-hero-body">' +
-        '<div class="kp-hero-top"><div class="brand"><div class="brand-mark">TT</div>' +
+        '<div class="kp-hero-top"><div class="brand"><img class="brand-mark app-logo" src="icons/icon-180.png" alt="TT">' +
         '<div class="brand-txt">Türk Telekom<small>TTM İŞ ORTAKLARI</small></div></div>' +
         '<div class="donem">' + DONEM + '</div></div>' +
         '<div class="kp-trophy">🏆</div>' +

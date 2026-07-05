@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-07-05 22:06 · Ust bar ve ana sayfa basliginda yeni uygulama logosu';
+const APP_BUILD = '2026-07-05 22:24 · Tum TT kutulari yeni logoyla degistirildi (paylasim gorselleri dahil)';

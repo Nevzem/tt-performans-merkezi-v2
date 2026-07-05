@@ -226,8 +226,7 @@ function renderMatrixV2() {
     '<div style="background:linear-gradient(135deg,#001E5A,#0A1840);' +
       'padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">' +
       '<div style="display:flex;align-items:center;gap:10px;">' +
-        '<div style="background:#E30613;border-radius:8px;width:38px;height:38px;flex-shrink:0;' +
-          'display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;">TT</div>' +
+        '<img src="icons/icon-180.png" alt="TT" style="width:38px;height:38px;flex-shrink:0;border-radius:8px;background:#fff;object-fit:cover;">' +
         '<div>' +
           '<div style="color:#fff;font-size:13px;font-weight:800;line-height:1.2;">Türk Telekom</div>' +
           '<div style="color:rgba(255,255,255,0.55);font-size:9px;font-weight:700;letter-spacing:1px;">KUZEY ANADOLU BÖLGE</div>' +
@@ -414,9 +413,7 @@ function _buildMatrixExportDOM() {
     '<div style="background:linear-gradient(135deg,#001E5A 0%,#0A1840 100%);' +
       'padding:30px 44px;display:flex;align-items:center;justify-content:space-between;">' +
       '<div style="display:flex;align-items:center;gap:20px;">' +
-        '<div style="background:#E30613;border-radius:14px;width:70px;height:70px;flex-shrink:0;' +
-          'display:flex;align-items:center;justify-content:center;' +
-          'font-size:25px;font-weight:900;color:#fff;">TT</div>' +
+        '<img src="icons/icon-180.png" alt="TT" style="width:70px;height:70px;flex-shrink:0;border-radius:14px;background:#fff;object-fit:cover;">' +
         '<div>' +
           '<div style="color:#fff;font-size:23px;font-weight:900;line-height:1.2;">Türk Telekom</div>' +
           '<div style="color:rgba(255,255,255,0.62);font-size:13px;font-weight:700;' +
