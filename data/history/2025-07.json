@@ -1,0 +1,667 @@
+{
+ "period": "2025-07",
+ "reportDate": "2025-07-31",
+ "channel": "TTM",
+ "dealers": [
+  {
+   "bayiKodu": "500733",
+   "bayiAdi": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+   "il": "SAMSUN",
+   "sy": "YUSUF DILKI",
+   "mobil": {
+    "hedef": 473,
+    "adet": 497,
+    "hgo": 105.1,
+    "forecast": 105
+   },
+   "dsl": {
+    "hedef": 52,
+    "adet": 44,
+    "hgo": 84.6,
+    "forecast": 85
+   },
+   "tv": {
+    "hedef": 24,
+    "adet": 21,
+    "hgo": 87.5,
+    "forecast": 88
+   },
+   "cihaz": {
+    "hedef": 66,
+    "adet": 61,
+    "hgo": 92.4,
+    "forecast": 92
+   }
+  },
+  {
+   "bayiKodu": "501699",
+   "bayiAdi": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+   "il": "YOZGAT",
+   "sy": "YUSUF DILKI",
+   "mobil": {
+    "hedef": 518,
+    "adet": 547,
+    "hgo": 105.6,
+    "forecast": 106
+   },
+   "dsl": {
+    "hedef": 52,
+    "adet": 60,
+    "hgo": 115.4,
+    "forecast": 115
+   },
+   "tv": {
+    "hedef": 24,
+    "adet": 25,
+    "hgo": 104.2,
+    "forecast": 104
+   },
+   "cihaz": {
+    "hedef": 74,
+    "adet": 81,
+    "hgo": 109.5,
+    "forecast": 110
+   }
+  },
+  {
+   "bayiKodu": "502046",
+   "bayiAdi": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+   "il": "SAMSUN",
+   "sy": "KORAY YEŞİLÖRDEK",
+   "mobil": {
+    "hedef": 536,
+    "adet": 563,
+    "hgo": 105,
+    "forecast": 105
+   },
+   "dsl": {
+    "hedef": 85,
+    "adet": 88,
+    "hgo": 103.5,
+    "forecast": 104
+   },
+   "tv": {
+    "hedef": 34,
+    "adet": 35,
+    "hgo": 102.9,
+    "forecast": 103
+   },
+   "cihaz": {
+    "hedef": 69,
+    "adet": 85,
+    "hgo": 123.2,
+    "forecast": 123
+   }
+  },
+  {
+   "bayiKodu": "4036313",
+   "bayiAdi": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+   "il": "TOKAT",
+   "sy": "KORAY YEŞİLÖRDEK",
+   "mobil": {
+    "hedef": 586,
+    "adet": 642,
+    "hgo": 109.6,
+    "forecast": 110
+   },
+   "dsl": {
+    "hedef": 87,
+    "adet": 92,
+    "hgo": 105.7,
+    "forecast": 106
+   },
+   "tv": {
+    "hedef": 38,
+    "adet": 39,
+    "hgo": 102.6,
+    "forecast": 103
+   },
+   "cihaz": {
+    "hedef": 211,
+    "adet": 217,
+    "hgo": 102.8,
+    "forecast": 103
+   }
+  },
+  {
+   "bayiKodu": "4040801",
+   "bayiAdi": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+   "il": "TOKAT",
+   "sy": "KORAY YEŞİLÖRDEK",
+   "mobil": {
+    "hedef": 375,
+    "adet": 393,
+    "hgo": 104.8,
+    "forecast": 105
+   },
+   "dsl": {
+    "hedef": 49,
+    "adet": 49,
+    "hgo": 100,
+    "forecast": 100
+   },
+   "tv": {
+    "hedef": 28,
+    "adet": 28,
+    "hgo": 100,
+    "forecast": 100
+   },
+   "cihaz": {
+    "hedef": 146,
+    "adet": 142,
+    "hgo": 97.3,
+    "forecast": 97
+   }
+  },
+  {
+   "bayiKodu": "4040802",
+   "bayiAdi": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+   "il": "TOKAT",
+   "sy": "KORAY YEŞİLÖRDEK",
+   "mobil": {
+    "hedef": 465,
+    "adet": 453,
+    "hgo": 97.4,
+    "forecast": 97
+   },
+   "dsl": {
+    "hedef": 77,
+    "adet": 78,
+    "hgo": 101.3,
+    "forecast": 101
+   },
+   "tv": {
+    "hedef": 35,
+    "adet": 35,
+    "hgo": 100,
+    "forecast": 100
+   },
+   "cihaz": {
+    "hedef": 188,
+    "adet": 149,
+    "hgo": 79.3,
+    "forecast": 79
+   }
+  },
+  {
+   "bayiKodu": "4040895",
+   "bayiAdi": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+   "il": "AMASYA",
+   "sy": "KORAY YEŞİLÖRDEK",
+   "mobil": {
+    "hedef": 339,
+    "adet": 403,
+    "hgo": 118.9,
+    "forecast": 119
+   },
+   "dsl": {
+    "hedef": 64,
+    "adet": 64,
+    "hgo": 100,
+    "forecast": 100
+   },
+   "tv": {
+    "hedef": 36,
+    "adet": 39,
+    "hgo": 108.3,
+    "forecast": 108
+   },
+   "cihaz": {
+    "hedef": 178,
+    "adet": 172,
+    "hgo": 96.6,
+    "forecast": 97
+   }
+  },
+  {
+   "bayiKodu": "4050907",
+   "bayiAdi": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+   "il": "ÇORUM",
+   "sy": "KORAY YEŞİLÖRDEK",
+   "mobil": {
+    "hedef": 638,
+    "adet": 783,
+    "hgo": 122.7,
+    "forecast": 123
+   },
+   "dsl": {
+    "hedef": 115,
+    "adet": 117,
+    "hgo": 101.7,
+    "forecast": 102
+   },
+   "tv": {
+    "hedef": 40,
+    "adet": 44,
+    "hgo": 110,
+    "forecast": 110
+   },
+   "cihaz": {
+    "hedef": 200,
+    "adet": 150,
+    "hgo": 75,
+    "forecast": 75
+   }
+  },
+  {
+   "bayiKodu": "4052718",
+   "bayiAdi": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+   "il": "SAMSUN",
+   "sy": "YUSUF DILKI",
+   "mobil": {
+    "hedef": 735,
+    "adet": 864,
+    "hgo": 117.6,
+    "forecast": 118
+   },
+   "dsl": {
+    "hedef": 64,
+    "adet": 54,
+    "hgo": 84.4,
+    "forecast": 84
+   },
+   "tv": {
+    "hedef": 35,
+    "adet": 39,
+    "hgo": 111.4,
+    "forecast": 111
+   },
+   "cihaz": {
+    "hedef": 153,
+    "adet": 142,
+    "hgo": 92.8,
+    "forecast": 93
+   }
+  },
+  {
+   "bayiKodu": "4054927",
+   "bayiAdi": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+   "il": "ÇANKIRI",
+   "sy": "YUSUF DILKI",
+   "mobil": {
+    "hedef": 457,
+    "adet": 616,
+    "hgo": 134.8,
+    "forecast": 135
+   },
+   "dsl": {
+    "hedef": 59,
+    "adet": 56,
+    "hgo": 94.9,
+    "forecast": 95
+   },
+   "tv": {
+    "hedef": 31,
+    "adet": 28,
+    "hgo": 90.3,
+    "forecast": 90
+   },
+   "cihaz": {
+    "hedef": 336,
+    "adet": 194,
+    "hgo": 57.7,
+    "forecast": 58
+   }
+  },
+  {
+   "bayiKodu": "4057503",
+   "bayiAdi": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+   "il": "KIRŞEHİR",
+   "sy": "YUSUF DILKI",
+   "mobil": {
+    "hedef": 476,
+    "adet": 593,
+    "hgo": 124.6,
+    "forecast": 125
+   },
+   "dsl": {
+    "hedef": 67,
+    "adet": 83,
+    "hgo": 123.9,
+    "forecast": 124
+   },
+   "tv": {
+    "hedef": 36,
+    "adet": 49,
+    "hgo": 136.1,
+    "forecast": 136
+   },
+   "cihaz": {
+    "hedef": 112,
+    "adet": 103,
+    "hgo": 92,
+    "forecast": 92
+   }
+  },
+  {
+   "bayiKodu": "4100087",
+   "bayiAdi": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+   "il": "KIRIKKALE",
+   "sy": "YUSUF DILKI",
+   "mobil": {
+    "hedef": 368,
+    "adet": 355,
+    "hgo": 96.5,
+    "forecast": 97
+   },
+   "dsl": {
+    "hedef": 57,
+    "adet": 64,
+    "hgo": 112.3,
+    "forecast": 112
+   },
+   "tv": {
+    "hedef": 37,
+    "adet": 33,
+    "hgo": 89.2,
+    "forecast": 89
+   },
+   "cihaz": {
+    "hedef": 198,
+    "adet": 172,
+    "hgo": 86.9,
+    "forecast": 87
+   }
+  },
+  {
+   "bayiKodu": "4100089",
+   "bayiAdi": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+   "il": "KIRIKKALE",
+   "sy": "YUSUF DILKI",
+   "mobil": {
+    "hedef": 785,
+    "adet": 865,
+    "hgo": 110.2,
+    "forecast": 110
+   },
+   "dsl": {
+    "hedef": 84,
+    "adet": 89,
+    "hgo": 106,
+    "forecast": 106
+   },
+   "tv": {
+    "hedef": 42,
+    "adet": 47,
+    "hgo": 111.9,
+    "forecast": 112
+   },
+   "cihaz": {
+    "hedef": 333,
+    "adet": 292,
+    "hgo": 87.7,
+    "forecast": 88
+   }
+  },
+  {
+   "bayiKodu": "4100170",
+   "bayiAdi": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+   "il": "SAMSUN",
+   "sy": "YUSUF DILKI",
+   "mobil": {
+    "hedef": 401,
+    "adet": 458,
+    "hgo": 114.2,
+    "forecast": 114
+   },
+   "dsl": {
+    "hedef": 59,
+    "adet": 58,
+    "hgo": 98.3,
+    "forecast": 98
+   },
+   "tv": {
+    "hedef": 27,
+    "adet": 32,
+    "hgo": 118.5,
+    "forecast": 119
+   },
+   "cihaz": {
+    "hedef": 132,
+    "adet": 105,
+    "hgo": 79.5,
+    "forecast": 80
+   }
+  },
+  {
+   "bayiKodu": "4100343",
+   "bayiAdi": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+   "il": "TOKAT",
+   "sy": "KORAY YEŞİLÖRDEK",
+   "mobil": {
+    "hedef": 328,
+    "adet": 324,
+    "hgo": 98.8,
+    "forecast": 99
+   },
+   "dsl": {
+    "hedef": 45,
+    "adet": 48,
+    "hgo": 106.7,
+    "forecast": 107
+   },
+   "tv": {
+    "hedef": 27,
+    "adet": 26,
+    "hgo": 96.3,
+    "forecast": 96
+   },
+   "cihaz": {
+    "hedef": 75,
+    "adet": 98,
+    "hgo": 130.7,
+    "forecast": 131
+   }
+  },
+  {
+   "bayiKodu": "4100641",
+   "bayiAdi": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+   "il": "SİNOP",
+   "sy": "YUSUF DILKI",
+   "mobil": {
+    "hedef": 396,
+    "adet": 438,
+    "hgo": 110.6,
+    "forecast": 111
+   },
+   "dsl": {
+    "hedef": 59,
+    "adet": 61,
+    "hgo": 103.4,
+    "forecast": 103
+   },
+   "tv": {
+    "hedef": 27,
+    "adet": 28,
+    "hgo": 103.7,
+    "forecast": 104
+   },
+   "cihaz": {
+    "hedef": 141,
+    "adet": 148,
+    "hgo": 105,
+    "forecast": 105
+   }
+  },
+  {
+   "bayiKodu": "4100676",
+   "bayiAdi": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+   "il": "SAMSUN",
+   "sy": "KORAY YEŞİLÖRDEK",
+   "mobil": {
+    "hedef": 544,
+    "adet": 602,
+    "hgo": 110.7,
+    "forecast": 111
+   },
+   "dsl": {
+    "hedef": 45,
+    "adet": 37,
+    "hgo": 82.2,
+    "forecast": 82
+   },
+   "tv": {
+    "hedef": 25,
+    "adet": 22,
+    "hgo": 88,
+    "forecast": 88
+   },
+   "cihaz": {
+    "hedef": 178,
+    "adet": 235,
+    "hgo": 132,
+    "forecast": 132
+   }
+  },
+  {
+   "bayiKodu": "4100729",
+   "bayiAdi": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+   "il": "SAMSUN",
+   "sy": "KORAY YEŞİLÖRDEK",
+   "mobil": {
+    "hedef": 453,
+    "adet": 500,
+    "hgo": 110.4,
+    "forecast": 110
+   },
+   "dsl": {
+    "hedef": 61,
+    "adet": 66,
+    "hgo": 108.2,
+    "forecast": 108
+   },
+   "tv": {
+    "hedef": 30,
+    "adet": 27,
+    "hgo": 90,
+    "forecast": 90
+   },
+   "cihaz": {
+    "hedef": 166,
+    "adet": 168,
+    "hgo": 101.2,
+    "forecast": 101
+   }
+  },
+  {
+   "bayiKodu": "4100760",
+   "bayiAdi": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+   "il": "KIRŞEHİR",
+   "sy": "YUSUF DILKI",
+   "mobil": {
+    "hedef": 438,
+    "adet": 715,
+    "hgo": 163.2,
+    "forecast": 163
+   },
+   "dsl": {
+    "hedef": 42,
+    "adet": 57,
+    "hgo": 135.7,
+    "forecast": 136
+   },
+   "tv": {
+    "hedef": 22,
+    "adet": 31,
+    "hgo": 140.9,
+    "forecast": 141
+   },
+   "cihaz": {
+    "hedef": 37,
+    "adet": 49,
+    "hgo": 132.4,
+    "forecast": 132
+   }
+  },
+  {
+   "bayiKodu": "7000045",
+   "bayiAdi": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+   "il": "ÇORUM",
+   "sy": "KORAY YEŞİLÖRDEK",
+   "mobil": {
+    "hedef": 393,
+    "adet": 417,
+    "hgo": 106.1,
+    "forecast": 106
+   },
+   "dsl": {
+    "hedef": 135,
+    "adet": 161,
+    "hgo": 119.3,
+    "forecast": 119
+   },
+   "tv": {
+    "hedef": 36,
+    "adet": 38,
+    "hgo": 105.6,
+    "forecast": 106
+   },
+   "cihaz": {
+    "hedef": 51,
+    "adet": 45,
+    "hgo": 88.2,
+    "forecast": 88
+   }
+  },
+  {
+   "bayiKodu": "7000447",
+   "bayiAdi": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+   "il": "AMASYA",
+   "sy": "KORAY YEŞİLÖRDEK",
+   "mobil": {
+    "hedef": 404,
+    "adet": 395,
+    "hgo": 97.8,
+    "forecast": 98
+   },
+   "dsl": {
+    "hedef": 64,
+    "adet": 66,
+    "hgo": 103.1,
+    "forecast": 103
+   },
+   "tv": {
+    "hedef": 32,
+    "adet": 35,
+    "hgo": 109.4,
+    "forecast": 109
+   },
+   "cihaz": {
+    "hedef": 207,
+    "adet": 136,
+    "hgo": 65.7,
+    "forecast": 66
+   }
+  },
+  {
+   "bayiKodu": "7100063",
+   "bayiAdi": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+   "il": "SAMSUN",
+   "sy": "KORAY YEŞİLÖRDEK",
+   "mobil": {
+    "hedef": 436,
+    "adet": 482,
+    "hgo": 110.6,
+    "forecast": 111
+   },
+   "dsl": {
+    "hedef": 56,
+    "adet": 44,
+    "hgo": 78.6,
+    "forecast": 79
+   },
+   "tv": {
+    "hedef": 31,
+    "adet": 25,
+    "hgo": 80.6,
+    "forecast": 81
+   },
+   "cihaz": {
+    "hedef": 180,
+    "adet": 172,
+    "hgo": 95.6,
+    "forecast": 96
+   }
+  }
+ ]
+}

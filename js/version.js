@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-07-05 23:37 · Gecmis Performans ekrani: YTD, YoY, aylik trend (data/history)';
+const APP_BUILD = '2026-07-06 00:01 · Gecmis ekrani GERCEK 2025 verisiyle (11 ay, Ocak-Kasim)';
