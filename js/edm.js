@@ -244,7 +244,7 @@ function _edmPageHeader() {
   return '<div class="hd-hero hd-anim" style="--i:0">' +
     '<div class="hd-hero-main">' +
       '<div class="hd-hero-head">' +
-        '<div class="hd-ph-mark">TT</div>' +
+        '<img class="hd-ph-mark app-logo" src="icons/icon-180.png" alt="TT">' +
         '<div class="hd-hero-ch-badge ch-edm">EDM</div>' +
         '<div class="hd-hero-titles">' +
           '<div class="hd-hero-title">EDM Performans Merkezi' + syLabel + '</div>' +

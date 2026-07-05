@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-07-05 21:57 · Yeni uygulama ikonu: Turk Telekom Kuzey Anadolu logosu';
+const APP_BUILD = '2026-07-05 22:06 · Ust bar ve ana sayfa basliginda yeni uygulama logosu';

@@ -2137,3 +2137,12 @@ body.exporting .card { animation: none !important; opacity: 1 !important; transf
   color: var(--green);
   white-space: nowrap;
 }
+
+/* ─── UYGULAMA LOGOSU (2026-07-05) ───────────────────────────────── */
+/* Topbar ve ana sayfa hero'daki kırmızı TT kutusu yerine uygulama ikonu */
+img.app-logo {
+  background: #fff;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.28);
+}
