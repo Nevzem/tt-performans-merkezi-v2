@@ -211,13 +211,10 @@ function cardHTML(prodKey) {
   const N = parseInt(document.getElementById("nsel").value);
   const syTag = sy === "Tümü" ? "" : " · SY: " + sy.split(" ")[0];
 
-  /* EDM kanalı için ayrı render */
+  /* EDM kanalı için ayrı render — "sy" bölümü buraya hiç ulaşmaz, render()
+     dispatcher'ında (yukarıda) doğrudan yönlendirilir. */
   if (typeof KANAL !== "undefined" && KANAL === "EDM" && section === "bayi") {
     return typeof renderEDMBayi === "function" ? renderEDMBayi(prodKey) : "";
-  }
-  if (typeof KANAL !== "undefined" && KANAL === "EDM" && section === "sy") {
-    if (typeof renderEDMSY === "function") renderEDMSY();
-    return "";
   }
   if (typeof KANAL !== "undefined" && KANAL === "EDM" && section === "pers") {
     return typeof renderEDMPers === "function" ? renderEDMPers(prodKey) : "";
@@ -667,7 +664,19 @@ function setLayout(l) {
 function render() {
   const cards = document.getElementById("cards");
   if (section === "matrix") { cards.style.maxWidth = "100%"; renderMatrixV2(); return; }
-  if (section === "sy") { renderSY(); return; }
+  if (section === "sy") {
+    /* Sprint 24.1 düzeltmesi: EDM kanalında SY sayfası artık gerçekten
+       APP_CONFIG.edmSY alt kümesine filtreleniyor (önceden bu satır
+       KANAL'a bakmaksızın her zaman renderSY() çağırıyordu — renderEDMSY()
+       hiçbir yerden tetiklenmiyordu, ölü kod). Bölge kartları bundan
+       etkilenmez: symBuildRegionCols() her zaman TÜM SYDATA.sy'yi kullanır. */
+    if (typeof KANAL !== "undefined" && KANAL === "EDM" && typeof renderEDMSY === "function") {
+      renderEDMSY();
+    } else {
+      renderSY();
+    }
+    return;
+  }
   if (section === "kupa") { cards.style.maxWidth = "330px"; renderKupa(); return; }
   if (section === "detay") { cards.style.maxWidth = "490px"; renderDetay(); return; }
   if (section === "trend") { cards.style.maxWidth = "440px"; renderTrend(); return; }

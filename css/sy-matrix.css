@@ -1,31 +1,36 @@
 /* ════════════════════════════════════════════════════════════════════
-   css/sy-matrix.css — Satış Yöneticisi Performans Matrisi (Sprint 24)
-   Mobil/DSL/TV/Cihaz'ı tek SY kartında gösteren çok ürünlü rapor.
-   Renk yalnızca HGO değeri, Forecast rozeti, kart sol vurgusu ve trend
-   metninde kullanılır — hücre/kart arka planları nötr kalır.
+   css/sy-matrix.css — Satış Yöneticisi Ürün Performans Raporu (Sprint 24.1)
+   Ürün bazlı takip: Mobil/DSL/TV/Cihaz her zaman ayrı kartlarda.
+   Renk yalnızca HGO değeri, Forecast rozeti, trend metni ve bölge farkı
+   göstergesinde kullanılır — hücre/kart arka planları nötr kalır (beyaz/
+   çok açık gri), tutarlı ince sınır + hafif gölge.
    ════════════════════════════════════════════════════════════════════ */
 
-.sym-list {
-  padding: 4px 8px 8px;
-  /* Kart genişliğine göre 2×2 / 4-yatay geçişi — export klonunda
-     (fixedWidth:1080) viewport media query'si tetiklenmez, bu yüzden
-     container query zorunlu; @media aşağıda yalnız gerçek geniş
-     pencereler için fallback. */
+/* Container-query kapsayıcısı KART GENELİNE taşındı (bölge grid'i +
+   yönetici grid'leri aynı bağlamı paylaşsın) — export klonunda
+   (fixedWidth:1440) viewport media query'si tetiklenmez, @container
+   ise klonun gerçek genişliğine göre çalışır; @media aşağıda yalnız
+   gerçek geniş pencereler için fallback. */
+.sym-page {
   container-type: inline-size;
   container-name: symlist;
 }
+
+.symr-wrap { padding: 2px 8px 12px; }
+
+.sym-list { padding: 0 8px 8px; }
 
 .sym-card {
   background: #fff;
   border: 1px solid #E3E8F2;
   border-radius: 12px;
-  padding: 10px 12px 12px;
-  margin-bottom: 11px;
+  padding: 12px 14px 14px;
+  margin-bottom: 9px;
   box-shadow: 0 2px 8px rgba(10,31,92,0.06);
 }
 .sym-card:last-child { margin-bottom: 2px; }
 
-.sym-card-top { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
+.sym-card-top { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; }
 .sym-rk { width: 20px; flex-shrink: 0; text-align: center; }
 .sym-rk .n { font-size: 11px; font-weight: 700; color: var(--muted); }
 
@@ -33,18 +38,14 @@
 .sym-nm  { font-size: 15.5px; font-weight: 900; color: var(--ink); letter-spacing: -0.2px;
            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sym-meta{ font-size: 10.5px; font-weight: 700; color: var(--muted); margin-top: 1px; }
-
-.sym-gen     { text-align: right; flex-shrink: 0; }
-.sym-gen-hgo { font-size: 17px; font-weight: 900; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
-.sym-gen-lbl { font-size: 8.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 1px; }
-.sym-gen-fc  { display: inline-block; font-size: 10.5px; font-weight: 800; margin-top: 3px; padding: 1px 6px; border-radius: 6px; }
+.sym-warn{ color: var(--amber); font-weight: 800; }
 
 /* ─── ÜRÜN IZGARASI — mobil 2×2, geniş/export 4 yan yana ─────────── */
-.sym-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.sym-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
 @container symlist (min-width: 720px) { .sym-grid { grid-template-columns: repeat(4, 1fr); } }
 @media (min-width: 720px)             { .sym-grid { grid-template-columns: repeat(4, 1fr); } }
 
-.sym-cell   { background: #F7F9FC; border: 1px solid #E7EBF3; border-radius: 9px; padding: 7px 8px 8px; min-width: 0; }
+.sym-cell   { background: #F7F9FC; border: 1px solid #E7EBF3; border-radius: 9px; padding: 9px 10px 10px; min-width: 0; }
 .sym-c-hdr  { display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
 .sym-c-ic   { font-size: 10px; }
 .sym-c-lbl  { font-size: 10.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
@@ -54,15 +55,32 @@
 .sym-c-fc   { font-size: 11.5px; font-weight: 800; padding: 1px 6px; border-radius: 6px; }
 .sym-c-akt  { font-size: 12.5px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
 
-.sym-c-tgt { font-size: 10px; font-weight: 700; color: var(--muted); margin-top: 3px; line-height: 1.3; }
-.sym-c-sub, .sym-c-sub2 { font-size: 10px; font-weight: 700; color: var(--muted); margin-top: 1px; line-height: 1.3; }
-.sym-c-plus { color: var(--green); font-weight: 800; }
+/* Hedef / Kalan-Fazla / Günlük — kompakt üçlü satır */
+.sym-c-trio     { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 5px; padding-top: 5px; border-top: 1px dashed #E3E8F2; }
+.sym-c-trioitem { text-align: center; min-width: 0; }
+.sym-c-trioitem .v { font-size: 11px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sym-c-trioitem .v.plus { color: var(--green); }
+.sym-c-trioitem .l { font-size: 8px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2px; margin-top: 1px; }
 
+/* Bölge karşılaştırması — HGO puanı üzerinden, tek kompakt satır */
+.sym-c-cmp   { display: flex; justify-content: space-between; gap: 6px; margin-top: 4px; font-size: 9.5px; font-weight: 700; color: var(--muted); }
+.sym-c-cmp .d.up { color: var(--green); font-weight: 800; }
+.sym-c-cmp .d.dn { color: var(--crimson); font-weight: 800; }
+.sym-c-cmp .d.eq { color: var(--muted); font-weight: 800; }
+
+/* Önceki rapora göre değişim — kartın en altında tek satır */
 .sym-c-trend { display: flex; justify-content: space-between; gap: 6px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed #E3E8F2; }
 .sym-tr      { font-size: 9.8px; font-weight: 800; }
 .sym-tr.up   { color: var(--green); }
 .sym-tr.dn   { color: var(--crimson); }
 .sym-tr.eq   { color: var(--muted); }
+
+/* ─── ÜRÜN LİDERLERİ — 2×2 kompakt mini grid (genel lider YOK) ────── */
+.sym-ldr-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 0 8px 10px; }
+.sym-ldr-card { background: #F7F9FC; border: 1px solid #E7EBF3; border-radius: 9px; padding: 8px 10px 9px; min-width: 0; }
+.sym-ldr-hdr  { display: flex; align-items: center; gap: 4px; font-size: 9px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
+.sym-ldr-nm   { font-size: 12px; font-weight: 800; color: var(--ink); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sym-ldr-v    { font-size: 15px; font-weight: 900; margin-top: 1px; font-variant-numeric: tabular-nums; color: var(--ink); }
 
 /* ─── MERKEZİ HGO BANT RENKLERİ — hgoBand(): gg/g/y/o/r ───────────── */
 .b-gg { color: #059669; }
@@ -71,9 +89,10 @@
 .b-o  { color: #C2660A; }
 .b-r  { color: var(--crimson); }
 
-.sym-c-fc.b-gg, .sym-gen-fc.b-gg { color: #064e3b; background: #d1fae5; }
-.sym-c-fc.b-g,  .sym-gen-fc.b-g  { color: var(--green);   background: var(--green-soft); }
-.sym-c-fc.b-y,  .sym-gen-fc.b-y  { color: var(--amber);   background: var(--amber-soft); }
-.sym-c-fc.b-o,  .sym-gen-fc.b-o  { color: #92400e; background: #fff7ed; }
-.sym-c-fc.b-r,  .sym-gen-fc.b-r  { color: var(--crimson); background: var(--crimson-soft); }
+.sym-c-fc.b-gg { color: #064e3b; background: #d1fae5; }
+.sym-c-fc.b-g  { color: var(--green);   background: var(--green-soft); }
+.sym-c-fc.b-y  { color: var(--amber);   background: var(--amber-soft); }
+.sym-c-fc.b-o  { color: #92400e; background: #fff7ed; }
+.sym-c-fc.b-r  { color: var(--crimson); background: var(--crimson-soft); }
 .sym-c-fc.b-off{ color: var(--muted); background: #F2F4F9; }
+/* .sym-ldr-v renk için yukarıdaki genel .b-gg/.b-g/.b-y/.b-o/.b-r metin renklerini kullanır (rozet dolgusu yok). */

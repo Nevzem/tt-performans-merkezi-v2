@@ -593,10 +593,16 @@ function renderEDMSY() {
     return;
   }
 
-  /* EDM SY isimlerini büyük harfle karşılaştır — APP_CONFIG.edmSY'dan türetilir */
-  var edmTargets = APP_CONFIG.edmSY.map(function(n) { return n.toUpperCase(); });
+  /* EDM SY isimlerini karşılaştır — APP_CONFIG.edmSY'dan türetilir.
+     Sprint 24.1 düzeltmesi: düz .toUpperCase() Türkçe "i" harfini yanlış
+     büyütüyordu ("Filiz"→"FILIZ", oysa SYDATA.sy'de "FİLİZ" var), bu yüzden
+     "Emre Filiz" ve "Ahmet Çelik" hiç eşleşmiyor, sessizce listeden
+     düşüyordu. Dosyanın başındaki normalizeSyName() (EDM bayi/personel
+     eşleşmesinde zaten kullanılıyor — Türkçe karakterleri ASCII'ye çevirip
+     sonra büyütüyor) burada da kullanılarak tutarlı hale getirildi. */
+  var edmTargets = APP_CONFIG.edmSY.map(normalizeSyName);
   var found = Object.keys(SYDATA.sy).filter(function(nm) {
-    return edmTargets.indexOf(nm.toUpperCase()) >= 0;
+    return edmTargets.indexOf(normalizeSyName(nm)) >= 0;
   });
 
   if (!found.length) {
