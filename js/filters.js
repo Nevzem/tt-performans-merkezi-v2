@@ -93,17 +93,21 @@ function buildFilterBar() {
   var html = '';
 
   if (isSY) {
-    /* ── Satış Yöneticisi filtre çubuğu — Sprint 24.1 ──
-       Ürün bazlı takip: sıralama HER ZAMAN bir ürüne bağlıdır, tek bir
-       "genel performans" sıralaması yok. Görünüm chip'i ile "Tek Ürün"
-       moduna geçilince eski Ürün/Liste chip'leri döner. */
-    var isSingleV = typeof syViewMode !== 'undefined' && syViewMode === 'single';
-    html += _fbarChip('sy-view', 'Görünüm', isSingleV ? 'Tek Ürün' : 'Ürün Performansı');
-    if (isSingleV) {
+    /* ── Satış Yöneticisi filtre çubuğu — Sprint 24.2 ──
+       Varsayılan görünüm artık 'v2' (kompakt Ürün Performans Raporu);
+       ürün/sıralama kontrolleri v2'de KARTIN İÇİNDE (pill butonlar),
+       bu yüzden dış filtre çubuğunda yalnızca Görünüm chip'i kalıyor.
+       'matrix' (Klasik Matris) ve 'single' (Tek Ürün) modlarında eski
+       chip'ler aynen çalışmaya devam eder. */
+    var vMode = (typeof syViewMode !== 'undefined') ? syViewMode : 'v2';
+    var vLabel = vMode === 'single' ? 'Tek Ürün' : vMode === 'matrix' ? 'Klasik Matris' : 'Ürün Raporu';
+    html += _fbarChip('sy-view', 'Görünüm', vLabel);
+
+    if (vMode === 'single') {
       var syProdShort = _SY_SHORT[syProd] || _truncate(syProd, 12) || 'Seç';
       html += _fbarChip('sy-prod',  'Ürün',  syProdShort);
       html += _fbarChip('sy-liste', 'Liste', _syListeLabel);
-    } else {
+    } else if (vMode === 'matrix') {
       var symProdLbl = (typeof SYM_PRODS !== 'undefined')
         ? ((SYM_PRODS.filter(function(p) { return p.key === (typeof symSortProd !== 'undefined' ? symSortProd : 'mobil'); })[0] || {}).label || 'MOBİL')
         : 'MOBİL';
@@ -113,6 +117,7 @@ function buildFilterBar() {
       html += _fbarChip('sym-prod', 'Ürün',      symProdLbl);
       html += _fbarChip('sym-sort', 'Sıralama',  symMetricLbl);
     }
+    /* vMode === 'v2' → ek chip yok, kontrol raporun içinde */
 
   } else if (isBayi && typeof KANAL !== 'undefined' && KANAL === 'EDM') {
     /* ── EDM Bayiler filtre çubuğu (aktivasyon bazlı) ── */
@@ -347,15 +352,16 @@ function _sheetConfig(type) {
     };
   }
 
-  /* ── SY görünüm modu — Sprint 24 ── */
+  /* ── SY görünüm modu — Sprint 24.2: varsayılan 'v2' (kompakt rapor) ── */
   if (type === 'sy-view') {
     return {
       title: 'Görünüm',
       items: [
-        { key: 'matrix', label: '📊 Ürün Performansı Raporu' },
+        { key: 'v2',     label: '🗂 Ürün Performans Raporu' },
+        { key: 'matrix', label: '📊 Klasik Matris (v1)' },
         { key: 'single', label: '🔎 Tek Ürün Görünümü' },
       ],
-      active: typeof syViewMode !== 'undefined' ? syViewMode : 'matrix',
+      active: typeof syViewMode !== 'undefined' ? syViewMode : 'v2',
     };
   }
 
@@ -720,6 +726,14 @@ function resetFiltersForPage(page) {
 /* ─── GÖRSEL OLUŞTUR ─────────────────────────────────────────────── */
 
 async function downloadCardPNG() {
+  /* Sprint 24.2: SY "Ürün Performans Raporu" (v2) kendi export DOM'unu
+     sıfırdan kuruyor (canlı ekranın screenshot'ı değil) — bkz. madde 16.
+     Genel klon tabanlı akış yalnızca v1/matris, tek-ürün ve diğer
+     sayfalar için geçerli kalır. */
+  if (navPage === 'sy' && (typeof syViewMode === 'undefined' || syViewMode === 'v2') && typeof exportSYReportV2 === 'function') {
+    return exportSYReportV2();
+  }
+
   var btn   = document.getElementById('fbar-dl-btn');
   var valEl = btn ? btn.querySelector('.fbar-chip-val') : null;
   var orig  = valEl ? valEl.textContent : 'Oluştur ↗';
@@ -747,12 +761,13 @@ async function downloadCardPNG() {
     document.body.classList.add('exporting');
 
     /* — Temiz clone — animasyon/opacity/filter reset, body dışı alanda —
-       Sprint 24.1: SY "Ürün Performansı" raporu telefon ekranında dar
-       render edilir; container-query (.sym-page) sayesinde 1440px'e
-       sabitlenen export klonunda bölge + yönetici ürün grid'leri 4 yan
-       yana görünür (bkz. css/sy-matrix.css). 1440px paylaşım ekranlarında
-       (WhatsApp) yakınlaştırıldığında metnin net kalması için önerilir. */
-    var isSyMatrix = navPage === 'sy' && (typeof syViewMode === 'undefined' || syViewMode !== 'single');
+       Sprint 24.1: SY "Klasik Matris" (v1, syViewMode==='matrix') telefon
+       ekranında dar render edilir; container-query (.sym-page) sayesinde
+       1440px'e sabitlenen export klonunda bölge + yönetici ürün grid'leri
+       4 yan yana görünür (bkz. css/sy-matrix.css). syViewMode==='v2' bu
+       noktaya hiç gelmez — downloadCardPNG() en başta exportSYReportV2()'ye
+       yönlendirir (kendi export DOM'unu kurar, bu klon akışını kullanmaz). */
+    var isSyMatrix = navPage === 'sy' && syViewMode === 'matrix';
     var fixedW = isSyMatrix ? 1440 : undefined;
     var res  = await createCleanExportClone(el, fixedW);
     cloneWrapper = res.wrapper;

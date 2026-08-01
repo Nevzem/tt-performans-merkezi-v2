@@ -29,8 +29,11 @@ var SYM_BAND_COLOR = { gg: '#059669', g: '#0E7A40', y: '#B26B00', o: '#ea8000', 
 /* ─── GÖRÜNÜM MODU + ÜRÜN BAZLI SIRALAMA STATE ──────────────────────
    Sprint 24.1: tek bir "genel performans" sıralaması YOK. Sıralama
    HER ZAMAN bir ürüne (symSortProd) ve bir ölçüte (symSortMetric)
-   bağlıdır — varsayılan Mobil / HGO. */
-var syViewMode     = 'matrix';   /* 'matrix' (Ürün Performansı, varsayılan) | 'single' (Tek Ürün) */
+   bağlıdır — varsayılan Mobil / HGO.
+   Sprint 24.2: varsayılan görünüm 'v2' oldu (js/sy-report-v2.js —
+   kompakt yönetici karşılaştırma tablosu). Bu dosyanın 'matrix' modu
+   "Klasik Matris" olarak korunuyor, silinmedi. */
+var syViewMode     = 'v2';   /* 'v2' (Ürün Performans Raporu, varsayılan) | 'matrix' (Klasik Matris) | 'single' (Tek Ürün) */
 var symSortProd    = 'mobil';    /* mobil|dsl|tv|cihaz */
 var symSortMetric  = 'hgo';      /* hgo|forecast|aktivasyon|deltaA|deltaHgo */
 

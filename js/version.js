@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-08-01 · Sprint 24.1: SY Ürün Performans Raporu (Bölge + ürün bazlı sıralama)';
+const APP_BUILD = '2026-08-01 · Sprint 24.2: SY Ürün Performans Raporu v2 (kompakt yönetici tablosu)';

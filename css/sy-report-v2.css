@@ -1,0 +1,189 @@
+/* ════════════════════════════════════════════════════════════════════
+   css/sy-report-v2.css — Satış Yöneticisi Ürün Performans Raporu v2
+   (Sprint 24.2 — sıfırdan, kompakt "yönetici karşılaştırma tablosu")
+
+   Bağımsız dosya: sy-matrix.css'e (v1) referans vermez, aynı .b-gg/.b-g/
+   .b-y/.b-o/.b-r bant sınıfları burada da tanımlıdır (kasıtlı tekrar —
+   v1 ileride kaldırılırsa v2 bozulmasın diye).
+   Renk yalnızca: ürün ikonu, mini donut, HGO metni, Forecast rozeti,
+   trend oku, ince vurgu çizgisinde kullanılır — kart zeminleri beyaz/
+   #F8FAFD, güçlü renkle boyanmaz.
+   ════════════════════════════════════════════════════════════════════ */
+
+.sy2-page {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(10,31,92,0.07);
+  container-type: inline-size;
+  container-name: sy2report;
+}
+
+/* ─── KOMPAKT KURUMSAL BAŞLIK ──────────────────────────────────────── */
+.sy2-hdr {
+  background: linear-gradient(140deg, var(--navy) 0%, var(--navy-2) 60%, var(--navy-3) 100%);
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px;
+  border-bottom: 2px solid var(--red);
+}
+.sy2-hdr-l { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+.sy2-logo  { width: 26px; height: 26px; border-radius: 6px; }
+.sy2-hdr-brand { color: #fff; font-size: 10px; font-weight: 800; line-height: 1.25; }
+.sy2-hdr-brand span { display: block; font-size: 8px; font-weight: 700; color: var(--gold-line); letter-spacing: 0.8px; }
+
+.sy2-hdr-c { flex: 1; min-width: 0; text-align: center; }
+.sy2-hdr-title { color: #fff; font-size: 13px; font-weight: 800; letter-spacing: -0.1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy2-hdr-sub   { color: rgba(255,255,255,0.55); font-size: 9px; font-weight: 600; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.sy2-hdr-r { text-align: right; flex-shrink: 0; }
+.sy2-hdr-donem { color: #fff; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; }
+.sy2-hdr-date  { color: rgba(255,255,255,0.5); font-size: 8.5px; font-weight: 600; margin-top: 1px; }
+
+@container sy2report (max-width: 560px) {
+  .sy2-hdr-c { display: none; }               /* dar mobilde ortadaki uzun metni gizle, başlık tek satırda kalsın */
+  .sy2-hdr-l { flex: 1; }
+}
+
+/* ─── ORTAK BÖLÜM BAŞLIĞI (.sec.t app genelinde tanımlı; burada padding sarmalayıcı) ── */
+.sy2-page .sec { margin: 8px 10px 6px; }
+
+/* ─── KUZEY ANADOLU BÖLGE — 2×2 mobil, 4-yatay geniş/export ─────────── */
+.sy2-region-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 0 10px 8px; }
+@container sy2report (min-width: 700px) { .sy2-region-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.sy2-rc { background: #F8FAFD; border: 1px solid #E3E8F2; border-radius: 13px; padding: 11px 12px 10px; min-width: 0; }
+.sy2-rc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
+.sy2-rc-lbl { display: flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
+.sy2-rc-hgowrap { text-align: right; }
+.sy2-rc-hgo   { font-size: 16px; font-weight: 900; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.1; white-space: nowrap; }
+.sy2-rc-hgo small { font-size: 8.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+.sy2-rc-akt   { font-size: 10px; font-weight: 700; color: var(--slate); margin-top: 1px; }
+
+.sy2-rc-mid   { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.sy2-rc-stats { flex: 1; min-width: 0; }
+.sy2-rc-line  { font-size: 11px; font-weight: 800; color: var(--ink); line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy2-rc-line small { font-size: 8.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-left: 2px; }
+.sy2-rc-line .plus { color: var(--green); }
+.sy2-rc-fc    { font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 6px; }
+
+.sy2-rc-daily { font-size: 10px; font-weight: 700; color: var(--muted); margin-top: 7px; padding-top: 6px; border-top: 1px dashed #E3E8F2; }
+.sy2-rc-trend2 { display: flex; justify-content: space-between; gap: 6px; margin-top: 3px; }
+
+/* ─── ÜRÜN / SIRALAMA KONTROLLERİ ─────────────────────────────────── */
+.sy2-filters { padding: 2px 10px 8px; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); padding-top: 8px; }
+.sy2-filters-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.sy2-filters-lbl { font-size: 9px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; width: 46px; flex-shrink: 0; }
+.sy2-pillrow { display: flex; flex-wrap: wrap; gap: 5px; }
+.sy2-pill {
+  border: 1px solid var(--line); background: #fff; color: var(--slate);
+  font-size: 10.5px; font-weight: 700; padding: 5px 10px; border-radius: 999px;
+  cursor: pointer; min-height: 26px;
+}
+.sy2-pill.on { background: var(--navy); border-color: var(--navy); color: #fff; font-weight: 800; }
+.sy2-filters-info { font-size: 10px; font-weight: 700; color: var(--muted); margin-top: 3px; }
+.sy2-filters-static .sy2-filters-info { font-size: 11px; color: var(--slate); margin-top: 0; }
+.sy2-filters-static .sy2-filters-info b { color: var(--ink); }
+
+/* Dokunma alanı ≥44px yalnızca canlı/mobil uygulamada gerekli — export
+   klonunda .exporting/klon bağlamında zorunlu değil, ama zarar da vermez. */
+@media (max-width: 480px) {
+  .sy2-pill { min-height: 30px; padding: 7px 12px; }
+}
+
+/* ─── YÖNETİCİ SATIRLARI ───────────────────────────────────────────── */
+.sy2-rows { padding: 0 10px 4px; }
+
+.sy2-row {
+  display: flex; flex-direction: column;
+  background: #fff; border: 1px solid #E3E8F2; border-left: 3px solid #D7DEEC;
+  border-radius: 12px; padding: 10px 12px 10px; margin-bottom: 8px;
+}
+.sy2-row:last-child { margin-bottom: 0; }
+
+.sy2-row-id { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.sy2-rk  { font-size: 12px; font-weight: 800; color: var(--muted); width: 16px; flex-shrink: 0; text-align: center; }
+.sy2-nm  { font-size: 15px; font-weight: 900; color: var(--ink); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy2-meta{ font-size: 10px; font-weight: 700; color: var(--muted); text-align: right; line-height: 1.35; flex-shrink: 0; }
+.sy2-warn{ color: var(--amber); font-size: 11px; }
+
+.sy2-row-prods { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+
+/* Geniş ekran / export: tek yatay tablo satırı — Yönetici | 4 ürün | Bölge farkı */
+@container sy2report (min-width: 760px) {
+  .sy2-row { flex-direction: row; align-items: stretch; gap: 10px; padding: 6px 12px; }
+  .sy2-row-id { flex: 0 0 16%; flex-direction: column; align-items: flex-start; margin-bottom: 0; gap: 2px; justify-content: center; }
+  .sy2-row-id .sy2-rk { width: auto; text-align: left; }
+  .sy2-meta { text-align: left; }
+  .sy2-row-prods { flex: 1 1 auto; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .sy2-diff { flex: 0 0 11%; }
+}
+
+/* ─── ÜRÜN MİNİ KARTI (yönetici satırı içinde) ───────────────────────── */
+.sy2-mc { background: #F8FAFD; border: 1px solid #E7EBF3; border-radius: 11px; padding: 6px 9px 6px; min-width: 0; }
+.sy2-mc-top { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.sy2-mc-lbl { display: flex; align-items: center; gap: 4px; font-size: 9.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.sy2-ic { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 5px; font-size: 9px; flex-shrink: 0; }
+.sy2-ic.sm { width: 14px; height: 14px; font-size: 8px; }
+
+.sy2-mc-hgo-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 3px 6px; margin-top: 3px; }
+.sy2-mc-hgo { font-size: 16px; font-weight: 900; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sy2-mc-fc  { font-size: 10px; font-weight: 800; padding: 1px 5px; border-radius: 5px; white-space: nowrap; flex-shrink: 0; }
+
+.sy2-mc-akt  { font-size: 12px; font-weight: 800; color: var(--ink); margin-top: 1px; font-variant-numeric: tabular-nums; }
+.sy2-mc-line { font-size: 10px; font-weight: 700; color: var(--muted); margin-top: 2px; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy2-mc-line .plus { color: var(--green); font-weight: 800; }
+
+.sy2-mc-trend { display: flex; justify-content: space-between; gap: 5px; margin-top: 3px; padding-top: 3px; border-top: 1px dashed #E3E8F2; }
+
+.sy2-tr    { font-size: 9.2px; font-weight: 800; }
+.sy2-tr.up { color: var(--green); }
+.sy2-tr.dn { color: var(--crimson); }
+.sy2-tr.eq { color: var(--muted); }
+
+/* ─── BÖLGEYE GÖRE FARK (yalnızca seçili ürün) ────────────────────────── */
+.sy2-diff {
+  margin-top: 8px; padding: 9px 10px; background: #F8FAFD; border: 1px solid #E7EBF3; border-radius: 11px;
+  display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 8px;
+}
+@container sy2report (min-width: 760px) {
+  .sy2-diff { margin-top: 0; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 1px; }
+}
+.sy2-diff-lbl    { font-size: 9px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2px; line-height: 1.25; }
+.sy2-diff-region { font-size: 9.5px; font-weight: 700; color: var(--slate); }
+.sy2-diff-val    { font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.sy2-diff-val.up { color: var(--green); }
+.sy2-diff-val.dn { color: var(--crimson); }
+.sy2-diff-val.eq { color: var(--muted); }
+.sy2-diff-sub    { font-size: 8px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2px; }
+
+/* ─── ÜRÜN LİDERLERİ — 2×2, genel lider YOK ──────────────────────────── */
+.sy2-ldr-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 0 10px 10px; }
+@container sy2report (min-width: 700px) { .sy2-ldr-grid { grid-template-columns: repeat(4, 1fr); } }
+.sy2-ldr { background: #F8FAFD; border: 1px solid #E7EBF3; border-radius: 11px; padding: 9px 11px; min-width: 0; }
+.sy2-ldr-top { display: flex; align-items: center; gap: 5px; font-size: 9px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2px; }
+.sy2-ldr-cup { margin-left: auto; font-size: 11px; }
+.sy2-ldr-nm  { font-size: 12px; font-weight: 800; color: var(--ink); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy2-ldr-v   { font-size: 13px; font-weight: 900; margin-top: 1px; font-variant-numeric: tabular-nums; color: var(--ink); }
+
+/* ─── KURUMSAL ALT BİLGİ ──────────────────────────────────────────────── */
+.sy2-ftr { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 10px 12px; font-size: 9.5px; font-weight: 700; color: var(--muted); letter-spacing: 0.3px; }
+.sy2-ftr .dot { color: var(--gold-line); }
+
+/* ─── MİNİ DONUT ──────────────────────────────────────────────────────── */
+.sy2-donut { flex-shrink: 0; display: block; }
+
+/* ─── MERKEZİ HGO BANT RENKLERİ — hgoBand(): gg/g/y/o/r (v1 ile aynı
+   değerler, dosya bağımsızlığı için burada da tanımlı) ──────────────── */
+.b-gg { color: #059669; }
+.b-g  { color: var(--green); }
+.b-y  { color: var(--amber); }
+.b-o  { color: #C2660A; }
+.b-r  { color: var(--crimson); }
+
+.sy2-mc-fc.b-gg, .sy2-rc-fc.b-gg { color: #064e3b; background: #d1fae5; }
+.sy2-mc-fc.b-g,  .sy2-rc-fc.b-g  { color: var(--green);   background: var(--green-soft); }
+.sy2-mc-fc.b-y,  .sy2-rc-fc.b-y  { color: var(--amber);   background: var(--amber-soft); }
+.sy2-mc-fc.b-o,  .sy2-rc-fc.b-o  { color: #92400e; background: #fff7ed; }
+.sy2-mc-fc.b-r,  .sy2-rc-fc.b-r  { color: var(--crimson); background: var(--crimson-soft); }
+.sy2-mc-fc.b-off,.sy2-rc-fc.b-off{ color: var(--muted); background: #F2F4F9; }
