@@ -46,7 +46,7 @@ function navTo(page) {
     setSec('pers');
 
   } else if (page === 'sy') {
-    _setDataHeader('Satış Yöneticisi', 'SY Bazlı Performans · HGO Sıralaması');
+    _setDataHeader('Satış Yöneticisi', 'Mobil · DSL · TV · Cihaz — Performans Matrisi');
     fbar.style.display = ''; perfSubStrip.style.display = 'none';
     setSec('sy');
 

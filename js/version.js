@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-07-06 00:32 · Gecmis bayi listesi yalnizca guncel bayiler';
+const APP_BUILD = '2026-08-01 · Sprint 24: SY Performans Matrisi (Mobil/DSL/TV/Cihaz)';

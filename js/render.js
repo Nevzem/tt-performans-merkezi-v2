@@ -275,9 +275,24 @@ function cardHTML(prodKey) {
 function setMatrixSort(p) { matrixSort = p; render(); }
 
 
-/* ───── SY GÖRÜNÜMÜ (mobil kart) ───── */
-/* Not: SY kıyas kartı (_syVsCard) kullanıcı isteğiyle kaldırıldı (2026-07-05) */
+/* ───── SY GÖRÜNÜMÜ ─────
+   Sprint 24: varsayılan görünüm artık çok ürünlü SY Performans Matrisi
+   (Mobil/DSL/TV/Cihaz birlikte) — js/sy-matrix.js → renderSYMatrixView().
+   Eski tek-ürün büyük kart "Tek Ürün Görünümü" olarak renderSYSingle()
+   adıyla korunur; syViewMode ('matrix'|'single') hangisinin gösterileceğini
+   belirler. Veri kaynağı (SYDATA/SYPREV/DATA) değişmedi. */
 function renderSY(onlyNames) {
+  if (typeof syViewMode !== 'undefined' && syViewMode === 'single') {
+    renderSYSingle(onlyNames);
+  } else if (typeof renderSYMatrixView === 'function') {
+    renderSYMatrixView(onlyNames);
+  } else {
+    renderSYSingle(onlyNames); /* sy-matrix.js yüklenmediyse güvenli düşüş */
+  }
+}
+
+/* Not: SY kıyas kartı (_syVsCard) kullanıcı isteğiyle kaldırıldı (2026-07-05) */
+function renderSYSingle(onlyNames) {
   const S = SYDATA;
   const prods = S.products && S.products.length ? S.products : ["Mobil Toplam"];
   if (!prods.includes(syProd)) syProd = prods[0];

@@ -93,10 +93,22 @@ function buildFilterBar() {
   var html = '';
 
   if (isSY) {
-    /* ── Satış Yöneticisi filtre çubuğu ── */
-    var syProdShort = _SY_SHORT[syProd] || _truncate(syProd, 12) || 'Seç';
-    html += _fbarChip('sy-prod',  'Ürün',  syProdShort);
-    html += _fbarChip('sy-liste', 'Liste', _syListeLabel);
+    /* ── Satış Yöneticisi filtre çubuğu — Sprint 24 ──
+       Ürün filtresi ana ihtiyaç olmaktan çıktı: varsayılan "Tüm Ürünler"
+       matris görünümünde Mobil/DSL/TV/Cihaz aynı kartta; Görünüm chip'i
+       ile "Tek Ürün" moduna geçilince eski Ürün/Liste chip'leri döner. */
+    var isSingleV = typeof syViewMode !== 'undefined' && syViewMode === 'single';
+    html += _fbarChip('sy-view', 'Görünüm', isSingleV ? 'Tek Ürün' : 'Tüm Ürünler');
+    if (isSingleV) {
+      var syProdShort = _SY_SHORT[syProd] || _truncate(syProd, 12) || 'Seç';
+      html += _fbarChip('sy-prod',  'Ürün',  syProdShort);
+      html += _fbarChip('sy-liste', 'Liste', _syListeLabel);
+    } else {
+      var symSortLbl = (typeof SYM_SORTS !== 'undefined')
+        ? ((SYM_SORTS.filter(function(s) { return s.key === (typeof symSort !== 'undefined' ? symSort : 'genel'); })[0] || {}).label || 'Genel Performans')
+        : 'Genel Performans';
+      html += _fbarChip('sy-sort', 'Sıralama', symSortLbl);
+    }
 
   } else if (isBayi && typeof KANAL !== 'undefined' && KANAL === 'EDM') {
     /* ── EDM Bayiler filtre çubuğu (aktivasyon bazlı) ── */
@@ -328,6 +340,29 @@ function _sheetConfig(type) {
         return { key: p, label: _SY_DISPLAY[p] || p };
       }),
       active: syProd,
+    };
+  }
+
+  /* ── SY görünüm modu — Sprint 24 ── */
+  if (type === 'sy-view') {
+    return {
+      title: 'Görünüm',
+      items: [
+        { key: 'matrix', label: '📊 Tüm Ürünler — Performans Matrisi' },
+        { key: 'single', label: '🔎 Tek Ürün Görünümü' },
+      ],
+      active: typeof syViewMode !== 'undefined' ? syViewMode : 'matrix',
+    };
+  }
+
+  /* ── SY matris sıralama — Sprint 24 ── */
+  if (type === 'sy-sort') {
+    return {
+      title: 'Sıralama',
+      items: (typeof SYM_SORTS !== 'undefined' ? SYM_SORTS : []).map(function(s) {
+        return { key: s.key, label: s.label };
+      }),
+      active: typeof symSort !== 'undefined' ? symSort : 'genel',
     };
   }
 
@@ -582,6 +617,12 @@ function _pick(type, key) {
   } else if (type === 'sy-liste') {
     _applySyListe(key);
 
+  } else if (type === 'sy-view') {
+    if (typeof setSyViewMode === 'function') setSyViewMode(key); /* render() içeride çağrılır */
+
+  } else if (type === 'sy-sort') {
+    if (typeof setSymSort === 'function') setSymSort(key);       /* render() içeride çağrılır */
+
   } else if (type === 'bayi') {
     bayiFilter = key;
     render();
@@ -687,17 +728,22 @@ async function downloadCardPNG() {
     });
     document.body.classList.add('exporting');
 
-    /* — Temiz clone — animasyon/opacity/filter reset, body dışı alanda — */
-    var res  = await createCleanExportClone(el);
+    /* — Temiz clone — animasyon/opacity/filter reset, body dışı alanda —
+       Sprint 24: SY "Tüm Ürünler" matrisi telefon ekranında dar render
+       edilir; container-query (.sym-list) sayesinde 1080px'e sabitlenen
+       export klonunda 4 ürün yan yana görünür (bkz. css/sy-matrix.css). */
+    var isSyMatrix = navPage === 'sy' && (typeof syViewMode === 'undefined' || syViewMode !== 'single');
+    var fixedW = isSyMatrix ? 1080 : undefined;
+    var res  = await createCleanExportClone(el, fixedW);
     cloneWrapper = res.wrapper;
 
     /* — Dosya adı — */
     var scope = navPage === 'bayi' ? 'Bayi'
-              : navPage === 'sy'   ? 'SatisYoneticisi'
+              : navPage === 'sy'   ? (isSyMatrix ? 'SYMatris' : 'SatisYoneticisi')
               : navPage === 'perf' && typeof section !== 'undefined' && section === 'kupa' ? 'KupaBende'
               : navPage === 'perf' && typeof section !== 'undefined' && section === 'risk' ? 'RiskRadari'
               : 'Personel';
-    var rawProd = navPage === 'sy' ? (typeof syProd !== 'undefined' ? syProd : '') : (typeof prod !== 'undefined' ? prod : '');
+    var rawProd = navPage === 'sy' ? (isSyMatrix ? '' : (typeof syProd !== 'undefined' ? syProd : '')) : (typeof prod !== 'undefined' ? prod : '');
     var prodKey = (rawProd || '').replace(/[^a-zA-ZçğıöşüÇĞİÖŞÜ0-9]/g, '');
     var dateStr = new Date().toLocaleDateString('tr-TR').replace(/\./g, '');
     var fname   = 'TT_' + scope + (prodKey ? '_' + prodKey : '') + '_' + dateStr + '.png';
