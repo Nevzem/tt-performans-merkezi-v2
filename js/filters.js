@@ -731,8 +731,8 @@ async function downloadCardPNG() {
      (uygulama ekranının screenshot'ı DEĞİL, ayrı offscreen DOM + ayrı
      .sy-share-* CSS). Genel klon tabanlı akış yalnızca v1/matris,
      tek-ürün ve diğer sayfalar için geçerli kalır. */
-  if (navPage === 'sy' && (typeof syViewMode === 'undefined' || syViewMode === 'v2') && typeof exportSYSharePNG === 'function') {
-    return exportSYSharePNG();
+  if (navPage === 'sy' && (typeof syViewMode === 'undefined' || syViewMode === 'v2') && typeof exportSYShareV3PNG === 'function') {
+    return exportSYShareV3PNG();
   }
 
   var btn   = document.getElementById('fbar-dl-btn');

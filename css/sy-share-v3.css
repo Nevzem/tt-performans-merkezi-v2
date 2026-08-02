@@ -1,0 +1,169 @@
+/* ════════════════════════════════════════════════════════════════════
+   css/sy-share-v3.css — Satış Yöneticisi PAYLAŞIM PNG şablonu (Sprint 25.1)
+
+   Referans görsele ("design-references/sy-share-target.jpeg") piksel
+   ölçümüyle eşleştirilmiş yeniden yapım. Yalnızca .sy-share-v3-*
+   sınıfları kullanılır — mobil uygulama ekranını (.sy2-*, css/
+   sy-report-v2.css) VEYA önceki paylaşım şablonunu (.sy-share-*, css/
+   sy-share.css) hiç etkilemez, onlardan hiçbir sınıf miras almaz.
+
+   Sabit genişlik export (js/sy-share-v3.js: SY_SHARE_V3_EXPORT_WIDTH=
+   1920) varsayımıyla tasarlandı — referansın ölçülen 3:2 oranına göre
+   yükseklik otomatik oluşur (~1280px). Responsive breakpoint YOK.
+   ════════════════════════════════════════════════════════════════════ */
+
+.sy-share-v3 {
+  --v3-div: #D5DCE7;   /* ölçülen ayırıcı rengi (referans ~#E3E6EC'e yakın, spec değeri kullanıldı) */
+  --v3-ink: #0A1F3D;
+  --v3-muted: #6B7A94;
+  background: #fff;
+  font-family: inherit;
+  width: 1920px;
+}
+
+/* ─── KURUMSAL BAŞLIK — kırmızı alt çizgi YOK (referansta yok) ───────── */
+.sy-share-v3-header {
+  background: linear-gradient(140deg, var(--navy) 0%, var(--navy-2) 60%, var(--navy-3) 100%);
+  display: flex; align-items: center; gap: 22px;
+  padding: 16px 32px;
+  min-height: 88px;
+}
+.sy-share-v3-hdr-l { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.sy-share-v3-logo  { width: 52px; height: 52px; border-radius: 12px; }
+.sy-share-v3-hdr-brand { color: #fff; font-size: 19px; font-weight: 800; line-height: 1.3; }
+.sy-share-v3-hdr-brand span { display: block; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.68); margin-top: 2px; }
+
+.sy-share-v3-hdr-c { flex: 1; min-width: 0; text-align: center; }
+.sy-share-v3-hdr-title { color: #fff; font-size: 27px; font-weight: 900; letter-spacing: 0.2px; }
+.sy-share-v3-hdr-sub   { color: rgba(255,255,255,0.72); font-size: 14px; font-weight: 600; margin-top: 7px; }
+
+.sy-share-v3-hdr-r { text-align: right; flex-shrink: 0; }
+.sy-share-v3-hdr-donem {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1.5px solid rgba(255,255,255,0.35); border-radius: 10px;
+  padding: 7px 16px; color: #fff; font-size: 15px; font-weight: 800; letter-spacing: 0.3px;
+}
+.sy-share-v3-hdr-date  { color: rgba(255,255,255,0.6); font-size: 12.5px; font-weight: 600; margin-top: 8px; }
+
+/* ─── BÖLÜM BAŞLIĞI ───────────────────────────────────────────────── */
+.sy-share-v3-sec {
+  margin: 16px 32px 9px;
+  font-size: 15px; font-weight: 900; color: var(--v3-ink);
+  text-transform: uppercase; letter-spacing: 0.3px;
+}
+
+/* ─── KUZEY ANADOLU BÖLGE — 4 eşit yatay kart ─────────────────────── */
+.sy-share-v3-region { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 0 32px; }
+
+.sy-share-v3-rc { background: #fff; border: 1px solid #E7EBF3; border-radius: 14px; padding: 14px 18px 12px; box-shadow: 0 1px 3px rgba(10,31,92,0.05); }
+.sy-share-v3-rc-top { display: flex; align-items: center; gap: 9px; }
+.sy-share-v3-rc-ic { width: 28px; height: 28px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sy-share-v3-rc-ic.circle { border-radius: 50%; }
+.sy-share-v3-rc-name { font-size: 14px; font-weight: 900; color: var(--v3-ink); text-transform: uppercase; letter-spacing: 0.3px; }
+
+.sy-share-v3-rc-mid { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 9px; }
+.sy-share-v3-rc-left { min-width: 0; }
+.sy-share-v3-rc-hgo { font-size: 27px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1; white-space: nowrap; }
+.sy-share-v3-rc-hgo small { font-size: 12px; font-weight: 700; color: var(--v3-muted); margin-left: 5px; text-transform: uppercase; }
+.sy-share-v3-rc-akt { font-size: 13px; font-weight: 700; color: var(--v3-ink); margin-top: 4px; white-space: nowrap; }
+.sy-share-v3-rc-akt b { font-weight: 800; }
+
+.sy-share-v3-rc-donutwrap { flex-shrink: 0; }
+
+.sy-share-v3-rc-right { text-align: right; flex-shrink: 0; }
+.sy-share-v3-rc-right-row { font-size: 15px; font-weight: 800; color: var(--v3-ink); white-space: nowrap; }
+.sy-share-v3-rc-right-row small { font-size: 11.5px; font-weight: 700; color: var(--v3-muted); text-transform: uppercase; margin-left: 5px; }
+.sy-share-v3-rc-right-row.minus { color: var(--crimson); }
+.sy-share-v3-rc-right-row.plus  { color: var(--green); }
+.sy-share-v3-rc-fc { display: inline-block; margin-top: 5px; font-size: 12.5px; font-weight: 800; padding: 3px 10px; border-radius: 7px; white-space: nowrap; }
+
+.sy-share-v3-rc-div { border-top: 1px dashed var(--v3-div); margin-top: 10px; padding-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.sy-share-v3-rc-daily { font-size: 12.5px; font-weight: 700; color: var(--v3-muted); white-space: nowrap; }
+.sy-share-v3-rc-sep { width: 1px; height: 13px; background: var(--v3-div); flex-shrink: 0; }
+.sy-share-v3-rc-tr { font-size: 12.5px; font-weight: 800; white-space: nowrap; display: flex; align-items: center; gap: 3px; }
+.sy-share-v3-rc-tr.up { color: var(--green); }
+.sy-share-v3-rc-tr.dn { color: var(--crimson); }
+.sy-share-v3-rc-tr.eq { color: var(--v3-muted); }
+
+/* ─── ANA TABLO ────────────────────────────────────────────────────── */
+.sy-share-v3-table { margin: 0 32px; border: 1px solid var(--v3-div); border-radius: 14px; overflow: hidden; }
+
+.sy-share-v3-trow { display: grid; grid-template-columns: 16.8% 18.6% 19.6% 20.8% 24.2%; }
+.sy-share-v3-trow:not(.sy-share-v3-thead) { min-height: 108px; border-bottom: 1px solid var(--v3-div); background: #fff; }
+.sy-share-v3-tbody .sy-share-v3-trow:last-child { border-bottom: none; }
+
+.sy-share-v3-thead { background: var(--navy); }
+.sy-share-v3-th {
+  display: flex; align-items: center; gap: 7px;
+  padding: 11px 16px; font-size: 13px; font-weight: 800; color: #fff;
+  text-transform: uppercase; letter-spacing: 0.3px;
+  border-right: 1px solid rgba(255,255,255,0.14);
+}
+.sy-share-v3-th:last-child { border-right: none; }
+.sy-share-v3-th.name { justify-content: flex-start; }
+.sy-share-v3-th-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+.sy-share-v3-td { border-right: 1px solid var(--v3-div); padding: 12px 16px; min-width: 0; display: flex; align-items: center; }
+.sy-share-v3-td:last-child { border-right: none; }
+
+/* Sıra + Yönetici tek kolonda, yatay grup, dikey ortalı */
+.sy-share-v3-td-nm { gap: 12px; }
+.sy-share-v3-rk { width: 25px; height: 28px; border-radius: 7px; background: var(--navy); color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sy-share-v3-nm { font-size: 16px; font-weight: 900; color: var(--v3-ink); line-height: 1.25; }
+
+/* ─── ÜRÜN HÜCRESİ ────────────────────────────────────────────────── */
+.sy-share-v3-cell { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; }
+.sy-share-v3-cell-donut { flex-shrink: 0; }
+.sy-share-v3-cell-body { min-width: 0; flex: 1; }
+.sy-share-v3-cell-hgo { font-size: 21px; font-weight: 900; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sy-share-v3-cell-hgo small { font-size: 10.5px; font-weight: 700; color: var(--v3-muted); margin-left: 3px; text-transform: uppercase; }
+.sy-share-v3-cell-akt { font-size: 12.5px; font-weight: 700; color: var(--v3-ink); margin-top: 3px; white-space: nowrap; }
+.sy-share-v3-cell-line { font-size: 11px; font-weight: 700; color: var(--v3-muted); margin-top: 4px; display: flex; gap: 6px; white-space: nowrap; }
+.sy-share-v3-cell-line .val { color: var(--v3-ink); font-weight: 800; }
+.sy-share-v3-cell-line .kv.minus .val { color: var(--crimson); }
+.sy-share-v3-cell-line .kv.plus .val  { color: var(--green); }
+.sy-share-v3-cell-trend { font-size: 10.5px; font-weight: 800; margin-top: 4px; display: flex; gap: 10px; white-space: nowrap; }
+.sy-share-v3-cell-trend .up { color: var(--green); }
+.sy-share-v3-cell-trend .dn { color: var(--crimson); }
+.sy-share-v3-cell-trend .eq { color: var(--v3-muted); }
+
+.sy-share-v3-cell-fc { position: absolute; top: -2px; right: 0; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 7px; white-space: nowrap; }
+
+/* ─── ÜRÜN LİDERLERİ ──────────────────────────────────────────────── */
+.sy-share-v3-leaders { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 0 32px; }
+.sy-share-v3-ldr { background: #F8FAFD; border: 1px solid #E7EBF3; border-radius: 13px; padding: 11px 16px; display: flex; align-items: center; gap: 12px; }
+.sy-share-v3-ldr-ic { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sy-share-v3-ldr-ic.circle { border-radius: 50%; }
+.sy-share-v3-ldr-body { flex: 1; min-width: 0; }
+.sy-share-v3-ldr-title { font-size: 11px; font-weight: 800; color: var(--v3-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+.sy-share-v3-ldr-nm { font-size: 15px; font-weight: 900; color: var(--v3-ink); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy-share-v3-ldr-v { font-size: 13px; font-weight: 800; margin-top: 2px; }
+.sy-share-v3-ldr-cup { width: 30px; height: 30px; flex-shrink: 0; }
+
+/* ─── LEJANT + FOOTER ─────────────────────────────────────────────── */
+.sy-share-v3-legend {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 14px 32px 16px; padding-top: 12px; border-top: 1px solid var(--v3-div);
+  font-size: 12px; font-weight: 700; color: var(--v3-muted);
+}
+.sy-share-v3-legend-l { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.sy-share-v3-legend-item { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.sy-share-v3-legend-r { display: flex; align-items: center; gap: 6px; color: var(--v3-muted); font-weight: 800; white-space: nowrap; }
+
+/* ─── MİNİ DONUT ──────────────────────────────────────────────────── */
+.sy-share-v3-donut { flex-shrink: 0; display: block; }
+
+/* ─── MERKEZİ HGO BANT RENKLERİ — hgoBand(): gg/g/y/o/r (mevcut eşikler,
+   YENİ EŞİK ÜRETİLMEDİ — render.js:hgoBand() ile birebir aynı). ────── */
+.sy-share-v3 .b-gg { color: #059669; }
+.sy-share-v3 .b-g  { color: var(--green); }
+.sy-share-v3 .b-y  { color: var(--amber); }
+.sy-share-v3 .b-o  { color: #C2660A; }
+.sy-share-v3 .b-r  { color: var(--crimson); }
+
+.sy-share-v3-cell-fc.b-gg, .sy-share-v3-rc-fc.b-gg { color: #064e3b; background: #d1fae5; }
+.sy-share-v3-cell-fc.b-g,  .sy-share-v3-rc-fc.b-g  { color: var(--green);   background: var(--green-soft); }
+.sy-share-v3-cell-fc.b-y,  .sy-share-v3-rc-fc.b-y  { color: var(--amber);   background: var(--amber-soft); }
+.sy-share-v3-cell-fc.b-o,  .sy-share-v3-rc-fc.b-o  { color: #92400e; background: #fff7ed; }
+.sy-share-v3-cell-fc.b-r,  .sy-share-v3-rc-fc.b-r  { color: var(--crimson); background: var(--crimson-soft); }
+.sy-share-v3-cell-fc.b-off,.sy-share-v3-rc-fc.b-off{ color: var(--v3-muted); background: #F2F4F9; }
