@@ -14,7 +14,7 @@
    ════════════════════════════════════════════════════════════════════ */
 
 .sy-share-page {
-  --syd: #D7DEE9;   /* kolon/satır ayırıcı rengi */
+  --syd: #D8DFEA;   /* kolon/satır ayırıcı rengi */
   background: #fff;
   font-family: inherit;
 }
@@ -71,8 +71,8 @@
 /* ─── ANA TABLO — Sıra | Satış Yöneticisi | Mobil | DSL | TV | Cihaz ──── */
 .sy-share-table { margin: 0 30px; border: 1px solid var(--syd); border-radius: 14px; overflow: hidden; background: #fff; }
 
-.sy-share-trow { display: grid; grid-template-columns: 64px 250px repeat(4, 1fr); align-items: stretch; }
-.sy-share-trow:not(.sy-share-thead) { min-height: 128px; border-bottom: 1px solid var(--syd); }
+.sy-share-trow { display: grid; grid-template-columns: 70px 300px repeat(4, 1fr); align-items: stretch; }
+.sy-share-trow:not(.sy-share-thead) { min-height: 118px; border-bottom: 1px solid var(--syd); }
 .sy-share-tbody .sy-share-trow:last-child { border-bottom: none; }
 .sy-share-trow.alt { background: #FAFBFD; }
 
@@ -102,7 +102,7 @@
 .sy-share-cell-line .plus { color: var(--green); font-weight: 800; }
 .sy-share-cell-trend { display: flex; gap: 7px; margin-top: 5px; }
 
-.sy-share-tr    { font-size: 9.5px; font-weight: 800; white-space: nowrap; }
+.sy-share-tr    { font-size: 10px; font-weight: 800; white-space: nowrap; }
 .sy-share-tr.up { color: var(--green); }
 .sy-share-tr.dn { color: var(--crimson); }
 .sy-share-tr.eq { color: var(--muted); }

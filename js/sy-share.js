@@ -51,7 +51,7 @@ function _sysTrend(delta, suffix, isHgo) {
 }
 
 /* ─── KURUMSAL BAŞLIK ─────────────────────────────────────────────── */
-function renderSYShareHeader(donemTxt, gunTxt, fcTag) {
+function renderSYShareHeader(donemTxt, gunTxt, fcTag, cmpTag) {
   var dateStr = new Date().toLocaleDateString('tr-TR');
   return '<div class="sy-share-hdr">' +
     '<div class="sy-share-hdr-l">' +
@@ -60,7 +60,7 @@ function renderSYShareHeader(donemTxt, gunTxt, fcTag) {
     '</div>' +
     '<div class="sy-share-hdr-c">' +
       '<div class="sy-share-hdr-title">SATIŞ YÖNETİCİSİ ÜRÜN PERFORMANS RAPORU</div>' +
-      '<div class="sy-share-hdr-sub">Mobil · DSL · TV · Cihaz' + (gunTxt ? ' · ' + gunTxt : '') + fcTag + '</div>' +
+      '<div class="sy-share-hdr-sub">Mobil · DSL · TV · Cihaz' + (gunTxt ? ' · ' + gunTxt : '') + fcTag + (cmpTag || '') + '</div>' +
     '</div>' +
     '<div class="sy-share-hdr-r">' +
       '<div class="sy-share-hdr-donem">' + (donemTxt || '—') + '</div>' +
@@ -83,7 +83,7 @@ function renderSYShareRegionSummary(regionCols, kalanGun, monthDone, edmMode) {
     return '<div class="sy-share-rc">' +
       '<div class="sy-share-rc-top">' +
         '<div class="sy-share-rc-lbl"><span class="sy-share-ic" style="background:' + SYS_ACCENT[p.key] + '22;color:' + SYS_ACCENT[p.key] + '">' + p.icon + '</span>' + (edmMode ? p.edmLabel : p.label) + '</div>' +
-        _sysDonut(donutPct, 38, SYS_ACCENT[p.key]) +
+        _sysDonut(donutPct, 48, SYS_ACCENT[p.key]) +
       '</div>' +
       '<div class="sy-share-rc-hgo' + (band ? ' b-' + band : '') + '">' + _symPct1(c.hgo) + ' <small>HGO</small></div>' +
       '<div class="sy-share-rc-akt">' + _symN(c.a) + ' Aktivasyon</div>' +
@@ -115,7 +115,7 @@ function renderSYShareProductCell(p, c) {
     : 'Hedef —';
 
   return '<div class="sy-share-cell">' +
-    _sysDonut(donutPct, 28, color) +
+    _sysDonut(donutPct, 40, color) +
     '<div class="sy-share-cell-mid">' +
       '<div class="sy-share-cell-hgo' + (band ? ' b-' + band : '') + '">' + _symPct1(c.hgo) + '</div>' +
       '<div class="sy-share-cell-fc' + (fBand ? ' b-' + fBand : ' b-off') + '">F ' + _symPct0(c.f) + '</div>' +
@@ -198,9 +198,10 @@ function buildSYShareReport(onlyNames) {
   var monthDone = gi.ayGun > 0 && gi.gecenGun > 0 && gi.ayGun <= gi.gecenGun;
   var gunTxt    = (gi.ayGun && gi.gecenGun) ? gi.gecenGun + '/' + gi.ayGun + '. gün' : '';
   var fcTag     = monthDone ? ' · Ay Sonu Sonucu' : ' · Forecast Aktif';
+  var cmpTag    = (typeof SYPREV !== 'undefined' && SYPREV) ? ' · önceki raporla karşılaştırma' : '';
   var donemTxt  = (typeof DONEM !== 'undefined' ? DONEM : '—');
 
-  return renderSYShareHeader(donemTxt, gunTxt, fcTag) +
+  return renderSYShareHeader(donemTxt, gunTxt, fcTag, cmpTag) +
     renderSYShareRegionSummary(regionCols, kalanGun, monthDone, edmMode) +
     renderSYShareTable(rows, edmMode) +
     renderSYShareLeaders(rows, edmMode) +
@@ -213,7 +214,7 @@ function buildSYShareReport(onlyNames) {
    AYNEN kullanılır — export mekaniği yeniden yazılmaz. Sabit 1600px
    genişlik: içeriğe göre otomatik yükseklik, her zaman yatay/masaüstü
    düzen. ──────────────────────────────────────────────────────────── */
-var SY_SHARE_EXPORT_WIDTH = 1600;
+var SY_SHARE_EXPORT_WIDTH = 1920;
 
 async function exportSYSharePNG() {
   var btn   = document.getElementById('fbar-dl-btn');
