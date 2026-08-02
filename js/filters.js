@@ -93,31 +93,15 @@ function buildFilterBar() {
   var html = '';
 
   if (isSY) {
-    /* ── Satış Yöneticisi filtre çubuğu — Sprint 24.2 ──
-       Varsayılan görünüm artık 'v2' (kompakt Ürün Performans Raporu);
-       ürün/sıralama kontrolleri v2'de KARTIN İÇİNDE (pill butonlar),
-       bu yüzden dış filtre çubuğunda yalnızca Görünüm chip'i kalıyor.
-       'matrix' (Klasik Matris) ve 'single' (Tek Ürün) modlarında eski
-       chip'ler aynen çalışmaya devam eder. */
-    var vMode = (typeof syViewMode !== 'undefined') ? syViewMode : 'v3';
-    var vLabel = vMode === 'single' ? 'Tek Ürün' : vMode === 'matrix' ? 'Klasik Matris' : vMode === 'v2' ? 'Ürün Raporu (v2)' : 'Mobil Ana Ekran';
-    html += _fbarChip('sy-view', 'Görünüm', vLabel);
-
-    if (vMode === 'single') {
-      var syProdShort = _SY_SHORT[syProd] || _truncate(syProd, 12) || 'Seç';
-      html += _fbarChip('sy-prod',  'Ürün',  syProdShort);
-      html += _fbarChip('sy-liste', 'Liste', _syListeLabel);
-    } else if (vMode === 'matrix') {
-      var symProdLbl = (typeof SYM_PRODS !== 'undefined')
-        ? ((SYM_PRODS.filter(function(p) { return p.key === (typeof symSortProd !== 'undefined' ? symSortProd : 'mobil'); })[0] || {}).label || 'MOBİL')
-        : 'MOBİL';
-      var symMetricLbl = (typeof SYM_SORT_METRICS !== 'undefined')
-        ? ((SYM_SORT_METRICS.filter(function(m) { return m.key === (typeof symSortMetric !== 'undefined' ? symSortMetric : 'hgo'); })[0] || {}).label || 'HGO')
-        : 'HGO';
-      html += _fbarChip('sym-prod', 'Ürün',      symProdLbl);
-      html += _fbarChip('sym-sort', 'Sıralama',  symMetricLbl);
-    }
-    /* vMode === 'v2' → ek chip yok, kontrol raporun içinde */
+    /* ── Satış Yöneticisi filtre çubuğu — Sprint 27.3 ──
+       Bu ekranın artık TEK bir görünümü var (v3, design-references/
+       sy-dashboard-reference.png) — "Görünüm" seçici chip'i ve ona bağlı
+       sy-prod/sy-liste/sym-prod/sym-sort chip'leri KALDIRILDI, kullanıcı
+       görünüm değiştiremiyor. syViewMode değişkeni ve eski render
+       fonksiyonları (renderSYSingle/renderSYMatrixView/renderSYReportV2)
+       rollback için KOD OLARAK duruyor, yalnızca bu seçim UI'ı kaldırıldı.
+       SY sayfasında dış filtre çubuğunda artık yalnızca (aşağıdaki ortak
+       blokta eklenen) "Görsel Oluştur" butonu kalıyor. */
 
   } else if (isBayi && typeof KANAL !== 'undefined' && KANAL === 'EDM') {
     /* ── EDM Bayiler filtre çubuğu (aktivasyon bazlı) ── */

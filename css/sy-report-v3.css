@@ -50,37 +50,40 @@
 
 .sy3-hdr-date { text-align: right; font-size: 10.5px; font-weight: 600; color: var(--muted); margin-top: 6px; }
 
-/* ─── KUZEY ANADOLU BÖLGE — 4'lü TEK SATIR KPI KART GRID (Sprint 27.2) ── */
-.sy3-kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; padding: 8px 8px 4px; }
+/* ─── KUZEY ANADOLU BÖLGE — 2×2 KPI KART GRID (Sprint 27.3: 4'lü tek
+   satırda HGO yüzdeleri/ürün adları kırpılıyordu — 2x2'ye dönüldü,
+   kart genişliği ikiye katlandığı için içerik büyütüldü, yükseklik
+   kompakt tutuldu). ───────────────────────────────────────────────── */
+.sy3-kpi { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 10px 10px 4px; }
 
 .sy3-card {
-  background: #fff; border: 1px solid #E7EBF3; border-radius: 12px;
-  padding: 7px 5px 7px; min-width: 0;
+  background: #fff; border: 1px solid #E7EBF3; border-radius: 13px;
+  padding: 9px 10px 9px; min-width: 0;
   box-shadow: 0 1px 4px rgba(10,31,92,0.05);
 }
-.sy3-card-top { display: flex; align-items: center; gap: 3px; }
-.sy3-card-ic { width: 15px; height: 15px; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.sy3-card-ic svg { width: 9px; height: 9px; }
-.sy3-card-name { font-size: 8.5px; font-weight: 800; color: var(--ink); text-transform: uppercase; letter-spacing: 0.1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy3-card-top { display: flex; align-items: center; gap: 6px; }
+.sy3-card-ic { width: 19px; height: 19px; border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sy3-card-ic svg { width: 11px; height: 11px; }
+.sy3-card-name { font-size: 11px; font-weight: 800; color: var(--ink); text-transform: uppercase; letter-spacing: 0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.sy3-card-hgorow { display: flex; align-items: center; justify-content: space-between; gap: 2px; margin-top: 6px; }
+.sy3-card-hgorow { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 7px; }
 .sy3-card-hgowrap { min-width: 0; }
-.sy3-card-hgo { font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sy3-card-hgolbl { font-size: 7px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-top: 1px; }
+.sy3-card-hgo { font-size: 21px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.1; white-space: nowrap; }
+.sy3-card-hgolbl { font-size: 9px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-top: 1px; }
 .sy3-card-donut { flex-shrink: 0; }
 
-.sy3-card-akt { font-size: 7.6px; font-weight: 700; color: var(--slate); margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy3-card-akt { font-size: 10.5px; font-weight: 700; color: var(--slate); margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.sy3-card-hr { height: 1px; background: #E3E8F2; margin: 6px 0; }
+.sy3-card-hr { height: 1px; background: #E3E8F2; margin: 7px 0; }
 
-.sy3-card-trio { display: flex; gap: 1px; }
+.sy3-card-trio { display: flex; gap: 4px; }
 .sy3-card-trioitem { min-width: 0; flex: 1 1 0; }
-.sy3-card-trioitem .v { font-size: 8.2px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sy3-card-trioitem .l { font-size: 5.8px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1px; margin-top: 1px; line-height: 1.2; }
+.sy3-card-trioitem .v { font-size: 11px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sy3-card-trioitem .l { font-size: 7.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1px; margin-top: 1px; line-height: 1.25; }
 
-.sy3-card-daily-lbl { font-size: 7.6px; font-weight: 700; color: var(--muted); }
-.sy3-card-trendrow { display: flex; flex-direction: column; gap: 1px; margin-top: 3px; }
-.sy3-card-trendrow .tr { font-size: 7.6px; font-weight: 800; white-space: nowrap; }
+.sy3-card-daily-lbl { font-size: 10px; font-weight: 700; color: var(--muted); }
+.sy3-card-trendrow { display: flex; justify-content: space-between; gap: 6px; margin-top: 4px; }
+.sy3-card-trendrow .tr { font-size: 10px; font-weight: 800; white-space: nowrap; }
 .sy3-card-trendrow .tr.up { color: var(--green); }
 .sy3-card-trendrow .tr.dn { color: var(--crimson); }
 .sy3-card-trendrow .tr.eq { color: var(--muted); }

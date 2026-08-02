@@ -2,12 +2,15 @@
    js/sy-report-v3.js — Satış Yöneticisi MOBİL ANA EKRAN v3 (Sprint 27)
 
    Referans (Sprint 27.2 — güncel): design-references/
-   sy-dashboard-reference.png — 4'lü tek satır KPI kart grid, tinted
-   ürün pilleri (başlıksız), "Yöneticiler" başlığı ve bayi/personel
-   meta satırı kaldırıldı, liste kolonları SY/Hedef/Aktv./HGO/Forecast/
-   Kalan/D. Adet, kanal şeridi (TTM/EDM) tamamen gizli.
-   Önceki referanslar (Sprint 27 → 27.1): sy-mobile-target.png,
-   sy-managers-mobile-reference-v1.png.
+   sy-dashboard-reference.png — 2×2 KPI kart grid (Sprint 27.3: 4'lü tek
+   satırda HGO/ürün adı kırpılıyordu, 2x2'ye dönüldü), tinted ürün
+   pilleri (başlıksız), "Yöneticiler" başlığı ve bayi/personel meta
+   satırı kaldırıldı, liste kolonları SY/Hedef/Aktv./HGO/Forecast/Kalan/
+   D. Adet, kanal şeridi (TTM/EDM) VE görünüm seçici tamamen gizli —
+   ekranın tek bir görünümü var (js/filters.js).
+   Önceki referanslar (Sprint 27 → 27.2): sy-mobile-target.png,
+   sy-managers-mobile-reference-v1.png (aynı dosya, kart düzeni
+   iterasyonları).
    Bu dosya js/sy-report-v2.js'teki HESAPLAMA/STATE katmanını
    (_sy2PrepareState, sy2SortProd/sy2SortMetric, setSy2SortProd/
    setSy2SortMetric, SYM_PRODS, SY2_ACCENT, _symN/_symPct1/_symPct0/
@@ -112,7 +115,7 @@ function renderSY3Card(p, c, kalanGun, monthDone, edmMode) {
         '<div class="sy3-card-hgo" style="color:' + color + '">' + _symPct0(c.hgo) + '</div>' +
         '<div class="sy3-card-hgolbl">HGO</div>' +
       '</div>' +
-      '<div class="sy3-card-donut">' + _sy3Donut(donutPct, 34, color) + '</div>' +
+      '<div class="sy3-card-donut">' + _sy3Donut(donutPct, 46, color) + '</div>' +
     '</div>' +
     '<div class="sy3-card-akt">' + _symN(c.a) + ' Aktv.</div>' +
     '<div class="sy3-card-hr"></div>' +
