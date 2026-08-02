@@ -11,6 +11,13 @@
 
    Bu ekranda da "Genel HGO / Genel Forecast / Toplam Performans" gibi
    ürünlerin toplamından üretilen birleşik metrik YOKTUR.
+
+   Sprint 24.3: Bu dosya artık YALNIZCA uygulama içi mobil/canlı ekranı
+   üretir (.sy2-* sınıfları). "Görsel Oluştur" PNG export'u tamamen
+   ayrı bir dosyaya taşındı — js/sy-share.js (.sy-share-* sınıfları,
+   bağımsız CSS: css/sy-share.css). Bu ekran ile paylaşım PNG'si aynı
+   hesap katmanını (sy-matrix.js) kullanır ama görünüm/DOM/CSS olarak
+   birbirinden tamamen bağımsızdır — bkz. js/sy-share.js üst yorumu.
    ════════════════════════════════════════════════════════════════════ */
 
 /* ─── ÜRÜN KİMLİK RENKLERİ — yalnızca ikon/donut vurgusu, performans
@@ -151,16 +158,11 @@ function buildSYRegionSummary(regionCols, kalanGun, monthDone, edmMode) {
 }
 
 /* ─── ÜRÜN VE SIRALAMA KONTROLLERİ (madde 5) ─────────────────────────
-   exportMode=true → butonlar yok, yalnızca seçili ürün/sıralama METİN. */
-function buildSYFilters(prodObj, metricObj, edmMode, exportMode) {
+   Sprint 24.3: yalnızca canlı/uygulama ekranında kullanılır — paylaşım
+   PNG'sinde (js/sy-share.js) bu kontroller hiç render edilmez. */
+function buildSYFilters(prodObj, metricObj, edmMode) {
   var dirTxt = (sy2SortMetric === 'deltaA' || sy2SortMetric === 'deltaHgo' || sy2SortMetric === 'hgo' || sy2SortMetric === 'forecast' || sy2SortMetric === 'aktivasyon')
     ? 'Yüksekten Düşüğe' : 'Yüksekten Düşüğe';
-
-  if (exportMode) {
-    return '<div class="sy2-filters sy2-filters-static">' +
-      '<div class="sy2-filters-info">Seçili Ürün: <b>' + (edmMode ? prodObj.edmLabel : prodObj.label) + '</b> &nbsp;·&nbsp; Sıralama: <b>' + metricObj.label + ' — ' + dirTxt + '</b></div>' +
-    '</div>';
-  }
 
   var prodBtns = SYM_PRODS.map(function(p) {
     return '<button class="sy2-pill' + (p.key === sy2SortProd ? ' on' : '') + '" onclick="setSy2SortProd(\'' + p.key + '\')">' +
@@ -289,19 +291,16 @@ function buildSYLeaders(rows, edmMode) {
     '<div class="sy2-ldr-grid">' + cardsHTML + '</div>';
 }
 
-/* ─── TAM RAPOR İÇERİĞİ — hem canlı görünüm hem export AYNI fonksiyonu
-   kullanır (exportMode yalnızca filtre kontrollerinin buton/metin
-   olmasını değiştirir — "uygulama ekranının screenshot'ı" değil, aynı
-   builder'lardan üretilmiş temiz DOM). ────────────────────────────── */
+/* ─── TAM RAPOR İÇERİĞİ — uygulama içi CANLI ekran için (Sprint 24.3'ten
+   itibaren export bu fonksiyonu kullanmaz; bkz. js/sy-share.js). ───── */
 function _sy2BuildInnerHTML(opts) {
   var regionCols = opts.regionCols, rows = opts.rows, kalanGun = opts.kalanGun,
       monthDone = opts.monthDone, edmMode = opts.edmMode, prodObj = opts.prodObj,
-      metricObj = opts.metricObj, subtitle = opts.subtitle, donemTxt = opts.donemTxt,
-      exportMode = !!opts.exportMode;
+      metricObj = opts.metricObj, subtitle = opts.subtitle, donemTxt = opts.donemTxt;
 
   return _sy2HeaderHTML(subtitle, donemTxt) +
     buildSYRegionSummary(regionCols, kalanGun, monthDone, edmMode) +
-    buildSYFilters(prodObj, metricObj, edmMode, exportMode) +
+    buildSYFilters(prodObj, metricObj, edmMode) +
     '<div class="sec t"><span>👔 Yöneticiler</span><span class="cnt">' + rows.length + ' SY</span></div>' +
     '<div class="sy2-rows">' + buildSYManagerRows(rows, regionCols, kalanGun, monthDone, edmMode, opts.sortProdKey, prodObj) + '</div>' +
     buildSYLeaders(rows, edmMode) +
@@ -360,48 +359,5 @@ function renderSYReportV2(onlyNames) {
   }
 
   cards.style.maxWidth = '1080px';
-  state.exportMode = false;
   cards.innerHTML = '<div class="card sy2-page" id="sy-card">' + _sy2BuildInnerHTML(state) + '</div>';
-}
-
-/* ─── EXPORT (madde 16) — canlı DOM'un screenshot'ı DEĞİL; aynı
-   builder'larla exportMode:true kullanılarak TEMİZ, gizli bir kaynak
-   düğüm üretilir, mevcut createCleanExportClone/captureExportImage/
-   cleanupExportClone/_openSharePreview altyapısı (export.js, filters.js)
-   AYNEN kullanılır — export mekaniği yeniden yazılmaz. ─────────────── */
-async function exportSYReportV2() {
-  var btn   = document.getElementById('fbar-dl-btn');
-  var valEl = btn ? btn.querySelector('.fbar-chip-val') : null;
-  var orig  = valEl ? valEl.textContent : 'Oluştur ↗';
-  if (btn)   { btn.disabled = true; }
-  if (valEl) { valEl.textContent = '⏳'; }
-
-  var cloneWrapper = null;
-  try {
-    var state = _sy2PrepareState(_sy2LastNames);
-    if (!state) throw new Error('SY verisi yok');
-    state.exportMode = true;
-
-    var srcEl = document.createElement('div');
-    srcEl.className = 'card sy2-page';
-    srcEl.innerHTML = _sy2BuildInnerHTML(state);
-
-    var res = await createCleanExportClone(srcEl, 1440);
-    cloneWrapper = res.wrapper;
-
-    var dateStr = new Date().toLocaleDateString('tr-TR').replace(/\./g, '');
-    var prodKey = (state.prodObj.label || '').replace(/[^a-zA-ZçğıöşüÇĞİÖŞÜ0-9]/g, '');
-    var fname   = 'TT_SYUrunRaporu_' + prodKey + '_' + dateStr + '.png';
-
-    var canvas = await captureExportImage(res.clone, { scale: 2 });
-    cleanupExportClone(cloneWrapper); cloneWrapper = null;
-
-    _openSharePreview(canvas.toDataURL('image/png'), fname);
-  } catch (e) {
-    alert('Görsel oluşturma hatası: ' + e.message);
-  }
-
-  cleanupExportClone(cloneWrapper);
-  if (btn)   { btn.disabled = false; }
-  if (valEl) { valEl.textContent = orig; }
 }

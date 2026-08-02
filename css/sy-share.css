@@ -1,0 +1,142 @@
+/* ════════════════════════════════════════════════════════════════════
+   css/sy-share.css — Satış Yöneticisi PAYLAŞIM PNG şablonu (Sprint 24.3)
+
+   Bağımsız dosya: css/sy-report-v2.css'e (.sy2-*, uygulama içi canlı
+   ekran) referans vermez, aynı .b-gg/.b-g/.b-y/.b-o/.b-r bant sınıfları
+   burada da kasıtlı olarak tekrar tanımlıdır. Bu dosya yalnızca
+   js/sy-share.js'in ürettiği .sy-share-page offscreen export DOM'unu
+   biçimlendirir — canlı uygulama ekranını (#sy-page, .sy2-*) HİÇ
+   etkilemez.
+
+   Sabit genişlik export (js/sy-share.js: SY_SHARE_EXPORT_WIDTH=1600)
+   varsayımıyla tasarlandı — yatay/masaüstü kurumsal rapor, responsive
+   breakpoint YOK (mobil ekranda hiç render edilmez).
+   ════════════════════════════════════════════════════════════════════ */
+
+.sy-share-page {
+  --syd: #D7DEE9;   /* kolon/satır ayırıcı rengi */
+  background: #fff;
+  font-family: inherit;
+}
+
+/* ─── KURUMSAL BAŞLIK ─────────────────────────────────────────────── */
+.sy-share-hdr {
+  background: linear-gradient(140deg, var(--navy) 0%, var(--navy-2) 60%, var(--navy-3) 100%);
+  display: flex; align-items: center; gap: 20px;
+  padding: 20px 30px;
+  border-bottom: 3px solid var(--red);
+}
+.sy-share-hdr-l { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.sy-share-logo  { width: 40px; height: 40px; border-radius: 9px; }
+.sy-share-hdr-brand { color: #fff; font-size: 15px; font-weight: 800; line-height: 1.3; }
+.sy-share-hdr-brand span { display: block; font-size: 11px; font-weight: 700; color: var(--gold-line); letter-spacing: 1px; margin-top: 1px; }
+
+.sy-share-hdr-c { flex: 1; min-width: 0; text-align: center; }
+.sy-share-hdr-title { color: #fff; font-size: 21px; font-weight: 900; letter-spacing: 0.2px; }
+.sy-share-hdr-sub   { color: rgba(255,255,255,0.62); font-size: 12.5px; font-weight: 600; margin-top: 5px; }
+
+.sy-share-hdr-r { text-align: right; flex-shrink: 0; }
+.sy-share-hdr-donem { color: #fff; font-size: 14px; font-weight: 800; letter-spacing: 0.5px; }
+.sy-share-hdr-date  { color: rgba(255,255,255,0.55); font-size: 11px; font-weight: 600; margin-top: 3px; }
+
+/* ─── BÖLÜM BAŞLIĞI ───────────────────────────────────────────────── */
+.sy-share-sec {
+  margin: 24px 30px 12px;
+  padding-left: 11px;
+  border-left: 4px solid var(--gold-line);
+  font-size: 15px; font-weight: 900; color: var(--navy);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sy-share-sec .cnt { font-size: 12px; font-weight: 700; color: var(--muted); }
+
+/* ─── KUZEY ANADOLU BÖLGE — 4 yatay ürün kartı, her zaman tek satır ──── */
+.sy-share-region-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 0 30px; }
+
+.sy-share-rc { background: #F8FAFD; border: 1px solid #E3E8F2; border-radius: 14px; padding: 16px 18px 14px; }
+.sy-share-rc-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.sy-share-rc-lbl { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+.sy-share-rc-hgo { font-size: 26px; font-weight: 900; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.1; margin-top: 10px; }
+.sy-share-rc-hgo small { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-left: 2px; }
+.sy-share-rc-akt { font-size: 13px; font-weight: 700; color: var(--slate); margin-top: 3px; }
+
+.sy-share-rc-stats { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--syd); font-size: 12px; font-weight: 800; color: var(--ink); flex-wrap: wrap; }
+.sy-share-rc-stats small { font-size: 9.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-left: 2px; }
+.sy-share-rc-stats .plus { color: var(--green); }
+.sy-share-rc-fc { font-size: 11.5px; font-weight: 800; padding: 2px 7px; border-radius: 6px; }
+
+.sy-share-rc-bot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
+.sy-share-rc-daily { font-size: 11px; font-weight: 700; color: var(--muted); }
+.sy-share-rc-trend { display: flex; gap: 8px; }
+
+/* ─── ANA TABLO — Sıra | Satış Yöneticisi | Mobil | DSL | TV | Cihaz ──── */
+.sy-share-table { margin: 0 30px; border: 1px solid var(--syd); border-radius: 14px; overflow: hidden; background: #fff; }
+
+.sy-share-trow { display: grid; grid-template-columns: 64px 250px repeat(4, 1fr); align-items: stretch; }
+.sy-share-trow:not(.sy-share-thead) { min-height: 128px; border-bottom: 1px solid var(--syd); }
+.sy-share-tbody .sy-share-trow:last-child { border-bottom: none; }
+.sy-share-trow.alt { background: #FAFBFD; }
+
+.sy-share-thead { background: var(--navy); }
+.sy-share-th {
+  display: flex; align-items: center; justify-content: center;
+  padding: 12px 8px; font-size: 12.5px; font-weight: 800; color: #fff;
+  text-transform: uppercase; letter-spacing: 0.4px;
+  border-right: 1px solid rgba(255,255,255,0.16);
+}
+.sy-share-th:last-child { border-right: none; }
+.sy-share-th-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 7px; flex-shrink: 0; }
+
+.sy-share-td { border-right: 1px solid var(--syd); display: flex; align-items: center; justify-content: center; padding: 10px; min-width: 0; }
+.sy-share-td:last-child { border-right: none; }
+.sy-share-td-rk { font-size: 15px; font-weight: 800; color: var(--muted); font-variant-numeric: tabular-nums; }
+.sy-share-td-nm { font-size: 16px; font-weight: 900; color: var(--ink); text-align: center; line-height: 1.3; padding: 10px 14px; }
+.sy-share-td-prod { padding: 10px 12px; }
+
+/* ─── ÜRÜN HÜCRESİ (tablo içindeki her SY×ürün kesişimi) ─────────────── */
+.sy-share-cell { display: flex; flex-direction: column; align-items: center; width: 100%; }
+.sy-share-cell-mid { display: flex; align-items: baseline; gap: 8px; margin-top: 6px; }
+.sy-share-cell-hgo { font-size: 21px; font-weight: 900; color: var(--ink); font-variant-numeric: tabular-nums; }
+.sy-share-cell-fc  { font-size: 11px; font-weight: 800; padding: 2px 6px; border-radius: 6px; white-space: nowrap; }
+.sy-share-cell-akt { font-size: 13px; font-weight: 800; color: var(--ink); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.sy-share-cell-line { font-size: 10.5px; font-weight: 700; color: var(--muted); margin-top: 3px; white-space: nowrap; }
+.sy-share-cell-line .plus { color: var(--green); font-weight: 800; }
+.sy-share-cell-trend { display: flex; gap: 7px; margin-top: 5px; }
+
+.sy-share-tr    { font-size: 9.5px; font-weight: 800; white-space: nowrap; }
+.sy-share-tr.up { color: var(--green); }
+.sy-share-tr.dn { color: var(--crimson); }
+.sy-share-tr.eq { color: var(--muted); }
+
+/* ─── ÜRÜN LİDERLERİ — 4 kart, genel lider YOK ───────────────────────── */
+.sy-share-ldr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 0 30px; }
+.sy-share-ldr { background: #F8FAFD; border: 1px solid #E7EBF3; border-radius: 14px; padding: 15px 17px; }
+.sy-share-ldr-top { display: flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
+.sy-share-ldr-cup { margin-left: auto; font-size: 15px; }
+.sy-share-ldr-nm  { font-size: 16px; font-weight: 800; color: var(--ink); margin-top: 8px; }
+.sy-share-ldr-v   { font-size: 18px; font-weight: 900; margin-top: 3px; font-variant-numeric: tabular-nums; color: var(--ink); }
+
+/* ─── KURUMSAL ALT BİLGİ ──────────────────────────────────────────────── */
+.sy-share-ftr { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 20px 30px 26px; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.3px; }
+.sy-share-ftr .dot { color: var(--gold-line); }
+
+/* ─── İKON RÜZGARI ────────────────────────────────────────────────────── */
+.sy-share-ic { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; font-size: 12px; flex-shrink: 0; }
+.sy-share-ic.sm { width: 18px; height: 18px; font-size: 10px; }
+
+/* ─── MİNİ DONUT ──────────────────────────────────────────────────────── */
+.sy-share-donut { flex-shrink: 0; display: block; }
+
+/* ─── MERKEZİ HGO BANT RENKLERİ — hgoBand(): gg/g/y/o/r (kasıtlı tekrar,
+   dosya bağımsızlığı için — sy2-* sınıflarındaki tanımla aynı değerler) ── */
+.sy-share-page .b-gg { color: #059669; }
+.sy-share-page .b-g  { color: var(--green); }
+.sy-share-page .b-y  { color: var(--amber); }
+.sy-share-page .b-o  { color: #C2660A; }
+.sy-share-page .b-r  { color: var(--crimson); }
+
+.sy-share-cell-fc.b-gg, .sy-share-rc-fc.b-gg { color: #064e3b; background: #d1fae5; }
+.sy-share-cell-fc.b-g,  .sy-share-rc-fc.b-g  { color: var(--green);   background: var(--green-soft); }
+.sy-share-cell-fc.b-y,  .sy-share-rc-fc.b-y  { color: var(--amber);   background: var(--amber-soft); }
+.sy-share-cell-fc.b-o,  .sy-share-rc-fc.b-o  { color: #92400e; background: #fff7ed; }
+.sy-share-cell-fc.b-r,  .sy-share-rc-fc.b-r  { color: var(--crimson); background: var(--crimson-soft); }
+.sy-share-cell-fc.b-off,.sy-share-rc-fc.b-off{ color: var(--muted); background: #F2F4F9; }

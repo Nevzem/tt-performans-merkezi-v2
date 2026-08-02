@@ -8,6 +8,11 @@
    Renk yalnızca: ürün ikonu, mini donut, HGO metni, Forecast rozeti,
    trend oku, ince vurgu çizgisinde kullanılır — kart zeminleri beyaz/
    #F8FAFD, güçlü renkle boyanmaz.
+
+   Sprint 24.3: Bu dosya YALNIZCA uygulama içi ekranı (.sy2-*) kapsar.
+   Paylaşım PNG'si artık tamamen ayrı bir dosyada: css/sy-share.css
+   (.sy-share-*). İki dosya birbirine referans vermez, birbirini
+   etkilemez.
    ════════════════════════════════════════════════════════════════════ */
 
 .sy2-page {
@@ -81,11 +86,8 @@
 }
 .sy2-pill.on { background: var(--navy); border-color: var(--navy); color: #fff; font-weight: 800; }
 .sy2-filters-info { font-size: 10px; font-weight: 700; color: var(--muted); margin-top: 3px; }
-.sy2-filters-static .sy2-filters-info { font-size: 11px; color: var(--slate); margin-top: 0; }
-.sy2-filters-static .sy2-filters-info b { color: var(--ink); }
 
-/* Dokunma alanı ≥44px yalnızca canlı/mobil uygulamada gerekli — export
-   klonunda .exporting/klon bağlamında zorunlu değil, ama zarar da vermez. */
+/* Dokunma alanı ≥44px — bu ekran yalnızca mobil/canlı uygulamada kullanılır. */
 @media (max-width: 480px) {
   .sy2-pill { min-height: 30px; padding: 7px 12px; }
 }

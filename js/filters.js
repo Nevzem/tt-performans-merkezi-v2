@@ -726,12 +726,13 @@ function resetFiltersForPage(page) {
 /* ─── GÖRSEL OLUŞTUR ─────────────────────────────────────────────── */
 
 async function downloadCardPNG() {
-  /* Sprint 24.2: SY "Ürün Performans Raporu" (v2) kendi export DOM'unu
-     sıfırdan kuruyor (canlı ekranın screenshot'ı değil) — bkz. madde 16.
-     Genel klon tabanlı akış yalnızca v1/matris, tek-ürün ve diğer
-     sayfalar için geçerli kalır. */
-  if (navPage === 'sy' && (typeof syViewMode === 'undefined' || syViewMode === 'v2') && typeof exportSYReportV2 === 'function') {
-    return exportSYReportV2();
+  /* Sprint 24.3: SY "Ürün Performans Raporu" (v2) paylaşım PNG'si artık
+     js/sy-share.js içinde tamamen bağımsız bir şablondan üretiliyor
+     (uygulama ekranının screenshot'ı DEĞİL, ayrı offscreen DOM + ayrı
+     .sy-share-* CSS). Genel klon tabanlı akış yalnızca v1/matris,
+     tek-ürün ve diğer sayfalar için geçerli kalır. */
+  if (navPage === 'sy' && (typeof syViewMode === 'undefined' || syViewMode === 'v2') && typeof exportSYSharePNG === 'function') {
+    return exportSYSharePNG();
   }
 
   var btn   = document.getElementById('fbar-dl-btn');
@@ -765,7 +766,7 @@ async function downloadCardPNG() {
        ekranında dar render edilir; container-query (.sym-page) sayesinde
        1440px'e sabitlenen export klonunda bölge + yönetici ürün grid'leri
        4 yan yana görünür (bkz. css/sy-matrix.css). syViewMode==='v2' bu
-       noktaya hiç gelmez — downloadCardPNG() en başta exportSYReportV2()'ye
+       noktaya hiç gelmez — downloadCardPNG() en başta exportSYSharePNG()'ye
        yönlendirir (kendi export DOM'unu kurar, bu klon akışını kullanmaz). */
     var isSyMatrix = navPage === 'sy' && syViewMode === 'matrix';
     var fixedW = isSyMatrix ? 1440 : undefined;
