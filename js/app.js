@@ -158,6 +158,7 @@ async function forceUpdate() {
 })();
 buildTabs();
 try { trendCapture(); } catch(e) {}
+try { if (typeof kupaSnapCapture === 'function') kupaSnapCapture(); } catch(e) {}
 render();
 navTo('ana');
 /* Geçmiş rapor manifest'ini arka planda yükle */

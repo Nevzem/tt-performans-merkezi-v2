@@ -690,7 +690,15 @@ function render() {
     }
     return;
   }
-  if (section === "kupa") { cards.style.maxWidth = "330px"; renderKupa(); return; }
+  if (section === "kupa") {
+    /* Sprint 28: varsayılan artık renderKupaV2() (design-references/
+       kupa-bende-final-reference.png) — eski renderKupa() (.kp-*)
+       rollback için korunuyor, yüklenmezse güvenli düşüş. maxWidth
+       renderKupaV2() içinde ayarlanır. */
+    if (typeof renderKupaV2 === "function") { renderKupaV2(); }
+    else { cards.style.maxWidth = "330px"; renderKupa(); }
+    return;
+  }
   if (section === "detay") { cards.style.maxWidth = "490px"; renderDetay(); return; }
   if (section === "trend") { cards.style.maxWidth = "440px"; renderTrend(); return; }
   if (section === "risk") { cards.style.maxWidth = "440px"; renderRisk(); return; }

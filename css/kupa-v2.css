@@ -1,0 +1,183 @@
+/* ════════════════════════════════════════════════════════════════════
+   css/kupa-v2.css — Kupa Bende ekranı v2 (Sprint 28)
+
+   Referans: design-references/kupa-bende-final-reference.png.
+   Yalnızca .kb-* sınıfları kullanılır — css/style.css'teki eski .kp-*
+   sınıflarına (js/render.js:renderKupa(), rollback için korunuyor) hiç
+   referans vermez, onları etkilemez. Koyu/near-black tema kasıtlı olarak
+   kendi yerel CSS custom property setini kullanır (uygulamanın geri
+   kalanı açık temalı).
+   ════════════════════════════════════════════════════════════════════ */
+
+.kb-page {
+  --kb-bg:      #05070C;
+  --kb-panel:   #0B0F1A;
+  --kb-panel-2: #0E1420;
+  --kb-line:    rgba(255,255,255,0.08);
+  --kb-gold:    #D9A62A;
+  --kb-gold-lt: #F4D772;
+  --kb-silver:  #B9C2D0;
+  --kb-bronze:  #C98A4B;
+  --kb-green:   #22C55E;
+  --kb-red:     #EF4444;
+  --kb-blue:    #4C8DFF;
+  --kb-ink:     #FFFFFF;
+  --kb-muted:   #8B93A7;
+  /* !important: js/export.js:createCleanExportClone() PNG dışa aktarımda
+     tüm ekranlarda güvenli varsayım olarak klonun köküne satır-içi
+     "background:#ffffff" ekliyor (diğer tüm ekranlar açık temalı) — bu
+     koyu tema için o beyazı geçersiz kılmak ZORUNDA, aksi halde export
+     PNG'si bozuk (beyaz zemin + görünmez metin) çıkar. */
+  background: var(--kb-bg) !important;
+  border-radius: 18px;
+  padding: 18px 12px 14px;
+  overflow: hidden;
+  position: relative;
+}
+.kb-page::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 80% 40% at 30% 0%, rgba(217,166,42,0.16), transparent 60%);
+}
+
+.kb-empty { color: var(--kb-muted); text-align: center; padding: 30px 10px; font-size: 12px; }
+
+/* ─── HERO — trophy + başlık + tarih ──────────────────────────────────── */
+.kb-hero { display: flex; align-items: center; gap: 10px; position: relative; }
+.kb-hero-trophy { flex-shrink: 0; width: 92px; display: flex; justify-content: center; filter: drop-shadow(0 6px 14px rgba(217,166,42,0.35)); }
+.kb-trophy-svg { display: block; width: 92px; height: auto; }
+
+.kb-hero-txt { flex: 1; min-width: 0; }
+.kb-title { font-size: 27px; font-weight: 900; letter-spacing: 0.5px; line-height: 1; white-space: nowrap; }
+.kb-title .w { color: #fff; }
+/* Not: background-clip:text gradient efekti html2canvas'ta (PNG export)
+   güvenilir render edilmiyor (bazı motorlarda düz dikdörtgen olarak
+   çıkıyor) — düz altın renk kullanılır, hem canlı ekranda hem export'ta
+   tutarlı. */
+.kb-title .g { color: var(--kb-gold-lt); }
+.kb-subtitle { color: rgba(255,255,255,0.75); font-size: 10.5px; font-weight: 700; letter-spacing: 0.8px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.kb-date-pill {
+  /* inline-flex html2canvas'ta (PNG export) bazen içeriği görünmez
+     yapıyor — display:flex + width:fit-content aynı kompakt görünümü
+     export'ta güvenilir şekilde verir. */
+  display: flex; width: fit-content; align-items: center; gap: 6px; margin-top: 9px;
+  background: var(--kb-panel); border: 1px solid var(--kb-line); border-radius: 999px;
+  padding: 5px 12px; color: #fff; font-size: 11px; font-weight: 800;
+}
+.kb-date-pill svg { color: var(--kb-gold); flex-shrink: 0; }
+
+/* ─── PODYUM (2 · 1 · 3) ───────────────────────────────────────────────── */
+.kb-podium { display: flex; gap: 6px; margin-top: 16px; align-items: stretch; }
+.kb-pod-card {
+  flex: 1 1 0; min-width: 0; background: var(--kb-panel); border: 1.5px solid var(--kb-line);
+  border-radius: 13px; padding: 9px 6px 10px; text-align: center;
+}
+.kb-pod-r1 { border-color: var(--kb-gold); box-shadow: 0 0 0 1px rgba(217,166,42,0.3), 0 4px 18px rgba(217,166,42,0.28); background: linear-gradient(180deg, #14100A, var(--kb-panel)); }
+.kb-pod-r2 { border-color: rgba(185,194,208,0.4); }
+.kb-pod-r3 { border-color: rgba(201,138,75,0.4); }
+
+.kb-pod-top { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.kb-pod-medal { font-size: 20px; line-height: 1; display: flex; justify-content: center; }
+.kb-pod-medal1 svg { display: block; }
+.kb-pod-medal2, .kb-pod-medal3 {
+  display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%;
+  font-size: 12px; font-weight: 900; color: #1A1E27;
+}
+.kb-pod-medal2 { background: linear-gradient(180deg, #E4E9F0, var(--kb-silver)); }
+.kb-pod-medal3 { background: linear-gradient(180deg, #E3AE7C, var(--kb-bronze)); }
+.kb-pod-id { min-width: 0; width: 100%; }
+.kb-pod-nm { color: #fff; font-size: 9px; font-weight: 800; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kb-pod-il { color: var(--kb-muted); font-size: 7.8px; font-weight: 700; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.kb-pod-pts { color: #fff; font-size: 16px; font-weight: 900; font-variant-numeric: tabular-nums; margin-top: 8px; white-space: nowrap; }
+.kb-pod-r1 .kb-pod-pts { color: var(--kb-gold-lt); font-size: 18px; }
+.kb-pod-lbl { color: var(--kb-muted); font-size: 7px; font-weight: 800; letter-spacing: 0.5px; margin-top: 1px; }
+
+.kb-pod-trendrow { margin-top: 7px; padding-top: 6px; border-top: 1px solid var(--kb-line); display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.kb-tr { font-size: 9.5px; font-weight: 800; white-space: nowrap; }
+.kb-tr.up { color: var(--kb-green); }
+.kb-tr.dn { color: var(--kb-red); }
+.kb-tr.eq { color: var(--kb-muted); }
+.kb-pod-trendlbl { font-size: 6.4px; font-weight: 700; color: var(--kb-muted); letter-spacing: 0.4px; }
+
+/* ─── İLK 10 SIRALAMA TABLOSU ──────────────────────────────────────────── */
+.kb-table { background: var(--kb-panel); border: 1px solid var(--kb-line); border-radius: 14px; margin-top: 12px; overflow: hidden; }
+.kb-table-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 11px 10px; border-bottom: 1px solid var(--kb-line); }
+.kb-table-title { display: flex; align-items: center; gap: 6px; color: #fff; font-size: 11.5px; font-weight: 900; letter-spacing: 0.3px; white-space: nowrap; }
+.kb-table-title svg { color: var(--kb-gold); }
+.kb-table-cols { display: flex; gap: 10px; color: var(--kb-muted); font-size: 7px; font-weight: 800; letter-spacing: 0.3px; }
+.kb-table-cols span:nth-child(1) { width: 40px; text-align: right; }
+.kb-table-cols span:nth-child(2) { width: 52px; text-align: right; }
+.kb-table-cols span:nth-child(3) { width: 44px; text-align: right; }
+
+.kb-trow { display: flex; align-items: center; gap: 5px; padding: 8px 10px; border-bottom: 1px solid var(--kb-line); }
+.kb-table .kb-trow:last-child { border-bottom: none; }
+
+.kb-rk { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; }
+.kb-rk1 { background: linear-gradient(180deg, var(--kb-gold-lt), var(--kb-gold)); color: #241B03; }
+.kb-rk2 { background: linear-gradient(180deg, #E4E9F0, var(--kb-silver)); color: #1A1E27; }
+.kb-rk3 { background: linear-gradient(180deg, #E3AE7C, var(--kb-bronze)); color: #2B1706; }
+.kb-rk-n { color: var(--kb-muted); background: transparent; font-size: 11px; }
+
+.kb-trow-crown { flex-shrink: 0; color: rgba(255,255,255,0.28); display: flex; }
+
+.kb-trow-id { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 5px; }
+.kb-trow-nm { color: #fff; font-size: 10.5px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kb-trow-il { color: var(--kb-muted); font-size: 7.6px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+
+.kb-trow-puan { flex-shrink: 0; width: 40px; text-align: right; color: #fff; font-size: 10.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.kb-trow-fark { flex-shrink: 0; width: 52px; text-align: right; color: var(--kb-muted); font-size: 9.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.kb-trow-trend { flex-shrink: 0; width: 44px; text-align: right; }
+.kb-trow-trend .kb-tr { font-size: 9px; }
+
+/* ─── GÜNÜN YÜKSELENİ / DÜŞENİ / BONUS ─────────────────────────────────── */
+.kb-bottom-grid { display: flex; gap: 6px; margin-top: 10px; }
+.kb-mini { flex: 1 1 0; min-width: 0; background: var(--kb-panel-2); border: 1.5px solid var(--kb-line); border-radius: 12px; padding: 8px 6px; }
+.kb-mini-up   { border-color: rgba(34,197,94,0.4); }
+.kb-mini-dn   { border-color: rgba(239,68,68,0.4); }
+.kb-mini-bonus{ border-color: rgba(76,141,255,0.4); }
+
+.kb-mini-title { display: flex; align-items: center; gap: 3px; font-size: 6.6px; font-weight: 900; letter-spacing: 0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kb-mini-title small { font-weight: 700; text-transform: none; opacity: 0.85; }
+.kb-mini-up .kb-mini-title   { color: var(--kb-green); }
+.kb-mini-dn .kb-mini-title   { color: var(--kb-red); }
+.kb-mini-bonus .kb-mini-title{ color: var(--kb-blue); }
+
+.kb-mini-body { display: flex; flex-direction: column; align-items: center; gap: 4px; margin-top: 8px; text-align: center; }
+.kb-mini-ic { display: flex; }
+.kb-mini-ic.up { color: var(--kb-green); }
+.kb-mini-ic.dn { color: var(--kb-red); }
+.kb-mini-ic.bonus { color: var(--kb-gold); }
+
+.kb-mini-txt { min-width: 0; width: 100%; }
+.kb-mini-nm { color: #fff; font-size: 9px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kb-mini-il { color: var(--kb-muted); font-size: 7px; font-weight: 700; margin-top: 1px; }
+.kb-mini-val { font-size: 15px; font-weight: 900; margin-top: 5px; font-variant-numeric: tabular-nums; }
+.kb-mini-val small { font-size: 7px; font-weight: 800; margin-left: 2px; }
+.kb-mini-val.up { color: var(--kb-green); }
+.kb-mini-val.dn { color: var(--kb-red); }
+.kb-mini-sub { font-size: 6.8px; font-weight: 800; margin-top: 5px; letter-spacing: 0.1px; }
+.kb-mini-sub.up { color: var(--kb-green); }
+.kb-mini-sub.dn { color: var(--kb-red); }
+.kb-mini-empty { color: var(--kb-muted); font-size: 8px; font-weight: 600; padding: 10px 2px; line-height: 1.4; }
+
+.kb-mini-tiers { width: 100%; display: flex; flex-direction: column; gap: 5px; margin-top: 2px; }
+.kb-tier { display: flex; align-items: center; gap: 4px; font-size: 7.6px; }
+.kb-tier b { color: #fff; font-weight: 900; white-space: nowrap; }
+.kb-tier small { color: var(--kb-muted); font-weight: 700; text-align: left; line-height: 1.2; }
+.kb-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.kb-dot.g { background: var(--kb-green); }
+.kb-dot.y { background: #F5B93D; }
+.kb-dot.r { background: var(--kb-red); }
+
+/* ─── ALT MOTİVASYON BANNER ─────────────────────────────────────────────── */
+.kb-banner {
+  display: flex; align-items: center; gap: 10px; margin-top: 12px;
+  background: var(--kb-panel); border: 1px solid var(--kb-line); border-radius: 13px; padding: 12px 14px;
+}
+.kb-banner-ic { color: var(--kb-gold); flex-shrink: 0; }
+.kb-banner-txt { flex: 1; min-width: 0; }
+.kb-banner-h { color: #fff; font-size: 12.5px; font-weight: 900; line-height: 1.3; }
+.kb-banner-h span { color: var(--kb-gold); }
+.kb-banner-s { color: var(--kb-muted); font-size: 9px; font-weight: 700; margin-top: 2px; }
+.kb-banner-target { color: rgba(255,255,255,0.5); flex-shrink: 0; }
