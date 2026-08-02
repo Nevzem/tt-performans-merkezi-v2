@@ -1,7 +1,7 @@
 /* ════════════════════════════════════════════════════════════════════
    css/sy-report-v3.css — Satış Yöneticisi MOBİL ANA EKRAN v3 (Sprint 27)
 
-   Referans: design-references/sy-mobile-target.png (kullanıcı onaylı).
+   Referans (Sprint 27.1): design-references/sy-managers-mobile-reference-v1.png.
    Yalnızca .sy3-* sınıfları kullanılır — css/sy-report-v2.css (.sy2-*,
    önceki mobil ekran) VE css/sy-share-v3.css (.sy-share-v3-*, PNG
    export) hiç etkilenmez, birbirine referans vermez.
@@ -12,39 +12,43 @@
 
 .sy3-page { background: #F0F3FA; }
 
-/* js/app.js:syncSYChrome() — genel topbar/kanal şeridi gizlendiğinde
-   .scroll-area'nın onlar için ayırdığı üst boşluk da kaldırılır (yalnızca
-   Satış Yöneticisi v3 aktifken; diğer sayfalarda bu sınıf hiç eklenmez). */
-.scroll-area.sy3-no-chrome { padding-top: 0; }
+/* js/app.js:syncSYChrome() — genel topbar gizlenir, kanal şeridi (TTM/EDM
+   erişimi korunsun diye) kalır ama topbar'ın yerine top:0'a çekilir;
+   .scroll-area artık yalnızca kanal şeridinin yüksekliği kadar boşluk
+   bırakır (yalnızca Satış Yöneticisi v3 aktifken; diğer sayfalarda bu
+   sınıflar hiç eklenmez, .channel-strip her zamanki gibi topbar altında
+   kalır). */
+.app.sy3-active .channel-strip { top: 0; }
+.scroll-area.sy3-no-chrome { padding-top: var(--chstrip-h); }
 
-/* ─── BİRLEŞİK KURUMSAL BAŞLIK — genel topbar/kanal şeridinin yerini
-   yalnızca bu sayfada alır (js/app.js:navTo() onları gizler). ───────── */
-.sy3-header {
-  background: linear-gradient(140deg, var(--navy) 0%, var(--navy-2) 60%, var(--navy-3) 100%);
-  padding: 14px 16px 16px;
-}
+/* ─── BİRLEŞİK KURUMSAL BAŞLIK (Sprint 27.1) — açık/beyaz zemin, referans:
+   design-references/sy-managers-mobile-reference-v1.png. Genel .topbar/
+   .page-hdr'ın yerini yalnızca bu sayfada alır (js/app.js:syncSYChrome());
+   .channel-strip (TTM/EDM) bu sayfada TEKRAR görünür — burada ayrıca
+   gösterilmez (referansta da yok). ───────────────────────────────────── */
+.sy3-header { padding: 16px 14px 4px; }
 .sy3-hdr-top { display: flex; align-items: center; gap: 12px; }
-.sy3-logo { width: 46px; height: 46px; border-radius: 11px; flex-shrink: 0; }
+
+.sy3-logo-card {
+  background: #fff; border: 1px solid #E7EBF3; border-radius: 13px;
+  padding: 6px 9px; flex-shrink: 0; box-shadow: 0 1px 4px rgba(10,31,92,0.06);
+}
+.sy3-logo { display: block; width: 40px; height: 40px; }
+
 .sy3-hdr-brand { flex: 1; min-width: 0; }
-.sy3-hdr-brand-t { color: #fff; font-size: 16px; font-weight: 800; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sy3-hdr-brand-s { color: rgba(255,255,255,0.68); font-size: 12px; font-weight: 600; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy3-hdr-brand-t { color: var(--ink); font-size: 15.5px; font-weight: 800; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy3-hdr-brand-s { color: var(--muted); font-size: 11.5px; font-weight: 600; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .sy3-hdr-donem {
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  border: 1.5px solid rgba(255,255,255,0.3); border-radius: 12px;
-  padding: 6px 12px; flex-shrink: 0;
+  display: flex; align-items: center; gap: 6px;
+  background: #fff; border: 1px solid #E7EBF3; border-radius: 11px;
+  padding: 9px 12px; flex-shrink: 0; color: var(--ink); box-shadow: 0 1px 4px rgba(10,31,92,0.05);
 }
-.sy3-hdr-donem-v { color: #fff; font-size: 13px; font-weight: 800; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
-.sy3-hdr-donem-d { color: rgba(255,255,255,0.6); font-size: 9.5px; font-weight: 600; white-space: nowrap; }
+.sy3-hdr-donem-ic { display: flex; color: var(--muted); }
+.sy3-hdr-donem-v { font-size: 12.5px; font-weight: 800; white-space: nowrap; }
+.sy3-hdr-donem-chev { display: flex; color: var(--muted); }
 
-.sy3-kanal { display: flex; justify-content: center; margin-top: 14px; }
-.sy3-kanal-toggle { display: flex; background: rgba(255,255,255,0.1); border-radius: 11px; padding: 3px; gap: 3px; }
-.sy3-kanal-btn {
-  border: none; background: transparent; color: rgba(255,255,255,0.65);
-  font-size: 13px; font-weight: 800; padding: 8px 26px; border-radius: 9px;
-  cursor: pointer; min-height: 36px;
-}
-.sy3-kanal-btn.on { background: #fff; color: var(--navy); }
+.sy3-hdr-date { text-align: right; font-size: 10.5px; font-weight: 600; color: var(--muted); margin-top: 6px; }
 
 /* ─── KUZEY ANADOLU BÖLGE — 2×2 KPI KART GRID ────────────────────────── */
 .sy3-kpi { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 12px 12px 4px; }
@@ -81,10 +85,10 @@
 .sy3-card-bottom .tr.dn { color: var(--crimson); }
 .sy3-card-bottom .tr.eq { color: var(--muted); }
 
-/* ─── FİLTRELER — ÜRÜN / SIRALAMA, tek satır, taşma yok ─────────────── */
+/* ─── FİLTRELER — yalnızca ÜRÜN, tek satır, taşma yok (Sprint 27.1:
+   SIRALAMA satırı ve "Tümü" pili kaldırıldı). ─────────────────────────── */
 .sy3-filters { padding: 14px 12px 6px; }
-.sy3-filters-row { margin-bottom: 10px; }
-.sy3-filters-row:last-of-type { margin-bottom: 6px; }
+.sy3-filters-row { margin-bottom: 6px; }
 .sy3-filters-lbl { font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block; }
 .sy3-pillrow { display: flex; gap: 6px; }
 .sy3-pill {
@@ -97,7 +101,6 @@
 }
 .sy3-pill .ic { flex-shrink: 0; display: inline-flex; }
 .sy3-pill.on-prod { color: #fff; font-weight: 800; border-color: transparent; }
-.sy3-pill.on-sort { background: var(--navy); border-color: var(--navy); color: #fff; font-weight: 800; }
 .sy3-filters-info { font-size: 10.5px; font-weight: 700; color: var(--muted); }
 
 /* ─── YÖNETİCİLER LİSTESİ ─────────────────────────────────────────────── */
@@ -108,7 +111,20 @@
 }
 .sy3-list-sec .cnt { font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: none; letter-spacing: 0; }
 
-.sy3-list { background: #fff; margin: 6px 12px 12px; border-radius: 14px; border: 1px solid #E7EBF3; overflow: hidden; }
+/* Kolon başlıkları — satırlarla AYNI grid oranlarını kullanır ki hizalı
+   dursun (rk/nmwrap/metrics/chev genişlikleri .sy3-row ile birebir). ── */
+.sy3-listhead { display: flex; align-items: center; gap: 5px; padding: 0 8px 6px 20px; }
+.sy3-listhead-rk { width: 20px; flex-shrink: 0; }
+.sy3-listhead-nm { flex: 1 1 64px; min-width: 0; }
+.sy3-listhead .sy3-metrics { display: flex; flex: 4 1 0; min-width: 0; gap: 3px; }
+.sy3-listhead .sy3-metric {
+  flex: 1 1 0; min-width: 0; text-align: center;
+  font-size: 7.3px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sy3-listhead-chev { width: 12px; flex-shrink: 0; }
+
+.sy3-list { background: #fff; margin: 0 12px 12px; border-radius: 14px; border: 1px solid #E7EBF3; overflow: hidden; }
 .sy3-row {
   display: flex; align-items: center; gap: 5px;
   padding: 10px 8px; border-bottom: 1px solid var(--hairline);
@@ -127,10 +143,17 @@
 .sy3-metric .v { font-size: 10.5px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
 .sy3-metric .v.up { color: var(--green); }
 .sy3-metric .v.dn { color: var(--crimson); }
-.sy3-metric .l { font-size: 7.3px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
 .sy3-chev { flex-shrink: 0; color: var(--muted); width: 12px; }
 .sy3-chev svg { display: block; width: 12px; height: 12px; }
+
+/* ─── HGO AÇIKLAMA KUTUSU (Sprint 27.1) ───────────────────────────────── */
+.sy3-infobox {
+  display: flex; align-items: center; gap: 8px;
+  background: #fff; border: 1px solid #E7EBF3; border-radius: 12px;
+  margin: 0 12px 16px; padding: 11px 14px;
+  font-size: 11px; font-weight: 600; color: var(--muted);
+}
+.sy3-infobox svg { flex-shrink: 0; }
 
 /* ─── MERKEZİ HGO BANT RENKLERİ — hgoBand(): gg/g/y/o/r (kasıtlı tekrar,
    dosya bağımsızlığı için; render.js:hgoBand() ile birebir aynı eşik). ── */
