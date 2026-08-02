@@ -8,30 +8,31 @@
 let navPage      = 'ana';
 let _perfSection = 'matrix';
 
-/* ─── SY MOBİL v3 KROM GİZLEME (Sprint 27, güncelleme 27.1) ───
+/* ─── SY MOBİL v3 KROM GİZLEME (Sprint 27 → 27.1 → 27.2) ───
    Satış Yöneticisi mobil ekranı (v3) kendi birleşik başlığını içeriyor
-   (js/sy-report-v3.js: .sy3-header) — genel topbar VE sayfa başlığı
-   (.page-hdr) bu ekranda YALNIZCA görsel olarak gizlenir (display:none).
-   Sprint 27.1: .channel-strip (TTM/EDM) ARTIK GİZLENMİYOR — referans
-   tasarımda (sy-managers-mobile-reference-v1.png) kanal geçişi
-   gösterilmiyor ama EDM erişimi kaybolmasın diye genel kanal şeridi bu
-   sayfada da görünür kalıyor; yalnızca topbar'ın yerini aldığı için
-   top:0'a konumlanıyor (bkz. css/sy-report-v3.css: .app.sy3-active).
-   navTo('sy') VE setSyViewMode() (js/sy-matrix.js) İKİSİ de bunu çağırır.
-   Diğer tüm sayfalarda (ana/bayi/pers/perf/geçmiş/ayarlar) davranış
-   BİREBİR aynı kalır — navPage!=='sy' olduğunda her zaman '' (görünür)
-   döner ve .app'ten sy3-active kaldırılır. */
+   (js/sy-report-v3.js: .sy3-header) — genel topbar, kanal şeridi
+   (TTM/EDM) VE sayfa başlığı (.page-hdr) bu ekranda YALNIZCA görsel
+   olarak gizlenir (display:none). Sprint 27.2: design-references/
+   sy-dashboard-reference.png açıkça "Kanal seçimini tamamen kaldır,
+   bu sayfada artık görünmeyecek" dediği için .channel-strip TEKRAR
+   gizleniyor (Sprint 27.1'de EDM erişimi için geçici olarak geri
+   getirilmişti — bu karar bu sprintte kullanıcı talimatıyla tersine
+   çevrildi). navTo('sy') VE setSyViewMode() (js/sy-matrix.js) İKİSİ de
+   bunu çağırır. Diğer tüm sayfalarda (ana/bayi/pers/perf/geçmiş/
+   ayarlar) davranış BİREBİR aynı kalır — navPage!=='sy' olduğunda her
+   zaman '' (görünür) döner. */
 function syncSYChrome() {
   var _topbar  = document.querySelector('.topbar');
+  var _chStrip = document.querySelector('.channel-strip');
   var _pageHdr = document.querySelector('.page-hdr');
   var _scroll  = document.querySelector('.scroll-area');
   var _app     = document.querySelector('.app');
   var _hide = (navPage === 'sy' && (typeof syViewMode === 'undefined' || syViewMode === 'v3'));
   if (_topbar)  _topbar.style.display  = _hide ? 'none' : '';
+  if (_chStrip) _chStrip.style.display = _hide ? 'none' : '';
   if (_pageHdr) _pageHdr.style.display = _hide ? 'none' : '';
   /* .scroll-area normalde sabit (fixed) topbar+kanal şeridi için üstte boşluk
-     (padding-top) ayırır — topbar gizlenince kanal şeridi tek başına
-     top:0'a çekilir, scroll-area yalnızca onun yüksekliği kadar boşluk bırakır. */
+     (padding-top) ayırır — ikisi de gizlenince o boşluk tamamen kaldırılır. */
   if (_scroll)  _scroll.classList.toggle('sy3-no-chrome', _hide);
   if (_app)     _app.classList.toggle('sy3-active', _hide);
 }

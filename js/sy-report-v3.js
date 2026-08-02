@@ -1,13 +1,13 @@
 /* ════════════════════════════════════════════════════════════════════
    js/sy-report-v3.js — Satış Yöneticisi MOBİL ANA EKRAN v3 (Sprint 27)
 
-   Referans (Sprint 27.1 güncellemesi): design-references/
-   sy-managers-mobile-reference-v1.png — açık/beyaz başlık, TTM/EDM
-   toggle kaldırıldı (genel .channel-strip bu sayfada tekrar görünür),
-   yalnızca ÜRÜN filtre satırı (SIRALAMA kaldırıldı, sıralama sabit
-   HGO), liste üstünde kolon başlıkları, HGO açıklama kutusu.
-   Önceki referans (Sprint 27 ilk sürüm): design-references/
-   sy-mobile-target.png.
+   Referans (Sprint 27.2 — güncel): design-references/
+   sy-dashboard-reference.png — 4'lü tek satır KPI kart grid, tinted
+   ürün pilleri (başlıksız), "Yöneticiler" başlığı ve bayi/personel
+   meta satırı kaldırıldı, liste kolonları SY/Hedef/Aktv./HGO/Forecast/
+   Kalan/D. Adet, kanal şeridi (TTM/EDM) tamamen gizli.
+   Önceki referanslar (Sprint 27 → 27.1): sy-mobile-target.png,
+   sy-managers-mobile-reference-v1.png.
    Bu dosya js/sy-report-v2.js'teki HESAPLAMA/STATE katmanını
    (_sy2PrepareState, sy2SortProd/sy2SortMetric, setSy2SortProd/
    setSy2SortMetric, SYM_PRODS, SY2_ACCENT, _symN/_symPct1/_symPct0/
@@ -88,13 +88,14 @@ function renderSY3Header(donemTxt) {
   '</div>';
 }
 
-/* ─── KUZEY ANADOLU BÖLGE — 2×2 KPI KART GRID ─────────────────────────
-   NOT (Sprint 27): "Forecast" rozeti artık "Mevcut HGO" olarak
-   etiketleniyor — değer AYNI (c.f, forecast yüzdesi), yalnızca
-   gösterim metni değişti. Yeşil/renkli rozet stili (fBand) korunuyor. */
+/* ─── KUZEY ANADOLU BÖLGE — 4'lü TEK SATIR KPI KART GRID (Sprint 27.2:
+   design-references/sy-dashboard-reference.png) ──────────────────────
+   Referansta trio (Hedef/Fazla-Kalan/Mevcut HGO) değerleri DÜZ (renksiz/
+   rozetsiz) — önceki sürümdeki yeşil "Mevcut HGO" rozeti kaldırıldı,
+   yalnızca metin. Değerler (c.h/c.kalan/c.fazla/c.f) DEĞİŞMEDİ, sadece
+   gösterim sadeleşti. HGO değeri hâlâ ürün rengiyle boyalı, donut aynen
+   korunuyor. Günlük artık kendi satırında, trend'ler onun altında. */
 function renderSY3Card(p, c, kalanGun, monthDone, edmMode) {
-  var band  = c.hgo != null ? _symBand(c.hgo) : null;
-  var fBand = c.f   != null ? _symBand(c.f)   : null;
   var color = SY2_ACCENT[p.key];
   var donutPct = c.hasTarget ? Math.min(c.hgo || 0, 100) : 0;
 
@@ -106,27 +107,27 @@ function renderSY3Card(p, c, kalanGun, monthDone, edmMode) {
       '<span class="sy3-card-ic" style="background:' + color + '">' + SY3_ICONS[p.key] + '</span>' +
       '<span class="sy3-card-name">' + (edmMode ? p.edmLabel : p.label) + '</span>' +
     '</div>' +
-    '<div class="sy3-card-mid">' +
-      '<div class="sy3-card-left">' +
-        '<div class="sy3-card-hgo" style="color:' + color + '">' + _symPct1(c.hgo) + '<small>HGO</small></div>' +
-        '<div class="sy3-card-akt">' + _symN(c.a) + ' Aktv</div>' +
+    '<div class="sy3-card-hgorow">' +
+      '<div class="sy3-card-hgowrap">' +
+        '<div class="sy3-card-hgo" style="color:' + color + '">' + _symPct0(c.hgo) + '</div>' +
+        '<div class="sy3-card-hgolbl">HGO</div>' +
       '</div>' +
-      '<div class="sy3-card-donut">' + _sy3Donut(donutPct, 50, color) + '</div>' +
+      '<div class="sy3-card-donut">' + _sy3Donut(donutPct, 34, color) + '</div>' +
     '</div>' +
+    '<div class="sy3-card-akt">' + _symN(c.a) + ' Aktv.</div>' +
+    '<div class="sy3-card-hr"></div>' +
     '<div class="sy3-card-trio">' +
       '<div class="sy3-card-trioitem"><div class="v">' + (c.hasTarget ? _symN(c.h) : '—') + '</div><div class="l">Hedef</div></div>' +
-      '<div class="sy3-card-trioitem"><div class="v' + (c.over ? ' plus' : '') + '">' +
+      '<div class="sy3-card-trioitem"><div class="v">' +
         (c.hasTarget ? (c.over ? '+' + _symN(c.fazla) : _symN(c.kalan)) : '—') +
       '</div><div class="l">' + (c.over ? 'Fazla' : 'Kalan') + '</div></div>' +
-      '<div class="sy3-card-trioitem">' +
-        '<div class="sy3-card-fc' + (fBand ? ' b-' + fBand : ' b-off') + '">' + _symPct0(c.f) + '</div>' +
-        '<div class="l">Mevcut HGO</div>' +
-      '</div>' +
+      '<div class="sy3-card-trioitem"><div class="v">' + _symPct0(c.f) + '</div><div class="l">Mevcut HGO</div></div>' +
     '</div>' +
-    '<div class="sy3-card-bottom">' +
-      '<span>Günlük ' + (gunlukVal != null ? _symN(gunlukVal) : '—') + '</span>' +
-      '<span class="tr">' + _sy3Trend(c.dA, 'adet', false) + '</span>' +
-      '<span class="tr">' + _sy3Trend(c.dHgo, 'HGO', true) + '</span>' +
+    '<div class="sy3-card-hr"></div>' +
+    '<div class="sy3-card-daily-lbl">Günlük</div>' +
+    '<div class="sy3-card-trendrow">' +
+      _sy3Trend(c.dA, 'adet', false) +
+      _sy3Trend(c.dHgo, 'HGO', true) +
     '</div>' +
   '</div>';
 }
@@ -138,67 +139,77 @@ function renderSY3KpiGrid(regionCols, kalanGun, monthDone, edmMode) {
   return '<div class="sy3-kpi">' + cardsHTML + '</div>';
 }
 
-/* ─── FİLTRELER — yalnızca ÜRÜN (Sprint 27.1: referansta "Tümü" pili ve
-   SIRALAMA satırı yok; kullanıcı onayıyla "Tümü" hiç eklenmedi — birleşik/
-   genel skor hesaplamak istenmedi, mevcut "Genel HGO/Forecast YOK" kuralı
-   korundu — bkz. proje geçmişi). Sıralama HER ZAMAN HGO'ya göre (sabit;
-   sy2SortMetric değişmeden 'hgo' kalır, seçim UI'ı kaldırıldı). Yönetici
-   listesi seçilen ürüne göre değişmeye DEVAM eder (sy2SortProd, mevcut
-   mekanizma, değişmedi). ─────────────────────────────────────────────── */
+/* ─── FİLTRELER — yalnızca ÜRÜN pilleri (Sprint 27.2: design-references/
+   sy-dashboard-reference.png). "Ürün" başlığı VE alt bilgi satırı
+   ("Mobil · HGO — Yüksekten Düşüğe") kaldırıldı — yalnızca pil satırı
+   kalıyor. Aktif pil artık dolu değil, ürün rengiyle TİNTED (açık tonlu
+   zemin + renkli border + renkli ikon/metin). Sıralama HER ZAMAN HGO'ya
+   göre (sabit; sy2SortMetric 'hgo', seçim UI'ı Sprint 27.1'de kaldırıldı).
+   Yönetici listesi seçilen ürüne göre değişmeye DEVAM eder (sy2SortProd,
+   mevcut mekanizma, değişmedi). ──────────────────────────────────────── */
 function renderSY3Filters(prodObj, edmMode) {
   var prodBtns = SYM_PRODS.map(function(p) {
     var on = p.key === sy2SortProd;
     var color = SY2_ACCENT[p.key];
-    var style = on ? ' style="background:' + color + '"' : '';
-    var icon = on ? SY3_ICONS[p.key] : '<span class="ic" style="color:' + color + '">' + SY3_ICONS_INK[p.key] + '</span>';
+    var style = on ? ' style="background:' + color + '14;border-color:' + color + ';color:' + color + '"' : '';
+    var icon = '<span class="ic" style="color:' + (on ? color : color) + '">' + SY3_ICONS_INK[p.key] + '</span>';
     return '<button class="sy3-pill' + (on ? ' on-prod' : '') + '"' + style + ' onclick="setSy2SortProd(\'' + p.key + '\')">' +
       icon + (edmMode ? p.edmLabel : p.label) + '</button>';
   }).join('');
 
-  return '<div class="sy3-filters">' +
-    '<div class="sy3-filters-row"><span class="sy3-filters-lbl">Ürün</span><div class="sy3-pillrow">' + prodBtns + '</div></div>' +
-    '<div class="sy3-filters-info">' + (edmMode ? prodObj.edmLabel : prodObj.label) + ' · HGO — Yüksekten Düşüğe</div>' +
-  '</div>';
+  return '<div class="sy3-filters"><div class="sy3-pillrow">' + prodBtns + '</div></div>';
 }
 
-/* ─── YÖNETİCİLER LİSTESİ — tek satır, 5 metrik kolonu (Sprint 27.1):
-   Mevcut HGO (=c.hgo, banded) | Forecast (=c.f, düz) | Aktivasyon |
-   Adet (dA trend) | HGO (dHgo trend). Kolon etiketleri artık satır
-   başına değil, listenin üstünde TEK SEFER (.sy3-listhead) gösterilir
-   (referans: design-references/sy-managers-mobile-reference-v1.png). ── */
+/* ─── YÖNETİCİLER LİSTESİ (Sprint 27.2: design-references/
+   sy-dashboard-reference.png) — kolonlar TAM OLARAK referanstaki sırada:
+   SY | Hedef | Aktv. | HGO | Forecast | Kalan | D. Adet.
+   - Hedef  = c.h (düz)
+   - Aktv.  = c.a (düz)
+   - HGO    = c.hgo (mevcut hgoBand renk eşiği, YENİ EŞİK YOK)
+   - Forecast = c.f (mevcut hgoBand renk eşiği — aynı fonksiyon, iki kez
+     yazılmadı)
+   - Kalan  = işaretli tek değer: hedef üstündeyse '+fazla' yeşil, altındaysa
+     '-kalan' kırmızı (c.kalan/c.fazla/c.over DEĞİŞMEDİ, yalnızca gösterim)
+   - D. Adet = c.dA (önceki rapora göre adet trendi, mevcut alan)
+   "Yöneticiler" başlığı VE bayi/personel meta satırı KALDIRILDI. ──────── */
 function renderSY3ManagerRow(row, i, sortProdKey) {
   var c = row.cols[sortProdKey] || {};
-  var band = c.hgo != null ? _symBand(c.hgo) : null;
+  var band  = c.hgo != null ? _symBand(c.hgo) : null;
+  var fBand = c.f   != null ? _symBand(c.f)   : null;
   var warnHTML = row.matchWarn ? ' <span class="warn">⚠</span>' : '';
+  var kalanCls = c.hasTarget ? (c.over ? ' up' : ' dn') : '';
+  var kalanTxt = c.hasTarget ? (c.over ? '+' + _symN(c.fazla) : '-' + _symN(c.kalan)) : '—';
+  var dAcls = c.dA > 0 ? ' up' : c.dA < 0 ? ' dn' : '';
+  var dAtxt = c.dA == null ? '—' : (c.dA > 0 ? '+' : '') + _symN(c.dA);
 
   return '<div class="sy3-row">' +
     '<span class="sy3-rk">' + (i + 1) + '</span>' +
     '<div class="sy3-nmwrap">' +
       '<div class="sy3-nm">' + row.nm + warnHTML + '</div>' +
-      '<div class="sy3-meta">' + row.bayiCount + ' bayi · ' + row.persCount + ' personel</div>' +
     '</div>' +
     '<div class="sy3-metrics">' +
-      '<div class="sy3-metric"><div class="v' + (band ? ' b-' + band : '') + '">' + _symPct1(c.hgo) + '</div></div>' +
-      '<div class="sy3-metric"><div class="v">' + _symPct0(c.f) + '</div></div>' +
+      '<div class="sy3-metric"><div class="v">' + (c.hasTarget ? _symN(c.h) : '—') + '</div></div>' +
       '<div class="sy3-metric"><div class="v">' + _symN(c.a) + '</div></div>' +
-      '<div class="sy3-metric"><div class="v' + (c.dA > 0 ? ' up' : c.dA < 0 ? ' dn' : '') + '">' + (c.dA == null ? '—' : (c.dA > 0 ? '+' : '') + _symN(c.dA)) + '</div></div>' +
-      '<div class="sy3-metric"><div class="v' + (c.dHgo > 0 ? ' up' : c.dHgo < 0 ? ' dn' : '') + '">' + (c.dHgo == null ? '—' : (c.dHgo > 0 ? '+' : '') + c.dHgo.toFixed(1).replace('.', ',')) + '</div></div>' +
+      '<div class="sy3-metric"><div class="v' + (band ? ' b-' + band : '') + '">' + _symPct0(c.hgo) + '</div></div>' +
+      '<div class="sy3-metric"><div class="v' + (fBand ? ' b-' + fBand : '') + '">' + _symPct0(c.f) + '</div></div>' +
+      '<div class="sy3-metric"><div class="v' + kalanCls + '">' + kalanTxt + '</div></div>' +
+      '<div class="sy3-metric"><div class="v' + dAcls + '">' + dAtxt + '</div></div>' +
     '</div>' +
     '<span class="sy3-chev">' + SY3_CHEV_ICON + '</span>' +
   '</div>';
 }
 
-function renderSY3ListHead(rows) {
-  return '<div class="sy3-list-sec"><span>Yöneticiler</span><span class="cnt">' + rows.length + ' SY</span></div>' +
-    '<div class="sy3-listhead">' +
+function renderSY3ListHead() {
+  return '<div class="sy3-listhead">' +
       '<span class="sy3-listhead-rk"></span>' +
-      '<span class="sy3-listhead-nm"></span>' +
+      '<span class="sy3-listhead-nm">SY</span>' +
       '<div class="sy3-metrics">' +
-        '<span class="sy3-metric">Mevcut</span>' +
-        '<span class="sy3-metric">Forec.</span>' +
-        '<span class="sy3-metric">Aktv</span>' +
-        '<span class="sy3-metric">Adet</span>' +
+        '<span class="sy3-metric">Hedef</span>' +
+        '<span class="sy3-metric">Aktv.</span>' +
         '<span class="sy3-metric">HGO</span>' +
+        '<span class="sy3-metric">Forecast</span>' +
+        '<span class="sy3-metric">Kalan</span>' +
+        '<span class="sy3-metric">D. Adet</span>' +
       '</div>' +
       '<span class="sy3-listhead-chev"></span>' +
     '</div>';
@@ -206,7 +217,7 @@ function renderSY3ListHead(rows) {
 
 function renderSY3ManagerList(rows, sortProdKey) {
   var rowsHTML = rows.map(function(r, i) { return renderSY3ManagerRow(r, i, sortProdKey); }).join('');
-  return renderSY3ListHead(rows) + '<div class="sy3-list">' + rowsHTML + '</div>';
+  return renderSY3ListHead() + '<div class="sy3-list">' + rowsHTML + '</div>';
 }
 
 /* ─── HGO AÇIKLAMA KUTUSU (Sprint 27.1) ──────────────────────────────── */

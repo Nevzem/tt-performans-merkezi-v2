@@ -1,7 +1,9 @@
 /* ════════════════════════════════════════════════════════════════════
    css/sy-report-v3.css — Satış Yöneticisi MOBİL ANA EKRAN v3 (Sprint 27)
 
-   Referans (Sprint 27.1): design-references/sy-managers-mobile-reference-v1.png.
+   Referans (Sprint 27.2 — güncel): design-references/sy-dashboard-reference.png.
+   Önceki referanslar (Sprint 27 → 27.1): sy-mobile-target.png,
+   sy-managers-mobile-reference-v1.png.
    Yalnızca .sy3-* sınıfları kullanılır — css/sy-report-v2.css (.sy2-*,
    önceki mobil ekran) VE css/sy-share-v3.css (.sy-share-v3-*, PNG
    export) hiç etkilenmez, birbirine referans vermez.
@@ -12,14 +14,12 @@
 
 .sy3-page { background: #F0F3FA; }
 
-/* js/app.js:syncSYChrome() — genel topbar gizlenir, kanal şeridi (TTM/EDM
-   erişimi korunsun diye) kalır ama topbar'ın yerine top:0'a çekilir;
-   .scroll-area artık yalnızca kanal şeridinin yüksekliği kadar boşluk
-   bırakır (yalnızca Satış Yöneticisi v3 aktifken; diğer sayfalarda bu
-   sınıflar hiç eklenmez, .channel-strip her zamanki gibi topbar altında
-   kalır). */
-.app.sy3-active .channel-strip { top: 0; }
-.scroll-area.sy3-no-chrome { padding-top: var(--chstrip-h); }
+/* js/app.js:syncSYChrome() — genel topbar VE kanal şeridi (TTM/EDM) bu
+   sayfada tamamen gizlenir (Sprint 27.2: referans tasarımda kanal
+   seçimi yok) — .scroll-area'nın onlar için ayırdığı üst boşluk da
+   kaldırılır (yalnızca Satış Yöneticisi v3 aktifken; diğer sayfalarda
+   bu sınıflar hiç eklenmez). */
+.scroll-area.sy3-no-chrome { padding-top: 0; }
 
 /* ─── BİRLEŞİK KURUMSAL BAŞLIK (Sprint 27.1) — açık/beyaz zemin, referans:
    design-references/sy-managers-mobile-reference-v1.png. Genel .topbar/
@@ -50,46 +50,45 @@
 
 .sy3-hdr-date { text-align: right; font-size: 10.5px; font-weight: 600; color: var(--muted); margin-top: 6px; }
 
-/* ─── KUZEY ANADOLU BÖLGE — 2×2 KPI KART GRID ────────────────────────── */
-.sy3-kpi { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 12px 12px 4px; }
+/* ─── KUZEY ANADOLU BÖLGE — 4'lü TEK SATIR KPI KART GRID (Sprint 27.2) ── */
+.sy3-kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; padding: 8px 8px 4px; }
 
 .sy3-card {
-  background: #fff; border: 1px solid #E7EBF3; border-radius: 14px;
-  padding: 12px 12px 10px; min-width: 0;
+  background: #fff; border: 1px solid #E7EBF3; border-radius: 12px;
+  padding: 7px 5px 7px; min-width: 0;
   box-shadow: 0 1px 4px rgba(10,31,92,0.05);
 }
-.sy3-card-top { display: flex; align-items: center; gap: 6px; }
-.sy3-card-ic { width: 20px; height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.sy3-card-name { font-size: 11.5px; font-weight: 800; color: var(--ink); text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy3-card-top { display: flex; align-items: center; gap: 3px; }
+.sy3-card-ic { width: 15px; height: 15px; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sy3-card-ic svg { width: 9px; height: 9px; }
+.sy3-card-name { font-size: 8.5px; font-weight: 800; color: var(--ink); text-transform: uppercase; letter-spacing: 0.1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.sy3-card-mid { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 6px; }
-.sy3-card-left { min-width: 0; flex: 1 1 0; overflow: hidden; }
-.sy3-card-hgo { font-size: 19px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sy3-card-hgo small { font-size: 9.5px; font-weight: 700; color: var(--muted); margin-left: 2px; text-transform: uppercase; }
-.sy3-card-akt { font-size: 10.5px; font-weight: 700; color: var(--slate); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy3-card-hgorow { display: flex; align-items: center; justify-content: space-between; gap: 2px; margin-top: 6px; }
+.sy3-card-hgowrap { min-width: 0; }
+.sy3-card-hgo { font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy3-card-hgolbl { font-size: 7px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-top: 1px; }
 .sy3-card-donut { flex-shrink: 0; }
 
-.sy3-card-trio { display: grid; grid-template-columns: 1fr 1fr 1.15fr; gap: 4px; margin-top: 9px; padding-top: 8px; border-top: 1px dashed #E3E8F2; }
-.sy3-card-trioitem { min-width: 0; }
-.sy3-card-trioitem .v { font-size: 12.5px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sy3-card-trioitem .v.plus { color: var(--green); }
-.sy3-card-trioitem .l { font-size: 8.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2px; margin-top: 1px; }
-.sy3-card-fc {
-  display: inline-block; font-size: 11.5px; font-weight: 800; padding: 2px 7px; border-radius: 6px; white-space: nowrap;
-}
-.sy3-card-fc + .l { margin-top: 3px; }
+.sy3-card-akt { font-size: 7.6px; font-weight: 700; color: var(--slate); margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.sy3-card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-top: 7px; padding-top: 6px; border-top: 1px dashed #E3E8F2; font-size: 9.5px; font-weight: 700; color: var(--muted); }
-.sy3-card-bottom .tr { font-size: 9.5px; font-weight: 800; white-space: nowrap; }
-.sy3-card-bottom .tr.up { color: var(--green); }
-.sy3-card-bottom .tr.dn { color: var(--crimson); }
-.sy3-card-bottom .tr.eq { color: var(--muted); }
+.sy3-card-hr { height: 1px; background: #E3E8F2; margin: 6px 0; }
 
-/* ─── FİLTRELER — yalnızca ÜRÜN, tek satır, taşma yok (Sprint 27.1:
-   SIRALAMA satırı ve "Tümü" pili kaldırıldı). ─────────────────────────── */
-.sy3-filters { padding: 14px 12px 6px; }
-.sy3-filters-row { margin-bottom: 6px; }
-.sy3-filters-lbl { font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block; }
+.sy3-card-trio { display: flex; gap: 1px; }
+.sy3-card-trioitem { min-width: 0; flex: 1 1 0; }
+.sy3-card-trioitem .v { font-size: 8.2px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy3-card-trioitem .l { font-size: 5.8px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1px; margin-top: 1px; line-height: 1.2; }
+
+.sy3-card-daily-lbl { font-size: 7.6px; font-weight: 700; color: var(--muted); }
+.sy3-card-trendrow { display: flex; flex-direction: column; gap: 1px; margin-top: 3px; }
+.sy3-card-trendrow .tr { font-size: 7.6px; font-weight: 800; white-space: nowrap; }
+.sy3-card-trendrow .tr.up { color: var(--green); }
+.sy3-card-trendrow .tr.dn { color: var(--crimson); }
+.sy3-card-trendrow .tr.eq { color: var(--muted); }
+
+/* ─── FİLTRELER — yalnızca ÜRÜN pilleri, başlıksız (Sprint 27.2) ─────────
+   Aktif pil ürün rengiyle TİNTED (açık zemin + renkli border/metin),
+   inline style ile js/sy-report-v3.js:renderSY3Filters() uygular. ──────── */
+.sy3-filters { padding: 12px 12px 4px; }
 .sy3-pillrow { display: flex; gap: 6px; }
 .sy3-pill {
   flex: 1 1 0; min-width: 0;
@@ -100,51 +99,42 @@
   cursor: pointer;
 }
 .sy3-pill .ic { flex-shrink: 0; display: inline-flex; }
-.sy3-pill.on-prod { color: #fff; font-weight: 800; border-color: transparent; }
-.sy3-filters-info { font-size: 10.5px; font-weight: 700; color: var(--muted); }
+.sy3-pill.on-prod { font-weight: 800; }
 
-/* ─── YÖNETİCİLER LİSTESİ ─────────────────────────────────────────────── */
-.sy3-list-sec {
-  margin: 10px 12px 4px; padding-left: 10px; border-left: 3px solid var(--gold);
-  display: flex; align-items: center; justify-content: space-between;
-  font-size: 13px; font-weight: 900; color: var(--navy); letter-spacing: 0.3px; text-transform: uppercase;
-}
-.sy3-list-sec .cnt { font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: none; letter-spacing: 0; }
-
-/* Kolon başlıkları — satırlarla AYNI grid oranlarını kullanır ki hizalı
-   dursun (rk/nmwrap/metrics/chev genişlikleri .sy3-row ile birebir). ── */
-.sy3-listhead { display: flex; align-items: center; gap: 5px; padding: 0 8px 6px 20px; }
-.sy3-listhead-rk { width: 20px; flex-shrink: 0; }
-.sy3-listhead-nm { flex: 1 1 64px; min-width: 0; }
-.sy3-listhead .sy3-metrics { display: flex; flex: 4 1 0; min-width: 0; gap: 3px; }
+/* ─── YÖNETİCİLER LİSTESİ (Sprint 27.2: "Yöneticiler" başlığı kaldırıldı,
+   liste doğrudan kolon başlıklarıyla başlar). Kolonlar satırlarla AYNI
+   grid oranlarını kullanır ki hizalı dursun. ──────────────────────────── */
+.sy3-listhead { display: flex; align-items: center; gap: 4px; padding: 10px 6px 6px 16px; }
+.sy3-listhead-rk { width: 18px; flex-shrink: 0; }
+.sy3-listhead-nm { flex: 1 1 58px; min-width: 0; font-size: 8px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
+.sy3-listhead .sy3-metrics { display: flex; flex: 6 1 0; min-width: 0; gap: 2px; }
 .sy3-listhead .sy3-metric {
   flex: 1 1 0; min-width: 0; text-align: center;
-  font-size: 7.3px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1px;
+  font-size: 6.6px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.sy3-listhead-chev { width: 12px; flex-shrink: 0; }
+.sy3-listhead-chev { width: 11px; flex-shrink: 0; }
 
 .sy3-list { background: #fff; margin: 0 12px 12px; border-radius: 14px; border: 1px solid #E7EBF3; overflow: hidden; }
 .sy3-row {
-  display: flex; align-items: center; gap: 5px;
-  padding: 10px 8px; border-bottom: 1px solid var(--hairline);
+  display: flex; align-items: center; gap: 4px;
+  padding: 7px 6px; border-bottom: 1px solid var(--hairline);
 }
 .sy3-list .sy3-row:last-child { border-bottom: none; }
 
-.sy3-rk { width: 20px; height: 20px; border-radius: 6px; background: var(--navy); color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sy3-rk { width: 18px; height: 18px; border-radius: 5px; background: var(--navy); color: #fff; font-size: 8.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-.sy3-nmwrap { min-width: 0; flex: 1 1 64px; }
-.sy3-nm { font-size: 11.5px; font-weight: 900; color: var(--ink); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sy3-nm .warn { color: var(--amber); font-size: 9px; margin-left: 1px; }
-.sy3-meta { font-size: 8.2px; font-weight: 700; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy3-nmwrap { min-width: 0; flex: 1 1 58px; }
+.sy3-nm { font-size: 10px; font-weight: 900; color: var(--ink); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sy3-nm .warn { color: var(--amber); font-size: 8px; margin-left: 1px; }
 
-.sy3-metrics { display: flex; flex: 4 1 0; min-width: 0; gap: 1px; }
+.sy3-metrics { display: flex; flex: 6 1 0; min-width: 0; gap: 2px; }
 .sy3-metric { flex: 1 1 0; min-width: 0; text-align: center; }
-.sy3-metric .v { font-size: 10.5px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
+.sy3-metric .v { font-size: 9px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
 .sy3-metric .v.up { color: var(--green); }
 .sy3-metric .v.dn { color: var(--crimson); }
-.sy3-chev { flex-shrink: 0; color: var(--muted); width: 12px; }
-.sy3-chev svg { display: block; width: 12px; height: 12px; }
+.sy3-chev { flex-shrink: 0; color: var(--muted); width: 11px; }
+.sy3-chev svg { display: block; width: 11px; height: 11px; }
 
 /* ─── HGO AÇIKLAMA KUTUSU (Sprint 27.1) ───────────────────────────────── */
 .sy3-infobox {
@@ -162,13 +152,6 @@
 .sy3-page .b-y  { color: var(--amber); }
 .sy3-page .b-o  { color: #C2660A; }
 .sy3-page .b-r  { color: var(--crimson); }
-
-.sy3-card-fc.b-gg { color: #064e3b; background: #d1fae5; }
-.sy3-card-fc.b-g  { color: var(--green);   background: var(--green-soft); }
-.sy3-card-fc.b-y  { color: var(--amber);   background: var(--amber-soft); }
-.sy3-card-fc.b-o  { color: #92400e; background: #fff7ed; }
-.sy3-card-fc.b-r  { color: var(--crimson); background: var(--crimson-soft); }
-.sy3-card-fc.b-off{ color: var(--muted); background: #F2F4F9; }
 
 /* ─── MİNİ DONUT ──────────────────────────────────────────────────────── */
 .sy3-donut { flex-shrink: 0; display: block; }
