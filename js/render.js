@@ -273,24 +273,31 @@ function setMatrixSort(p) { matrixSort = p; render(); }
 
 
 /* ───── SY GÖRÜNÜMÜ ─────
-   Sprint 24.2: varsayılan görünüm artık kompakt "Ürün Performans Raporu v2"
-   (js/sy-report-v2.js → renderSYReportV2()) — sıfırdan tasarlanan yönetici
-   karşılaştırma tablosu. Sprint 24'ün çok ürünlü matris kartı ("Klasik
+   Sprint 27: varsayılan görünüm artık "Mobil Ana Ekran v3" (js/sy-report-v3.js
+   → renderSYReportV3()) — design-references/sy-mobile-target.png referansına
+   göre yeniden tasarlanan mobil ekran. Önceki "Ürün Performans Raporu v2"
+   (js/sy-report-v2.js), Sprint 24'ün çok ürünlü matris kartı ("Klasik
    Matris") ve en eski tek-ürün büyük kart ("Tek Ürün Görünümü") ROLLBACK
-   amacıyla KORUNUR, silinmez; syViewMode ('v2'|'matrix'|'single') hangisinin
-   gösterileceğini belirler (varsayılan: sy-matrix.js'te 'v2'). Veri kaynağı
-   (SYDATA/SYPREV/DATA) değişmedi — üç görünüm de aynı hesap katmanını kullanır. */
+   amacıyla KORUNUR, silinmez; syViewMode ('v3'|'v2'|'matrix'|'single')
+   hangisinin gösterileceğini belirler (varsayılan: sy-matrix.js'te 'v3').
+   Veri kaynağı (SYDATA/SYPREV/DATA) değişmedi — dört görünüm de aynı hesap
+   katmanını kullanır. PNG export (js/sy-share-v3.js) bu görünümlerden
+   tamamen bağımsızdır, hiçbirinden etkilenmez. */
 function renderSY(onlyNames) {
   if (typeof syViewMode !== 'undefined' && syViewMode === 'single') {
     renderSYSingle(onlyNames);
   } else if (typeof syViewMode !== 'undefined' && syViewMode === 'matrix' && typeof renderSYMatrixView === 'function') {
     renderSYMatrixView(onlyNames);
-  } else if (typeof renderSYReportV2 === 'function') {
+  } else if (typeof syViewMode !== 'undefined' && syViewMode === 'v2' && typeof renderSYReportV2 === 'function') {
     renderSYReportV2(onlyNames);
+  } else if (typeof renderSYReportV3 === 'function') {
+    renderSYReportV3(onlyNames);
+  } else if (typeof renderSYReportV2 === 'function') {
+    renderSYReportV2(onlyNames); /* sy-report-v3.js yüklenmediyse güvenli düşüş */
   } else if (typeof renderSYMatrixView === 'function') {
-    renderSYMatrixView(onlyNames); /* sy-report-v2.js yüklenmediyse güvenli düşüş */
+    renderSYMatrixView(onlyNames);
   } else {
-    renderSYSingle(onlyNames);     /* sy-matrix.js da yüklenmediyse son çare */
+    renderSYSingle(onlyNames);     /* hiçbiri yüklenmediyse son çare */
   }
 }
 

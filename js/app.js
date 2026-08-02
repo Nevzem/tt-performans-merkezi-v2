@@ -8,6 +8,28 @@
 let navPage      = 'ana';
 let _perfSection = 'matrix';
 
+/* ─── SY MOBİL v3 KROM GİZLEME (Sprint 27) ───
+   Satış Yöneticisi mobil ekranı (v3) kendi birleşik başlığını içeriyor
+   (js/sy-report-v3.js: .sy3-header) — genel topbar/kanal şeridi/sayfa
+   başlığı bu ekranda YALNIZCA görsel olarak gizlenir (display:none).
+   navTo('sy') VE setSyViewMode() (js/sy-matrix.js) İKİSİ de bunu çağırır
+   (görünüm v3↔v2 arası değişince de senkron kalsın diye). Diğer tüm
+   sayfalarda (ana/bayi/pers/perf/geçmiş/ayarlar) davranış BİREBİR aynı
+   kalır — navPage!=='sy' olduğunda her zaman '' (görünür) döner. */
+function syncSYChrome() {
+  var _topbar  = document.querySelector('.topbar');
+  var _chStrip = document.querySelector('.channel-strip');
+  var _pageHdr = document.querySelector('.page-hdr');
+  var _scroll  = document.querySelector('.scroll-area');
+  var _hide = (navPage === 'sy' && (typeof syViewMode === 'undefined' || syViewMode === 'v3'));
+  if (_topbar)  _topbar.style.display  = _hide ? 'none' : '';
+  if (_chStrip) _chStrip.style.display = _hide ? 'none' : '';
+  if (_pageHdr) _pageHdr.style.display = _hide ? 'none' : '';
+  /* .scroll-area normalde sabit (fixed) topbar+kanal şeridi için üstte boşluk
+     (padding-top) ayırır — bunlar gizlenince o boşluk da kaldırılmalı. */
+  if (_scroll)  _scroll.classList.toggle('sy3-no-chrome', _hide);
+}
+
 /* ─── SAYFA GEÇİŞİ ───────────────────────── */
 function navTo(page) {
   navPage = page;
@@ -16,6 +38,8 @@ function navTo(page) {
   document.querySelectorAll('.nav-item').forEach(function(b) {
     b.classList.toggle('active', b.dataset.nav === page);
   });
+
+  syncSYChrome();
 
   /* Sayfaları göster / gizle */
   _setVisible('page-ana',    page === 'ana');

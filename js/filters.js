@@ -99,8 +99,8 @@ function buildFilterBar() {
        bu yüzden dış filtre çubuğunda yalnızca Görünüm chip'i kalıyor.
        'matrix' (Klasik Matris) ve 'single' (Tek Ürün) modlarında eski
        chip'ler aynen çalışmaya devam eder. */
-    var vMode = (typeof syViewMode !== 'undefined') ? syViewMode : 'v2';
-    var vLabel = vMode === 'single' ? 'Tek Ürün' : vMode === 'matrix' ? 'Klasik Matris' : 'Ürün Raporu';
+    var vMode = (typeof syViewMode !== 'undefined') ? syViewMode : 'v3';
+    var vLabel = vMode === 'single' ? 'Tek Ürün' : vMode === 'matrix' ? 'Klasik Matris' : vMode === 'v2' ? 'Ürün Raporu (v2)' : 'Mobil Ana Ekran';
     html += _fbarChip('sy-view', 'Görünüm', vLabel);
 
     if (vMode === 'single') {
@@ -352,16 +352,17 @@ function _sheetConfig(type) {
     };
   }
 
-  /* ── SY görünüm modu — Sprint 24.2: varsayılan 'v2' (kompakt rapor) ── */
+  /* ── SY görünüm modu — Sprint 27: varsayılan 'v3' (mobil ana ekran) ── */
   if (type === 'sy-view') {
     return {
       title: 'Görünüm',
       items: [
-        { key: 'v2',     label: '🗂 Ürün Performans Raporu' },
+        { key: 'v3',     label: '📱 Mobil Ana Ekran' },
+        { key: 'v2',     label: '🗂 Ürün Performans Raporu (v2)' },
         { key: 'matrix', label: '📊 Klasik Matris (v1)' },
         { key: 'single', label: '🔎 Tek Ürün Görünümü' },
       ],
-      active: typeof syViewMode !== 'undefined' ? syViewMode : 'v2',
+      active: typeof syViewMode !== 'undefined' ? syViewMode : 'v3',
     };
   }
 
@@ -731,7 +732,7 @@ async function downloadCardPNG() {
      (uygulama ekranının screenshot'ı DEĞİL, ayrı offscreen DOM + ayrı
      .sy-share-* CSS). Genel klon tabanlı akış yalnızca v1/matris,
      tek-ürün ve diğer sayfalar için geçerli kalır. */
-  if (navPage === 'sy' && (typeof syViewMode === 'undefined' || syViewMode === 'v2') && typeof exportSYShareV3PNG === 'function') {
+  if (navPage === 'sy' && (typeof syViewMode === 'undefined' || syViewMode === 'v3' || syViewMode === 'v2') && typeof exportSYShareV3PNG === 'function') {
     return exportSYShareV3PNG();
   }
 

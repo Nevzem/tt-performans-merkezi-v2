@@ -33,7 +33,7 @@ var SYM_BAND_COLOR = { gg: '#059669', g: '#0E7A40', y: '#B26B00', o: '#ea8000', 
    Sprint 24.2: varsayılan görünüm 'v2' oldu (js/sy-report-v2.js —
    kompakt yönetici karşılaştırma tablosu). Bu dosyanın 'matrix' modu
    "Klasik Matris" olarak korunuyor, silinmedi. */
-var syViewMode     = 'v2';   /* 'v2' (Ürün Performans Raporu, varsayılan) | 'matrix' (Klasik Matris) | 'single' (Tek Ürün) */
+var syViewMode     = 'v3';   /* 'v3' (Mobil Ana Ekran, varsayılan — Sprint 27) | 'v2' (Ürün Performans Raporu) | 'matrix' (Klasik Matris) | 'single' (Tek Ürün) */
 var symSortProd    = 'mobil';    /* mobil|dsl|tv|cihaz */
 var symSortMetric  = 'hgo';      /* hgo|forecast|aktivasyon|deltaA|deltaHgo */
 
@@ -47,6 +47,7 @@ var SYM_SORT_METRICS = [
 
 function setSyViewMode(m) {
   syViewMode = m;
+  if (typeof syncSYChrome === 'function') syncSYChrome(); /* v3↔v2 arası geçişte genel topbar/kanal/page-hdr senkron kalsın (js/app.js) */
   if (typeof buildFilterBar === 'function') buildFilterBar();
   render();
 }
