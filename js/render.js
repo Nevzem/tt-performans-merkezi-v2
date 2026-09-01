@@ -651,19 +651,20 @@ function buildTabs() {
   const isDetay = section === "detay";
   const isTrend = section === "trend";
   const isRisk = section === "risk";
+  const isDevelopment = section === "development";
   document.getElementById("sec-tabs").innerHTML = SECTIONS.map(s =>
     '<button class="tab' + (s.key === section ? " on-sec" : "") + '" onclick="setSec(\'' + s.key + '\')">' + s.label + '</button>').join("");
-  document.getElementById("prod-tabs").innerHTML = isTrend ? '<span style="font-size:10.5px;color:var(--muted)">Seçim kartın üstünde</span>' : isRisk ? '<span style="font-size:10.5px;color:var(--muted)">Tüm ürünler taranıyor</span>' : isDetay ? '<span style="font-size:10.5px;color:var(--muted)">Bayi seçimi kartın üstünde</span>' : isKupa ? '<span style="font-size:10.5px;color:var(--muted)">Kampanya puanı: Faturalı+DSL+Faturasız</span>' : isSY ? '<span style="font-size:10.5px;color:var(--muted)">Ürün seçimi kartın üstünde</span>' : isMatrix ? '<span style="font-size:10.5px;color:var(--muted)">Tüm ürünler tek tabloda</span>' : PRODS[section].map(p =>
+  document.getElementById("prod-tabs").innerHTML = isDevelopment ? '<span style="font-size:10.5px;color:var(--muted)">Bayi ve dönem seçimi ekranın üstünde</span>' : isTrend ? '<span style="font-size:10.5px;color:var(--muted)">Seçim kartın üstünde</span>' : isRisk ? '<span style="font-size:10.5px;color:var(--muted)">Tüm ürünler taranıyor</span>' : isDetay ? '<span style="font-size:10.5px;color:var(--muted)">Bayi seçimi kartın üstünde</span>' : isKupa ? '<span style="font-size:10.5px;color:var(--muted)">Kampanya puanı: DSL ×8 + Mobil ×5 + IPTV ×3</span>' : isSY ? '<span style="font-size:10.5px;color:var(--muted)">Ürün seçimi kartın üstünde</span>' : isMatrix ? '<span style="font-size:10.5px;color:var(--muted)">Tüm ürünler tek tabloda</span>' : PRODS[section].map(p =>
     '<button class="tab' + (p.key === prod ? " on-prod" : "") + '" onclick="setProd(\'' + p.key + '\')">' + p.icon + ' ' + p.key + '</button>').join("");
-  document.getElementById("sy-tabs").innerHTML = (isMatrix || isSY || isKupa || isDetay || isTrend || isRisk) ? '<span style="font-size:10.5px;color:var(--muted)">—</span>' : syList().map(s =>
+  document.getElementById("sy-tabs").innerHTML = (isMatrix || isSY || isKupa || isDetay || isTrend || isRisk || isDevelopment) ? '<span style="font-size:10.5px;color:var(--muted)">—</span>' : syList().map(s =>
     '<button class="tab' + (s === sy ? " on-sec" : "") + '" onclick="setSy(\'' + s.replace(/'/g, "\\'") + '\')">' + (s === "Tümü" ? "👥 Tümü" : "👔 " + s) + '</button>').join("");
   const vt = document.getElementById("view-tabs"), vl = document.getElementById("view-label");
-  const showViews = section === "pers" && layout === "single" && !isMatrix && !isSY && !isKupa && !isDetay && !isTrend && !isRisk;
+  const showViews = section === "pers" && layout === "single" && !isMatrix && !isSY && !isKupa && !isDetay && !isTrend && !isRisk && !isDevelopment;
   vt.style.display = showViews ? "" : "none"; vl.style.display = showViews ? "" : "none";
   if (showViews) vt.innerHTML = VIEWS.map(v => '<button class="tab' + (v.key === view ? " on-view" : "") + '" onclick="setView(\'' + v.key + '\')">' + v.label + '</button>').join("");
 }
 function setSec(s) { section = s; if (["pers","bayi"].includes(s)) prod = PRODS[s][s === "bayi" ? 2 : 0].key; sy = "Tümü";
-  const lt = document.querySelector(".layout-toggle"); if (lt) lt.style.display = (s === "matrix" || s === "sy" || s === "kupa" || s === "detay" || s === "trend" || s === "risk") ? "none" : "";
+  const lt = document.querySelector(".layout-toggle"); if (lt) lt.style.display = (s === "matrix" || s === "sy" || s === "kupa" || s === "detay" || s === "trend" || s === "risk" || s === "development") ? "none" : "";
   buildTabs(); render(); }
 function setProd(p) { prod = p; buildTabs(); render(); }
 function setView(v) { view = v; buildTabs(); render(); }
@@ -702,6 +703,7 @@ function render() {
   if (section === "detay") { cards.style.maxWidth = "490px"; renderDetay(); return; }
   if (section === "trend") { cards.style.maxWidth = "440px"; renderTrend(); return; }
   if (section === "risk") { cards.style.maxWidth = "440px"; renderRisk(); return; }
+  if (section === "development") { renderDevelopment(); return; }
   cards.style.maxWidth = "";
   if (layout === "grid") {
     cards.className = "cards grid";

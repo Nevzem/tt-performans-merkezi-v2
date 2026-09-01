@@ -730,7 +730,8 @@ async function downloadCardPNG() {
   var hiddenEls    = [];
   try {
     /* — Doğru kartı bul — */
-    var el = document.getElementById('sy-card')     ||
+    var el = document.getElementById('development-card') ||
+             document.getElementById('sy-card')     ||
              document.getElementById('kupa-card')   ||
              document.getElementById('risk-card')   ||
              document.getElementById('card-main')   ||
@@ -759,7 +760,8 @@ async function downloadCardPNG() {
     cloneWrapper = res.wrapper;
 
     /* — Dosya adı — */
-    var scope = navPage === 'bayi' ? 'Bayi'
+    var scope = navPage === 'perf' && typeof section !== 'undefined' && section === 'development' ? 'BayiGelisim'
+              : navPage === 'bayi' ? 'Bayi'
               : navPage === 'sy'   ? (isSyMatrix ? 'SYMatris' : 'SatisYoneticisi')
               : navPage === 'perf' && typeof section !== 'undefined' && section === 'kupa' ? 'KupaBende'
               : navPage === 'perf' && typeof section !== 'undefined' && section === 'risk' ? 'RiskRadari'
