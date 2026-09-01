@@ -20,15 +20,37 @@
       ilk 10 sıralama tablosu, Günün Yükseleni/Düşeni/Bonus kartları,
       alt motivasyon banner'ı.
 
-   Hesaplama: KUPA dizisindeki toplam/fat/dsl/fsz/iptv/mob/bonus alanları
-   DEĞİŞMEDİ (js/parser.js). "Lidere fark" ve "Bonus Durumu" tier'ları
-   bu alanlardan türetilen SUNUM hesaplarıdır (yeni iş mantığı değil —
-   var olan toplam/iptv alanlarının basit karşılaştırma/gruplama).
+   Hesaplama: DSL HGO ×8 + Mobil HGO ×5 + IPTV HGO ×3 (js/parser.js).
+   Akıllı Cihaz HGO %105+ bonus hakkı verir. "Lidere fark" ve "Bonus
+   Durumu" tier'ları bu alanlardan türetilen sunum hesaplarıdır.
    ════════════════════════════════════════════════════════════════════ */
 
 /* ─── 1) GÜNLÜK ANLIK GÖRÜNTÜ DEPOSU ──────────────────────────────────── */
 const KUPA_SNAP_KEY = "tt_kuzey_kupa_snap_v1";
 let _kupaSnapMem = null;
+
+/* Gömülü başlangıç verisi eski kampanya alanlarıyla kaydedilmiş olabilir.
+   Excel'den gelen güncel satırlar da aynı fonksiyondan güvenle geçebilir. */
+function kupaApplyAgustos26Rules(rows) {
+  var cihazRows = (typeof DATA !== 'undefined' && DATA.bayi && DATA.bayi['Akıllı Cihaz']) || [];
+  rows.forEach(function(r) {
+    if (typeof r.cihaz !== 'number') {
+      var cihazRow = cihazRows.find(function(c) {
+        return c.p === r.b && String(c.b || '').split(' · ')[0] === String(r.kod);
+      });
+      r.cihaz = cihazRow && typeof cihazRow.g === 'number' ? cihazRow.g : 0;
+    }
+    r.pDsl = Math.round(r.dsl * 8 * 10) / 10;
+    r.pMob = Math.round(r.mob * 5 * 10) / 10;
+    r.pIptv = Math.round(r.iptv * 3 * 10) / 10;
+    r.toplam = Math.round((r.pDsl + r.pMob + r.pIptv) * 10) / 10;
+    r.bonus = r.cihaz >= 105;
+  });
+  rows.sort(function(a, b) { return (b.toplam - a.toplam) || (b.iptv - a.iptv) || (b.mob - a.mob); });
+  return rows;
+}
+
+if (typeof KUPA !== 'undefined') kupaApplyAgustos26Rules(KUPA);
 
 function kupaSnapLoad() {
   if (_kupaSnapMem) return _kupaSnapMem;
@@ -206,12 +228,12 @@ function renderKupaMovers(K, prevSnap) {
       '<div class="kb-mini-sub dn">' + (m.down.rankChange < 0 ? Math.abs(m.down.rankChange) + ' SIRA GERİLEDİ ▼' : '—') + '</div>'
     : '<div class="kb-mini-empty">Henüz karşılaştırma verisi yok</div>';
 
-  /* ── Bonus Durumu (IPTV HGO %100+) — mevcut r.iptv/r.bonus alanlarından
-     3 kademeli sayım (yeni hesap DEĞİL, var olan alanların gruplanması):
-     bonus aldı (iptv≥100, r.bonus ile birebir) · yakın (95-99) · dışı (<95) */
+  /* ── Bonus Durumu (Akıllı Cihaz HGO %105+) — mevcut r.cihaz/r.bonus
+     alanlarından 3 kademeli sayım: bonus aldı (cihaz≥105) · yakın
+     (100-104,9) · dışı (<100). */
   var aldiN = 0, yakinN = 0, disiN = 0;
   K.forEach(function(r) {
-    if (r.iptv >= 100) aldiN++; else if (r.iptv >= 95) yakinN++; else disiN++;
+    if (r.cihaz >= 105) aldiN++; else if (r.cihaz >= 100) yakinN++; else disiN++;
   });
 
   return '<div class="kb-bottom-grid">' +
@@ -221,11 +243,11 @@ function renderKupaMovers(K, prevSnap) {
     '<div class="kb-mini kb-mini-dn"><div class="kb-mini-title">' + KB_DOWN_ICON.replace('width="26" height="26"', 'width="15" height="15"') + ' GÜNÜN EN ÇOK DÜŞENİ</div>' +
       '<div class="kb-mini-body"><span class="kb-mini-ic dn">' + KB_DOWN_ICON + '</span><div class="kb-mini-txt">' + downHTML + '</div></div>' +
     '</div>' +
-    '<div class="kb-mini kb-mini-bonus"><div class="kb-mini-title">' + KB_GIFT_ICON.replace('width="26" height="26"', 'width="15" height="15"') + ' BONUS DURUMU <small>(IPTV HGO %100+)</small></div>' +
+    '<div class="kb-mini kb-mini-bonus"><div class="kb-mini-title">' + KB_GIFT_ICON.replace('width="26" height="26"', 'width="15" height="15"') + ' BONUS DURUMU <small>(AKILLI CİHAZ HGO %105+)</small></div>' +
       '<div class="kb-mini-body"><span class="kb-mini-ic bonus">' + KB_GIFT_ICON + '</span>' +
         '<div class="kb-mini-tiers">' +
           '<div class="kb-tier"><span class="kb-dot g"></span><b>' + aldiN + ' BAYİ</b><small>BONUS ALDI</small></div>' +
-          '<div class="kb-tier"><span class="kb-dot y"></span><b>' + yakinN + ' BAYİ</b><small>%95 - %99 ARASI</small></div>' +
+          '<div class="kb-tier"><span class="kb-dot y"></span><b>' + yakinN + ' BAYİ</b><small>%100 - %104,9 ARASI</small></div>' +
           '<div class="kb-tier"><span class="kb-dot r"></span><b>' + disiN + ' BAYİ</b><small>BONUS DIŞI</small></div>' +
         '</div>' +
       '</div>' +
@@ -257,7 +279,7 @@ function renderKupaBanner() {
    id="kupa-card" KORUNUR — js/filters.js:downloadCardPNG() ve
    js/export.js bu id'yi arıyor, PNG export bu sayede değişmeden çalışır. */
 function renderKupaV2() {
-  var K = KUPA || [];
+  var K = kupaApplyAgustos26Rules(KUPA || []);
   var cards = document.getElementById('cards');
   cards.className = 'cards single';
   cards.style.maxWidth = '420px';

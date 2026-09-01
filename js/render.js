@@ -419,13 +419,13 @@ function renderKupa() {
         '<div class="kp-name">' + r.b + '<small>' + r.kod + ' · ' + r.il + '</small></div>' +
         '<div class="kp-pts"><span class="kp-pv">' + r.toplam.toLocaleString("tr-TR") + '</span><span class="kp-pl">PUAN</span></div>' +
       '</div>' +
-      (r.bonus ? '<div class="kp-bonus">🎁 IPTV %' + r.iptv.toFixed(1) + ' · BONUS ÖDÜLE HAK KAZANDI</div>' : '') +
+      (r.bonus ? '<div class="kp-bonus">🎁 AKILLI CİHAZ %' + r.cihaz.toFixed(1) + ' · BONUS ÖDÜLE HAK KAZANDI</div>' : '') +
       '<div class="kp-break">' +
-        '<div class="kp-b"><span class="kp-bv">%' + r.fat.toFixed(1) + '</span><span class="kp-bl">Faturalı ×6</span><span class="kp-bp">' + r.pFat.toFixed(0) + ' p</span></div>' +
-        '<div class="kp-b"><span class="kp-bv">%' + r.dsl.toFixed(1) + '</span><span class="kp-bl">DSL ×5</span><span class="kp-bp">' + r.pDsl.toFixed(0) + ' p</span></div>' +
-        '<div class="kp-b"><span class="kp-bv">%' + r.fsz.toFixed(1) + '</span><span class="kp-bl">Faturasız ×4</span><span class="kp-bp">' + r.pFsz.toFixed(0) + ' p</span></div>' +
+        '<div class="kp-b"><span class="kp-bv">%' + r.dsl.toFixed(1) + '</span><span class="kp-bl">DSL ×8</span><span class="kp-bp">' + r.pDsl.toFixed(0) + ' p</span></div>' +
+        '<div class="kp-b"><span class="kp-bv">%' + r.mob.toFixed(1) + '</span><span class="kp-bl">Mobil ×5</span><span class="kp-bp">' + r.pMob.toFixed(0) + ' p</span></div>' +
+        '<div class="kp-b"><span class="kp-bv">%' + r.iptv.toFixed(1) + '</span><span class="kp-bl">IPTV ×3</span><span class="kp-bp">' + r.pIptv.toFixed(0) + ' p</span></div>' +
       '</div>' +
-      '<div class="kp-foot"><span>🎯 Odak: Mobil %' + r.mob.toFixed(1) + '</span><span>🎁 Bonus: IPTV %' + r.iptv.toFixed(1) + '</span></div>' +
+      '<div class="kp-foot"><span>🎯 DSL ×8 · Mobil ×5 · IPTV ×3</span><span>🎁 Akıllı Cihaz %' + r.cihaz.toFixed(1) + '</span></div>' +
     '</div>';
   });
 
@@ -712,4 +712,3 @@ function render() {
     cards.innerHTML = '<div id="cardWrap"><div class="card" id="card-main">' + cardHTML(prod) + '</div></div>';
   }
 }
-

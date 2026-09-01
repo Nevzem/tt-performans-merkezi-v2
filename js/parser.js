@@ -136,12 +136,13 @@ function parseWB(wb) {
         const dslh = dh_>0 ? Math.round(da_/dh_*1000)/10 : 0;
         const iptvh = ih_>0 ? Math.round(ia_/ih_*1000)/10 : 0;
         const mobh = mh>0 ? Math.round(ma/mh*1000)/10 : 0;
-        const pFat = Math.min(fat*6, 780), pDsl = Math.min(dslh*5, 650), pFsz = Math.min(fsz*4, 520);
+        const cihazh = ch_>0 ? Math.round(ca_/ch_*1000)/10 : 0;
+        const pDsl = dslh*8, pMob = mobh*5, pIptv = iptvh*3;
         kupaRows.push({
           kod: r[2] ? String(r[2]).trim() : "", b: shortB(r[3]), il: r[5] ? String(r[5]).trim() : "",
-          fat, fsz, dsl: dslh, iptv: iptvh, mob: mobh,
-          pFat: Math.round(pFat*10)/10, pDsl: Math.round(pDsl*10)/10, pFsz: Math.round(pFsz*10)/10,
-          toplam: Math.round((pFat+pDsl+pFsz)*10)/10, bonus: iptvh >= 100,
+          fat, fsz, dsl: dslh, iptv: iptvh, mob: mobh, cihaz: cihazh,
+          pDsl: Math.round(pDsl*10)/10, pMob: Math.round(pMob*10)/10, pIptv: Math.round(pIptv*10)/10,
+          toplam: Math.round((pDsl+pMob+pIptv)*10)/10, bonus: cihazh >= 105,
         });
       }
     }
