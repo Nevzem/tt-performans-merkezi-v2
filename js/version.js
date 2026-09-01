@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-09-01 · Sprint 29: Kupa Bende Ağustos\u201926 puan ve bonus güncellemesi';
+const APP_BUILD = '2026-09-01 · Sprint 29.1: Kupa Bende bayi kodu görünümü';

@@ -150,7 +150,7 @@ function _kbPodiumCard(row, rank, prevSnap) {
     : '<span class="kb-pod-medal kb-pod-medal' + rank + '">' + rank + '</span>';
   return '<div class="kb-pod-card kb-pod-r' + rank + '">' +
     '<div class="kb-pod-top">' + medal +
-      '<div class="kb-pod-id"><div class="kb-pod-nm">' + row.b + '</div><div class="kb-pod-il">' + row.il + '</div></div>' +
+      '<div class="kb-pod-id"><div class="kb-pod-nm">' + row.b + '</div><div class="kb-pod-il">' + row.kod + ' · ' + row.il + '</div></div>' +
     '</div>' +
     '<div class="kb-pod-pts">' + _kbN1(row.toplam) + '</div>' +
     '<div class="kb-pod-lbl">PUAN</div>' +
@@ -177,7 +177,7 @@ function _kbTableRow(row, rank, leaderToplam, prevSnap) {
   return '<div class="kb-trow">' +
     _kbRankBadge(rank) +
     '<span class="kb-trow-crown">' + KB_CROWN_ICON + '</span>' +
-    '<div class="kb-trow-id"><span class="kb-trow-nm">' + row.b + '</span><span class="kb-trow-il">' + row.il + '</span></div>' +
+    '<div class="kb-trow-id"><span class="kb-trow-nm">' + row.b + '</span><span class="kb-trow-il">' + row.kod + ' · ' + row.il + '</span></div>' +
     '<span class="kb-trow-puan">' + _kbN1(row.toplam) + '</span>' +
     '<span class="kb-trow-fark">' + fark + '</span>' +
     '<span class="kb-trow-trend">' + _kbTrendHTML(delta) + '</span>' +
@@ -217,13 +217,13 @@ function renderKupaMovers(K, prevSnap) {
   var m = _kbBiggestMovers(K, prevSnap);
 
   var upHTML = m.up
-    ? '<div class="kb-mini-nm">' + m.up.row.b + '</div><div class="kb-mini-il">' + m.up.row.il + '</div>' +
+    ? '<div class="kb-mini-nm">' + m.up.row.b + '</div><div class="kb-mini-il">' + m.up.row.kod + ' · ' + m.up.row.il + '</div>' +
       '<div class="kb-mini-val up">+' + _kbN1(m.up.delta) + '<small>PUAN</small></div>' +
       '<div class="kb-mini-sub up">' + (m.up.rankChange > 0 ? m.up.rankChange + ' SIRA YÜKSELDİ ▲' : '—') + '</div>'
     : '<div class="kb-mini-empty">Henüz karşılaştırma verisi yok</div>';
 
   var downHTML = m.down
-    ? '<div class="kb-mini-nm">' + m.down.row.b + '</div><div class="kb-mini-il">' + m.down.row.il + '</div>' +
+    ? '<div class="kb-mini-nm">' + m.down.row.b + '</div><div class="kb-mini-il">' + m.down.row.kod + ' · ' + m.down.row.il + '</div>' +
       '<div class="kb-mini-val dn">' + _kbN1(m.down.delta) + '<small>PUAN</small></div>' +
       '<div class="kb-mini-sub dn">' + (m.down.rankChange < 0 ? Math.abs(m.down.rankChange) + ' SIRA GERİLEDİ ▼' : '—') + '</div>'
     : '<div class="kb-mini-empty">Henüz karşılaştırma verisi yok</div>';
