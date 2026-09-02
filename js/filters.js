@@ -711,6 +711,9 @@ function resetFiltersForPage(page) {
 /* ─── GÖRSEL OLUŞTUR ─────────────────────────────────────────────── */
 
 async function downloadCardPNG() {
+  if (navPage === 'perf' && typeof section !== 'undefined' && section === 'monthEnd' && typeof exportMonthEndPNG === 'function') {
+    return exportMonthEndPNG();
+  }
   /* Sprint 24.3: SY "Ürün Performans Raporu" (v2) paylaşım PNG'si artık
      js/sy-share.js içinde tamamen bağımsız bir şablondan üretiliyor
      (uygulama ekranının screenshot'ı DEĞİL, ayrı offscreen DOM + ayrı
