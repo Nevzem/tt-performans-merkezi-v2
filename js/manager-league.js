@@ -29,16 +29,19 @@ function managerLeagueScore(code) {
 }
 
 function managerLeagueDate() {
-  return new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' }).toLocaleUpperCase('tr-TR');
+  return new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' }).toLocaleUpperCase('tr-TR');
 }
 
-function managerLeagueSide(team, score, side, winner) {
+function managerLeagueNumber(value) { return Math.round(value).toLocaleString('tr-TR'); }
+
+function managerLeagueSide(team, score, side, winner, difference, tied) {
   var missing = score === null;
   return '<div class="ml-team ml-team-' + side + (winner ? ' ml-winner' : '') + '">' +
+    (winner ? '<div class="ml-leading">ÖNDE</div>' : tied ? '<div class="ml-leading ml-draw">BERABERE</div>' : '') +
     '<div class="ml-team-name">' + team.name + '</div>' +
     '<div class="ml-team-code">' + team.code + '</div>' +
-    (missing ? '<div class="ml-missing">RAPORDA VERİ YOK</div>' : '<div class="ml-score">' + Math.round(score) + '<small> PUAN</small></div>') +
-    (winner ? '<div class="ml-leading">ÖNDE</div>' : '') +
+    (missing ? '<div class="ml-missing">RAPORDA VERİ YOK</div>' : '<div class="ml-score">' + managerLeagueNumber(score) + '<small> PUAN</small></div>') +
+    (winner ? '<div class="ml-difference">+' + managerLeagueNumber(difference) + '</div>' : '') +
   '</div>';
 }
 
@@ -50,15 +53,13 @@ function managerLeagueMatch(pair, index) {
   var tied = comparable && delta < 0.05;
   var leftWins = comparable && !tied && leftScore > rightScore;
   var rightWins = comparable && !tied && rightScore > leftScore;
-  var status = !comparable ? 'SONUÇ BEKLENİYOR' : tied ? 'BERABERE' : '+' + Math.round(delta) + ' PUAN FARK';
   return '<article class="ml-match">' +
     '<div class="ml-round">' + (index + 1) + '</div>' +
     '<div class="ml-versus">' +
-      managerLeagueSide(pair[0], leftScore, 'left', leftWins) +
+      managerLeagueSide(pair[0], leftScore, 'left', leftWins, delta, tied) +
       '<div class="ml-vs">VS</div>' +
-      managerLeagueSide(pair[1], rightScore, 'right', rightWins) +
+      managerLeagueSide(pair[1], rightScore, 'right', rightWins, delta, false) +
     '</div>' +
-    '<div class="ml-status' + (tied ? ' ml-tied' : '') + '">' + status + '</div>' +
   '</article>';
 }
 
@@ -69,10 +70,10 @@ function renderManagerLeague() {
   cards.innerHTML =
     '<div class="ml-actions"><button type="button" onclick="downloadManagerLeaguePNG()">Paylaşılabilir Görsel Oluştur</button></div>' +
     '<section id="manager-league-card" class="ml-card">' +
-      '<header class="ml-header"><div class="ml-trophy">🏆</div><div><h2>MAĞAZA MÜDÜRLERİ YARIŞMASI</h2><p>EYLÜL · GÜNLÜK PUAN DURUMU</p></div></header>' +
-      '<div class="ml-date">' + managerLeagueDate() + '</div>' +
+      '<header class="ml-header"><div class="ml-kicker">EYLÜL MAĞAZA MÜDÜRLERİ YARIŞMASI</div><h2>GÜNLÜK PUAN DURUMU</h2></header>' +
+      '<div class="ml-date"><span>' + managerLeagueDate() + '</span><b>GÜNCEL VERİ</b></div>' +
+      '<div class="ml-trophy-line"><i></i><div class="ml-trophy">🏆</div><i></i></div>' +
       '<div class="ml-matches">' + MANAGER_LEAGUE_MATCHES.map(managerLeagueMatch).join('') + '</div>' +
-      '<footer class="ml-footer">Her gün yenilenen performans mücadelesi</footer>' +
     '</section>';
 }
 
