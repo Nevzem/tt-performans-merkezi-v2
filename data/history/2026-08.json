@@ -2,6 +2,22 @@
  "period": "2026-08",
  "reportDate": "2026-08-31",
  "channel": "TTM",
+ "benchmarks": {
+  "tr": {
+   "mobil": {
+    "hgo": 95
+   },
+   "dsl": {
+    "hgo": 92
+   },
+   "tv": {
+    "hgo": 101
+   },
+   "cihaz": {
+    "hgo": 108.1
+   }
+  }
+ },
  "dealers": [
   {
    "bayiKodu": "500733",

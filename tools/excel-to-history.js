@@ -101,6 +101,32 @@ for (let i = 3; i < rows.length; i++) {
 const periods = Object.keys(byPeriod).sort();
 if (!periods.length) { console.error(BOLGE + ' verisi bulunamadı.'); process.exit(1); }
 
+/* Kapanış raporundaki Türkiye geneli ürün oranları. SY-BAYİ TTM sayfasında
+   aynı TÜRKİYE özeti birden fazla yönetici bölümünde tekrar eder; TV toplam
+   HGO'su dolu olan ilk satır güvenilir özet satırıdır. Cihaz uygulamada
+   Akıllı Cihaz + Diğer olarak birleştiği için oran ağırlıklı hesaplanır. */
+function readTrBenchmark() {
+  const trSheetName = wb.SheetNames.find(n => String(n).trim() === 'SY-BAYİ TTM');
+  if (!trSheetName) return null;
+  const trRows = XLSX.utils.sheet_to_json(wb.Sheets[trSheetName],
+    { header: 1, defval: null, raw: false });
+  const pct = v => {
+    const n = parseFloat(String(v == null ? '' : v).replace('%', '').replace(',', '.'));
+    return isFinite(n) ? n : null;
+  };
+  const tr = trRows.find(r => String(r[1] || '').trim().toUpperCase() === 'TÜRKİYE' && pct(r[37]) > 0);
+  if (!tr) return null;
+  const cihazHedef = num(tr[40]) + num(tr[45]);
+  const cihazAdet = num(tr[41]) + num(tr[46]);
+  return {
+    mobil: { hgo: pct(tr[15]) },
+    dsl:   { hgo: pct(tr[20]) },
+    tv:    { hgo: pct(tr[37]) },
+    cihaz: { hgo: cihazHedef > 0 ? Math.round(cihazAdet / cihazHedef * 1000) / 10 : null },
+  };
+}
+const trBenchmark = readTrBenchmark();
+
 /* Dönem dosyalarını yaz */
 periods.forEach(p => {
   const [y, m] = p.split('-').map(Number);
@@ -109,6 +135,7 @@ periods.forEach(p => {
     period: p,
     reportDate: p + '-' + String(lastDay).padStart(2, '0'),
     channel: 'TTM',
+    benchmarks: trBenchmark ? { tr: trBenchmark } : undefined,
     dealers: byPeriod[p],
   };
   fs.writeFileSync(path.join(OUT_DIR, p + '.json'),

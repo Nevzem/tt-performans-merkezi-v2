@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-09-01 · Sprint 31: Ürün Bazlı Gelişim Merkezi V2';
+const APP_BUILD = '2026-09-02 · Sprint 31.3: Gelişim Merkezi TR Karşılaştırması';
