@@ -85,9 +85,10 @@ async function downloadManagerLeaguePNG() {
     if (button) { button.disabled = true; button.textContent = 'Hazırlanıyor…'; }
     var card = document.getElementById('manager-league-card');
     if (!card) throw new Error('Müdürler Ligi kartı bulunamadı');
-    var result = await createCleanExportClone(card, 540);
+    var result = await createCleanExportClone(card, 768);
     wrapper = result.wrapper;
-    result.clone.style.width = '540px';
+    result.wrapper.style.containerType = 'inline-size';
+    result.clone.style.width = '768px';
     result.clone.style.maxWidth = 'none';
     var canvas = await captureExportImage(result.clone, { scale: 2.5 });
     cleanupExportClone(wrapper); wrapper = null;
