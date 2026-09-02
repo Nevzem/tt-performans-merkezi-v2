@@ -2,7 +2,7 @@
 var MANAGER_LEAGUE_MATCHES = [
   [{ code: '4052718', name: 'Asis İletişim' },       { code: '4100676', name: 'Primetech Bilişim' }],
   [{ code: '4100641', name: 'Asis İletişim' },       { code: '4100729', name: 'Primetech' }],
-  [{ code: '4100170', name: 'Asis İletişim' },       { code: '71000990', name: 'Primetech Bilişim' }],
+  [{ code: '4100170', name: 'Asis İletişim' },       { code: '4100990', name: 'Primetech Bilişim' }],
   [{ code: '4100781', name: 'Asis İletişim' },       { code: '4100778', name: 'Primetech Bilişim' }],
   [{ code: '4100089', name: 'Kılavuzlar İletişim' }, { code: '4057503', name: 'Öztürk İletişim' }],
   [{ code: '4100087', name: 'Kılavuzlar İletişim' }, { code: '4100760', name: 'Öztürk İletişim' }]
