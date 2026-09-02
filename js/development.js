@@ -94,11 +94,11 @@ function devOverviewCards() {
     var curr = devYtd(DEV_BAYI, DEV_PERIOD, p.key);
     var prev = devYtd(DEV_BAYI, devAddMonths(DEV_PERIOD,-12), p.key);
     var month = devValue(DEV_PERIOD, DEV_BAYI, p.key) || {};
-    var yoy = devPct(curr.adet, prev.adet), status = devStatus(month.hgo, yoy), trHgo = devTrHgo(DEV_PERIOD, p.key);
+    var yoy = devPct(curr.adet, prev.adet), status = devStatus(curr.hgo, yoy), trHgo = devTrHgo(DEV_PERIOD, p.key);
     return '<button class="dv-product-card ' + (DEV_PRODUCT === p.key ? 'selected' : '') + '" style="--p:' + p.color + ';--ps:' + p.soft + '" onclick="devSetProduct(\'' + p.key + '\')">' +
       '<div class="dv-pc-top"><span class="dv-pc-icon">' + p.icon + '</span><strong>' + p.label + '</strong><i class="' + status.cls + '">' + status.label + '</i></div>' +
       '<div class="dv-pc-value">' + devFmt(curr.adet) + '<small> YTD</small></div>' +
-      '<div class="dv-pc-foot"><span class="' + devTone(yoy) + '">' + devPctText(yoy) + ' YoY</span><span>HGO ' + (month.hgo == null ? '—' : '%' + month.hgo.toFixed(1).replace('.',',')) + '</span><span class="dv-tr-rate ' + (trHgo == null ? 'flat' : devTone(trHgo - 100)) + '">TR ' + (trHgo == null ? '—' : '%' + trHgo.toFixed(1).replace('.',',')) + '</span><span>Fc ' + (month.forecast == null ? '—' : '%' + month.forecast.toFixed(0)) + '</span></div>' +
+      '<div class="dv-pc-foot"><span class="' + devTone(yoy) + '">' + devPctText(yoy) + ' YoY</span><span>YTD HGO ' + (curr.hgo == null ? '—' : '%' + curr.hgo.toFixed(1).replace('.',',')) + '</span><span class="dv-tr-rate ' + (trHgo == null ? 'flat' : devTone(trHgo - 100)) + '">TR Ay ' + (trHgo == null ? '—' : '%' + trHgo.toFixed(1).replace('.',',')) + '</span><span>Fc ' + (month.forecast == null ? '—' : '%' + month.forecast.toFixed(0)) + '</span></div>' +
     '</button>';
   }).join('') + '</div>';
 }
@@ -110,11 +110,11 @@ function devRangeTabs() {
 
 function devHealthHero(info) {
   var p = devProduct(), curr = devYtd(DEV_BAYI, DEV_PERIOD, p.key), prev = devYtd(DEV_BAYI, devAddMonths(DEV_PERIOD,-12), p.key), trHgo = devTrHgo(DEV_PERIOD, p.key);
-  var month = devValue(DEV_PERIOD, DEV_BAYI, p.key) || {}, diff = curr.adet - prev.adet, yoy = devPct(curr.adet, prev.adet), remaining = Math.max(0, curr.hedef - curr.adet), status = devStatus(month.hgo, yoy);
+  var month = devValue(DEV_PERIOD, DEV_BAYI, p.key) || {}, diff = curr.adet - prev.adet, yoy = devPct(curr.adet, prev.adet), remaining = Math.max(0, curr.hedef - curr.adet), status = devStatus(curr.hgo, yoy);
   return '<section class="dv-hero" style="--p:' + p.color + ';--ps:' + p.soft + '">' +
     '<div class="dv-hero-head"><div><span class="dv-hero-icon">' + p.icon + '</span><div><small>' + devEsc(info.bayiKodu) + ' · ' + devEsc(info.il || '') + '</small><h2>' + p.label + ' Gelişimi</h2></div></div><b class="' + status.cls + '">' + status.label + '</b></div>' +
     '<div class="dv-hero-main"><div><small>YTD ÜRETİM</small><strong>' + devFmt(curr.adet) + '</strong><span>adet</span></div><div class="dv-hero-change"><small>GEÇEN YIL ' + devFmt(prev.adet) + '</small><b class="' + devTone(diff) + '">' + devSigned(diff) + ' adet</b><span class="' + devTone(yoy) + '">' + devPctText(yoy) + '</span></div></div>' +
-    '<div class="dv-hero-metrics"><div><span>HGO</span><b>' + (month.hgo == null ? '—' : '%' + month.hgo.toFixed(1).replace('.',',')) + '</b><small class="' + (trHgo == null ? 'flat' : devTone(trHgo - 100)) + '">TR ' + (trHgo == null ? '—' : '%' + trHgo.toFixed(1).replace('.',',')) + '</small></div><div><span>Forecast</span><b>' + (month.forecast == null ? '—' : '%' + month.forecast.toFixed(0)) + '</b></div><div><span>YTD Hedef</span><b>' + devFmt(curr.hedef) + '</b></div><div><span>Hedefe Kalan</span><b>' + devFmt(remaining) + '</b></div></div>' +
+    '<div class="dv-hero-metrics"><div><span>YTD HGO</span><b>' + (curr.hgo == null ? '—' : '%' + curr.hgo.toFixed(1).replace('.',',')) + '</b><small class="' + (trHgo == null ? 'flat' : devTone(trHgo - 100)) + '">TR Ay ' + (trHgo == null ? '—' : '%' + trHgo.toFixed(1).replace('.',',')) + '</small></div><div><span>Forecast</span><b>' + (month.forecast == null ? '—' : '%' + month.forecast.toFixed(0)) + '</b></div><div><span>YTD Hedef</span><b>' + devFmt(curr.hedef) + '</b></div><div><span>Hedefe Kalan</span><b>' + devFmt(remaining) + '</b></div></div>' +
   '</section>';
 }
 
@@ -168,12 +168,12 @@ function devPeerComparison() {
 
 function devManagerSummary(info) {
   var p=devProduct(), curr=devYtd(DEV_BAYI,DEV_PERIOD,p.key), prev=devYtd(DEV_BAYI,devAddMonths(DEV_PERIOD,-12),p.key), month=devValue(DEV_PERIOD,DEV_BAYI,p.key)||{};
-  var diff=curr.adet-prev.adet,yoy=devPct(curr.adet,prev.adet),remaining=Math.max(0,curr.hedef-curr.adet),status=devStatus(month.hgo,yoy);
+  var diff=curr.adet-prev.adet,yoy=devPct(curr.adet,prev.adet),remaining=Math.max(0,curr.hedef-curr.adet),status=devStatus(curr.hgo,yoy);
   var text='<b>'+devEsc(info.bayiAdi)+'</b> '+p.label+' üretiminde geçen yılın aynı dönemine göre <strong class="'+devTone(diff)+'">'+devSigned(diff)+' adet ('+devPctText(yoy)+')</strong> değişim göstermiştir. ';
   if(status.cls==='strong')text+='Mevcut HGO ve gelişim yönü güçlü seviyededir.';
   else if(status.cls==='risk')text+='Mevcut sonuçlar müdahale gerektiren risk seviyesindedir.';
   else text+='Performans dengeli görünmekle birlikte yakın takip edilmelidir.';
-  return '<section class="dv-manager" style="--p:'+p.color+'"><div class="dv-manager-icon">✦</div><div><h3>Yönetici Özeti</h3><p>'+text+'</p><div><span>HGO <b>'+(month.hgo==null?'—':'%'+month.hgo.toFixed(1).replace('.',','))+'</b></span><span>Forecast <b>'+(month.forecast==null?'—':'%'+month.forecast.toFixed(0))+'</b></span><span>Kalan <b>'+devFmt(remaining)+'</b></span></div></div></section>';
+  return '<section class="dv-manager" style="--p:'+p.color+'"><div class="dv-manager-icon">✦</div><div><h3>Yönetici Özeti</h3><p>'+text+'</p><div><span>YTD HGO <b>'+(curr.hgo==null?'—':'%'+curr.hgo.toFixed(1).replace('.',','))+'</b></span><span>Forecast <b>'+(month.forecast==null?'—':'%'+month.forecast.toFixed(0))+'</b></span><span>Kalan <b>'+devFmt(remaining)+'</b></span></div></div></section>';
 }
 
 function devActions() {
