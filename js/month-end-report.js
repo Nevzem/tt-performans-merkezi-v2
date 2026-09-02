@@ -47,7 +47,7 @@ function merCanvasReport(){
  function txt(t,x,y,size,color,weight,align){c.font=(weight||'600')+' '+size+'px Arial, sans-serif';c.fillStyle=color||white;c.textAlign=align||'left';c.textBaseline='middle';c.fillText(String(t),x,y)}
  function line(x1,y1,x2,y2,color,w,dash){c.beginPath();c.strokeStyle=color;c.lineWidth=w||1;c.setLineDash(dash||[]);c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.setLineDash([])}
  function pct(v){return v==null?'—':'%'+Number(v).toFixed(v%1?1:0).replace('.',',')}
- function yoy(v){return v==null?'—':(v>=0?'+':'')+'%'+Math.abs(v).toFixed(Math.abs(v)%1?1:0).replace('.',',')}
+ function yoy(v){return v==null?'—':(v>=0?'+':'-')+'%'+Math.abs(v).toFixed(Math.abs(v)%1?1:0).replace('.',',')}
  function circle(x,y,r,color,label,fs){c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.strokeStyle=color;c.lineWidth=2;c.stroke();txt(label,x,y,fs||18,color,'800','center')}
  c.fillStyle=bg;c.fillRect(0,0,1536,1024);
  txt('AY SONU BAYİ PERFORMANS KARNESİ',31,37,38,white,'900');txt(merPeriod()+' • GERÇEK VERİ',31,80,22,pink,'900');line(849,20,849,84,pink,2);txt(dealer.b,884,51,31,white,'900');rr(1352,26,166,42,8,null,white);txt('YATIRIMCI RAPORU',1435,47,14,white,'700','center');
