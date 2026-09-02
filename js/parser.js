@@ -137,7 +137,8 @@ function parseWB(wb) {
         const iptvh = ih_>0 ? Math.round(ia_/ih_*1000)/10 : 0;
         const mobh = mh>0 ? Math.round(ma/mh*1000)/10 : 0;
         const cihazh = ch_>0 ? Math.round(ca_/ch_*1000)/10 : 0;
-        const pDsl = dslh*8, pMob = mobh*5, pIptv = iptvh*3;
+        // Kupa Bende Eylül'26: ürün puanları %130 HGO'da tavan yapar.
+        const pDsl = Math.min(1040, dslh*8), pMob = Math.min(650, mobh*5), pIptv = Math.min(390, iptvh*3);
         kupaRows.push({
           kod: r[2] ? String(r[2]).trim() : "", b: shortB(r[3]), il: r[5] ? String(r[5]).trim() : "",
           fat, fsz, dsl: dslh, iptv: iptvh, mob: mobh, cihaz: cihazh,
@@ -208,7 +209,8 @@ function parseWB(wb) {
       (detayPers[kod] = detayPers[kod] || []).push({p: String(r[6]).trim(), prods: pr});
     }
   }
-  kupaRows.sort((a,b) => (b.toplam - a.toplam) || (b.iptv - a.iptv) || (b.mob - a.mob));
+  // Eylül'26 eşitlik kuralı: toplam puan, Akıllı Cihaz HGO, DSL HGO.
+  kupaRows.sort((a,b) => (b.toplam - a.toplam) || (b.cihaz - a.cihaz) || (b.dsl - a.dsl) || String(a.kod).localeCompare(String(b.kod), 'tr'));
   const matrix = { rows: mxRows, kuzey: totHgo(kuzeyTot), anadolu: totHgo(anadoluTot) };
 
   // ── SY ÖZET ──

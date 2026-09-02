@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-09-02 · Sprint 32.6: Müdürler Ligi Bayi Kodu Düzeltmesi';
+const APP_BUILD = '2026-09-02 · Sprint 33: Kupa Bende Eylül\'26';
