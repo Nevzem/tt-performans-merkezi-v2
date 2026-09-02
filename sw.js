@@ -34,6 +34,7 @@ const ASSETS = [
   'js/vendor/html2canvas.min.js',
   'icons/icon-180.png',
   'icons/icon-512.png',
+  'assets/manager-league-template.jpeg',
 ];
 
 self.addEventListener('install', function (e) {

@@ -70,9 +70,7 @@ function renderManagerLeague() {
   cards.innerHTML =
     '<div class="ml-actions"><button type="button" onclick="downloadManagerLeaguePNG()">Paylaşılabilir Görsel Oluştur</button></div>' +
     '<section id="manager-league-card" class="ml-card">' +
-      '<header class="ml-header"><div class="ml-kicker">EYLÜL MAĞAZA MÜDÜRLERİ YARIŞMASI</div><h2>GÜNLÜK PUAN DURUMU</h2></header>' +
       '<div class="ml-date"><span>' + managerLeagueDate() + '</span><b>GÜNCEL VERİ</b></div>' +
-      '<div class="ml-trophy-line"><i></i><div class="ml-trophy">🏆</div><i></i></div>' +
       '<div class="ml-matches">' + MANAGER_LEAGUE_MATCHES.map(managerLeagueMatch).join('') + '</div>' +
     '</section>';
 }
@@ -85,10 +83,10 @@ async function downloadManagerLeaguePNG() {
     if (button) { button.disabled = true; button.textContent = 'Hazırlanıyor…'; }
     var card = document.getElementById('manager-league-card');
     if (!card) throw new Error('Müdürler Ligi kartı bulunamadı');
-    var result = await createCleanExportClone(card, 768);
+    var result = await createCleanExportClone(card, 1024);
     wrapper = result.wrapper;
     result.wrapper.style.containerType = 'inline-size';
-    result.clone.style.width = '768px';
+    result.clone.style.width = '1024px';
     result.clone.style.maxWidth = 'none';
     var canvas = await captureExportImage(result.clone, { scale: 2.5 });
     cleanupExportClone(wrapper); wrapper = null;
