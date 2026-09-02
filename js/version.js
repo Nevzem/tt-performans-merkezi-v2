@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-09-02 · Sprint 32.3: Birebir Müdürler Ligi Şablonu';
+const APP_BUILD = '2026-09-02 · Sprint 32.4: Müdürler Ligi Şablon Düzeltmesi';
