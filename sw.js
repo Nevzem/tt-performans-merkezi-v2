@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-v9';
+const CACHE = 'ttpm-v10';
 
 const ASSETS = [
   '.',
@@ -35,6 +35,7 @@ const ASSETS = [
   'icons/icon-180.png',
   'icons/icon-512.png',
   'assets/manager-league-template.jpeg',
+  'assets/manager-league-template-v2.jpg',
 ];
 
 self.addEventListener('install', function (e) {

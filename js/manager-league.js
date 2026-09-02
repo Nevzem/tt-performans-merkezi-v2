@@ -70,6 +70,7 @@ function renderManagerLeague() {
   cards.innerHTML =
     '<div class="ml-actions"><button type="button" onclick="downloadManagerLeaguePNG()">Paylaşılabilir Görsel Oluştur</button></div>' +
     '<section id="manager-league-card" class="ml-card">' +
+      '<img class="ml-template-bg" src="assets/manager-league-template-v2.jpg" alt="" aria-hidden="true">' +
       '<div class="ml-date"><span>' + managerLeagueDate() + '</span><b>GÜNCEL VERİ</b></div>' +
       '<div class="ml-matches">' + MANAGER_LEAGUE_MATCHES.map(managerLeagueMatch).join('') + '</div>' +
     '</section>';
@@ -88,6 +89,8 @@ async function downloadManagerLeaguePNG() {
     result.wrapper.style.containerType = 'inline-size';
     result.clone.style.width = '1024px';
     result.clone.style.maxWidth = 'none';
+    var templateImage = result.clone.querySelector('.ml-template-bg');
+    if (templateImage && templateImage.decode) await templateImage.decode();
     var canvas = await captureExportImage(result.clone, { scale: 2.5 });
     cleanupExportClone(wrapper); wrapper = null;
     var period = (typeof DONEM !== 'undefined' && DONEM ? DONEM : 'Eylul').replace(/[^0-9A-Za-z]/g, '');
