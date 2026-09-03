@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-09-03 · Sprint 34.4: Ürün Bazlı YTD ve YoY';
+const APP_BUILD = '2026-09-03 · Sprint 34.5: Doğrulanmış YTD ve YoY';
