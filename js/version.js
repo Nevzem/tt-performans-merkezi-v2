@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-09-03 · Sprint 34.9: Net HGO ve Aylık Adet Etiketleri';
+const APP_BUILD = '2026-09-03 · Sprint 35: Ultra HD PNG ve Türkiye HGO Kıyası';
