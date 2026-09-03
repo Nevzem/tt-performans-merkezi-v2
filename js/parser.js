@@ -57,8 +57,9 @@ function parseWB(wb) {
                 bayi: { "Postpaid": [], "Prepaid": [], "Toplam Mobil": [], "DSL": [], "Toplam TV": [], "Akıllı Cihaz": [], "Diğer Cihaz": [] } };
   const mxRows = [];
   const kupaRows = [];
-  const acc = () => ({ mobil:[0,0], dsl:[0,0], iptv:[0,0], uydu:[0,0], tv:[0,0], cihaz:[0,0] });
-  const kuzeyTot = acc(), anadoluTot = acc();
+  const acc = () => ({ postpaid:[0,0], prepaid:[0,0], mobil:[0,0], dsl:[0,0], iptv:[0,0], uydu:[0,0], tv:[0,0], akilliCihaz:[0,0], digerCihaz:[0,0], cihaz:[0,0] });
+  const kuzeyTot = acc(), anadoluTot = acc(), turkiyeTot = acc();
+  let hasTurkiyeTot = false;
   let donem = null, persCount = 0, bayiCount = 0;
   const warnings = [];
 
@@ -119,7 +120,8 @@ function parseWB(wb) {
       const ih_ = num(r[69]) || 0, ia_ = num(r[70]) || 0, uh_ = num(r[73]) || 0, ua_ = num(r[74]) || 0;
       const ch_ = num(r[77]) || 0, ca_ = num(r[78]) || 0, gh_ = num(r[81]) || 0, ga_ = num(r[82]) || 0;
       const mh = ph_+rh_, ma = pa_+ra_, th = ih_+uh_, ta = ia_+ua_, xh = ch_+gh_, xa = ca_+ga_;
-      const addTo = (A) => { A.mobil[0]+=mh; A.mobil[1]+=ma; A.dsl[0]+=dh_; A.dsl[1]+=da_; A.iptv[0]+=ih_; A.iptv[1]+=ia_; A.uydu[0]+=uh_; A.uydu[1]+=ua_; A.tv[0]+=th; A.tv[1]+=ta; A.cihaz[0]+=xh; A.cihaz[1]+=xa; };
+      const addTo = (A) => { A.postpaid[0]+=ph_; A.postpaid[1]+=pa_; A.prepaid[0]+=rh_; A.prepaid[1]+=ra_; A.mobil[0]+=mh; A.mobil[1]+=ma; A.dsl[0]+=dh_; A.dsl[1]+=da_; A.iptv[0]+=ih_; A.iptv[1]+=ia_; A.uydu[0]+=uh_; A.uydu[1]+=ua_; A.tv[0]+=th; A.tv[1]+=ta; A.akilliCihaz[0]+=ch_; A.akilliCihaz[1]+=ca_; A.digerCihaz[0]+=gh_; A.digerCihaz[1]+=ga_; A.cihaz[0]+=xh; A.cihaz[1]+=xa; };
+      if (bolge_ === "TÜRKİYE" || bolge_ === "TURKIYE") { Object.keys(turkiyeTot).forEach(k => { turkiyeTot[k][0]=0; turkiyeTot[k][1]=0; }); addTo(turkiyeTot); hasTurkiyeTot = true; }
       addTo(anadoluTot);
       if (bolge_ === "KUZEY ANADOLU") {
         addTo(kuzeyTot);
@@ -171,12 +173,16 @@ function parseWB(wb) {
   for (const k in out.bayi) out.bayi[k].sort((a, c) => c.g - a.g);
   mxRows.sort((a, c) => (c.mobil == null ? -1 : c.mobil) - (a.mobil == null ? -1 : a.mobil));
   const totHgo = (T) => ({
+    postpaid: T.postpaid[0] ? Math.round(T.postpaid[1]/T.postpaid[0]*1000)/10 : null,
+    prepaid: T.prepaid[0] ? Math.round(T.prepaid[1]/T.prepaid[0]*1000)/10 : null,
     mobil: T.mobil[0] ? Math.round(T.mobil[1]/T.mobil[0]*1000)/10 : null,
     dsl: T.dsl[0] ? Math.round(T.dsl[1]/T.dsl[0]*1000)/10 : null,
     iptv: T.iptv[0] ? Math.round(T.iptv[1]/T.iptv[0]*1000)/10 : null,
     ipdsl: T.dsl[1] ? Math.round(T.iptv[1]/T.dsl[1]*1000)/10 : null,
     uydu: T.uydu[0] ? Math.round(T.uydu[1]/T.uydu[0]*1000)/10 : null,
     tv: T.tv[0] ? Math.round(T.tv[1]/T.tv[0]*1000)/10 : null,
+    akilliCihaz: T.akilliCihaz[0] ? Math.round(T.akilliCihaz[1]/T.akilliCihaz[0]*1000)/10 : null,
+    digerCihaz: T.digerCihaz[0] ? Math.round(T.digerCihaz[1]/T.digerCihaz[0]*1000)/10 : null,
     cihaz: T.cihaz[0] ? Math.round(T.cihaz[1]/T.cihaz[0]*1000)/10 : null,
   });
 
@@ -211,7 +217,7 @@ function parseWB(wb) {
   }
   // Eylül'26 eşitlik kuralı: toplam puan, Akıllı Cihaz HGO, DSL HGO.
   kupaRows.sort((a,b) => (b.toplam - a.toplam) || (b.cihaz - a.cihaz) || (b.dsl - a.dsl) || String(a.kod).localeCompare(String(b.kod), 'tr'));
-  const matrix = { rows: mxRows, kuzey: totHgo(kuzeyTot), anadolu: totHgo(anadoluTot) };
+  const matrix = { rows: mxRows, kuzey: totHgo(kuzeyTot), anadolu: totHgo(anadoluTot), turkiye: hasTurkiyeTot ? totHgo(turkiyeTot) : null };
 
   // ── SY ÖZET ──
   const syOut = {};
