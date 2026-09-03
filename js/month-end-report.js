@@ -55,7 +55,9 @@ function merBars(products){var max=Math.max.apply(null,products.reduce(function(
 function merYtdMatrix(products){var html='<div class="mer-ytd-head"><span>Ürün</span><span>2025 YTD</span><span>2026 YTD</span><span>Fark</span><span>YTD YoY</span></div>';products.forEach(function(p){var s=p.stats,up=s.ytdDiff!=null&&s.ytdDiff>=0;html+='<div class="mer-ytd-row"><b style="color:'+p.color+'">'+p.label+'</b><span>'+merN(s.ytdPrev)+'</span><span>'+merN(s.ytd)+'</span><strong class="'+(up?'pos':'neg')+'">'+merGap(s.ytdDiff)+'</strong><strong class="'+(up?'pos':'neg')+'">'+(s.ytdYoY==null?'—':(s.ytdYoY>=0?'+':'')+merP(s.ytdYoY))+'</strong></div>'});return html}
 function merCanvasReport(){
  var dealer=DETAY.bayiler[merDealerCode],products=merProductData(dealer),ratio=(dealer.prods.DSL&&dealer.prods.DSL.a)?dealer.prods.IPTV.a/dealer.prods.DSL.a*100:null;
- var cv=document.createElement('canvas');cv.width=3072;cv.height=2048;var c=cv.getContext('2d');c.scale(2,2);
+ /* 4K genişlikte, kayıpsız PNG. Mantıksal tasarım 1536×1024 olarak kalır;
+    daha yüksek piksel yoğunluğu özellikle küçük tablo ve grafik yazılarını netleştirir. */
+ var cv=document.createElement('canvas');cv.width=4096;cv.height=2731;var c=cv.getContext('2d');c.scale(8/3,8/3);
  var bg='#f4f7fb',panel='#ffffff',inner='#f8fafc',border='#d7e0ea',muted='#64748b',white='#10243e',pink='#e6007e',cyan='#00a6d6',green='#20a65a',purple='#7046b3',orange='#f47b20',yellow='#d9a900';
  function rr(x,y,w,h,r,fill,stroke){c.beginPath();c.roundRect(x,y,w,h,r);if(fill){c.fillStyle=fill;c.fill()}if(stroke){c.strokeStyle=stroke;c.lineWidth=1;c.stroke()}}
  function txt(t,x,y,size,color,weight,align){c.font=(weight||'600')+' '+size+'px Arial, sans-serif';c.fillStyle=color||white;c.textAlign=align||'left';c.textBaseline='middle';c.fillText(String(t),x,y)}
