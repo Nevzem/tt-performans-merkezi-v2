@@ -801,6 +801,7 @@ function _openSharePreview(dataUrl, fname) {
   if (existing) existing.remove();
 
   var shareIcon = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>';
+  var downloadIcon = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="7 10 12 15 17 10"/><path d="M5 21h14"/></svg>';
 
   var m = document.createElement('div');
   m.id = 'spm';
@@ -808,6 +809,7 @@ function _openSharePreview(dataUrl, fname) {
     '<div class="spm-toolbar">' +
       '<button class="spm-btn spm-close-btn" onclick="_closeSPM()">✕&nbsp;Kapat</button>' +
       '<span class="spm-title">Önizleme</span>' +
+      '<button class="spm-btn spm-download-btn" onclick="_downloadSPM()">' + downloadIcon + '&nbsp;Orijinal PNG</button>' +
       '<button class="spm-btn spm-share-btn" onclick="_shareSPM()">' + shareIcon + '&nbsp;Paylaş</button>' +
     '</div>' +
     '<div class="spm-body">' +
@@ -824,6 +826,11 @@ function _openSharePreview(dataUrl, fname) {
 function _closeSPM() {
   var m = document.getElementById('spm');
   if (m) { m.remove(); document.body.style.overflow = ''; }
+}
+
+function _downloadSPM() {
+  var m = document.getElementById('spm');
+  if (m) _spmDownload(m._spmData, m._spmFname);
 }
 
 async function _shareSPM() {
