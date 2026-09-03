@@ -5,7 +5,7 @@ var MER_PRODUCTS=[
  {label:'DSL',key:'DSL',hist:'dsl',color:'#53d769'},
  {label:'IPTV',key:'IPTV',hist:'iptv',color:'#a65ae8'},
  {label:'Uydu TV',key:'Uydu',hist:'uydu',color:'#ff851b'},
- {label:'Cihaz',key:'Akıllı Cihaz',hist:'cihaz',color:'#ffd21e'}
+ {label:'Cihaz',key:'Akıllı Cihaz',hist:'akilliCihaz',color:'#ffd21e'}
 ];
 var merDealerCode=null;
 function merN(v){return v==null?'—':Math.round(v).toLocaleString('tr-TR')}
@@ -18,13 +18,14 @@ function merHistoryValue(code,pm,period){
  var x=d[pm.hist];if(!x&&pm.hist==='cihaz')x=d.cihaz;return x||null;
 }
 function merSeries(code,pm){
- var out=[];if(typeof HIST2_DATA!=='undefined')Object.keys(HIST2_DATA).sort().forEach(function(period){if(period.slice(0,4)!=='2026')return;var x=merHistoryValue(code,pm,period);if(x)out.push({period:period,a:x.adet||0,h:x.hedef||0})});return out.slice(-8);
+ var reportPeriod=String((typeof DONEM!=='undefined'&&DONEM)||'').replace('/','-'),year=reportPeriod.slice(0,4)||String(new Date().getFullYear());
+ var out=[];if(typeof HIST2_DATA!=='undefined')Object.keys(HIST2_DATA).sort().forEach(function(period){if(period.slice(0,4)!==year||(reportPeriod&&period>reportPeriod))return;var x=merHistoryValue(code,pm,period);if(x)out.push({period:period,a:x.adet||0,h:x.hedef||0})});return out.slice(-12);
 }
 function merStats(code,pm,current){
  var series=merSeries(code,pm),a=current?current.a:0,h=current?current.h:0,g=h?a/h*100:null;
  var days=(typeof SYDATA!=='undefined'&&SYDATA.calisilanGun)||30;
  var ytdA=series.length?series.reduce(function(s,x){return s+x.a},0):null;
- var p=series.length?merHistoryValue(code,pm,String(Number(series[series.length-1].period.slice(0,4))-1)+series[series.length-1].period.slice(4)):null;
+ var reportPeriod=String((typeof DONEM!=='undefined'&&DONEM)||'').replace('/','-'),refPeriod=reportPeriod||((series.length&&series[series.length-1].period)||''),p=refPeriod?merHistoryValue(code,pm,String(Number(refPeriod.slice(0,4))-1)+refPeriod.slice(4)):null;
  var yoy=p&&p.adet?((a-p.adet)/p.adet*100):null;
  return {a:a,h:h,g:g,daily:a/days,ytd:ytdA,yoy:yoy,series:series};
 }

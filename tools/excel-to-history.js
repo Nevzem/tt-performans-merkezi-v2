@@ -8,9 +8,8 @@
                      İl, Bölge Müdürü, Satış Yöneticisi, Dönem(YYYYAA)
      Ürün blokları: [Hedef, Aktivasyon, HGO, Bekleyen] × N
    Yalnız Bölge = KUZEY ANADOLU satırları alınır.
-   Ürün eşlemesi (uygulamayla aynı):
-     mobil = POSTPAID + PREPAID · dsl = DSL (Sabit İnternet)
-     tv    = IPTV + TİVİBU UYDU · cihaz = Akıllı Cihaz + Diğer
+   Ürün eşlemesi: ayrık ürünler korunur; birleşik alanlar yalnızca mevcut
+   ekranlarla geriye dönük uyumluluk ve toplam kontrolü için ayrıca yazılır.
    Kapanmış ay dosyası olduğundan forecast = HGO (ay sonu gerçekleşmesi).
    Çıktı: data/history/YYYY-AA.json (+ manifest.json periods güncellenir)
    ════════════════════════════════════════════════════════════════════ */
@@ -86,16 +85,27 @@ for (let i = 3; i < rows.length; i++) {
              forecast: hgo !== null ? Math.round(hgo) : null };
   }
 
-  (byPeriod[period] = byPeriod[period] || []).push({
+  const periodDealers = byPeriod[period] = byPeriod[period] || [];
+  const dealerRecord = {
     bayiKodu: String(r[2]).trim(),
     bayiAdi:  String(r[3] || '').trim(),
     il:       String(r[5] || '').trim(),
     sy:       String(r[7] || '').trim(),
-    mobil: prod([MAP.post, MAP.pre]),
-    dsl:   prod([MAP.dsl]),
-    tv:    prod([MAP.iptv, MAP.uydu]),
-    cihaz: prod([MAP.cihazA, MAP.cihazD]),
-  });
+    postpaid:    prod([MAP.post]),
+    prepaid:     prod([MAP.pre]),
+    mobil:       prod([MAP.post, MAP.pre]),
+    dsl:         prod([MAP.dsl]),
+    iptv:        prod([MAP.iptv]),
+    uydu:        prod([MAP.uydu]),
+    tv:          prod([MAP.iptv, MAP.uydu]),
+    akilliCihaz: prod([MAP.cihazA]),
+    digerCihaz:  prod([MAP.cihazD]),
+    cihaz:       prod([MAP.cihazA, MAP.cihazD]),
+  };
+  /* Bazı kaynak paketlerde aynı bayi/dönem satırı iki kez bulunuyor. İlk
+     kayıt korunur; YTD hesaplarının iki katına çıkması engellenir. */
+  if (!periodDealers.some(d => d.bayiKodu === dealerRecord.bayiKodu))
+    periodDealers.push(dealerRecord);
 }
 
 const periods = Object.keys(byPeriod).sort();

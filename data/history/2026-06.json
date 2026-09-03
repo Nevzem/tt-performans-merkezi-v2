@@ -8,6 +8,18 @@
    "bayiAdi": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
    "il": "SAMSUN",
    "sy": "YUSUF DILKI",
+   "postpaid": {
+    "hedef": 280,
+    "adet": 202,
+    "hgo": 72.1,
+    "forecast": 72
+   },
+   "prepaid": {
+    "hedef": 119,
+    "adet": 129,
+    "hgo": 108.4,
+    "forecast": 108
+   },
    "mobil": {
     "hedef": 399,
     "adet": 331,
@@ -20,11 +32,35 @@
     "hgo": 86.7,
     "forecast": 87
    },
+   "iptv": {
+    "hedef": 27,
+    "adet": 23,
+    "hgo": 85.2,
+    "forecast": 85
+   },
+   "uydu": {
+    "hedef": 8,
+    "adet": 8,
+    "hgo": 100,
+    "forecast": 100
+   },
    "tv": {
     "hedef": 35,
     "adet": 31,
     "hgo": 88.6,
     "forecast": 89
+   },
+   "akilliCihaz": {
+    "hedef": 65,
+    "adet": 60,
+    "hgo": 92.3,
+    "forecast": 92
+   },
+   "digerCihaz": {
+    "hedef": 68,
+    "adet": 77,
+    "hgo": 113.2,
+    "forecast": 113
    },
    "cihaz": {
     "hedef": 133,
@@ -38,6 +74,18 @@
    "bayiAdi": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
    "il": "YOZGAT",
    "sy": "YUSUF DILKI",
+   "postpaid": {
+    "hedef": 162,
+    "adet": 99,
+    "hgo": 61.1,
+    "forecast": 61
+   },
+   "prepaid": {
+    "hedef": 168,
+    "adet": 229,
+    "hgo": 136.3,
+    "forecast": 136
+   },
    "mobil": {
     "hedef": 330,
     "adet": 328,
@@ -50,11 +98,35 @@
     "hgo": 73.5,
     "forecast": 74
    },
+   "iptv": {
+    "hedef": 27,
+    "adet": 18,
+    "hgo": 66.7,
+    "forecast": 67
+   },
+   "uydu": {
+    "hedef": 8,
+    "adet": 6,
+    "hgo": 75,
+    "forecast": 75
+   },
    "tv": {
     "hedef": 35,
     "adet": 24,
     "hgo": 68.6,
     "forecast": 69
+   },
+   "akilliCihaz": {
+    "hedef": 47,
+    "adet": 55,
+    "hgo": 117,
+    "forecast": 117
+   },
+   "digerCihaz": {
+    "hedef": 32,
+    "adet": 16,
+    "hgo": 50,
+    "forecast": 50
    },
    "cihaz": {
     "hedef": 79,
@@ -68,6 +140,18 @@
    "bayiAdi": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
    "il": "SAMSUN",
    "sy": "YUSUF DILKI",
+   "postpaid": {
+    "hedef": 287,
+    "adet": 182,
+    "hgo": 63.4,
+    "forecast": 63
+   },
+   "prepaid": {
+    "hedef": 93,
+    "adet": 86,
+    "hgo": 92.5,
+    "forecast": 93
+   },
    "mobil": {
     "hedef": 380,
     "adet": 268,
@@ -80,11 +164,35 @@
     "hgo": 90.2,
     "forecast": 90
    },
+   "iptv": {
+    "hedef": 27,
+    "adet": 27,
+    "hgo": 100,
+    "forecast": 100
+   },
+   "uydu": {
+    "hedef": 8,
+    "adet": 4,
+    "hgo": 50,
+    "forecast": 50
+   },
    "tv": {
     "hedef": 35,
     "adet": 31,
     "hgo": 88.6,
     "forecast": 89
+   },
+   "akilliCihaz": {
+    "hedef": 42,
+    "adet": 45,
+    "hgo": 107.1,
+    "forecast": 107
+   },
+   "digerCihaz": {
+    "hedef": 46,
+    "adet": 48,
+    "hgo": 104.3,
+    "forecast": 104
    },
    "cihaz": {
     "hedef": 88,
@@ -98,6 +206,18 @@
    "bayiAdi": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
    "il": "TOKAT",
    "sy": "KORAY YEŞİLÖRDEK",
+   "postpaid": {
+    "hedef": 273,
+    "adet": 186,
+    "hgo": 68.1,
+    "forecast": 68
+   },
+   "prepaid": {
+    "hedef": 190,
+    "adet": 243,
+    "hgo": 127.9,
+    "forecast": 128
+   },
    "mobil": {
     "hedef": 463,
     "adet": 429,
@@ -110,11 +230,35 @@
     "hgo": 101.6,
     "forecast": 102
    },
+   "iptv": {
+    "hedef": 26,
+    "adet": 34,
+    "hgo": 130.8,
+    "forecast": 131
+   },
+   "uydu": {
+    "hedef": 12,
+    "adet": 12,
+    "hgo": 100,
+    "forecast": 100
+   },
    "tv": {
     "hedef": 38,
     "adet": 46,
     "hgo": 121.1,
     "forecast": 121
+   },
+   "akilliCihaz": {
+    "hedef": 86,
+    "adet": 87,
+    "hgo": 101.2,
+    "forecast": 101
+   },
+   "digerCihaz": {
+    "hedef": 102,
+    "adet": 125,
+    "hgo": 122.5,
+    "forecast": 123
    },
    "cihaz": {
     "hedef": 188,
@@ -128,6 +272,18 @@
    "bayiAdi": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
    "il": "SAMSUN",
    "sy": "YUSUF DILKI",
+   "postpaid": {
+    "hedef": 369,
+    "adet": 368,
+    "hgo": 99.7,
+    "forecast": 100
+   },
+   "prepaid": {
+    "hedef": 230,
+    "adet": 232,
+    "hgo": 100.9,
+    "forecast": 101
+   },
    "mobil": {
     "hedef": 599,
     "adet": 600,
@@ -140,11 +296,35 @@
     "hgo": 101.9,
     "forecast": 102
    },
+   "iptv": {
+    "hedef": 27,
+    "adet": 29,
+    "hgo": 107.4,
+    "forecast": 107
+   },
+   "uydu": {
+    "hedef": 9,
+    "adet": 12,
+    "hgo": 133.3,
+    "forecast": 133
+   },
    "tv": {
     "hedef": 36,
     "adet": 41,
     "hgo": 113.9,
     "forecast": 114
+   },
+   "akilliCihaz": {
+    "hedef": 72,
+    "adet": 94,
+    "hgo": 130.6,
+    "forecast": 131
+   },
+   "digerCihaz": {
+    "hedef": 95,
+    "adet": 138,
+    "hgo": 145.3,
+    "forecast": 145
    },
    "cihaz": {
     "hedef": 167,
@@ -158,6 +338,18 @@
    "bayiAdi": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
    "il": "ÇANKIRI",
    "sy": "KORAY YEŞİLÖRDEK",
+   "postpaid": {
+    "hedef": 194,
+    "adet": 102,
+    "hgo": 52.6,
+    "forecast": 53
+   },
+   "prepaid": {
+    "hedef": 255,
+    "adet": 254,
+    "hgo": 99.6,
+    "forecast": 100
+   },
    "mobil": {
     "hedef": 449,
     "adet": 356,
@@ -170,11 +362,35 @@
     "hgo": 98.4,
     "forecast": 98
    },
+   "iptv": {
+    "hedef": 30,
+    "adet": 41,
+    "hgo": 136.7,
+    "forecast": 137
+   },
+   "uydu": {
+    "hedef": 15,
+    "adet": 20,
+    "hgo": 133.3,
+    "forecast": 133
+   },
    "tv": {
     "hedef": 45,
     "adet": 61,
     "hgo": 135.6,
     "forecast": 136
+   },
+   "akilliCihaz": {
+    "hedef": 140,
+    "adet": 106,
+    "hgo": 75.7,
+    "forecast": 76
+   },
+   "digerCihaz": {
+    "hedef": 166,
+    "adet": 190,
+    "hgo": 114.5,
+    "forecast": 115
    },
    "cihaz": {
     "hedef": 306,
@@ -188,6 +404,18 @@
    "bayiAdi": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
    "il": "KIRŞEHİR",
    "sy": "YUSUF DILKI",
+   "postpaid": {
+    "hedef": 152,
+    "adet": 80,
+    "hgo": 52.6,
+    "forecast": 53
+   },
+   "prepaid": {
+    "hedef": 242,
+    "adet": 287,
+    "hgo": 118.6,
+    "forecast": 119
+   },
    "mobil": {
     "hedef": 394,
     "adet": 367,
@@ -200,11 +428,35 @@
     "hgo": 101,
     "forecast": 101
    },
+   "iptv": {
+    "hedef": 37,
+    "adet": 41,
+    "hgo": 110.8,
+    "forecast": 111
+   },
+   "uydu": {
+    "hedef": 9,
+    "adet": 12,
+    "hgo": 133.3,
+    "forecast": 133
+   },
    "tv": {
     "hedef": 46,
     "adet": 53,
     "hgo": 115.2,
     "forecast": 115
+   },
+   "akilliCihaz": {
+    "hedef": 83,
+    "adet": 76,
+    "hgo": 91.6,
+    "forecast": 92
+   },
+   "digerCihaz": {
+    "hedef": 99,
+    "adet": 110,
+    "hgo": 111.1,
+    "forecast": 111
    },
    "cihaz": {
     "hedef": 182,
@@ -218,6 +470,18 @@
    "bayiAdi": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
    "il": "KIRIKKALE",
    "sy": "YUSUF DILKI",
+   "postpaid": {
+    "hedef": 195,
+    "adet": 164,
+    "hgo": 84.1,
+    "forecast": 84
+   },
+   "prepaid": {
+    "hedef": 108,
+    "adet": 89,
+    "hgo": 82.4,
+    "forecast": 82
+   },
    "mobil": {
     "hedef": 303,
     "adet": 253,
@@ -230,11 +494,35 @@
     "hgo": 81.6,
     "forecast": 82
    },
+   "iptv": {
+    "hedef": 26,
+    "adet": 24,
+    "hgo": 92.3,
+    "forecast": 92
+   },
+   "uydu": {
+    "hedef": 8,
+    "adet": 11,
+    "hgo": 137.5,
+    "forecast": 138
+   },
    "tv": {
     "hedef": 34,
     "adet": 35,
     "hgo": 102.9,
     "forecast": 103
+   },
+   "akilliCihaz": {
+    "hedef": 97,
+    "adet": 109,
+    "hgo": 112.4,
+    "forecast": 112
+   },
+   "digerCihaz": {
+    "hedef": 70,
+    "adet": 42,
+    "hgo": 60,
+    "forecast": 60
    },
    "cihaz": {
     "hedef": 167,
@@ -248,6 +536,18 @@
    "bayiAdi": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
    "il": "KIRIKKALE",
    "sy": "YUSUF DILKI",
+   "postpaid": {
+    "hedef": 452,
+    "adet": 187,
+    "hgo": 41.4,
+    "forecast": 41
+   },
+   "prepaid": {
+    "hedef": 227,
+    "adet": 516,
+    "hgo": 227.3,
+    "forecast": 227
+   },
    "mobil": {
     "hedef": 679,
     "adet": 703,
@@ -260,11 +560,35 @@
     "hgo": 101.4,
     "forecast": 101
    },
+   "iptv": {
+    "hedef": 36,
+    "adet": 41,
+    "hgo": 113.9,
+    "forecast": 114
+   },
+   "uydu": {
+    "hedef": 12,
+    "adet": 18,
+    "hgo": 150,
+    "forecast": 150
+   },
    "tv": {
     "hedef": 48,
     "adet": 59,
     "hgo": 122.9,
     "forecast": 123
+   },
+   "akilliCihaz": {
+    "hedef": 117,
+    "adet": 148,
+    "hgo": 126.5,
+    "forecast": 127
+   },
+   "digerCihaz": {
+    "hedef": 130,
+    "adet": 140,
+    "hgo": 107.7,
+    "forecast": 108
    },
    "cihaz": {
     "hedef": 247,
@@ -278,6 +602,18 @@
    "bayiAdi": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
    "il": "TOKAT",
    "sy": "KORAY YEŞİLÖRDEK",
+   "postpaid": {
+    "hedef": 209,
+    "adet": 199,
+    "hgo": 95.2,
+    "forecast": 95
+   },
+   "prepaid": {
+    "hedef": 72,
+    "adet": 93,
+    "hgo": 129.2,
+    "forecast": 129
+   },
    "mobil": {
     "hedef": 281,
     "adet": 292,
@@ -290,11 +626,35 @@
     "hgo": 123.7,
     "forecast": 124
    },
+   "iptv": {
+    "hedef": 20,
+    "adet": 20,
+    "hgo": 100,
+    "forecast": 100
+   },
+   "uydu": {
+    "hedef": 8,
+    "adet": 9,
+    "hgo": 112.5,
+    "forecast": 113
+   },
    "tv": {
     "hedef": 28,
     "adet": 29,
     "hgo": 103.6,
     "forecast": 104
+   },
+   "akilliCihaz": {
+    "hedef": 68,
+    "adet": 67,
+    "hgo": 98.5,
+    "forecast": 99
+   },
+   "digerCihaz": {
+    "hedef": 77,
+    "adet": 93,
+    "hgo": 120.8,
+    "forecast": 121
    },
    "cihaz": {
     "hedef": 145,
@@ -308,6 +668,18 @@
    "bayiAdi": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
    "il": "SİNOP",
    "sy": "YUSUF DILKI",
+   "postpaid": {
+    "hedef": 170,
+    "adet": 122,
+    "hgo": 71.8,
+    "forecast": 72
+   },
+   "prepaid": {
+    "hedef": 156,
+    "adet": 158,
+    "hgo": 101.3,
+    "forecast": 101
+   },
    "mobil": {
     "hedef": 326,
     "adet": 280,
@@ -320,11 +692,35 @@
     "hgo": 90.5,
     "forecast": 91
    },
+   "iptv": {
+    "hedef": 30,
+    "adet": 25,
+    "hgo": 83.3,
+    "forecast": 83
+   },
+   "uydu": {
+    "hedef": 8,
+    "adet": 17,
+    "hgo": 212.5,
+    "forecast": 213
+   },
    "tv": {
     "hedef": 38,
     "adet": 42,
     "hgo": 110.5,
     "forecast": 111
+   },
+   "akilliCihaz": {
+    "hedef": 82,
+    "adet": 74,
+    "hgo": 90.2,
+    "forecast": 90
+   },
+   "digerCihaz": {
+    "hedef": 80,
+    "adet": 81,
+    "hgo": 101.3,
+    "forecast": 101
    },
    "cihaz": {
     "hedef": 162,
@@ -338,6 +734,18 @@
    "bayiAdi": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
    "il": "SAMSUN",
    "sy": "KORAY YEŞİLÖRDEK",
+   "postpaid": {
+    "hedef": 374,
+    "adet": 284,
+    "hgo": 75.9,
+    "forecast": 76
+   },
+   "prepaid": {
+    "hedef": 85,
+    "adet": 89,
+    "hgo": 104.7,
+    "forecast": 105
+   },
    "mobil": {
     "hedef": 459,
     "adet": 373,
@@ -350,11 +758,35 @@
     "hgo": 100,
     "forecast": 100
    },
+   "iptv": {
+    "hedef": 26,
+    "adet": 27,
+    "hgo": 103.8,
+    "forecast": 104
+   },
+   "uydu": {
+    "hedef": 8,
+    "adet": 11,
+    "hgo": 137.5,
+    "forecast": 138
+   },
    "tv": {
     "hedef": 34,
     "adet": 38,
     "hgo": 111.8,
     "forecast": 112
+   },
+   "akilliCihaz": {
+    "hedef": 98,
+    "adet": 125,
+    "hgo": 127.6,
+    "forecast": 128
+   },
+   "digerCihaz": {
+    "hedef": 58,
+    "adet": 95,
+    "hgo": 163.8,
+    "forecast": 164
    },
    "cihaz": {
     "hedef": 156,
@@ -368,6 +800,18 @@
    "bayiAdi": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
    "il": "SAMSUN",
    "sy": "KORAY YEŞİLÖRDEK",
+   "postpaid": {
+    "hedef": 310,
+    "adet": 220,
+    "hgo": 71,
+    "forecast": 71
+   },
+   "prepaid": {
+    "hedef": 178,
+    "adet": 190,
+    "hgo": 106.7,
+    "forecast": 107
+   },
    "mobil": {
     "hedef": 488,
     "adet": 410,
@@ -380,11 +824,35 @@
     "hgo": 78.9,
     "forecast": 79
    },
+   "iptv": {
+    "hedef": 30,
+    "adet": 26,
+    "hgo": 86.7,
+    "forecast": 87
+   },
+   "uydu": {
+    "hedef": 8,
+    "adet": 7,
+    "hgo": 87.5,
+    "forecast": 88
+   },
    "tv": {
     "hedef": 38,
     "adet": 33,
     "hgo": 86.8,
     "forecast": 87
+   },
+   "akilliCihaz": {
+    "hedef": 110,
+    "adet": 217,
+    "hgo": 197.3,
+    "forecast": 197
+   },
+   "digerCihaz": {
+    "hedef": 94,
+    "adet": 91,
+    "hgo": 96.8,
+    "forecast": 97
    },
    "cihaz": {
     "hedef": 204,
@@ -398,6 +866,18 @@
    "bayiAdi": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
    "il": "KIRŞEHİR",
    "sy": "YUSUF DILKI",
+   "postpaid": {
+    "hedef": 184,
+    "adet": 107,
+    "hgo": 58.2,
+    "forecast": 58
+   },
+   "prepaid": {
+    "hedef": 310,
+    "adet": 354,
+    "hgo": 114.2,
+    "forecast": 114
+   },
    "mobil": {
     "hedef": 494,
     "adet": 461,
@@ -410,11 +890,35 @@
     "hgo": 77.9,
     "forecast": 78
    },
+   "iptv": {
+    "hedef": 30,
+    "adet": 22,
+    "hgo": 73.3,
+    "forecast": 73
+   },
+   "uydu": {
+    "hedef": 12,
+    "adet": 12,
+    "hgo": 100,
+    "forecast": 100
+   },
    "tv": {
     "hedef": 42,
     "adet": 34,
     "hgo": 81,
     "forecast": 81
+   },
+   "akilliCihaz": {
+    "hedef": 79,
+    "adet": 85,
+    "hgo": 107.6,
+    "forecast": 108
+   },
+   "digerCihaz": {
+    "hedef": 61,
+    "adet": 30,
+    "hgo": 49.2,
+    "forecast": 49
    },
    "cihaz": {
     "hedef": 140,
@@ -428,6 +932,18 @@
    "bayiAdi": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
    "il": "TOKAT",
    "sy": "KORAY YEŞİLÖRDEK",
+   "postpaid": {
+    "hedef": 226,
+    "adet": 185,
+    "hgo": 81.9,
+    "forecast": 82
+   },
+   "prepaid": {
+    "hedef": 73,
+    "adet": 109,
+    "hgo": 149.3,
+    "forecast": 149
+   },
    "mobil": {
     "hedef": 299,
     "adet": 294,
@@ -440,11 +956,35 @@
     "hgo": 93,
     "forecast": 93
    },
+   "iptv": {
+    "hedef": 25,
+    "adet": 26,
+    "hgo": 104,
+    "forecast": 104
+   },
+   "uydu": {
+    "hedef": 8,
+    "adet": 10,
+    "hgo": 125,
+    "forecast": 125
+   },
    "tv": {
     "hedef": 33,
     "adet": 36,
     "hgo": 109.1,
     "forecast": 109
+   },
+   "akilliCihaz": {
+    "hedef": 62,
+    "adet": 64,
+    "hgo": 103.2,
+    "forecast": 103
+   },
+   "digerCihaz": {
+    "hedef": 87,
+    "adet": 125,
+    "hgo": 143.7,
+    "forecast": 144
    },
    "cihaz": {
     "hedef": 149,
@@ -458,6 +998,18 @@
    "bayiAdi": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
    "il": "TOKAT",
    "sy": "KORAY YEŞİLÖRDEK",
+   "postpaid": {
+    "hedef": 230,
+    "adet": 252,
+    "hgo": 109.6,
+    "forecast": 110
+   },
+   "prepaid": {
+    "hedef": 86,
+    "adet": 112,
+    "hgo": 130.2,
+    "forecast": 130
+   },
    "mobil": {
     "hedef": 316,
     "adet": 364,
@@ -470,11 +1022,35 @@
     "hgo": 133.3,
     "forecast": 133
    },
+   "iptv": {
+    "hedef": 27,
+    "adet": 25,
+    "hgo": 92.6,
+    "forecast": 93
+   },
+   "uydu": {
+    "hedef": 8,
+    "adet": 7,
+    "hgo": 87.5,
+    "forecast": 88
+   },
    "tv": {
     "hedef": 35,
     "adet": 32,
     "hgo": 91.4,
     "forecast": 91
+   },
+   "akilliCihaz": {
+    "hedef": 96,
+    "adet": 112,
+    "hgo": 116.7,
+    "forecast": 117
+   },
+   "digerCihaz": {
+    "hedef": 104,
+    "adet": 217,
+    "hgo": 208.7,
+    "forecast": 209
    },
    "cihaz": {
     "hedef": 200,
@@ -488,6 +1064,18 @@
    "bayiAdi": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
    "il": "ÇORUM",
    "sy": "KORAY YEŞİLÖRDEK",
+   "postpaid": {
+    "hedef": 209,
+    "adet": 119,
+    "hgo": 56.9,
+    "forecast": 57
+   },
+   "prepaid": {
+    "hedef": 430,
+    "adet": 374,
+    "hgo": 87,
+    "forecast": 87
+   },
    "mobil": {
     "hedef": 639,
     "adet": 493,
@@ -500,11 +1088,35 @@
     "hgo": 78.9,
     "forecast": 79
    },
+   "iptv": {
+    "hedef": 38,
+    "adet": 23,
+    "hgo": 60.5,
+    "forecast": 61
+   },
+   "uydu": {
+    "hedef": 12,
+    "adet": 16,
+    "hgo": 133.3,
+    "forecast": 133
+   },
    "tv": {
     "hedef": 50,
     "adet": 39,
     "hgo": 78,
     "forecast": 78
+   },
+   "akilliCihaz": {
+    "hedef": 97,
+    "adet": 77,
+    "hgo": 79.4,
+    "forecast": 79
+   },
+   "digerCihaz": {
+    "hedef": 81,
+    "adet": 83,
+    "hgo": 102.5,
+    "forecast": 103
    },
    "cihaz": {
     "hedef": 178,
@@ -518,6 +1130,18 @@
    "bayiAdi": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
    "il": "AMASYA",
    "sy": "KORAY YEŞİLÖRDEK",
+   "postpaid": {
+    "hedef": 196,
+    "adet": 131,
+    "hgo": 66.8,
+    "forecast": 67
+   },
+   "prepaid": {
+    "hedef": 93,
+    "adet": 124,
+    "hgo": 133.3,
+    "forecast": 133
+   },
    "mobil": {
     "hedef": 289,
     "adet": 255,
@@ -530,11 +1154,35 @@
     "hgo": 113.3,
     "forecast": 113
    },
+   "iptv": {
+    "hedef": 27,
+    "adet": 22,
+    "hgo": 81.5,
+    "forecast": 82
+   },
+   "uydu": {
+    "hedef": 8,
+    "adet": 9,
+    "hgo": 112.5,
+    "forecast": 113
+   },
    "tv": {
     "hedef": 35,
     "adet": 31,
     "hgo": 88.6,
     "forecast": 89
+   },
+   "akilliCihaz": {
+    "hedef": 62,
+    "adet": 62,
+    "hgo": 100,
+    "forecast": 100
+   },
+   "digerCihaz": {
+    "hedef": 97,
+    "adet": 117,
+    "hgo": 120.6,
+    "forecast": 121
    },
    "cihaz": {
     "hedef": 159,
@@ -548,6 +1196,18 @@
    "bayiAdi": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
    "il": "AMASYA",
    "sy": "KORAY YEŞİLÖRDEK",
+   "postpaid": {
+    "hedef": 185,
+    "adet": 188,
+    "hgo": 101.6,
+    "forecast": 102
+   },
+   "prepaid": {
+    "hedef": 107,
+    "adet": 139,
+    "hgo": 129.9,
+    "forecast": 130
+   },
    "mobil": {
     "hedef": 292,
     "adet": 327,
@@ -560,11 +1220,35 @@
     "hgo": 106.9,
     "forecast": 107
    },
+   "iptv": {
+    "hedef": 30,
+    "adet": 30,
+    "hgo": 100,
+    "forecast": 100
+   },
+   "uydu": {
+    "hedef": 13,
+    "adet": 19,
+    "hgo": 146.2,
+    "forecast": 146
+   },
    "tv": {
     "hedef": 43,
     "adet": 49,
     "hgo": 114,
     "forecast": 114
+   },
+   "akilliCihaz": {
+    "hedef": 65,
+    "adet": 65,
+    "hgo": 100,
+    "forecast": 100
+   },
+   "digerCihaz": {
+    "hedef": 97,
+    "adet": 118,
+    "hgo": 121.6,
+    "forecast": 122
    },
    "cihaz": {
     "hedef": 162,
@@ -578,6 +1262,18 @@
    "bayiAdi": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
    "il": "ÇORUM",
    "sy": "KORAY YEŞİLÖRDEK",
+   "postpaid": {
+    "hedef": 148,
+    "adet": 132,
+    "hgo": 89.2,
+    "forecast": 89
+   },
+   "prepaid": {
+    "hedef": 125,
+    "adet": 117,
+    "hgo": 93.6,
+    "forecast": 94
+   },
    "mobil": {
     "hedef": 273,
     "adet": 249,
@@ -590,11 +1286,35 @@
     "hgo": 99.3,
     "forecast": 99
    },
+   "iptv": {
+    "hedef": 43,
+    "adet": 43,
+    "hgo": 100,
+    "forecast": 100
+   },
+   "uydu": {
+    "hedef": 8,
+    "adet": 6,
+    "hgo": 75,
+    "forecast": 75
+   },
    "tv": {
     "hedef": 51,
     "adet": 49,
     "hgo": 96.1,
     "forecast": 96
+   },
+   "akilliCihaz": {
+    "hedef": 33,
+    "adet": 25,
+    "hgo": 75.8,
+    "forecast": 76
+   },
+   "digerCihaz": {
+    "hedef": 18,
+    "adet": 17,
+    "hgo": 94.4,
+    "forecast": 94
    },
    "cihaz": {
     "hedef": 51,
@@ -608,6 +1328,18 @@
    "bayiAdi": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
    "il": "SAMSUN",
    "sy": "KORAY YEŞİLÖRDEK",
+   "postpaid": {
+    "hedef": 224,
+    "adet": 237,
+    "hgo": 105.8,
+    "forecast": 106
+   },
+   "prepaid": {
+    "hedef": 135,
+    "adet": 137,
+    "hgo": 101.5,
+    "forecast": 102
+   },
    "mobil": {
     "hedef": 359,
     "adet": 374,
@@ -620,11 +1352,35 @@
     "hgo": 68.8,
     "forecast": 69
    },
+   "iptv": {
+    "hedef": 29,
+    "adet": 16,
+    "hgo": 55.2,
+    "forecast": 55
+   },
+   "uydu": {
+    "hedef": 8,
+    "adet": 11,
+    "hgo": 137.5,
+    "forecast": 138
+   },
    "tv": {
     "hedef": 37,
     "adet": 27,
     "hgo": 73,
     "forecast": 73
+   },
+   "akilliCihaz": {
+    "hedef": 107,
+    "adet": 114,
+    "hgo": 106.5,
+    "forecast": 107
+   },
+   "digerCihaz": {
+    "hedef": 72,
+    "adet": 61,
+    "hgo": 84.7,
+    "forecast": 85
    },
    "cihaz": {
     "hedef": 179,
