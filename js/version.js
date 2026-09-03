@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-09-03 · Sprint 34.7: Yönetici Raporu Okunabilirlik';
+const APP_BUILD = '2026-09-03 · Sprint 34.8: Ürün Bazlı YTD Aktivasyon Kıyası';
