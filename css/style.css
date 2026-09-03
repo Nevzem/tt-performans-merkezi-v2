@@ -1263,6 +1263,20 @@ table.mx td.val .raw { font-size: 9px; font-weight: 600; opacity: 0.6; margin-to
   min-width: 82px; justify-content: center;
   box-shadow: 0 2px 12px rgba(0,122,255,0.4);
 }
+.spm-download-btn {
+  background: rgba(255,255,255,0.96);
+  color: #10233F;
+  border: 1px solid rgba(255,255,255,0.2);
+  min-width: 126px; justify-content: center;
+}
+@media (max-width: 560px) {
+  .spm-toolbar { gap: 7px; padding-left: 9px; padding-right: 9px; }
+  .spm-title { display: none; }
+  .spm-btn { padding: 8px 9px; font-size: 12px; }
+  .spm-close-btn { min-width: 68px; }
+  .spm-download-btn { min-width: 112px; }
+  .spm-share-btn { min-width: 76px; }
+}
 
 /* ─── GÖRSEL ALANI ────────────────────────────────────────────────── */
 .spm-body {
