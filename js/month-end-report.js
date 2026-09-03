@@ -10,6 +10,7 @@ var MER_PRODUCTS=[
 var merDealerCode=null;
 function merN(v){return v==null?'—':Math.round(v).toLocaleString('tr-TR')}
 function merP(v){return v==null?'—':'%'+Number(v).toFixed(v%1?1:0).replace('.',',')}
+function merMonthShort(period){var m=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];var n=Number(String(period||'').slice(5,7));return m[n-1]||''}
 function merPeriod(){var d=(typeof DONEM!=='undefined'&&DONEM)||'';return d||new Date().toLocaleDateString('tr-TR',{month:'long',year:'numeric'}).toLocaleUpperCase('tr-TR')}
 function merCodes(){return Object.keys((typeof DETAY!=='undefined'&&DETAY.bayiler)||{}).sort(function(a,b){return DETAY.bayiler[a].b.localeCompare(DETAY.bayiler[b].b,'tr')})}
 function merHistoryValue(code,pm,period){
@@ -40,11 +41,12 @@ function merStats(code,pm,current){
  return {a:a,h:h,g:g,daily:a/days,ytd:ytdA,ytdTarget:ytdTarget,ytdGap:ytdGap,ytdPrev:ytdPrev,ytdDiff:ytdDiff,ytdYoY:ytdYoY,yoy:yoy,series:series};
 }
 function merSpark(stats,color){
- var s=stats.series.length?stats.series.map(function(x){return x.a}):[stats.a,stats.a];while(s.length<8)s.unshift(null);
+ var entries=stats.series.length?stats.series.map(function(x){return {a:x.a,period:x.period}}):[{a:stats.a,period:''},{a:stats.a,period:''}];while(entries.length<8)entries.unshift({a:null,period:''});
+ var s=entries.map(function(x){return x.a});
  var nums=s.filter(function(v){return v!=null});var max=Math.max.apply(null,nums.concat([stats.h,1])),min=Math.min.apply(null,nums.concat([stats.h]));var span=max-min||1;
  var pts=s.map(function(v,i){return v==null?null:[i*250/7,68-(v-min)/span*50,v]}).filter(Boolean);
  var line=pts.map(function(p){return p[0]+','+p[1]}).join(' ');var ty=68-(stats.h-min)/span*55;
- return '<svg viewBox="0 0 250 82" preserveAspectRatio="none"><line x1="0" y1="'+ty+'" x2="250" y2="'+ty+'" stroke="'+color+'" stroke-dasharray="4 3" opacity=".75"/><polyline points="'+line+'" fill="none" stroke="'+color+'" stroke-width="3"/>'+pts.map(function(p,i){var anchor=p[0]<10?'start':p[0]>240?'end':'middle',ly=Math.max(9,p[1]-7-(i%2?2:0));return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3" fill="'+color+'"/><text x="'+p[0]+'" y="'+ly+'" text-anchor="'+anchor+'" fill="#53657a" font-size="8" font-weight="700">'+merN(p[2])+'</text>'}).join('')+'</svg>';
+ return '<svg viewBox="0 0 250 92" preserveAspectRatio="none"><line x1="0" y1="'+ty+'" x2="250" y2="'+ty+'" stroke="'+color+'" stroke-dasharray="4 3" opacity=".75"/><polyline points="'+line+'" fill="none" stroke="'+color+'" stroke-width="3"/>'+pts.map(function(p,i){var anchor=p[0]<10?'start':p[0]>240?'end':'middle',ly=Math.max(9,p[1]-7-(i%2?2:0));return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3" fill="'+color+'"/><text x="'+p[0]+'" y="'+ly+'" text-anchor="'+anchor+'" fill="#53657a" font-size="8" font-weight="700">'+merN(p[2])+'</text>'}).join('')+entries.map(function(e,i){return e.period?'<text x="'+(i*250/7)+'" y="89" text-anchor="'+(i===0?'start':i===7?'end':'middle')+'" fill="#64748b" font-size="7" font-weight="700">'+merMonthShort(e.period)+'</text>':''}).join('')+'</svg>';
 }
 function merProductData(dealer){return MER_PRODUCTS.map(function(pm){return Object.assign({},pm,{stats:merStats(dealer.kod,pm,dealer.prods[pm.key])})})}
 function merTrHgo(p){var t=typeof MATRIX!=='undefined'&&MATRIX&&MATRIX.turkiye;if(!t)return null;return t[p.hist]}
@@ -74,9 +76,10 @@ function merCanvasReport(){
  products.forEach(function(p,i){
   var col=i%2,row=Math.floor(i/2),x=27+col*386,y=280+row*154,w=372,h=144,s=p.stats,tr=merTrHgo(p);
   rr(x,y,w,h,10,inner,border);txt((i+1)+'. '+p.label,x+14,y+25,14,p.color,'800');txt('Güncel '+merN(s.a),x+w-16,y+25,16,white,'900','right');
-  var sx=x+14,sy=y+60,sw=250,sh=54;line(sx,sy+sh/2,sx+sw,sy+sh/2,p.color,1,[4,3]);var vals=s.series.map(function(v){return v.a});if(!vals.length)vals=[s.a,s.a];var mx=Math.max.apply(null,vals.concat([s.h||0,1])),mn=Math.min.apply(null,vals.concat([s.h||0]));var span=mx-mn||1;
+  var sx=x+14,sy=y+60,sw=250,sh=47;line(sx,sy+sh/2,sx+sw,sy+sh/2,p.color,1,[4,3]);var vals=s.series.map(function(v){return v.a});if(!vals.length)vals=[s.a,s.a];var mx=Math.max.apply(null,vals.concat([s.h||0,1])),mn=Math.min.apply(null,vals.concat([s.h||0]));var span=mx-mn||1;
   c.beginPath();vals.forEach(function(v,j){var px=sx+(vals.length===1?sw:sw*j/(vals.length-1)),py=sy+sh-(v-mn)/span*sh;if(j)c.lineTo(px,py);else c.moveTo(px,py)});c.strokeStyle=p.color;c.lineWidth=3;c.stroke();
   vals.forEach(function(v,j){var px=sx+(vals.length===1?sw:sw*j/(vals.length-1)),py=sy+sh-(v-mn)/span*sh;c.beginPath();c.arc(px,py,4,0,Math.PI*2);c.fillStyle=p.color;c.fill();txt(merN(v),px,Math.max(sy-2,py-10),9,muted,'700',j===0?'left':j===vals.length-1?'right':'center')});
+  s.series.forEach(function(v,j){var px=sx+(s.series.length===1?sw:sw*j/(s.series.length-1));txt(merMonthShort(v.period),px,y+119,8,muted,'700',j===0?'left':j===s.series.length-1?'right':'center')});
   txt('Hedef '+merN(s.h),x+w-16,y+51,12,p.color,'700','right');rr(x+w-101,y+62,85,49,8,'#ffffff',p.color);txt('Bayi',x+w-93,y+76,9,muted,'700');txt(pct(s.g),x+w-23,y+76,11,p.color,'900','right');line(x+w-94,y+86,x+w-23,y+86,border,1);txt('TR',x+w-93,y+99,9,muted,'700');txt(pct(tr),x+w-23,y+99,11,white,'900','right');txt(s.yoy==null?'Aylık YoY: veri yok':'Aylık YoY '+yoy(s.yoy),x+w-12,y+128,10,s.yoy!=null&&s.yoy<0?'#dc2638':green,'800','right');
  });
  rr(812,243,709,493,10,panel,border);txt('ÜRÜN BAZLI PERFORMANS',830,266,18,white,'900');var tx=820,ty=282,tw=693,rh=64,cols=[108,70,80,76,80,105,88,86],heads=['Ürün','Ay Hdf.','Gerçek.','Ay Perf.','Günlük','YTD G / H','YTD Fark','Aylık YoY'];var cx=tx;heads.forEach(function(h,i){txt(h,cx+cols[i]/2,ty+22,11,muted,'700','center');cx+=cols[i]});products.forEach(function(p,r){var yy=ty+43+r*rh,cx2=tx;rr(tx,yy,tw,rh,0,inner,border);var vals=[p.label,merN(p.stats.h),merN(p.stats.a),pct(p.stats.g),p.stats.daily.toFixed(1).replace('.',','),merN(p.stats.ytd)+' / '+merN(p.stats.ytdTarget),merGap(p.stats.ytdGap),p.stats.yoy==null?'Veri yok':yoy(p.stats.yoy)];vals.forEach(function(v,i){if(i)line(cx2,yy,cx2,yy+rh,border,1);var color=i===0||i===3?p.color:(i===6?(p.stats.ytdGap<0?'#dc2638':green):white);txt(v,cx2+cols[i]/2,yy+rh/2,i===0?14:12,color,i===0||i===3||i===6?'800':'600','center');cx2+=cols[i]})});
