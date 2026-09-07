@@ -1,109 +1,392 @@
-/* Ay Sonu Bayi Performans Karnesi - ürünler asla birbirine toplanmaz. */
-var MER_PRODUCTS=[
- {label:'Faturalı',key:'Postpaid',hist:'postpaid',color:'#f20a7a'},
- {label:'Faturasız',key:'Prepaid',hist:'prepaid',color:'#16c7ee'},
- {label:'DSL',key:'DSL',hist:'dsl',color:'#53d769'},
- {label:'IPTV',key:'IPTV',hist:'iptv',color:'#a65ae8'},
- {label:'Uydu TV',key:'Uydu',hist:'uydu',color:'#ff851b'},
- {label:'Cihaz',key:'Akıllı Cihaz',hist:'akilliCihaz',color:'#ffd21e'}
+/* Ay Sonu Bayi Performans Karnesi V2
+ * Ürünler birbirine eklenmez; yalnızca "Mobil" görünümü Postpaid + Prepaid
+ * kaynağındaki hazır "Toplam Mobil" satırını kullanır.
+ */
+var MER_TABLE_PRODUCTS = [
+  { label: 'Faturalı', key: 'Postpaid', hist: 'postpaid', region: 'postpaid', color: '#f20a7a' },
+  { label: 'Faturasız', key: 'Prepaid', hist: 'prepaid', region: 'prepaid', color: '#16c7ee' },
+  { label: 'Toplam Mobil', key: 'Toplam Mobil', hist: 'mobil', region: 'mobil', color: '#315a87' },
+  { label: 'DSL', key: 'DSL', hist: 'dsl', region: 'dsl', color: '#42c966' },
+  { label: 'IPTV', key: 'IPTV', hist: 'iptv', region: 'iptv', color: '#9c55dd' },
+  { label: 'Uydu TV', key: 'Uydu', hist: 'uydu', region: 'uydu', color: '#ff7b17' },
+  { label: 'Cihaz', key: 'Akıllı Cihaz', hist: 'akilliCihaz', region: 'akilliCihaz', color: '#f5c400' }
 ];
-var merDealerCode=null;
-function merN(v){return v==null?'—':Math.round(v).toLocaleString('tr-TR')}
-function merP(v){return v==null?'—':'%'+Number(v).toFixed(v%1?1:0).replace('.',',')}
-function merMonthShort(period){var m=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];var n=Number(String(period||'').slice(5,7));return m[n-1]||''}
-function merPeriod(){var d=(typeof DONEM!=='undefined'&&DONEM)||'';return d||new Date().toLocaleDateString('tr-TR',{month:'long',year:'numeric'}).toLocaleUpperCase('tr-TR')}
-function merCodes(){return Object.keys((typeof DETAY!=='undefined'&&DETAY.bayiler)||{}).sort(function(a,b){return DETAY.bayiler[a].b.localeCompare(DETAY.bayiler[b].b,'tr')})}
-function merHistoryValue(code,pm,period){
- var doc=typeof HIST2_DATA!=='undefined'?HIST2_DATA[period]:null;if(!doc||!doc.dealers)return null;
- var d=doc.dealers.find(function(x){return String(x.bayiKodu)===String(code)});if(!d)return null;
- var x=d[pm.hist];if(!x&&pm.hist==='cihaz')x=d.cihaz;return x||null;
+
+var MER_TREND_PRODUCTS = [
+  { label: 'Mobil', key: 'Toplam Mobil', hist: 'mobil', region: 'mobil', color: '#f20a7a' },
+  { label: 'DSL', key: 'DSL', hist: 'dsl', region: 'dsl', color: '#42c966' },
+  { label: 'IPTV', key: 'IPTV', hist: 'iptv', region: 'iptv', color: '#9c55dd' },
+  { label: 'Uydu TV', key: 'Uydu', hist: 'uydu', region: 'uydu', color: '#ff7b17' },
+  { label: 'Cihaz', key: 'Akıllı Cihaz', hist: 'akilliCihaz', region: 'akilliCihaz', color: '#f5c400' },
+  { label: 'Diğer Cihaz', key: 'Diğer Cihaz', hist: 'digerCihaz', region: 'digerCihaz', color: '#3e72a5' }
+];
+
+var MER_YTD_PRODUCTS = MER_TABLE_PRODUCTS.filter(function (p) { return p.label !== 'Toplam Mobil'; });
+var MER_STAFF_PRODUCTS = [
+  { label: 'Mobil', key: 'Toplam Mobil' },
+  { label: 'DSL', key: 'DSL' },
+  { label: 'IPTV', key: 'IPTV' },
+  { label: 'Uydu', key: 'Uydu' },
+  { label: 'Cihaz', key: 'Akıllı Cihaz' },
+  { label: 'Diğer', key: 'Diğer Cihaz' }
+];
+
+var merDealerCode = null;
+
+function merN(v) { return v == null ? '—' : Math.round(v).toLocaleString('tr-TR'); }
+function merP(v) { return v == null || !isFinite(v) ? '—' : '%' + Number(v).toFixed(v % 1 ? 1 : 0).replace('.', ','); }
+function merSignedP(v) { return v == null || !isFinite(v) ? '—' : (v >= 0 ? '+' : '-') + '%' + Math.abs(v).toFixed(Math.abs(v) % 1 ? 1 : 0).replace('.', ','); }
+function merMonthShort(period) {
+  var months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+  return months[Number(String(period || '').slice(5, 7)) - 1] || '';
 }
-function merSeries(code,pm){
- var reportPeriod=String((typeof DONEM!=='undefined'&&DONEM)||'').replace('/','-'),year=reportPeriod.slice(0,4)||String(new Date().getFullYear());
- var out=[];if(typeof HIST2_DATA!=='undefined')Object.keys(HIST2_DATA).sort().forEach(function(period){if(period.slice(0,4)!==year||(reportPeriod&&period>reportPeriod))return;var x=merHistoryValue(code,pm,period);if(x)out.push({period:period,a:x.adet||0,h:x.hedef||0})});return out.slice(-12);
+function merPeriod() {
+  var d = (typeof DONEM !== 'undefined' && DONEM) || '';
+  return d || new Date().toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' }).toLocaleUpperCase('tr-TR');
 }
-function merStats(code,pm,current){
- var series=merSeries(code,pm),a=current?current.a:0,h=current?current.h:0,g=h?a/h*100:null;
- var days=(typeof SYDATA!=='undefined'&&SYDATA.calisilanGun)||30;
- var reportPeriod=String((typeof DONEM!=='undefined'&&DONEM)||'').replace('/','-'),refPeriod=reportPeriod||((series.length&&series[series.length-1].period)||''),p=refPeriod?merHistoryValue(code,pm,String(Number(refPeriod.slice(0,4))-1)+refPeriod.slice(4)):null;
- /* Geçmiş paketinde rapor ayı da varsa kapanış değerini değil, ekranda
-    yüklü güncel raporun gerçekleşenini kullan. Böylece YTD = önceki kapanan
-    aylar + mevcut rapor ayı olur ve trendin son noktası güncel adetle eşleşir. */
- if(refPeriod&&current){var currentIndex=series.findIndex(function(x){return x.period===refPeriod});var currentPoint={period:refPeriod,a:a,h:h};if(currentIndex>=0)series[currentIndex]=currentPoint;else series.push(currentPoint);series.sort(function(x,y){return x.period.localeCompare(y.period)})}
- var ytdA=series.length?series.reduce(function(s,x){return s+x.a},0):null;
- var ytdTarget=series.length?series.reduce(function(s,x){return s+x.h},0):null;
- var ytdGap=ytdA==null||ytdTarget==null?null:ytdA-ytdTarget;
- var prevYear=refPeriod?String(Number(refPeriod.slice(0,4))-1):'',prevEnd=prevYear+(refPeriod?refPeriod.slice(4):''),ytdPrev=null;
- if(prevYear&&typeof HIST2_DATA!=='undefined'){var prevValues=[];Object.keys(HIST2_DATA).sort().forEach(function(period){if(period.slice(0,4)!==prevYear||period>prevEnd)return;var x=merHistoryValue(code,pm,period);if(x)prevValues.push(x.adet||0)});if(prevValues.length)ytdPrev=prevValues.reduce(function(s,v){return s+v},0)}
- var ytdDiff=ytdA==null||ytdPrev==null?null:ytdA-ytdPrev;
- var ytdYoY=ytdPrev?ytdDiff/ytdPrev*100:null;
- var yoy=p&&p.adet?((a-p.adet)/p.adet*100):null;
- return {a:a,h:h,g:g,daily:a/days,ytd:ytdA,ytdTarget:ytdTarget,ytdGap:ytdGap,ytdPrev:ytdPrev,ytdDiff:ytdDiff,ytdYoY:ytdYoY,yoy:yoy,series:series};
+function merReportYear() {
+  return Number(String((typeof DONEM !== 'undefined' && DONEM) || new Date().getFullYear()).slice(0, 4));
 }
-function merSpark(stats,color){
- var entries=stats.series.length?stats.series.map(function(x){return {a:x.a,period:x.period}}):[{a:stats.a,period:''},{a:stats.a,period:''}];while(entries.length<8)entries.unshift({a:null,period:''});
- var s=entries.map(function(x){return x.a});
- var nums=s.filter(function(v){return v!=null});var max=Math.max.apply(null,nums.concat([stats.h,1])),min=Math.min.apply(null,nums.concat([stats.h]));var span=max-min||1;
- var pts=s.map(function(v,i){return v==null?null:[i*250/7,68-(v-min)/span*50,v]}).filter(Boolean);
- var line=pts.map(function(p){return p[0]+','+p[1]}).join(' ');var ty=68-(stats.h-min)/span*55;
- return '<svg viewBox="0 0 250 92" preserveAspectRatio="none"><line x1="0" y1="'+ty+'" x2="250" y2="'+ty+'" stroke="'+color+'" stroke-dasharray="4 3" opacity=".75"/><polyline points="'+line+'" fill="none" stroke="'+color+'" stroke-width="3"/>'+pts.map(function(p,i){var anchor=p[0]<10?'start':p[0]>240?'end':'middle',ly=Math.max(9,p[1]-7-(i%2?2:0));return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3" fill="'+color+'"/><text x="'+p[0]+'" y="'+ly+'" text-anchor="'+anchor+'" fill="#53657a" font-size="8" font-weight="700">'+merN(p[2])+'</text>'}).join('')+entries.map(function(e,i){return e.period?'<text x="'+(i*250/7)+'" y="89" text-anchor="'+(i===0?'start':i===7?'end':'middle')+'" fill="#64748b" font-size="7" font-weight="700">'+merMonthShort(e.period)+'</text>':''}).join('')+'</svg>';
+function merCodes() {
+  return Object.keys((typeof DETAY !== 'undefined' && DETAY.bayiler) || {}).sort(function (a, b) {
+    return DETAY.bayiler[a].b.localeCompare(DETAY.bayiler[b].b, 'tr');
+  });
 }
-function merProductData(dealer){return MER_PRODUCTS.map(function(pm){return Object.assign({},pm,{stats:merStats(dealer.kod,pm,dealer.prods[pm.key])})})}
-function merTrHgo(p){var t=typeof MATRIX!=='undefined'&&MATRIX&&MATRIX.turkiye;if(!t)return null;return t[p.hist]}
-function merTrendCard(p){var s=p.stats,up=s.yoy==null?null:s.yoy>=0,tr=merTrHgo(p);return '<div class="mer-trend"><div class="mer-trend-h" style="color:'+p.color+'"><b>'+p.label+'</b><b>Güncel '+merN(s.a)+'</b></div><div class="mer-chart">'+merSpark(s,p.color)+'</div><div class="mer-trend-side"><span class="mer-target" style="color:'+p.color+'">Hedef '+merN(s.h)+'</span><span class="mer-hgo" style="border-color:'+p.color+'"><span><small>Bayi HGO</small><b style="color:'+p.color+'">'+merP(s.g)+'</b></span><span><small>TR HGO</small><b>'+merP(tr)+'</b></span></span><span class="mer-yoy" style="color:'+(up===false?'#dc2638':'#20a65a')+'">Aylık YoY '+(s.yoy==null?'veri yok':(up?'+':'')+merP(s.yoy))+'</span></div></div>'}
-function merGap(v){return v==null?'—':v===0?'Tam':(v>0?'+':'')+merN(v)}
-function merTable(products){var h=['Ürün','Ay Hedef','Gerçekleşen','Ay Perf.','Günlük Ort.','YTD G / H','YTD Fark','Aylık YoY'];var html=h.map(function(x){return '<div class="mer-th">'+x+'</div>'}).join('');products.forEach(function(p){var s=p.stats;[p.label,merN(s.h),merN(s.a),merP(s.g),s.daily.toFixed(1).replace('.',','),merN(s.ytd)+' / '+merN(s.ytdTarget),merGap(s.ytdGap),s.yoy==null?'Veri yok':(s.yoy>=0?'+':'')+merP(s.yoy)].forEach(function(v,i){var gapClass=i===6?(s.ytdGap<0?' gap-neg':' gap-pos'):'';html+='<div class="mer-td '+(i===0?'prod ':'')+(i===3?'perf':'')+gapClass+'" style="'+(i===0||i===3?'color:'+p.color:'')+'">'+v+'</div>'})});return html}
-function merBars(products){var max=Math.max.apply(null,products.reduce(function(a,p){return a.concat([p.stats.ytd||0,p.stats.ytdPrev||0])},[1]));return products.map(function(p){var s=p.stats,y=s.ytd||0,prev=s.ytdPrev||0,ph=Math.min(108,Math.max(0,prev/max*108)),yh=Math.min(108,Math.max(0,y/max*108));return '<div class="mer-bar-group"><div class="mer-bar-wrap"><span>'+merN(prev)+'</span><div class="mer-bar" style="height:'+ph+'px;background:#00a6d6"></div></div><div class="mer-bar-wrap"><span>'+merN(y)+'</span><div class="mer-bar" style="height:'+yh+'px;background:#e6007e"></div></div><span class="mer-bar-name">'+p.label+'</span><span class="mer-bar-yoy" style="color:'+(s.ytdYoY!=null&&s.ytdYoY<0?'#dc2638':'#20a65a')+'">'+(s.ytdYoY==null?'—':(s.ytdYoY>=0?'+':'')+merP(s.ytdYoY))+'</span></div>'}).join('')}
-function merYtdMatrix(products){var html='<div class="mer-ytd-head"><span>Ürün</span><span>2025 YTD</span><span>2026 YTD</span><span>Fark</span><span>YTD YoY</span></div>';products.forEach(function(p){var s=p.stats,up=s.ytdDiff!=null&&s.ytdDiff>=0;html+='<div class="mer-ytd-row"><b style="color:'+p.color+'">'+p.label+'</b><span>'+merN(s.ytdPrev)+'</span><span>'+merN(s.ytd)+'</span><strong class="'+(up?'pos':'neg')+'">'+merGap(s.ytdDiff)+'</strong><strong class="'+(up?'pos':'neg')+'">'+(s.ytdYoY==null?'—':(s.ytdYoY>=0?'+':'')+merP(s.ytdYoY))+'</strong></div>'});return html}
-function merCanvasReport(){
- var dealer=DETAY.bayiler[merDealerCode],products=merProductData(dealer),ratio=(dealer.prods.DSL&&dealer.prods.DSL.a)?dealer.prods.IPTV.a/dealer.prods.DSL.a*100:null;
- /* 4K genişlikte, kayıpsız PNG. Mantıksal tasarım 1536×1024 olarak kalır;
-    daha yüksek piksel yoğunluğu özellikle küçük tablo ve grafik yazılarını netleştirir. */
- var cv=document.createElement('canvas');cv.width=4096;cv.height=2731;var c=cv.getContext('2d');c.scale(8/3,8/3);
- var bg='#f4f7fb',panel='#ffffff',inner='#f8fafc',border='#d7e0ea',muted='#64748b',white='#10243e',pink='#e6007e',cyan='#00a6d6',green='#20a65a',purple='#7046b3',orange='#f47b20',yellow='#d9a900';
- function rr(x,y,w,h,r,fill,stroke){c.beginPath();c.roundRect(x,y,w,h,r);if(fill){c.fillStyle=fill;c.fill()}if(stroke){c.strokeStyle=stroke;c.lineWidth=1;c.stroke()}}
- function txt(t,x,y,size,color,weight,align){c.font=(weight||'600')+' '+size+'px Arial, sans-serif';c.fillStyle=color||white;c.textAlign=align||'left';c.textBaseline='middle';c.fillText(String(t),x,y)}
- function line(x1,y1,x2,y2,color,w,dash){c.beginPath();c.strokeStyle=color;c.lineWidth=w||1;c.setLineDash(dash||[]);c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.setLineDash([])}
- function pct(v){return v==null?'—':'%'+Number(v).toFixed(v%1?1:0).replace('.',',')}
- function yoy(v){return v==null?'—':(v>=0?'+':'-')+'%'+Math.abs(v).toFixed(Math.abs(v)%1?1:0).replace('.',',')}
- function circle(x,y,r,color,label,fs){c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.strokeStyle=color;c.lineWidth=2;c.stroke();txt(label,x,y,fs||18,color,'800','center')}
- c.fillStyle=bg;c.fillRect(0,0,1536,1024);
- txt('AY SONU BAYİ PERFORMANS KARNESİ',31,37,38,white,'900');txt(merPeriod()+' • GERÇEK VERİ',31,80,22,pink,'900');line(849,20,849,84,pink,2);txt(dealer.b,884,41,29,white,'900');txt('Bayi Kodu: '+dealer.kod,884,72,14,muted,'700');rr(1352,26,166,42,8,null,white);txt('YATIRIMCI RAPORU',1435,47,14,white,'700','center');
- var over=products.filter(function(p){return p.stats.g>=100}),ytdOver=products.filter(function(p){return p.stats.ytdGap>=0}),best=products.slice().sort(function(a,b){return(b.stats.g||0)-(a.stats.g||0)})[0],yb=products.filter(function(p){return p.stats.yoy!=null}).sort(function(a,b){return b.stats.yoy-a.stats.yoy})[0];
- var sig=[['YTD HEDEF ÜSTÜ',ytdOver.length+' / 6 ÜRÜN',ytdOver.map(function(p){return p.label}).join(' • ')||'Henüz yok',pink,'▦'],['AY HEDEF ÜSTÜ',over.length+' / 6 ÜRÜN',over.map(function(p){return p.label}).join(' • ')||'Henüz yok',cyan,'◎'],['EN GÜÇLÜ ÜRÜN',best.label+' '+pct(best.stats.g),'Ay Performansı',purple,'★'],['EN YÜKSEK AYLIK YOY',yb?yb.label+' '+yoy(yb.stats.yoy):'Veri yok','Geçen Yılın Aynı Ayına Göre',green,'↗'],['IPTV • DSL',pct(ratio),'Dönüşüm Oranı',orange,'◉']];
- sig.forEach(function(s,i){var x=15+i*302;rr(x,106,291,123,10,panel,border);circle(x+56,168,36,s[3],s[4],22);txt(s[0],x+111,137,13,white,'700');txt(s[1],x+111,174,27,white,'900');txt(s[2],x+111,208,12,muted,'500')});
- rr(15,243,785,493,10,panel,border);txt('ÜRÜN BAZLI TRENDLER',33,266,18,white,'900');
- products.forEach(function(p,i){
-  var col=i%2,row=Math.floor(i/2),x=27+col*386,y=280+row*154,w=372,h=144,s=p.stats,tr=merTrHgo(p);
-  rr(x,y,w,h,10,inner,border);txt((i+1)+'. '+p.label,x+14,y+25,14,p.color,'800');txt('Güncel '+merN(s.a),x+w-16,y+25,16,white,'900','right');
-  var sx=x+14,sy=y+60,sw=250,sh=47;line(sx,sy+sh/2,sx+sw,sy+sh/2,p.color,1,[4,3]);var vals=s.series.map(function(v){return v.a});if(!vals.length)vals=[s.a,s.a];var mx=Math.max.apply(null,vals.concat([s.h||0,1])),mn=Math.min.apply(null,vals.concat([s.h||0]));var span=mx-mn||1;
-  c.beginPath();vals.forEach(function(v,j){var px=sx+(vals.length===1?sw:sw*j/(vals.length-1)),py=sy+sh-(v-mn)/span*sh;if(j)c.lineTo(px,py);else c.moveTo(px,py)});c.strokeStyle=p.color;c.lineWidth=3;c.stroke();
-  vals.forEach(function(v,j){var px=sx+(vals.length===1?sw:sw*j/(vals.length-1)),py=sy+sh-(v-mn)/span*sh;c.beginPath();c.arc(px,py,4,0,Math.PI*2);c.fillStyle=p.color;c.fill();txt(merN(v),px,Math.max(sy-2,py-10),9,muted,'700',j===0?'left':j===vals.length-1?'right':'center')});
-  s.series.forEach(function(v,j){var px=sx+(s.series.length===1?sw:sw*j/(s.series.length-1));txt(merMonthShort(v.period),px,y+119,8,muted,'700',j===0?'left':j===s.series.length-1?'right':'center')});
-  txt('Hedef '+merN(s.h),x+w-16,y+51,12,p.color,'700','right');rr(x+w-101,y+62,85,49,8,'#ffffff',p.color);txt('Bayi',x+w-93,y+76,9,muted,'700');txt(pct(s.g),x+w-23,y+76,11,p.color,'900','right');line(x+w-94,y+86,x+w-23,y+86,border,1);txt('TR',x+w-93,y+99,9,muted,'700');txt(pct(tr),x+w-23,y+99,11,white,'900','right');txt(s.yoy==null?'Aylık YoY: veri yok':'Aylık YoY '+yoy(s.yoy),x+w-12,y+128,10,s.yoy!=null&&s.yoy<0?'#dc2638':green,'800','right');
- });
- rr(812,243,709,493,10,panel,border);txt('ÜRÜN BAZLI PERFORMANS',830,266,18,white,'900');var tx=820,ty=282,tw=693,rh=64,cols=[108,70,80,76,80,105,88,86],heads=['Ürün','Ay Hdf.','Gerçek.','Ay Perf.','Günlük','YTD G / H','YTD Fark','Aylık YoY'];var cx=tx;heads.forEach(function(h,i){txt(h,cx+cols[i]/2,ty+22,11,muted,'700','center');cx+=cols[i]});products.forEach(function(p,r){var yy=ty+43+r*rh,cx2=tx;rr(tx,yy,tw,rh,0,inner,border);var vals=[p.label,merN(p.stats.h),merN(p.stats.a),pct(p.stats.g),p.stats.daily.toFixed(1).replace('.',','),merN(p.stats.ytd)+' / '+merN(p.stats.ytdTarget),merGap(p.stats.ytdGap),p.stats.yoy==null?'Veri yok':yoy(p.stats.yoy)];vals.forEach(function(v,i){if(i)line(cx2,yy,cx2,yy+rh,border,1);var color=i===0||i===3?p.color:(i===6?(p.stats.ytdGap<0?'#dc2638':green):white);txt(v,cx2+cols[i]/2,yy+rh/2,i===0?14:12,color,i===0||i===3||i===6?'800':'600','center');cx2+=cols[i]})});
- var reportYear=Number(String((typeof DONEM!=='undefined'&&DONEM)||new Date().getFullYear()).slice(0,4));rr(15,746,662,244,10,panel,border);txt('2025–2026 YTD AKTİVASYON KIYASI',33,770,18,white,'900');txt('Sütunlar: YTD adet • Alt oran: 2026 YTD’nin 2025 YTD’ye göre değişimi',33,793,10,muted,'600');txt('■',400,770,13,cyan,'700');txt(String(reportYear-1),415,770,11,muted,'600');txt('■',469,770,13,pink,'700');txt(String(reportYear),484,770,11,muted,'600');var max=Math.max.apply(null,products.reduce(function(a,p){return a.concat([p.stats.ytd||0,p.stats.ytdPrev||0])},[1]));products.forEach(function(p,i){var x=56+i*101,y=925,cur=p.stats.ytd||0,prev=p.stats.ytdPrev||0;var ph=Math.min(108,Math.max(2,prev/max*108)),ch=Math.min(108,Math.max(2,cur/max*108));c.fillStyle=cyan;c.fillRect(x,y-ph,24,ph);c.fillStyle=pink;c.fillRect(x+28,y-ch,24,ch);txt(merN(prev),x+12,y-ph-9,9,muted,'700','center');txt(merN(cur),x+40,y-ch-9,9,muted,'700','center');txt(p.label,x+26,944,10,white,'600','center');txt(p.stats.ytdYoY==null?'—':yoy(p.stats.ytdYoY),x+26,970,10,p.stats.ytdYoY!=null&&p.stats.ytdYoY<0?'#dc2638':green,'800','center')});
- rr(689,746,325,244,10,panel,border);txt('IPTV / DSL ORANI',710,773,18,white,'900');var rx=793,ry=865,rad=65;c.beginPath();c.arc(rx,ry,rad,0,Math.PI*2);c.strokeStyle='#dce5ee';c.lineWidth=22;c.stroke();c.beginPath();c.arc(rx,ry,rad,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,(ratio||0)/100));c.strokeStyle=purple;c.lineWidth=22;c.stroke();txt(pct(ratio),rx,ry,29,white,'900','center');txt('●  Bayi '+pct(ratio),886,832,16,purple,'800');txt('●  Bölge '+(MATRIX&&MATRIX.kuzey?pct(MATRIX.kuzey.ipdsl):'—'),886,871,16,green,'800');txt('●  Anadolu '+(MATRIX&&MATRIX.anadolu?pct(MATRIX.anadolu.ipdsl):'—'),886,910,16,cyan,'800');txt('Her 100 DSL satışındaki IPTV eşleşmesini gösterir.',708,971,11,muted,'600');
- rr(1027,746,494,244,10,panel,border);txt('ÜRÜN BAZLI YTD AKTİVASYON',1055,773,18,white,'900');line(1055,792,1494,792,pink,2);var yx=1045,yw=[110,80,80,80,95],yh=['Ürün','2025 YTD','2026 YTD','Fark','YTD YoY'],yc=yx;yh.forEach(function(v,i){txt(v,yc+yw[i]/2,811,11,muted,'700','center');yc+=yw[i]});products.forEach(function(p,i){var yy=829+i*26,cx=yx,s=p.stats,up=s.ytdDiff!=null&&s.ytdDiff>=0,vals=[p.label,merN(s.ytdPrev),merN(s.ytd),merGap(s.ytdDiff),s.ytdYoY==null?'—':yoy(s.ytdYoY)];if(i%2===0)rr(yx,yy-12,445,25,4,inner,null);vals.forEach(function(v,j){txt(v,cx+yw[j]/2,yy,j===0?12:11,j===0?p.color:(j>=3?(up?green:'#dc2638'):white),j===0||j>=3?'800':'600','center');cx+=yw[j]})});return cv;
+function merHistoryValue(code, pm, period) {
+  var doc = typeof HIST2_DATA !== 'undefined' ? HIST2_DATA[period] : null;
+  if (!doc || !doc.dealers) return null;
+  var dealer = doc.dealers.find(function (x) { return String(x.bayiKodu) === String(code); });
+  if (!dealer) return null;
+  return dealer[pm.hist] || null;
 }
-async function exportMonthEndPNG(){
- var el=document.getElementById('month-end-report');if(!el)return;
- var host=null;
- try{
-  var cv=merCanvasReport();
-  _openSharePreview(cv.toDataURL('image/png'),'TT_AySonu_'+merDealerCode+'_'+String(merPeriod()).replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşü]/g,'')+'.png');
- }catch(e){alert('Görsel oluşturma hatası: '+e.message)}finally{if(host&&host.parentNode)host.parentNode.removeChild(host)}
+function merSeries(code, pm) {
+  var reportPeriod = String((typeof DONEM !== 'undefined' && DONEM) || '').replace('/', '-');
+  var year = reportPeriod.slice(0, 4) || String(new Date().getFullYear());
+  var out = [];
+  if (typeof HIST2_DATA !== 'undefined') {
+    Object.keys(HIST2_DATA).sort().forEach(function (period) {
+      if (period.slice(0, 4) !== year || (reportPeriod && period > reportPeriod)) return;
+      var x = merHistoryValue(code, pm, period);
+      if (x) out.push({ period: period, a: x.adet || 0, h: x.hedef || 0 });
+    });
+  }
+  return out.slice(-12);
 }
-function renderMonthEndReport(){
- var cards=document.getElementById('cards');cards.className='cards single';cards.style.maxWidth='none';var codes=merCodes();if(!codes.length){cards.innerHTML='<div class="mer-empty">Bayi verisi bulunamadı. Güncel Excel raporunu yükleyin.</div>';return}
- if(!merDealerCode||!DETAY.bayiler[merDealerCode])merDealerCode=codes[0];var d=DETAY.bayiler[merDealerCode],ps=merProductData(d),over=ps.filter(function(p){return p.stats.g>=100}),ytdOver=ps.filter(function(p){return p.stats.ytdGap>=0}),best=ps.slice().sort(function(a,b){return(b.stats.g||0)-(a.stats.g||0)})[0],ybest=ps.filter(function(p){return p.stats.yoy!=null}).sort(function(a,b){return b.stats.yoy-a.stats.yoy})[0];var ratio=(d.prods.DSL&&d.prods.DSL.a)?(d.prods.IPTV.a/d.prods.DSL.a*100):null;
- var options=codes.map(function(k){var x=DETAY.bayiler[k];return '<option value="'+k+'" '+(k===merDealerCode?'selected':'')+'>'+x.b+' · '+x.il+' · '+k+'</option>'}).join('');
- var sig=[['YTD HEDEF ÜSTÜ',ytdOver.length+' / 6 ÜRÜN',ytdOver.map(function(x){return x.label}).join(' • ')||'Henüz yok','#e6007e','▦'],['AY HEDEF ÜSTÜ',over.length+' / 6 ÜRÜN',over.map(function(x){return x.label}).join(' • ')||'Henüz yok','#00a6d6','◎'],['EN GÜÇLÜ ÜRÜN',best.label+' '+merP(best.stats.g),'Ay performansı','#7046b3','★'],['EN YÜKSEK AYLIK YOY',ybest?ybest.label+' '+(ybest.stats.yoy>=0?'+':'')+merP(ybest.stats.yoy):'Veri bekleniyor','Geçen yılın aynı ayına göre','#20a65a','↗'],['IPTV • DSL',merP(ratio),'Dönüşüm oranı','#f47b20','◉']];
- cards.innerHTML='<div class="mer-toolbar"><span class="mer-print-note">Ürün adetleri birbirine eklenmez.</span><select onchange="merDealerCode=this.value;renderMonthEndReport()">'+options+'</select><button onclick="window.print()">PDF Kaydet</button><button onclick="downloadCardPNG()">PNG Paylaş</button></div><div class="mer-scroll"><section class="mer-report" id="month-end-report"><header class="mer-head"><div><h1>AY SONU BAYİ PERFORMANS KARNESİ</h1><p>'+merPeriod()+' • GERÇEK VERİ</p></div><i class="mer-divider"></i><div class="mer-dealer"><strong>'+d.b+'</strong><span>Bayi Kodu: '+d.kod+'</span></div><div class="mer-draft">YATIRIMCI RAPORU</div></header><div class="mer-signals">'+sig.map(function(x){return '<div class="mer-signal"><i class="mer-signal-icon" style="color:'+x[3]+'">'+x[4]+'</i><div><small>'+x[0]+'</small><strong>'+x[1]+'</strong><span>'+x[2]+'</span></div></div>'}).join('')+'</div><div class="mer-main"><div class="mer-panel"><h2 class="mer-title">ÜRÜN BAZLI TRENDLER</h2><div class="mer-trends">'+ps.map(merTrendCard).join('')+'</div></div><div class="mer-panel"><h2 class="mer-title">ÜRÜN BAZLI PERFORMANS</h2><div class="mer-table">'+merTable(ps)+'</div></div></div><div class="mer-bottom"><div class="mer-panel"><h2 class="mer-title">2025–2026 YTD AKTİVASYON KIYASI <span class="mer-legend"><b style="color:#00a6d6">■</b> 2025 &nbsp; <b style="color:#e6007e">■</b> 2026</span><small class="mer-title-note">Sütunlar YTD adedi, alt oran 2026 YTD’nin 2025 YTD’ye göre değişimini gösterir.</small></h2><div class="mer-bars">'+merBars(ps)+'</div></div><div class="mer-panel"><h2 class="mer-title">IPTV / DSL ORANI</h2><div class="mer-ratio"><div class="mer-big-ring"><b>'+merP(ratio)+'</b></div><div class="mer-ratio-list"><div style="color:#a65ae8">Bayi '+merP(ratio)+'</div><div style="color:#53d769">Bölge '+(MATRIX&&MATRIX.kuzey?merP(MATRIX.kuzey.ipdsl):'—')+'</div><div style="color:#16c7ee">Anadolu '+(MATRIX&&MATRIX.anadolu?merP(MATRIX.anadolu.ipdsl):'—')+'</div></div></div><div class="mer-ratio-note">Her 100 DSL satışının kaçının IPTV ile eşleştiğini gösterir.</div></div><div class="mer-panel"><h2 class="mer-title">ÜRÜN BAZLI YTD AKTİVASYON</h2><div class="mer-ytd-matrix">'+merYtdMatrix(ps)+'</div></div></div></section></div>';
- var toolbarButtons=cards.querySelectorAll('.mer-toolbar button');
- if(toolbarButtons.length>1)toolbarButtons[0].remove();
- toolbarButtons=cards.querySelectorAll('.mer-toolbar button');
- if(toolbarButtons[0])toolbarButtons[0].textContent='Yüksek Kalite PNG Paylaş';
- if(typeof loadAllHistory==='function'&&!HIST2_LOADED&&!HIST2_LOADING)loadAllHistory().then(renderMonthEndReport);
+function merStats(code, pm, current) {
+  var series = merSeries(code, pm);
+  var a = current ? Number(current.a || 0) : 0;
+  var h = current ? Number(current.h || 0) : 0;
+  var g = h ? a / h * 100 : null;
+  var days = (typeof SYDATA !== 'undefined' && SYDATA.calisilanGun) || 30;
+  var reportPeriod = String((typeof DONEM !== 'undefined' && DONEM) || '').replace('/', '-');
+  var refPeriod = reportPeriod || ((series.length && series[series.length - 1].period) || '');
+  var prevMonth = refPeriod ? merHistoryValue(code, pm, String(Number(refPeriod.slice(0, 4)) - 1) + refPeriod.slice(4)) : null;
+
+  /* Geçmişte rapor ayı varsa son noktayı güncel gerçekleşen/hedef ile değiştir. */
+  if (refPeriod && current) {
+    var currentIndex = series.findIndex(function (x) { return x.period === refPeriod; });
+    var currentPoint = { period: refPeriod, a: a, h: h };
+    if (currentIndex >= 0) series[currentIndex] = currentPoint;
+    else series.push(currentPoint);
+    series.sort(function (x, y) { return x.period.localeCompare(y.period); });
+  }
+
+  var ytdA = series.length ? series.reduce(function (sum, x) { return sum + x.a; }, 0) : null;
+  var ytdTarget = series.length ? series.reduce(function (sum, x) { return sum + x.h; }, 0) : null;
+  var ytdGap = ytdA == null || ytdTarget == null ? null : ytdA - ytdTarget;
+  var ytdHgo = ytdTarget ? ytdA / ytdTarget * 100 : null;
+  var prevYear = refPeriod ? String(Number(refPeriod.slice(0, 4)) - 1) : '';
+  var prevEnd = prevYear + (refPeriod ? refPeriod.slice(4) : '');
+  var ytdPrev = null;
+  if (prevYear && typeof HIST2_DATA !== 'undefined') {
+    var prevValues = [];
+    Object.keys(HIST2_DATA).sort().forEach(function (period) {
+      if (period.slice(0, 4) !== prevYear || period > prevEnd) return;
+      var x = merHistoryValue(code, pm, period);
+      if (x) prevValues.push(x.adet || 0);
+    });
+    if (prevValues.length) ytdPrev = prevValues.reduce(function (sum, value) { return sum + value; }, 0);
+  }
+  var ytdDiff = ytdA == null || ytdPrev == null ? null : ytdA - ytdPrev;
+  var ytdYoY = ytdPrev ? ytdDiff / ytdPrev * 100 : null;
+  var yoy = prevMonth && prevMonth.adet ? (a - prevMonth.adet) / prevMonth.adet * 100 : null;
+  return {
+    a: a, h: h, g: g, daily: a / days, ytd: ytdA, ytdTarget: ytdTarget,
+    ytdGap: ytdGap, ytdHgo: ytdHgo, ytdPrev: ytdPrev, ytdDiff: ytdDiff,
+    ytdYoY: ytdYoY, yoy: yoy, series: series
+  };
+}
+function merProductData(dealer, definitions) {
+  return definitions.map(function (pm) {
+    return Object.assign({}, pm, { stats: merStats(dealer.kod, pm, dealer.prods[pm.key]) });
+  });
+}
+function merRegionHgo(pm) {
+  var region = typeof MATRIX !== 'undefined' && MATRIX && MATRIX.kuzey;
+  if (!region) return null;
+  var value = region[pm.region];
+  return typeof value === 'number' ? value : null;
+}
+function merRegionRank(pm, code) {
+  var rows = [];
+  var dealers = (typeof DETAY !== 'undefined' && DETAY.bayiler) || {};
+  Object.keys(dealers).forEach(function (dealerCode) {
+    var value = dealers[dealerCode].prods && dealers[dealerCode].prods[pm.key];
+    if (!value || !value.h) return;
+    rows.push({ code: String(dealerCode), g: Number(value.g != null ? value.g : value.a / value.h * 100), a: Number(value.a || 0) });
+  });
+  rows.sort(function (x, y) { return y.g - x.g || y.a - x.a || x.code.localeCompare(y.code); });
+  var position = rows.findIndex(function (x) { return x.code === String(code); });
+  return position < 0 ? '—' : (position + 1) + '/' + rows.length;
+}
+function merGap(v) { return v == null ? '—' : v === 0 ? 'Tam' : (v > 0 ? '+' : '') + merN(v); }
+
+function merSpark(stats, color) {
+  var entries = stats.series.length ? stats.series.map(function (x) { return { a: x.a, period: x.period }; }) : [{ a: stats.a, period: '' }, { a: stats.a, period: '' }];
+  while (entries.length < 8) entries.unshift({ a: null, period: '' });
+  entries = entries.slice(-8);
+  var values = entries.map(function (x) { return x.a; });
+  var numbers = values.filter(function (v) { return v != null; });
+  var max = Math.max.apply(null, numbers.concat([stats.h, 1]));
+  var min = Math.min.apply(null, numbers.concat([stats.h]));
+  var span = max - min || 1;
+  var points = values.map(function (v, i) { return v == null ? null : [i * 250 / 7, 61 - (v - min) / span * 43, v]; }).filter(Boolean);
+  var line = points.map(function (p) { return p[0] + ',' + p[1]; }).join(' ');
+  var targetY = 61 - (stats.h - min) / span * 43;
+  return '<svg viewBox="0 0 250 88" preserveAspectRatio="none">' +
+    '<line x1="0" y1="' + targetY + '" x2="250" y2="' + targetY + '" stroke="' + color + '" stroke-dasharray="4 3" opacity=".72"/>' +
+    '<polyline points="' + line + '" fill="none" stroke="' + color + '" stroke-width="3"/>' +
+    points.map(function (p, i) {
+      var anchor = p[0] < 10 ? 'start' : p[0] > 240 ? 'end' : 'middle';
+      return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3" fill="' + color + '"/>' +
+        '<text x="' + p[0] + '" y="' + Math.max(8, p[1] - 6 - (i % 2 ? 1 : 0)) + '" text-anchor="' + anchor + '" fill="#53657a" font-size="7.5" font-weight="700">' + merN(p[2]) + '</text>';
+    }).join('') +
+    entries.map(function (entry, i) {
+      if (!entry.period) return '';
+      var anchor = i === 0 ? 'start' : i === 7 ? 'end' : 'middle';
+      return '<text x="' + (i * 250 / 7) + '" y="86" text-anchor="' + anchor + '" fill="#64748b" font-size="7" font-weight="700">' + merMonthShort(entry.period) + '</text>';
+    }).join('') + '</svg>';
+}
+function merTrendCard(p, code, index) {
+  var s = p.stats;
+  var region = merRegionHgo(p);
+  var rank = merRegionRank(p, code);
+  var yoyColor = s.yoy != null && s.yoy < 0 ? '#dc2638' : '#20a65a';
+  return '<div class="mer-trend">' +
+    '<div class="mer-trend-h" style="color:' + p.color + '"><b>' + (index + 1) + '. ' + p.label + '</b><b>Güncel ' + merN(s.a) + '</b></div>' +
+    '<div class="mer-chart">' + merSpark(s, p.color) + '</div>' +
+    '<div class="mer-trend-side">' +
+      '<span class="mer-target" style="color:' + p.color + '">Hedef ' + merN(s.h) + '</span>' +
+      '<span class="mer-hgo" style="border-color:' + p.color + '">' +
+        '<span><small>Bayi HGO</small><b style="color:' + p.color + '">' + merP(s.g) + '</b></span>' +
+        '<span><small>Bölge HGO</small><b>' + merP(region) + '</b></span>' +
+        '<span><small>Bölge Sıra</small><b>' + rank + '</b></span>' +
+      '</span>' +
+      '<span class="mer-yoy" style="color:' + yoyColor + '">Aylık YoY ' + (s.yoy == null ? 'veri yok' : merSignedP(s.yoy)) + '</span>' +
+    '</div></div>';
+}
+function merTable(products) {
+  var headers = ['Ürün', 'Ay Hdf.', 'Gerçek.', 'Ay HGO', 'Günlük', 'YTD G / H', 'YTD HGO', 'YTD Fark', 'Aylık YoY'];
+  var html = headers.map(function (x) { return '<div class="mer-th">' + x + '</div>'; }).join('');
+  products.forEach(function (p) {
+    var s = p.stats;
+    var values = [p.label, merN(s.h), merN(s.a), merP(s.g), s.daily.toFixed(1).replace('.', ','), merN(s.ytd) + ' / ' + merN(s.ytdTarget), merP(s.ytdHgo), merGap(s.ytdGap), s.yoy == null ? 'Veri yok' : merSignedP(s.yoy)];
+    values.forEach(function (value, i) {
+      var cls = 'mer-td';
+      if (i === 0) cls += ' prod';
+      if (i === 3 || i === 6) cls += ' perf';
+      if (i === 7) cls += s.ytdGap < 0 ? ' gap-neg' : ' gap-pos';
+      var style = (i === 0 || i === 3 || i === 6) ? 'color:' + p.color : '';
+      html += '<div class="' + cls + '" style="' + style + '">' + value + '</div>';
+    });
+  });
+  return html;
+}
+function merBars(products) {
+  var max = Math.max.apply(null, products.reduce(function (all, p) { return all.concat([p.stats.ytd || 0, p.stats.ytdPrev || 0]); }, [1]));
+  return products.map(function (p) {
+    var s = p.stats;
+    var current = s.ytd || 0;
+    var previous = s.ytdPrev || 0;
+    var previousHeight = Math.min(108, Math.max(0, previous / max * 108));
+    var currentHeight = Math.min(108, Math.max(0, current / max * 108));
+    var color = s.ytdYoY != null && s.ytdYoY < 0 ? '#dc2638' : '#20a65a';
+    return '<div class="mer-bar-group"><div class="mer-bar-wrap"><span>' + merN(previous) + '</span><div class="mer-bar" style="height:' + previousHeight + 'px;background:#00a6d6"></div></div>' +
+      '<div class="mer-bar-wrap"><span>' + merN(current) + '</span><div class="mer-bar" style="height:' + currentHeight + 'px;background:#e6007e"></div></div>' +
+      '<span class="mer-bar-name">' + p.label + '</span><span class="mer-bar-yoy" style="color:' + color + '">' + (s.ytdYoY == null ? '—' : merSignedP(s.ytdYoY)) + '</span></div>';
+  }).join('');
+}
+function merStaffRows(code) {
+  var people = (typeof DETAY !== 'undefined' && DETAY.pers && DETAY.pers[code]) || [];
+  return people.slice().sort(function (a, b) { return String(a.p || '').localeCompare(String(b.p || ''), 'tr'); });
+}
+function merStaffTone(value) {
+  if (!value || !value.h) return 'staff-empty';
+  var pct = Number(value.a || 0) / Number(value.h) * 100;
+  return pct >= 100 ? 'staff-good' : pct >= 80 ? 'staff-watch' : 'staff-low';
+}
+function merStaffTable(code) {
+  var rows = merStaffRows(code);
+  var html = '<div class="mer-staff-head"><span>Personel</span>' + MER_STAFF_PRODUCTS.map(function (p) { return '<span>' + p.label + '</span>'; }).join('') + '</div>';
+  if (!rows.length) return html + '<div class="mer-staff-empty">Personel kırılımı bulunamadı.</div>';
+  rows.slice(0, 5).forEach(function (person) {
+    html += '<div class="mer-staff-row"><b title="' + String(person.p || '').replace(/"/g, '&quot;') + '">' + (person.p || '—') + '</b>';
+    MER_STAFF_PRODUCTS.forEach(function (product) {
+      var value = person.prods && person.prods[product.key];
+      html += '<span class="' + merStaffTone(value) + '">' + (value && value.h ? merN(value.h) + '/' + merN(value.a) : '—') + '</span>';
+    });
+    html += '</div>';
+  });
+  if (rows.length > 5) html += '<div class="mer-staff-note">İlk 5 personel gösteriliyor • Toplam ' + rows.length + ' personel</div>';
+  else html += '<div class="mer-staff-note">Değerler hedef / gerçekleşen adedidir.</div>';
+  return html;
+}
+
+function merCanvasReport() {
+  var dealer = DETAY.bayiler[merDealerCode];
+  var tableProducts = merProductData(dealer, MER_TABLE_PRODUCTS);
+  var trendProducts = merProductData(dealer, MER_TREND_PRODUCTS);
+  var ytdProducts = merProductData(dealer, MER_YTD_PRODUCTS);
+  var ratio = dealer.prods.DSL && dealer.prods.DSL.a ? dealer.prods.IPTV.a / dealer.prods.DSL.a * 100 : null;
+  var canvas = document.createElement('canvas');
+  canvas.width = 4096;
+  canvas.height = 2731;
+  var c = canvas.getContext('2d');
+  c.scale(8 / 3, 8 / 3);
+
+  var navy = '#10243e', panel = '#ffffff', soft = '#f8fafc', border = '#d7e0ea', muted = '#64748b';
+  var pink = '#e6007e', cyan = '#00a6d6', green = '#20a65a', red = '#dc2638', purple = '#7046b3', orange = '#f47b20';
+  function rr(x, y, w, h, r, fill, stroke) { c.beginPath(); c.roundRect(x, y, w, h, r); if (fill) { c.fillStyle = fill; c.fill(); } if (stroke) { c.strokeStyle = stroke; c.lineWidth = 1; c.stroke(); } }
+  function txt(t, x, y, size, color, weight, align) { c.font = (weight || '600') + ' ' + size + 'px Arial, sans-serif'; c.fillStyle = color || navy; c.textAlign = align || 'left'; c.textBaseline = 'middle'; c.fillText(String(t), x, y); }
+  function fitTxt(t, x, y, maxWidth, size, minSize, color, weight, align) { var s = size; while (s > minSize) { c.font = (weight || '600') + ' ' + s + 'px Arial, sans-serif'; if (c.measureText(String(t)).width <= maxWidth) break; s -= 1; } txt(t, x, y, s, color, weight, align); }
+  function line(x1, y1, x2, y2, color, width, dash) { c.beginPath(); c.strokeStyle = color; c.lineWidth = width || 1; c.setLineDash(dash || []); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke(); c.setLineDash([]); }
+  function ring(x, y, color, label) { c.beginPath(); c.arc(x, y, 36, 0, Math.PI * 2); c.strokeStyle = color; c.lineWidth = 2; c.stroke(); txt(label, x, y, 21, color, '800', 'center'); }
+  function staffFill(value) { if (!value || !value.h) return { bg: '#eef2f6', fg: muted }; var pct = Number(value.a || 0) / Number(value.h) * 100; return pct >= 100 ? { bg: '#dff5e7', fg: '#16864a' } : pct >= 80 ? { bg: '#fff0cd', fg: '#a56c00' } : { bg: '#fde3e6', fg: red }; }
+
+  c.fillStyle = '#f4f7fb'; c.fillRect(0, 0, 1536, 1024);
+  txt('AY SONU BAYİ PERFORMANS KARNESİ', 31, 37, 38, navy, '900');
+  txt(merPeriod() + ' • GERÇEK VERİ', 31, 80, 22, pink, '900');
+  line(849, 20, 849, 84, pink, 2);
+  fitTxt(dealer.b, 884, 41, 410, 29, 20, navy, '900');
+  txt('Bayi Kodu: ' + dealer.kod, 884, 72, 14, muted, '700');
+  rr(1352, 26, 166, 42, 8, null, navy); txt('YATIRIMCI RAPORU', 1435, 47, 14, navy, '700', 'center');
+
+  var over = tableProducts.filter(function (p) { return p.label !== 'Toplam Mobil' && p.stats.g >= 100; });
+  var ytdOver = tableProducts.filter(function (p) { return p.label !== 'Toplam Mobil' && p.stats.ytdHgo >= 100; });
+  var best = tableProducts.filter(function (p) { return p.label !== 'Toplam Mobil'; }).sort(function (a, b) { return (b.stats.g || 0) - (a.stats.g || 0); })[0];
+  var yoyBest = tableProducts.filter(function (p) { return p.label !== 'Toplam Mobil' && p.stats.yoy != null; }).sort(function (a, b) { return b.stats.yoy - a.stats.yoy; })[0];
+  var signals = [
+    ['YTD HEDEF ÜSTÜ', ytdOver.length + ' / 6 ÜRÜN', ytdOver.map(function (p) { return p.label; }).join(' • ') || 'Henüz yok', pink, '▦'],
+    ['AY HEDEF ÜSTÜ', over.length + ' / 6 ÜRÜN', over.map(function (p) { return p.label; }).join(' • ') || 'Henüz yok', cyan, '◎'],
+    ['EN GÜÇLÜ ÜRÜN', best.label + ' ' + merP(best.stats.g), 'Ay Performansı', purple, '★'],
+    ['EN YÜKSEK AYLIK YOY', yoyBest ? yoyBest.label + ' ' + merSignedP(yoyBest.stats.yoy) : 'Veri yok', 'Geçen Yılın Aynı Ayına Göre', green, '↗'],
+    ['IPTV • DSL', merP(ratio), 'Dönüşüm Oranı', orange, '◉']
+  ];
+  signals.forEach(function (signal, i) {
+    var x = 15 + i * 302;
+    rr(x, 106, 291, 123, 10, panel, border); ring(x + 56, 168, signal[3], signal[4]);
+    txt(signal[0], x + 111, 137, 12, navy, '700');
+    fitTxt(signal[1], x + 111, 174, 165, 27, 19, navy, '900');
+    fitTxt(signal[2], x + 111, 207, 166, 11, 8, muted, '600');
+  });
+
+  rr(15, 243, 785, 493, 10, panel, border); txt('ÜRÜN BAZLI TRENDLER', 33, 266, 18, navy, '900');
+  trendProducts.forEach(function (p, i) {
+    var col = i % 2, row = Math.floor(i / 2), x = 27 + col * 386, y = 280 + row * 154, w = 372, h = 144, s = p.stats;
+    var regionHgo = merRegionHgo(p), rank = merRegionRank(p, dealer.kod);
+    rr(x, y, w, h, 10, soft, border);
+    txt((i + 1) + '. ' + p.label, x + 14, y + 23, 14, p.color, '800');
+    txt('Güncel ' + merN(s.a), x + w - 14, y + 23, 16, navy, '900', 'right');
+    var sx = x + 14, sy = y + 53, sw = 232, sh = 43;
+    var vals = s.series.map(function (v) { return v.a; }); if (!vals.length) vals = [s.a, s.a];
+    var max = Math.max.apply(null, vals.concat([s.h || 0, 1])), min = Math.min.apply(null, vals.concat([s.h || 0])), span = max - min || 1;
+    var targetY = sy + sh - (s.h - min) / span * sh; line(sx, targetY, sx + sw, targetY, p.color, 1, [4, 3]);
+    c.beginPath(); vals.forEach(function (v, j) { var px = sx + (vals.length === 1 ? sw : sw * j / (vals.length - 1)), py = sy + sh - (v - min) / span * sh; if (j) c.lineTo(px, py); else c.moveTo(px, py); }); c.strokeStyle = p.color; c.lineWidth = 3; c.stroke();
+    vals.forEach(function (v, j) { var px = sx + (vals.length === 1 ? sw : sw * j / (vals.length - 1)), py = sy + sh - (v - min) / span * sh; c.beginPath(); c.arc(px, py, 3.5, 0, Math.PI * 2); c.fillStyle = p.color; c.fill(); txt(merN(v), px, Math.max(sy - 2, py - 9), 8, muted, '700', j === 0 ? 'left' : j === vals.length - 1 ? 'right' : 'center'); });
+    s.series.slice(-8).forEach(function (entry, j, arr) { var px = sx + (arr.length === 1 ? sw : sw * j / (arr.length - 1)); txt(merMonthShort(entry.period), px, y + 110, 7, muted, '700', j === 0 ? 'left' : j === arr.length - 1 ? 'right' : 'center'); });
+    txt('Hedef ' + merN(s.h), x + w - 14, y + 46, 11, p.color, '700', 'right');
+    rr(x + w - 111, y + 53, 97, 66, 8, '#ffffff', p.color);
+    [['Bayi HGO', merP(s.g), p.color], ['Bölge HGO', merP(regionHgo), navy], ['Bölge Sıra', rank, navy]].forEach(function (rowData, r) { var yy = y + 64 + r * 20; if (r) line(x + w - 104, yy - 10, x + w - 21, yy - 10, border, 1); txt(rowData[0], x + w - 103, yy, 7.5, muted, '700'); txt(rowData[1], x + w - 21, yy, 9.5, rowData[2], '900', 'right'); });
+    txt('Aylık YoY ' + (s.yoy == null ? 'veri yok' : merSignedP(s.yoy)), x + w - 14, y + 132, 9, s.yoy != null && s.yoy < 0 ? red : green, '800', 'right');
+  });
+
+  rr(812, 243, 709, 493, 10, panel, border); txt('ÜRÜN BAZLI PERFORMANS', 830, 266, 18, navy, '900');
+  var tx = 820, ty = 282, tw = 693, rowHeight = 54, widths = [95, 62, 66, 68, 60, 107, 72, 80, 83];
+  var heads = ['Ürün', 'Ay Hdf.', 'Gerçek.', 'Ay HGO', 'Günlük', 'YTD G / H', 'YTD HGO', 'YTD Fark', 'Aylık YoY'];
+  var columnX = tx; heads.forEach(function (head, i) { txt(head, columnX + widths[i] / 2, ty + 20, 9.5, muted, '700', 'center'); columnX += widths[i]; });
+  tableProducts.forEach(function (p, row) {
+    var yy = ty + 40 + row * rowHeight, cx = tx, s = p.stats;
+    rr(tx, yy, tw, rowHeight, 0, soft, border);
+    var values = [p.label, merN(s.h), merN(s.a), merP(s.g), s.daily.toFixed(1).replace('.', ','), merN(s.ytd) + ' / ' + merN(s.ytdTarget), merP(s.ytdHgo), merGap(s.ytdGap), s.yoy == null ? 'Veri yok' : merSignedP(s.yoy)];
+    values.forEach(function (value, i) { if (i) line(cx, yy, cx, yy + rowHeight, border, 1); var color = i === 0 || i === 3 || i === 6 ? p.color : i === 7 ? (s.ytdGap < 0 ? red : green) : navy; fitTxt(value, cx + widths[i] / 2, yy + rowHeight / 2, widths[i] - 8, i === 0 ? 12 : 10.5, 8, color, i === 0 || i === 3 || i === 6 || i === 7 ? '800' : '600', 'center'); cx += widths[i]; });
+  });
+  txt('YTD HGO = YTD gerçekleşen / YTD hedef', 1511, 719, 8.5, muted, '700', 'right');
+
+  var reportYear = merReportYear();
+  rr(15, 746, 662, 244, 10, panel, border); txt((reportYear - 1) + '–' + reportYear + ' YTD AKTİVASYON KIYASI', 33, 770, 18, navy, '900');
+  txt('Sütunlar YTD adedi • Alt oran güncel YTD’nin önceki yıl YTD’ye göre değişimidir.', 33, 793, 9.5, muted, '600');
+  txt('■', 400, 770, 13, cyan, '700'); txt(String(reportYear - 1), 415, 770, 11, muted, '600'); txt('■', 469, 770, 13, pink, '700'); txt(String(reportYear), 484, 770, 11, muted, '600');
+  var ytdMax = Math.max.apply(null, ytdProducts.reduce(function (all, p) { return all.concat([p.stats.ytd || 0, p.stats.ytdPrev || 0]); }, [1]));
+  ytdProducts.forEach(function (p, i) { var x = 56 + i * 101, baseY = 925, current = p.stats.ytd || 0, previous = p.stats.ytdPrev || 0; var prevHeight = Math.min(108, Math.max(2, previous / ytdMax * 108)), currentHeight = Math.min(108, Math.max(2, current / ytdMax * 108)); c.fillStyle = cyan; c.fillRect(x, baseY - prevHeight, 24, prevHeight); c.fillStyle = pink; c.fillRect(x + 28, baseY - currentHeight, 24, currentHeight); txt(merN(previous), x + 12, baseY - prevHeight - 9, 9, muted, '700', 'center'); txt(merN(current), x + 40, baseY - currentHeight - 9, 9, muted, '700', 'center'); txt(p.label, x + 26, 944, 10, navy, '600', 'center'); txt(p.stats.ytdYoY == null ? '—' : merSignedP(p.stats.ytdYoY), x + 26, 970, 10, p.stats.ytdYoY != null && p.stats.ytdYoY < 0 ? red : green, '800', 'center'); });
+
+  rr(689, 746, 325, 244, 10, panel, border); txt('IPTV / DSL ORANI', 710, 773, 18, navy, '900');
+  var rx = 793, ry = 865, radius = 65; c.beginPath(); c.arc(rx, ry, radius, 0, Math.PI * 2); c.strokeStyle = '#dce5ee'; c.lineWidth = 22; c.stroke(); c.beginPath(); c.arc(rx, ry, radius, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, (ratio || 0) / 100)); c.strokeStyle = purple; c.lineWidth = 22; c.stroke(); txt(merP(ratio), rx, ry, 29, navy, '900', 'center');
+  txt('●  Bayi ' + merP(ratio), 886, 832, 16, purple, '800'); txt('●  Bölge ' + (MATRIX && MATRIX.kuzey ? merP(MATRIX.kuzey.ipdsl) : '—'), 886, 871, 16, green, '800'); txt('●  Anadolu ' + (MATRIX && MATRIX.anadolu ? merP(MATRIX.anadolu.ipdsl) : '—'), 886, 910, 16, cyan, '800'); txt('Her 100 DSL satışındaki IPTV eşleşmesini gösterir.', 708, 971, 10, muted, '600');
+
+  rr(1027, 746, 494, 244, 10, panel, border); txt('PERSONEL AY SONU PERFORMANSI', 1055, 773, 18, navy, '900'); line(1055, 792, 1494, 792, pink, 2);
+  var people = merStaffRows(dealer.kod), visiblePeople = people.slice(0, 5), staffX = 1045, staffWidths = [109, 59, 57, 57, 55, 57, 65];
+  var staffHeads = ['Personel', 'Mobil', 'DSL', 'IPTV', 'Uydu', 'Cihaz', 'Diğer'], scx = staffX;
+  staffHeads.forEach(function (head, i) { txt(head, scx + staffWidths[i] / 2, 810, 9, muted, '700', 'center'); scx += staffWidths[i]; });
+  if (!visiblePeople.length) txt('Personel kırılımı bulunamadı.', 1270, 881, 13, muted, '600', 'center');
+  visiblePeople.forEach(function (person, row) { var yy = 828 + row * 27, cx = staffX; if (row % 2 === 0) rr(staffX, yy - 12, 459, 25, 4, soft, null); fitTxt(person.p || '—', cx + staffWidths[0] / 2, yy, staffWidths[0] - 8, 10, 7, navy, '800', 'center'); cx += staffWidths[0]; MER_STAFF_PRODUCTS.forEach(function (product, i) { var value = person.prods && person.prods[product.key], tone = staffFill(value), display = value && value.h ? merN(value.h) + '/' + merN(value.a) : '—'; rr(cx + 3, yy - 10, staffWidths[i + 1] - 6, 20, 5, tone.bg, null); fitTxt(display, cx + staffWidths[i + 1] / 2, yy, staffWidths[i + 1] - 10, 9.5, 7, tone.fg, '800', 'center'); cx += staffWidths[i + 1]; }); });
+  txt(people.length > 5 ? 'İlk 5 personel • Toplam ' + people.length : 'Değerler hedef / gerçekleşen adedidir.', 1055, 974, 8.5, muted, '600');
+  return canvas;
+}
+
+async function exportMonthEndPNG() {
+  if (!document.getElementById('month-end-report')) return;
+  try {
+    var canvas = merCanvasReport();
+    _openSharePreview(canvas.toDataURL('image/png'), 'TT_AySonu_' + merDealerCode + '_' + String(merPeriod()).replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşü]/g, '') + '.png');
+  } catch (error) {
+    alert('Görsel oluşturma hatası: ' + error.message);
+  }
+}
+
+function renderMonthEndReport() {
+  var cards = document.getElementById('cards');
+  cards.className = 'cards single'; cards.style.maxWidth = 'none';
+  var codes = merCodes();
+  if (!codes.length) { cards.innerHTML = '<div class="mer-empty">Bayi verisi bulunamadı. Güncel Excel raporunu yükleyin.</div>'; return; }
+  if (!merDealerCode || !DETAY.bayiler[merDealerCode]) merDealerCode = codes[0];
+  var dealer = DETAY.bayiler[merDealerCode];
+  var tableProducts = merProductData(dealer, MER_TABLE_PRODUCTS);
+  var trendProducts = merProductData(dealer, MER_TREND_PRODUCTS);
+  var ytdProducts = merProductData(dealer, MER_YTD_PRODUCTS);
+  var baseProducts = tableProducts.filter(function (p) { return p.label !== 'Toplam Mobil'; });
+  var over = baseProducts.filter(function (p) { return p.stats.g >= 100; });
+  var ytdOver = baseProducts.filter(function (p) { return p.stats.ytdHgo >= 100; });
+  var best = baseProducts.slice().sort(function (a, b) { return (b.stats.g || 0) - (a.stats.g || 0); })[0];
+  var yoyBest = baseProducts.filter(function (p) { return p.stats.yoy != null; }).sort(function (a, b) { return b.stats.yoy - a.stats.yoy; })[0];
+  var ratio = dealer.prods.DSL && dealer.prods.DSL.a ? dealer.prods.IPTV.a / dealer.prods.DSL.a * 100 : null;
+  var reportYear = merReportYear();
+  var options = codes.map(function (code) { var x = DETAY.bayiler[code]; return '<option value="' + code + '" ' + (code === merDealerCode ? 'selected' : '') + '>' + x.b + ' · ' + x.il + ' · ' + code + '</option>'; }).join('');
+  var signals = [
+    ['YTD HEDEF ÜSTÜ', ytdOver.length + ' / 6 ÜRÜN', ytdOver.map(function (p) { return p.label; }).join(' • ') || 'Henüz yok', '#e6007e', '▦'],
+    ['AY HEDEF ÜSTÜ', over.length + ' / 6 ÜRÜN', over.map(function (p) { return p.label; }).join(' • ') || 'Henüz yok', '#00a6d6', '◎'],
+    ['EN GÜÇLÜ ÜRÜN', best.label + ' ' + merP(best.stats.g), 'Ay performansı', '#7046b3', '★'],
+    ['EN YÜKSEK AYLIK YOY', yoyBest ? yoyBest.label + ' ' + merSignedP(yoyBest.stats.yoy) : 'Veri bekleniyor', 'Geçen yılın aynı ayına göre', '#20a65a', '↗'],
+    ['IPTV • DSL', merP(ratio), 'Dönüşüm oranı', '#f47b20', '◉']
+  ];
+  cards.innerHTML = '<div class="mer-toolbar"><span class="mer-print-note">Ürün adetleri birbirine eklenmez.</span><select onchange="merDealerCode=this.value;renderMonthEndReport()">' + options + '</select><button onclick="downloadCardPNG()">Yüksek Kalite PNG Paylaş</button></div>' +
+    '<div class="mer-scroll"><section class="mer-report" id="month-end-report">' +
+      '<header class="mer-head"><div><h1>AY SONU BAYİ PERFORMANS KARNESİ</h1><p>' + merPeriod() + ' • GERÇEK VERİ</p></div><i class="mer-divider"></i><div class="mer-dealer"><strong>' + dealer.b + '</strong><span>Bayi Kodu: ' + dealer.kod + '</span></div><div class="mer-draft">YATIRIMCI RAPORU</div></header>' +
+      '<div class="mer-signals">' + signals.map(function (x) { return '<div class="mer-signal"><i class="mer-signal-icon" style="color:' + x[3] + '">' + x[4] + '</i><div><small>' + x[0] + '</small><strong>' + x[1] + '</strong><span>' + x[2] + '</span></div></div>'; }).join('') + '</div>' +
+      '<div class="mer-main"><div class="mer-panel"><h2 class="mer-title">ÜRÜN BAZLI TRENDLER</h2><div class="mer-trends">' + trendProducts.map(function (p, i) { return merTrendCard(p, dealer.kod, i); }).join('') + '</div></div>' +
+      '<div class="mer-panel"><h2 class="mer-title">ÜRÜN BAZLI PERFORMANS</h2><div class="mer-table">' + merTable(tableProducts) + '</div><span class="mer-table-note">YTD HGO = gerçekleşen / hedef</span></div></div>' +
+      '<div class="mer-bottom"><div class="mer-panel"><h2 class="mer-title">' + (reportYear - 1) + '–' + reportYear + ' YTD AKTİVASYON KIYASI <span class="mer-legend"><b style="color:#00a6d6">■</b> ' + (reportYear - 1) + ' &nbsp; <b style="color:#e6007e">■</b> ' + reportYear + '</span><small class="mer-title-note">Sütunlar YTD adedi, alt oran güncel YTD’nin önceki yıl YTD’ye göre değişimidir.</small></h2><div class="mer-bars">' + merBars(ytdProducts) + '</div></div>' +
+      '<div class="mer-panel"><h2 class="mer-title">IPTV / DSL ORANI</h2><div class="mer-ratio"><div class="mer-big-ring"><b>' + merP(ratio) + '</b></div><div class="mer-ratio-list"><div style="color:#a65ae8">Bayi ' + merP(ratio) + '</div><div style="color:#53d769">Bölge ' + (MATRIX && MATRIX.kuzey ? merP(MATRIX.kuzey.ipdsl) : '—') + '</div><div style="color:#16c7ee">Anadolu ' + (MATRIX && MATRIX.anadolu ? merP(MATRIX.anadolu.ipdsl) : '—') + '</div></div></div><div class="mer-ratio-note">Her 100 DSL satışının kaçının IPTV ile eşleştiğini gösterir.</div></div>' +
+      '<div class="mer-panel"><h2 class="mer-title">PERSONEL AY SONU PERFORMANSI</h2><div class="mer-staff-table">' + merStaffTable(dealer.kod) + '</div></div></div>' +
+    '</section></div>';
+  if (typeof loadAllHistory === 'function' && !HIST2_LOADED && !HIST2_LOADING) loadAllHistory().then(renderMonthEndReport);
 }
