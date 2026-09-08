@@ -556,10 +556,11 @@ function wire(boxId, inputId, isPrev) {
         };
         if (isPrev) {
           PREV = parsed.data;
+          KUPA_PREV = parsed.kupa && parsed.kupa.length ? parsed.kupa : null;
           if (typeof PREV_DETAY !== "undefined") PREV_DETAY = parsed.detay || null;
           if (parsed.syData && Object.keys(parsed.syData.sy).length) SYPREV = parsed.syData; box.classList.add("loaded");
           _setBoxLabel(box, f.name);
-          msg.className = "pmsg ok show"; msg.textContent = "✅ Karşılaştırma yüklendi (" + parsed.donem + ")";
+          msg.className = "pmsg ok show"; msg.textContent = "✅ Karşılaştırma yüklendi (" + parsed.donem + ") · Kupa Son 24 Saat aktif";
         } else {
           DATA = parsed.data; DONEM = parsed.donem; MATRIX = parsed.matrix; if (parsed.kupa && parsed.kupa.length) KUPA = parsed.kupa; if (parsed.detay && Object.keys(parsed.detay.bayiler).length) { DETAY = parsed.detay; detayKod = null; }
           try { trendCapture(); } catch(e) {} try { if (typeof kupaSnapCapture === 'function') kupaSnapCapture(); } catch(e) {} if (parsed.syData && Object.keys(parsed.syData.sy).length) SYDATA = parsed.syData; box.classList.add("loaded");
