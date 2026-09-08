@@ -59,6 +59,9 @@ const EDM_SY_NAMES = ['Tümü', ...APP_CONFIG.edmSY];
 let DAY_NOW   = null;  /* Ayarlar > Forecast "Geçen gün"  */
 let DAY_TOTAL = null;  /* Ayarlar > Forecast "Ay toplam"  */
 let PREV = null;
+/* Önceki günlük Excel raporundan hesaplanan Kupa satırları.
+   Kupa ekranındaki "Son 24 Saat" puan farkının birincil kaynağıdır. */
+let KUPA_PREV = null;
 let DONEM = "2026/06";
 let section = "pers";
 let prod = "Toplam Mobil";
