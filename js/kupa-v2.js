@@ -102,6 +102,24 @@ function kupaSnapPrev() {
   return store[days[days.length - 1]];
 }
 
+/* Ayarlar > Önceki Rapor alanına yüklenen Excel'in Kupa puanlarını
+   karşılaştırma anlık görüntüsüne dönüştürür. Yerel günlük kayıt yalnızca
+   önceki Excel yüklenmemişse geriye dönük uyumluluk için kullanılır. */
+function kupaRowsSnapshot(rows) {
+  if (!rows || !rows.length) return null;
+  var cloned = rows.map(function(r) { return Object.assign({}, r); });
+  var ordered = kupaApplyEylul26Rules(cloned);
+  var snap = {};
+  ordered.forEach(function(r, i) {
+    snap[String(r.kod)] = { toplam: r.toplam, rank: i + 1 };
+  });
+  return snap;
+}
+function kupaComparisonSnapshot() {
+  var uploadedPrevious = (typeof KUPA_PREV !== 'undefined') ? kupaRowsSnapshot(KUPA_PREV) : null;
+  return uploadedPrevious || kupaSnapPrev();
+}
+
 /* ─── BİÇİMLENDİRME ────────────────────────────────────────────────────── */
 function _kbN1(n) { return n.toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }); }
 function _kbTrendHTML(delta) {
@@ -315,7 +333,8 @@ function renderKupaV2() {
     return;
   }
 
-  var prevSnap = kupaSnapPrev();
+  /* "Son 24 Saat" = güncel puan - önceki günlük Excel raporundaki puan. */
+  var prevSnap = kupaComparisonSnapshot();
 
   cards.innerHTML = '<div class="kb-page" id="kupa-card">' +
     renderKupaHeader() +
