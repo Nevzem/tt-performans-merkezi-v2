@@ -353,6 +353,82 @@ async function exportMonthEndPNG() {
   }
 }
 
+/* 4096x2731 JPEG'i tek sayfalık A3 yatay PDF içine kayıpsız ölçekte
+ * yerleştirir. A3 baskıda yaklaşık 248 DPI, A4 baskıda yaklaşık 350 DPI
+ * netlik sağlar. Harici PDF kütüphanesi gerektirmez. */
+function merCanvasToPdfBytes(canvas) {
+  var jpegUrl = canvas.toDataURL('image/jpeg', 0.98);
+  var binary = atob(jpegUrl.split(',')[1]);
+  var imageBytes = new Uint8Array(binary.length);
+  for (var i = 0; i < binary.length; i++) imageBytes[i] = binary.charCodeAt(i);
+
+  var encoder = new TextEncoder();
+  var chunks = [];
+  var offsets = [0];
+  var totalLength = 0;
+  function push(value) {
+    var bytes = typeof value === 'string' ? encoder.encode(value) : value;
+    chunks.push(bytes); totalLength += bytes.length;
+  }
+  function object(number, parts) {
+    offsets[number] = totalLength;
+    push(number + ' 0 obj\n');
+    parts.forEach(push);
+    push('\nendobj\n');
+  }
+
+  /* ISO A3 yatay: 420 x 297 mm. Görsel 3:2 oranında ortalanır. */
+  var pageWidth = 1190.55;
+  var pageHeight = 841.89;
+  var drawWidth = pageWidth;
+  var drawHeight = drawWidth * canvas.height / canvas.width;
+  var drawY = (pageHeight - drawHeight) / 2;
+  var content = 'q\n' + drawWidth.toFixed(2) + ' 0 0 ' + drawHeight.toFixed(2) + ' 0 ' + drawY.toFixed(2) + ' cm\n/Im0 Do\nQ\n';
+
+  push(new Uint8Array([37, 80, 68, 70, 45, 49, 46, 52, 10, 37, 226, 227, 207, 211, 10]));
+  object(1, ['<< /Type /Catalog /Pages 2 0 R >>']);
+  object(2, ['<< /Type /Pages /Kids [3 0 R] /Count 1 >>']);
+  object(3, ['<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + pageWidth + ' ' + pageHeight + '] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>']);
+  object(4, ['<< /Type /XObject /Subtype /Image /Width ' + canvas.width + ' /Height ' + canvas.height + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + imageBytes.length + ' >>\nstream\n', imageBytes, '\nendstream']);
+  object(5, ['<< /Length ' + encoder.encode(content).length + ' >>\nstream\n' + content + 'endstream']);
+
+  var xrefOffset = totalLength;
+  push('xref\n0 6\n0000000000 65535 f \n');
+  for (var n = 1; n <= 5; n++) push(String(offsets[n]).padStart(10, '0') + ' 00000 n \n');
+  push('trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xrefOffset + '\n%%EOF');
+
+  var pdf = new Uint8Array(totalLength);
+  var cursor = 0;
+  chunks.forEach(function (chunk) { pdf.set(chunk, cursor); cursor += chunk.length; });
+  return pdf;
+}
+
+async function exportMonthEndPDF() {
+  var button = document.querySelector('.mer-pdf-button');
+  var original = button ? button.textContent : '';
+  if (button) { button.disabled = true; button.textContent = 'PDF Hazırlanıyor…'; }
+  try {
+    var canvas = merCanvasReport();
+    var bytes = merCanvasToPdfBytes(canvas);
+    var blob = new Blob([bytes], { type: 'application/pdf' });
+    var fileName = 'TT_AySonu_' + merDealerCode + '_' + String(merPeriod()).replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşü]/g, '') + '_A3.pdf';
+    var file = typeof File !== 'undefined' ? new File([blob], fileName, { type: 'application/pdf' }) : null;
+
+    if (file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'Ay Sonu Bayi Performans Karnesi' });
+    } else {
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement('a');
+      link.href = url; link.download = fileName; document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
+    }
+  } catch (error) {
+    if (error && error.name !== 'AbortError') alert('PDF oluşturma hatası: ' + error.message);
+  } finally {
+    if (button) { button.disabled = false; button.textContent = original; }
+  }
+}
+
 function renderMonthEndReport() {
   var cards = document.getElementById('cards');
   cards.className = 'cards single'; cards.style.maxWidth = 'none';
@@ -378,7 +454,7 @@ function renderMonthEndReport() {
     ['EN YÜKSEK AYLIK YOY', yoyBest ? yoyBest.label + ' ' + merSignedP(yoyBest.stats.yoy) : 'Veri bekleniyor', 'Geçen yılın aynı ayına göre', '#20a65a', '↗'],
     ['IPTV • DSL', merP(ratio), 'Dönüşüm oranı', '#f47b20', '◉']
   ];
-  cards.innerHTML = '<div class="mer-toolbar"><span class="mer-print-note">Ürün adetleri birbirine eklenmez.</span><select onchange="merDealerCode=this.value;renderMonthEndReport()">' + options + '</select><button onclick="downloadCardPNG()">Yüksek Kalite PNG Paylaş</button></div>' +
+  cards.innerHTML = '<div class="mer-toolbar"><span class="mer-print-note">Ürün adetleri birbirine eklenmez.</span><select onchange="merDealerCode=this.value;renderMonthEndReport()">' + options + '</select><button class="mer-pdf-button" onclick="exportMonthEndPDF()">Yüksek Kalite PDF</button><button onclick="downloadCardPNG()">Yüksek Kalite PNG Paylaş</button></div>' +
     '<div class="mer-scroll"><section class="mer-report" id="month-end-report">' +
       '<header class="mer-head"><div><h1>AY SONU BAYİ PERFORMANS KARNESİ</h1><p>' + merPeriod() + ' • GERÇEK VERİ</p></div><i class="mer-divider"></i><div class="mer-dealer"><strong>' + dealer.b + '</strong><span>Bayi Kodu: ' + dealer.kod + '</span></div><div class="mer-draft">YATIRIMCI RAPORU</div></header>' +
       '<div class="mer-signals">' + signals.map(function (x) { return '<div class="mer-signal"><i class="mer-signal-icon" style="color:' + x[3] + '">' + x[4] + '</i><div><small>' + x[0] + '</small><strong>' + x[1] + '</strong><span>' + x[2] + '</span></div></div>'; }).join('') + '</div>' +
