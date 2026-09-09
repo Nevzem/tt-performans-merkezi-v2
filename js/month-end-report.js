@@ -311,23 +311,23 @@ function merCanvasReport() {
   });
 
   rr(812, 243, 709, 493, 10, panel, border); txt('ÜRÜN BAZLI PERFORMANS', 830, 266, 18, navy, '900');
-  var tx = 820, ty = 282, tw = 693, rowHeight = 54, widths = [95, 62, 66, 68, 60, 107, 72, 80, 83];
+  var tx = 820, ty = 282, tw = 693, rowHeight = 54, widths = [96, 61, 65, 66, 58, 115, 74, 78, 80];
   var heads = ['Ürün', 'Ay Hdf.', 'Gerçek.', 'Ay HGO', 'Günlük', 'YTD G / H', 'YTD HGO', 'YTD Fark', 'Aylık YoY'];
-  var columnX = tx; heads.forEach(function (head, i) { txt(head, columnX + widths[i] / 2, ty + 20, 9.5, muted, '700', 'center'); columnX += widths[i]; });
+  var columnX = tx; heads.forEach(function (head, i) { fitTxt(head, columnX + widths[i] / 2, ty + 20, widths[i] - 5, 11, 9.5, muted, '800', 'center'); columnX += widths[i]; });
   tableProducts.forEach(function (p, row) {
     var yy = ty + 40 + row * rowHeight, cx = tx, s = p.stats;
     rr(tx, yy, tw, rowHeight, 0, soft, border);
     var values = [p.label, merN(s.h), merN(s.a), merP(s.g), s.daily.toFixed(1).replace('.', ','), merN(s.ytd) + ' / ' + merN(s.ytdTarget), merP(s.ytdHgo), merGap(s.ytdGap), s.yoy == null ? 'Veri yok' : merSignedP(s.yoy)];
-    values.forEach(function (value, i) { if (i) line(cx, yy, cx, yy + rowHeight, border, 1); var color = i === 0 || i === 3 || i === 6 ? p.color : i === 7 ? (s.ytdGap < 0 ? red : green) : navy; fitTxt(value, cx + widths[i] / 2, yy + rowHeight / 2, widths[i] - 8, i === 0 ? 12 : 10.5, 8, color, i === 0 || i === 3 || i === 6 || i === 7 ? '800' : '600', 'center'); cx += widths[i]; });
+    values.forEach(function (value, i) { if (i) line(cx, yy, cx, yy + rowHeight, border, 1); var color = i === 0 || i === 3 || i === 6 ? p.color : i === 7 ? (s.ytdGap < 0 ? red : green) : navy; fitTxt(value, cx + widths[i] / 2, yy + rowHeight / 2, widths[i] - 7, i === 0 ? 13.5 : i === 3 || i === 6 ? 13 : 12.5, 9.5, color, i === 0 || i === 3 || i === 6 || i === 7 ? '800' : '700', 'center'); cx += widths[i]; });
   });
-  txt('YTD HGO = YTD gerçekleşen / YTD hedef', 1511, 719, 8.5, muted, '700', 'right');
+  txt('YTD HGO = YTD gerçekleşen / YTD hedef', 1511, 719, 9.5, muted, '700', 'right');
 
   var reportYear = merReportYear();
-  rr(15, 746, 662, 244, 10, panel, border); txt((reportYear - 1) + '–' + reportYear + ' YTD AKTİVASYON KIYASI', 33, 770, 18, navy, '900');
-  txt('Sütunlar YTD adedi • Alt oran güncel YTD’nin önceki yıl YTD’ye göre değişimidir.', 33, 793, 9.5, muted, '600');
-  txt('■', 400, 770, 13, cyan, '700'); txt(String(reportYear - 1), 415, 770, 11, muted, '600'); txt('■', 469, 770, 13, pink, '700'); txt(String(reportYear), 484, 770, 11, muted, '600');
+  rr(15, 746, 662, 244, 10, panel, border); txt((reportYear - 1) + '–' + reportYear + ' YTD AKTİVASYON KIYASI', 33, 770, 19, navy, '900');
+  txt('Sütunlar YTD adedi • Alt oran güncel YTD’nin önceki yıl YTD’ye göre değişimidir.', 33, 794, 10.5, muted, '650');
+  txt('■', 400, 770, 14, cyan, '700'); txt(String(reportYear - 1), 416, 770, 12, muted, '700'); txt('■', 472, 770, 14, pink, '700'); txt(String(reportYear), 488, 770, 12, muted, '700');
   var ytdMax = Math.max.apply(null, ytdProducts.reduce(function (all, p) { return all.concat([p.stats.ytd || 0, p.stats.ytdPrev || 0]); }, [1]));
-  ytdProducts.forEach(function (p, i) { var x = 56 + i * 101, baseY = 925, current = p.stats.ytd || 0, previous = p.stats.ytdPrev || 0; var prevHeight = Math.min(108, Math.max(2, previous / ytdMax * 108)), currentHeight = Math.min(108, Math.max(2, current / ytdMax * 108)); c.fillStyle = cyan; c.fillRect(x, baseY - prevHeight, 24, prevHeight); c.fillStyle = pink; c.fillRect(x + 28, baseY - currentHeight, 24, currentHeight); txt(merN(previous), x + 12, baseY - prevHeight - 9, 9, muted, '700', 'center'); txt(merN(current), x + 40, baseY - currentHeight - 9, 9, muted, '700', 'center'); txt(p.label, x + 26, 944, 10, navy, '600', 'center'); txt(p.stats.ytdYoY == null ? '—' : merSignedP(p.stats.ytdYoY), x + 26, 970, 10, p.stats.ytdYoY != null && p.stats.ytdYoY < 0 ? red : green, '800', 'center'); });
+  ytdProducts.forEach(function (p, i) { var x = 54 + i * 101, baseY = 925, current = p.stats.ytd || 0, previous = p.stats.ytdPrev || 0; var prevHeight = Math.min(106, Math.max(2, previous / ytdMax * 106)), currentHeight = Math.min(106, Math.max(2, current / ytdMax * 106)); c.fillStyle = cyan; c.fillRect(x, baseY - prevHeight, 27, prevHeight); c.fillStyle = pink; c.fillRect(x + 33, baseY - currentHeight, 27, currentHeight); fitTxt(merN(previous), x + 13.5, baseY - prevHeight - 10, 45, 11.5, 9.5, muted, '800', 'center'); fitTxt(merN(current), x + 46.5, baseY - currentHeight - 10, 45, 11.5, 9.5, muted, '800', 'center'); fitTxt(p.label, x + 30, 946, 86, 12, 10, navy, '700', 'center'); txt(p.stats.ytdYoY == null ? '—' : merSignedP(p.stats.ytdYoY), x + 30, 971, 11.5, p.stats.ytdYoY != null && p.stats.ytdYoY < 0 ? red : green, '900', 'center'); });
 
   rr(689, 746, 325, 244, 10, panel, border); txt('IPTV / DSL ORANI', 710, 773, 18, navy, '900');
   var rx = 793, ry = 865, radius = 65; c.beginPath(); c.arc(rx, ry, radius, 0, Math.PI * 2); c.strokeStyle = '#dce5ee'; c.lineWidth = 22; c.stroke(); c.beginPath(); c.arc(rx, ry, radius, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, (ratio || 0) / 100)); c.strokeStyle = purple; c.lineWidth = 22; c.stroke(); txt(merP(ratio), rx, ry, 29, navy, '900', 'center');
