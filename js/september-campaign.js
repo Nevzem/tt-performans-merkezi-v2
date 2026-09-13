@@ -114,9 +114,6 @@ function sepCampaignUpdateLabel() {
   return now.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' }) +
     ' · ' + now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 }
-function sepCampaignTrophy() {
-  return '<svg viewBox="0 0 220 245" aria-hidden="true"><defs><linearGradient id="scGold" x1="0" x2="1"><stop stop-color="#a85d05"/><stop offset=".28" stop-color="#ffe37c"/><stop offset=".55" stop-color="#d99712"/><stop offset=".78" stop-color="#fff0a0"/><stop offset="1" stop-color="#9e5200"/></linearGradient><filter id="scShadow"><feDropShadow dx="0" dy="7" stdDeviation="5" flood-opacity=".55"/></filter></defs><g fill="url(#scGold)" stroke="#6f3900" stroke-width="3" filter="url(#scShadow)"><path d="M62 27h96v25c0 52-18 83-48 96-30-13-48-44-48-96z"/><path d="M62 42H27c0 48 17 70 55 76l-8-22C51 89 43 75 42 58h20z"/><path d="M158 42h35c0 48-17 70-55 76l8-22c23-7 31-21 32-38h-20z"/><path d="M99 143h22v34h-22zM76 176h68v19H76zM55 193h110v25H55z"/></g><path d="m110 53 11 22 25 4-18 18 4 25-22-12-22 12 4-25-18-18 25-4z" fill="#fff1a2" stroke="#9c5e05" stroke-width="3"/><rect x="43" y="211" width="134" height="28" rx="5" fill="#061f47" stroke="#efbe3e" stroke-width="3"/><text x="110" y="230" text-anchor="middle" fill="#ffe681" font-size="13" font-weight="900">PERFORMANS</text></svg>';
-}
 function renderSeptemberCampaign() {
   var cards = document.getElementById('cards');
   var rows = sepCampaignRows(typeof DETAY !== 'undefined' ? DETAY : null, sepCampaignFactor(false));
@@ -128,13 +125,11 @@ function renderSeptemberCampaign() {
   cards.innerHTML =
     '<div class="sc-actions"><div><b>24 bayi için bağımsız kampanya alanı</b><small>Günlük değişimler için Ayarlar’dan önceki raporu yükleyin.</small></div><button type="button" onclick="downloadSeptemberCampaignPNG()">Yüksek Kalite Görsel Oluştur</button></div>' +
     '<section id="september-campaign-card" class="sc-card">' +
-      '<svg class="sc-mountains" viewBox="0 0 1024 280" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="scMountain" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1685d6"/><stop offset="1" stop-color="#032a62"/></linearGradient></defs><path d="M0 250 95 176 165 220 252 113 330 200 420 151 500 219 602 112 690 205 764 144 840 212 925 125 1024 214V280H0Z" fill="url(#scMountain)" opacity=".85"/><path d="m190 201 62-88 32 83-32-35-19 25-18-9zM558 166l44-54 29 65-29-27-17 20zM884 176l41-51 27 63-27-25-15 19z" fill="#d7efff" opacity=".85"/></svg>' +
-      '<header class="sc-hero"><div class="sc-brand"><b>Türk Telekom</b><small>Değerli Hissettirir</small><i><u></u><u></u><u></u></i></div><div class="sc-heading"><small>KUZEY ANADOLU BÖLGE</small><h1>TTM MAĞAZA MÜDÜRLERİ</h1><h2>EYLÜL PERFORMANS KAMPANYASI</h2><p>▣ &nbsp; 1 – 30 Eylül 2026</p><em>Hedef Daha Güçlü Yarınlar</em></div><div class="sc-slogan">Birlikte<br>Daha Fazlası<br>Mümkün</div><div class="sc-trophy">' + sepCampaignTrophy() + '</div></header>' +
-      '<div class="sc-summary"><div><i>♟</i><small>TOPLAM BAYİ</small><strong>' + SEP_CAMPAIGN_EXPECTED_DEALERS + '</strong></div><div><i>◎</i><small>KAMPANYA SÜRESİ</small><strong>1 – 30<br>Eylül 2026</strong></div><div><i>▥</i><small>GÜNCELLEME</small><strong>' + sepCampaignEscape(sepCampaignUpdateLabel()).replace(' · ', '<br>') + '</strong></div></div>' +
+      '<div class="sc-live-total">' + SEP_CAMPAIGN_EXPECTED_DEALERS + '</div>' +
+      '<div class="sc-live-update">' + sepCampaignEscape(sepCampaignUpdateLabel()).replace(' · ', '<br>') + '</div>' +
       '<div class="sc-table"><div class="sc-row sc-head"><div>SIRA</div><div>BAYİ KODU</div><div>BAYİ ADI</div><div>TOPLAM<br>PUAN</div><div>GÜNLÜK<br>PUAN ARTIŞI</div><div>DÜNE GÖRE<br>SIRA DEĞİŞİMİ</div></div>' +
         tableRows.join('') +
       '</div>' +
-      '<footer class="sc-footer"><b>Başarı,<br>insanla mümkün.</b><div><span>▥</span> DAHA GÜÇLÜ<br>PERFORMANS</div><div><span>♟</span> DAHA GÜÇLÜ<br>EKİP</div><div><span>★</span> DAHA GÜÇLÜ<br>TÜRK TELEKOM</div><strong>Türk Telekom<small>Değerli Hissettirir</small></strong></footer>' +
     '</section>';
 }
 async function downloadSeptemberCampaignPNG() {
@@ -146,8 +141,7 @@ async function downloadSeptemberCampaignPNG() {
     if (!card) throw new Error('Eylül Kampanyası kartı bulunamadı');
     var result = await createCleanExportClone(card, 1024); wrapper = result.wrapper;
     result.clone.style.width = '1024px'; result.clone.style.height = '1536px'; result.clone.style.maxWidth = 'none';
-    result.wrapper.style.background = '#031637';
-    result.clone.style.background = 'radial-gradient(circle at 50% -10%,#197ad0 0,transparent 35%),linear-gradient(145deg,#031637,#063d7c 48%,#031637)';
+    result.wrapper.style.background = '#073b7a';
     var canvas = await captureExportImage(result.clone, { scale: 3, backgroundColor: '#031637' });
     cleanupExportClone(wrapper); wrapper = null;
     _openSharePreview(canvas.toDataURL('image/png'), 'TT_Eylul_Magaza_Mudurleri_2026.png');
