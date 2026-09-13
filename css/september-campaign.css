@@ -1,7 +1,7 @@
 .sc-page{padding-bottom:28px;overflow:auto}.sc-actions{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 auto 12px;width:100%;max-width:1024px;color:#10243e}.sc-actions div{display:flex;flex-direction:column}.sc-actions b{font-size:14px}.sc-actions small{font-size:11px;color:#64748b;margin-top:3px}.sc-actions button{border:0;border-radius:10px;background:#073e86;color:#fff;font-weight:850;padding:12px 18px;cursor:pointer;box-shadow:0 8px 22px #073e8630}.sc-actions button:disabled{opacity:.6}
 
 /* Temiz dağ arka planı ve dinamik 23 bayi sıralaması. */
-.sc-card{position:relative;overflow:hidden;width:1024px;height:1536px;box-sizing:border-box;margin:auto;background:#063b78 url('../assets/september-campaign-clean-bg.png?v=20260913') center/1024px 1536px no-repeat;color:#082859;font-family:"Arial Narrow",Arial,"Segoe UI",sans-serif;box-shadow:0 25px 65px #061a3c40}
+.sc-card{position:relative;overflow:hidden;width:1024px;height:1536px;box-sizing:border-box;margin:auto;background:#063b78 url('../assets/september-campaign-clean-bg.jpg?v=20260913b') center/1024px 1536px no-repeat;color:#082859;font-family:"Arial Narrow",Arial,"Segoe UI",sans-serif;box-shadow:0 25px 65px #061a3c40}
 
 .sc-table{position:absolute;z-index:4;left:16px;right:16px;top:345px;height:1005px;box-sizing:border-box;background:#f8fbfd;border:8px solid #fff;border-radius:20px;overflow:hidden;color:#082859;box-shadow:0 8px 22px #00152f65;outline:2px solid #e9c75a;outline-offset:-4px}
 .sc-row{display:grid;grid-template-columns:68px 120px 275px 120px 120px 110px 163px;height:36.8px;align-items:stretch;border-bottom:1px solid #bdd5e6;box-sizing:border-box}

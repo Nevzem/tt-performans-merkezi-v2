@@ -135,7 +135,7 @@ async function downloadSeptemberCampaignPNG() {
     if (button) { button.disabled = true; button.textContent = 'Hazırlanıyor…'; }
     var card = document.getElementById('september-campaign-card');
     if (!card) throw new Error('Eylül Kampanyası kartı bulunamadı');
-    var templateUrl = new URL('assets/september-campaign-clean-bg.png?v=20260913', document.baseURI).href;
+    var templateUrl = new URL('assets/september-campaign-clean-bg.jpg?v=20260913b', document.baseURI).href;
     await new Promise(function (resolve, reject) {
       var templateImage = new Image();
       templateImage.onload = resolve;

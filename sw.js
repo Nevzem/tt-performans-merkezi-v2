@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-v34';
+const CACHE = 'ttpm-v35';
 
 const ASSETS = [
   '.',
@@ -17,7 +17,7 @@ const ASSETS = [
   'css/manager-league.css',
   'css/month-end-report.css',
   'css/september-campaign.css',
-  'assets/september-campaign-clean-bg.png',
+  'assets/september-campaign-clean-bg.jpg',
   'css/matrix-v2.css',
   'js/data.js',
   'js/parser.js',
