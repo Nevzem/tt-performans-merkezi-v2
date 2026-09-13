@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-09-12 · Sprint 36: Eylül Kampanyası';
+const APP_BUILD = '2026-09-13 · Sprint 36.1: Kampanya Birebir Şablon';
