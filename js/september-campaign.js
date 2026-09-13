@@ -139,9 +139,22 @@ async function downloadSeptemberCampaignPNG() {
     if (button) { button.disabled = true; button.textContent = 'Hazırlanıyor…'; }
     var card = document.getElementById('september-campaign-card');
     if (!card) throw new Error('Eylül Kampanyası kartı bulunamadı');
+    var templateUrl = new URL('assets/september-campaign-reference.jpeg?v=20260913', document.baseURI).href;
+    await new Promise(function (resolve, reject) {
+      var templateImage = new Image();
+      templateImage.onload = resolve;
+      templateImage.onerror = function () { reject(new Error('Kampanya arka planı yüklenemedi')); };
+      templateImage.src = templateUrl;
+    });
     var result = await createCleanExportClone(card, 1024); wrapper = result.wrapper;
     result.clone.style.width = '1024px'; result.clone.style.height = '1536px'; result.clone.style.maxWidth = 'none';
     result.wrapper.style.background = '#073b7a';
+    result.clone.style.backgroundColor = '#073b7a';
+    result.clone.style.backgroundImage = 'url("' + templateUrl + '")';
+    result.clone.style.backgroundPosition = 'center';
+    result.clone.style.backgroundRepeat = 'no-repeat';
+    result.clone.style.backgroundSize = '1024px 1536px';
+    await new Promise(function (resolve) { setTimeout(resolve, 180); });
     var canvas = await captureExportImage(result.clone, { scale: 3, backgroundColor: '#031637' });
     cleanupExportClone(wrapper); wrapper = null;
     _openSharePreview(canvas.toDataURL('image/png'), 'TT_Eylul_Magaza_Mudurleri_2026.png');

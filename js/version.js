@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-09-13 · Sprint 36.2: Referans Görsel Birebir Şablon';
+const APP_BUILD = '2026-09-13 · Sprint 36.3: Paylaşım Arka Plan Düzeltmesi';
