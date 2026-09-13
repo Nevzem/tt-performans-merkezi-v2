@@ -1,7 +1,8 @@
 /* Kuzey Anadolu TTM Mağaza Müdürleri — Eylül 2026 Performans Kampanyası
  * Müdürler Ligi ve Kupa Bende modüllerinden tamamen bağımsızdır.
  */
-var SEP_CAMPAIGN_EXPECTED_DEALERS = 24;
+var SEP_CAMPAIGN_EXPECTED_DEALERS = 23;
+var SEP_CAMPAIGN_PRIZES = ['8.000 TL', '5.000 TL', '4.000 TL', '3.000 TL'];
 var SEP_CAMPAIGN_RULES = [
   { key: 'Toplam Mobil', label: 'Mobil', weight: 3, icon: '▯' },
   { key: 'DSL', label: 'DSL', weight: 4, icon: '⌁' },
@@ -104,15 +105,11 @@ function sepCampaignRow(row, index, previousMap) {
     '<div class="sc-score">' + sepCampaignNum(row.score.total, row.score.total % 1 ? 1 : 0) + '</div>' +
     '<div>' + sepCampaignDelta(pointDelta, 'point') + '</div>' +
     '<div>' + sepCampaignDelta(rankDelta, 'rank') + '</div>' +
+    '<div class="sc-prize">' + (rank <= 4 ? '<strong>' + SEP_CAMPAIGN_PRIZES[rank - 1] + '</strong>' : '<span>—</span>') + '</div>' +
   '</div>';
 }
 function sepCampaignPlaceholder(index) {
-  return '<div class="sc-row sc-placeholder"><div class="sc-rank"><b>' + (index + 1) + '</b></div><div>—</div><div class="sc-dealer"><strong>RAPORDA BAYİ VERİSİ BEKLENİYOR</strong></div><div>—</div><div>—</div><div>—</div></div>';
-}
-function sepCampaignUpdateLabel() {
-  var now = new Date();
-  return now.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' }) +
-    ' · ' + now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+  return '<div class="sc-row sc-placeholder"><div class="sc-rank"><b>' + (index + 1) + '</b></div><div>—</div><div class="sc-dealer"><strong>RAPORDA BAYİ VERİSİ BEKLENİYOR</strong></div><div>—</div><div>—</div><div>—</div><div>—</div></div>';
 }
 function renderSeptemberCampaign() {
   var cards = document.getElementById('cards');
@@ -123,13 +120,12 @@ function renderSeptemberCampaign() {
   cards.className = 'cards single sc-page';
   cards.style.maxWidth = '1120px';
   cards.innerHTML =
-    '<div class="sc-actions"><div><b>24 bayi için bağımsız kampanya alanı</b><small>Günlük değişimler için Ayarlar’dan önceki raporu yükleyin.</small></div><button type="button" onclick="downloadSeptemberCampaignPNG()">Yüksek Kalite Görsel Oluştur</button></div>' +
+    '<div class="sc-actions"><div><b>23 bayi için bağımsız kampanya alanı</b><small>Günlük değişimler için Ayarlar’dan önceki raporu yükleyin.</small></div><button type="button" onclick="downloadSeptemberCampaignPNG()">Yüksek Kalite Görsel Oluştur</button></div>' +
     '<section id="september-campaign-card" class="sc-card">' +
-      '<div class="sc-live-total">' + SEP_CAMPAIGN_EXPECTED_DEALERS + '</div>' +
-      '<div class="sc-live-update">' + sepCampaignEscape(sepCampaignUpdateLabel()).replace(' · ', '<br>') + '</div>' +
-      '<div class="sc-table"><div class="sc-row sc-head"><div>SIRA</div><div>BAYİ KODU</div><div>BAYİ ADI</div><div>TOPLAM<br>PUAN</div><div>GÜNLÜK<br>PUAN ARTIŞI</div><div>DÜNE GÖRE<br>SIRA DEĞİŞİMİ</div></div>' +
+      '<div class="sc-table"><div class="sc-row sc-head"><div>SIRA</div><div>BAYİ KODU</div><div>BAYİ ADI</div><div>TOPLAM<br>PUAN</div><div>GÜNLÜK PUAN<br>ARTIŞI</div><div>DÜNE GÖRE<br>SIRA</div><div>TAHMİNİ<br>ÖDÜL</div></div>' +
         tableRows.join('') +
       '</div>' +
+      '<div class="sc-prize-note">* Ödül tutarları mevcut sıralamaya göre tahminidir.</div>' +
     '</section>';
 }
 async function downloadSeptemberCampaignPNG() {
@@ -139,7 +135,7 @@ async function downloadSeptemberCampaignPNG() {
     if (button) { button.disabled = true; button.textContent = 'Hazırlanıyor…'; }
     var card = document.getElementById('september-campaign-card');
     if (!card) throw new Error('Eylül Kampanyası kartı bulunamadı');
-    var templateUrl = new URL('assets/september-campaign-reference.jpeg?v=20260913', document.baseURI).href;
+    var templateUrl = new URL('assets/september-campaign-clean-bg.png?v=20260913', document.baseURI).href;
     await new Promise(function (resolve, reject) {
       var templateImage = new Image();
       templateImage.onload = resolve;
