@@ -52,6 +52,7 @@ function navTo(page) {
   _setVisible('page-ana',    page === 'ana');
   _setVisible('page-data',   page === 'bayi' || page === 'pers' || page === 'sy' || page === 'perf');
   _setVisible('page-gecmis', page === 'gecmis');
+  _setVisible('page-earnings', page === 'earnings');
   _setVisible('page-ayar',   page === 'ayar');
 
   var fbar         = document.getElementById('compact-filter-bar');
@@ -86,7 +87,11 @@ function navTo(page) {
     perfSubStrip.style.display = '';
     perfSec(_perfSection); /* perfSec fbar'ı yönetir */
 
-    } else if (page === 'gecmis') {
+    } else if (page === 'earnings') {
+    fbar.style.display = 'none'; perfSubStrip.style.display = 'none';
+    if (typeof renderEarningsPage === 'function') renderEarningsPage();
+
+  } else if (page === 'gecmis') {
     fbar.style.display = 'none'; perfSubStrip.style.display = 'none';
     if (typeof initHistoryPage === 'function') initHistoryPage();
 
