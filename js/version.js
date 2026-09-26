@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-09-13 · Sprint 36.5: Kampanya Arka Fon Onarımı';
+const APP_BUILD = '2026-09-26 · Sprint 37: Prim & Kazanç Premium Dashboard';
