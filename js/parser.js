@@ -187,11 +187,11 @@ function parseWB(wb) {
   });
 
   // ── Bayi Detayı ──
-  const detayBayiler = {}, detayPers = {};
+  const detayBayiler = {}, detayCariBayiler = {}, detayPers = {};
   {
     const BP = {Postpaid:[49,50],Prepaid:[53,54],DSL:[57,58],IPTV:[69,70],Uydu:[73,74],"Akıllı Cihaz":[77,78],"Diğer Cihaz":[81,82]};
     for (const r of rowsB.slice(hib + 1)) {
-      if (!r || !r[3] || !r[1] || String(r[1]).trim().toUpperCase() !== "KUZEY ANADOLU") continue;
+      if (!r || !r[3] || !r[1]) continue;
       const kod = r[2] ? String(r[2]).trim() : "";
       if (!/^\d+$/.test(kod)) continue;
       const pr = {};
@@ -200,7 +200,13 @@ function parseWB(wb) {
       pr["Toplam Mobil"]={h:Math.round(ph+rh),a:Math.round(pa+ra),g:(ph+rh)>0?Math.round((pa+ra)/(ph+rh)*1000)/10:null};
       pr["Toplam TV"]={h:Math.round(ih+uh),a:Math.round(ia+ua),g:(ih+uh)>0?Math.round((ia+ua)/(ih+uh)*1000)/10:null};
       pr["Toplam Cihaz"]={h:Math.round(ch+gh),a:Math.round(ca+ga),g:(ch+gh)>0?Math.round((ca+ga)/(ch+gh)*1000)/10:null};
-      detayBayiler[kod] = {kod, b: shortB(r[3]), fullName: String(r[3]).trim(), anaBayiKod: r[4] ? String(r[4]).trim() : '', il: r[5]?String(r[5]).trim():"", sy: r[7]&&String(r[7]).trim()!=="-"?String(r[7]).trim():"", prods: pr};
+      const record = {kod, bolge: String(r[1]).trim(), b: shortB(r[3]), fullName: String(r[3]).trim(), anaBayiKod: r[4] ? String(r[4]).trim() : '', il: r[5]?String(r[5]).trim():"", sy: r[7]&&String(r[7]).trim()!=="-"?String(r[7]).trim():"", prods: pr};
+      detayCariBayiler[kod] = record;
+      if (String(r[1]).trim().toUpperCase() === "KUZEY ANADOLU") detayBayiler[kod] = record;
+    }
+    const cariParents = new Set(Object.values(detayBayiler).map(d=>d.anaBayiKod).filter(Boolean));
+    for (const code of Object.keys(detayCariBayiler)) {
+      if (!detayBayiler[code] && !cariParents.has(detayCariBayiler[code].anaBayiKod)) delete detayCariBayiler[code];
     }
     const PP = {Postpaid:[38,39],Prepaid:[41,42],DSL:[44,45],IPTV:[53,54],Uydu:[56,57],"Akıllı Cihaz":[59,60],"Diğer Cihaz":[62,63]};
     for (const r of rows.slice(hi + 1)) {
@@ -244,7 +250,7 @@ function parseWB(wb) {
     }
   }
   const dfmt = donem && donem.length === 6 ? donem.slice(0,4) + "/" + donem.slice(4) : (donem || "—");
-  return { data: out, donem: dfmt, persCount, bayiCount, warnings, matrix, kupa: kupaRows, detay: { bayiler: detayBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
+  return { data: out, donem: dfmt, persCount, bayiCount, warnings, matrix, kupa: kupaRows, detay: { bayiler: detayBayiler, cariBayiler: detayCariBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
 }
 
 /* ───── EDM PARSER — Dinamik kolon tespiti ───── */

@@ -7,7 +7,8 @@
      Sabit kolonlar: Ana Bölge, Bölge, Bayi Kodu, Bayi Adı, Ana Bayi Kodu,
                      İl, Bölge Müdürü, Satış Yöneticisi, Dönem(YYYYAA)
      Ürün blokları: [Hedef, Aktivasyon, HGO, Bekleyen] × N
-   Yalnız Bölge = KUZEY ANADOLU satırları alınır.
+   Bölge raporu Kuzey Anadolu ile sınırlıdır; accountDealers cari şubelerini saklar.
+   --accounts-only --account=7000514: mevcut kapanışları değiştirmeden cari geçmişi ekler.
    Ürün eşlemesi: ayrık ürünler korunur; birleşik alanlar yalnızca mevcut
    ekranlarla geriye dönük uyumluluk ve toplam kontrolü için ayrıca yazılır.
    Kapanmış ay dosyası olduğundan forecast = HGO (ay sonu gerçekleşmesi).
@@ -68,11 +69,15 @@ for (const k in MAP) if (MAP[k] < 0) { console.error('EKSİK ÜRÜN BLOĞU: ' + 
 const num = v => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
 
 /* Dönem bazında KUZEY ANADOLU bayilerini topla */
-const byPeriod = {};
+const byPeriod = {}, accountByPeriod = {};
+const accountsOnly = process.argv.includes("--accounts-only");
+const accountArg = process.argv.find(a=>a.startsWith("--account="));
+const accountCode = accountArg ? accountArg.split("=")[1] : null;
 for (let i = 3; i < rows.length; i++) {
   const r = rows[i];
   if (!r || !r[2]) continue;
-  if (String(r[1] || '').trim().toUpperCase() !== BOLGE) continue;
+  if (!/^\d+$/.test(String(r[2]).trim())) continue;
+  const regional = String(r[1] || '').trim().toUpperCase() === BOLGE;
   const dRaw = String(r[8] || '').trim();          /* 202511 */
   if (!/^\d{6}$/.test(dRaw)) continue;
   const period = dRaw.slice(0, 4) + '-' + dRaw.slice(4);
@@ -85,11 +90,12 @@ for (let i = 3; i < rows.length; i++) {
              forecast: hgo !== null ? Math.round(hgo) : null };
   }
 
-  const periodDealers = byPeriod[period] = byPeriod[period] || [];
+  const periodDealers = (regional ? byPeriod : accountByPeriod)[period] = (regional ? byPeriod : accountByPeriod)[period] || [];
   const dealerRecord = {
     bayiKodu: String(r[2]).trim(),
     bayiAdi:  String(r[3] || '').trim(),
     anaBayiKodu: String(r[4] || '').trim(),
+    bolge: String(r[1] || '').trim(),
     il:       String(r[5] || '').trim(),
     sy:       String(r[7] || '').trim(),
     postpaid:    prod([MAP.post]),
@@ -149,8 +155,17 @@ periods.forEach(p => {
     benchmarks: trBenchmark ? { tr: trBenchmark } : undefined,
     dealers: byPeriod[p],
   };
+  var parents = new Set(byPeriod[p].map(d=>d.anaBayiKodu).filter(Boolean));
+  var extra = (accountByPeriod[p]||[]).filter(d=>parents.has(d.anaBayiKodu) && (!accountCode || d.anaBayiKodu===accountCode));
+  var output = doc;
+  if(accountsOnly){
+    output = JSON.parse(fs.readFileSync(path.join(OUT_DIR,p+'.json'),'utf8'));
+    output.dealers.forEach(d=>{const matched=byPeriod[p].find(r=>r.bayiKodu===d.bayiKodu && (!accountCode || r.anaBayiKodu===accountCode));if(matched){d.anaBayiKodu=matched.anaBayiKodu;d.bolge=matched.bolge;}});
+    const keep = (output.accountDealers||[]).filter(d=>accountCode && d.anaBayiKodu!==accountCode);
+    output.accountDealers = keep.concat(extra);
+  }else output.accountDealers = extra;
   fs.writeFileSync(path.join(OUT_DIR, p + '.json'),
-    JSON.stringify(doc, null, 1) + '\n', 'utf8');
+    JSON.stringify(output, null, 1) + '\n', 'utf8');
   console.log('yazıldı: ' + p + '.json (' + doc.dealers.length + ' bayi)');
 });
 

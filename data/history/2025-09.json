@@ -727,7 +727,9 @@
     "adet": 127,
     "hgo": 96.2,
     "forecast": 96
-   }
+   },
+   "anaBayiKodu": "7000514",
+   "bolge": "KUZEY ANADOLU"
   },
   {
    "bayiKodu": "4100087",
@@ -1255,7 +1257,9 @@
     "adet": 119,
     "hgo": 100.8,
     "forecast": 101
-   }
+   },
+   "anaBayiKodu": "7000514",
+   "bolge": "KUZEY ANADOLU"
   },
   {
    "bayiKodu": "4100776",
@@ -1783,6 +1787,144 @@
     "adet": 198,
     "hgo": 125.3,
     "forecast": 125
+   }
+  }
+ ],
+ "accountDealers": [
+  {
+   "bayiKodu": "4100756",
+   "bayiAdi": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+   "anaBayiKodu": "7000514",
+   "bolge": "ORTA ANADOLU",
+   "il": "ANKARA",
+   "sy": "KEMAL SUALP",
+   "postpaid": {
+    "hedef": 182,
+    "adet": 72,
+    "hgo": 39.6,
+    "forecast": 40
+   },
+   "prepaid": {
+    "hedef": 56,
+    "adet": 200,
+    "hgo": 357.1,
+    "forecast": 357
+   },
+   "mobil": {
+    "hedef": 238,
+    "adet": 272,
+    "hgo": 114.3,
+    "forecast": 114
+   },
+   "dsl": {
+    "hedef": 54,
+    "adet": 63,
+    "hgo": 116.7,
+    "forecast": 117
+   },
+   "iptv": {
+    "hedef": 23,
+    "adet": 28,
+    "hgo": 121.7,
+    "forecast": 122
+   },
+   "uydu": {
+    "hedef": 8,
+    "adet": 8,
+    "hgo": 100,
+    "forecast": 100
+   },
+   "tv": {
+    "hedef": 31,
+    "adet": 36,
+    "hgo": 116.1,
+    "forecast": 116
+   },
+   "akilliCihaz": {
+    "hedef": 40,
+    "adet": 40,
+    "hgo": 100,
+    "forecast": 100
+   },
+   "digerCihaz": {
+    "hedef": 18,
+    "adet": 33,
+    "hgo": 183.3,
+    "forecast": 183
+   },
+   "cihaz": {
+    "hedef": 58,
+    "adet": 73,
+    "hgo": 125.9,
+    "forecast": 126
+   }
+  },
+  {
+   "bayiKodu": "7000514",
+   "bayiAdi": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+   "anaBayiKodu": "7000514",
+   "bolge": "ORTA ANADOLU",
+   "il": "ANKARA",
+   "sy": "KEMAL SUALP",
+   "postpaid": {
+    "hedef": 340,
+    "adet": 122,
+    "hgo": 35.9,
+    "forecast": 36
+   },
+   "prepaid": {
+    "hedef": 56,
+    "adet": 323,
+    "hgo": 576.8,
+    "forecast": 577
+   },
+   "mobil": {
+    "hedef": 396,
+    "adet": 445,
+    "hgo": 112.4,
+    "forecast": 112
+   },
+   "dsl": {
+    "hedef": 46,
+    "adet": 42,
+    "hgo": 91.3,
+    "forecast": 91
+   },
+   "iptv": {
+    "hedef": 18,
+    "adet": 9,
+    "hgo": 50,
+    "forecast": 50
+   },
+   "uydu": {
+    "hedef": 10,
+    "adet": 10,
+    "hgo": 100,
+    "forecast": 100
+   },
+   "tv": {
+    "hedef": 28,
+    "adet": 19,
+    "hgo": 67.9,
+    "forecast": 68
+   },
+   "akilliCihaz": {
+    "hedef": 39,
+    "adet": 44,
+    "hgo": 112.8,
+    "forecast": 113
+   },
+   "digerCihaz": {
+    "hedef": 19,
+    "adet": 41,
+    "hgo": 215.8,
+    "forecast": 216
+   },
+   "cihaz": {
+    "hedef": 58,
+    "adet": 85,
+    "hgo": 146.6,
+    "forecast": 147
    }
   }
  ]

@@ -42,8 +42,8 @@ function merCaptureUpload(parsed,edm){
 function merCurrent(){return MER_LIVE||{period:merPeriodKey(typeof DONEM!=='undefined'?DONEM:null),ttm:typeof DETAY!=='undefined'?DETAY:null,edm:null,matrix:typeof MATRIX!=='undefined'?MATRIX:null,sy:typeof SYDATA!=='undefined'?SYDATA:null,sample:true,closed:false};}
 function merFromHistory(doc){
   if(!doc)return null;
-  var dealers={}; (doc.dealers||[]).forEach(function(d){var prods={};MER_PRODUCTS.forEach(function(p){if(d[p.hist])prods[p.key]={h:d[p.hist].hedef,a:d[p.hist].adet};});dealers[String(d.bayiKodu)]={kod:String(d.bayiKodu),b:d.bayiAdi,fullName:d.bayiAdi,anaBayiKod:d.anaBayiKodu||d.anaBayiKod||'',il:d.il,sy:d.sy,prods:prods};});
-  return {period:doc.period,ttm:{bayiler:dealers,pers:{}},edm:null,matrix:null,benchmarks:doc.benchmarks,closed:true,sample:false,history:true};
+  function convert(records){var dealers={};(records||[]).forEach(function(d){var prods={};MER_PRODUCTS.forEach(function(p){if(d[p.hist])prods[p.key]={h:d[p.hist].hedef,a:d[p.hist].adet};});dealers[String(d.bayiKodu)]={kod:String(d.bayiKodu),b:d.bayiAdi,fullName:d.bayiAdi,anaBayiKod:d.anaBayiKodu||d.anaBayiKod||'',bolge:d.bolge||'KUZEY ANADOLU',il:d.il,sy:d.sy,prods:prods};});return dealers;}
+  return {period:doc.period,ttm:{bayiler:convert(doc.dealers),cariBayiler:convert(doc.accountDealers),pers:{}},edm:null,matrix:null,benchmarks:doc.benchmarks,closed:true,sample:false,history:true};
 }
 function merSource(period){
   if(period==='current')return merCurrent();
@@ -51,20 +51,31 @@ function merSource(period){
 }
 function merSourceAt(period){return MER_LIVE && MER_LIVE.period===period?MER_LIVE:merSource(period);}
 function merRows(source,channel){return Object.values((source && source[channel.toLowerCase()] && source[channel.toLowerCase()].bayiler)||{}).map(function(d){return Object.assign({},d,{channel:channel,id:channel+':'+d.kod});});}
+/* National branches are available only to cari reports. Uploaded rows win;
+ * closed legacy archives can recover matching-month external history. */
+function merAccountRows(source){
+  var ttm=source && source.ttm||{},extra=ttm.cariBayiler;
+  if(extra==null && source && (source.closed||source.sample) && typeof HIST2_DATA!=='undefined'){
+    var historic=merFromHistory(HIST2_DATA[source.period]);extra=historic && historic.ttm.cariBayiler;
+  }
+  return Object.values(Object.assign({},extra||{},ttm.bayiler||{})).map(function(d){return Object.assign({},d,{channel:'TTM',id:'TTM:'+d.kod});});
+}
 function merName(d){return d.fullName||d.b||d.kod;}
 function merParent(d){
   if(MER_PARENTS[d.kod])return {id:'code:'+MER_PARENTS[d.kod],code:MER_PARENTS[d.kod],verified:true};
   if(d.anaBayiKod && d.anaBayiKod!=='-')return {id:'code:'+d.anaBayiKod,code:d.anaBayiKod,verified:true};
   var live=merCurrent(), other=live.ttm && live.ttm.bayiler && live.ttm.bayiler[d.kod];
   if(other && other.anaBayiKod)return {id:'code:'+other.anaBayiKod,code:other.anaBayiKod,verified:true};
-  var name=merName(d);
+  var name=merName(d),historyParent=null;
   if(!d.fullName && typeof HIST2_DATA!=='undefined'){
-    Object.keys(HIST2_DATA).sort().reverse().some(function(period){var doc=HIST2_DATA[period];var old=doc && doc.dealers && doc.dealers.find(function(x){return String(x.bayiKodu)===String(d.kod);});if(old){name=old.bayiAdi||name;}return !!old;});
+    Object.keys(HIST2_DATA).sort().reverse().some(function(period){var doc=HIST2_DATA[period];var old=doc && doc.dealers && doc.dealers.find(function(x){return String(x.bayiKodu)===String(d.kod);});if(old){name=old.bayiAdi||name;historyParent=old.anaBayiKodu||old.anaBayiKod;}return !!old;});
   }
+  if(historyParent)return {id:'code:'+historyParent,code:historyParent,verified:true};
   return {id:'name:'+String(name).trim().replace(/\s+/g,' ').replace(/[.\s]+$/g,'').toLocaleUpperCase('tr-TR'),code:null,verified:false};
 }
 function merGroups(source){
   var groups={};merRows(source,'TTM').forEach(function(d){var parent=merParent(d);if(!groups[parent.id])groups[parent.id]={id:parent.id,code:parent.code,name:merName(d),verified:parent.verified,rows:[]};groups[parent.id].rows.push(d);});
+  merAccountRows(source).forEach(function(d){var parent=merParent(d),g=groups[parent.id];if(g && !g.rows.some(function(r){return r.kod===d.kod;}))g.rows.push(d);});
   return Object.values(groups).sort(function(a,b){return a.name.localeCompare(b.name,'tr');});
 }
 function merAggregate(rows,key){
@@ -86,7 +97,7 @@ function merAccountMonthRows(ctx,src){
   var codes=new Set(ctx.rows.map(function(d){return String(d.kod);}));
   function legalName(d){return merName(d).trim().replace(/\s+/g,' ').replace(/[.\s]+$/g,'').toLocaleUpperCase('tr-TR');}
   var names=new Set(ctx.rows.filter(function(d){return d.fullName;}).map(legalName));
-  return merRows(src,'TTM').filter(function(d){
+  return merAccountRows(src).filter(function(d){
     var parent=MER_PARENTS[d.kod]||d.anaBayiKod;
     if(parent && parent!=='-' && ctx.group && ctx.group.code)return String(parent)===String(ctx.group.code);
     if(MER_PARENTS[d.kod])return 'code:'+MER_PARENTS[d.kod]===ctx.selection;
@@ -154,7 +165,8 @@ function merModel(){
   if(source.sample)ctx.notes.push('Örnek veri; güncel kapanış Excel’ini yükleyin.');
   if(!source.closed)ctx.notes.push('Ara dönem verisi; ay kapanışı henüz doğrulanmadı.');
   if(ctx.scope==='region' && !source.edm)ctx.notes.push('EDM bölge verisi bulunamadı; yalnız TTM gösteriliyor.');
-  if(ctx.scope==='account')ctx.notes.push('Cari geçmişi: her ay dosyada bulunan bağlı şubelerin toplamı; şube sayıları grafikte gösterilir.');
+  if(ctx.scope==='account')ctx.notes.push('Cari: diğer bölgelerdeki bağlı şubeler dahil; geçmişte her ayın raporlanan şubeleri toplanır.');
+  if(ctx.scope==='account' && ctx.group && ctx.group.code==='7000514' && source.period>='2025-07' && ctx.rows.length<4 && !source.ttm.cariBayiler)ctx.notes.push('Öztürk’ün tüm şubeleri için güncel TTM Excel’ini yeniden yükleyin.');
   if(ctx.group && !ctx.group.verified)ctx.notes.push('Cari grubu şirket adıyla eşleştirildi. Ana cari kodunu eşleştirmelerden doğrulayın.');
   if(source.history)ctx.notes.push('Bu arşivde personel kırılımı bulunmuyor.');
   if(merStorageNote)ctx.notes.push(merStorageNote);

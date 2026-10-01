@@ -925,7 +925,9 @@
     "adet": 80,
     "hgo": 76.9,
     "forecast": 77
-   }
+   },
+   "anaBayiKodu": "7000514",
+   "bolge": "KUZEY ANADOLU"
   },
   {
    "bayiKodu": "4100087",
@@ -1453,6 +1455,76 @@
     "adet": 10,
     "hgo": 15.9,
     "forecast": 16
+   }
+  }
+ ],
+ "accountDealers": [
+  {
+   "bayiKodu": "7000514",
+   "bayiAdi": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+   "anaBayiKodu": "7000514",
+   "bolge": "ORTA ANADOLU",
+   "il": "ANKARA",
+   "sy": "KEMAL SUALP",
+   "postpaid": {
+    "hedef": 235,
+    "adet": 371,
+    "hgo": 157.9,
+    "forecast": 158
+   },
+   "prepaid": {
+    "hedef": 60,
+    "adet": 45,
+    "hgo": 75,
+    "forecast": 75
+   },
+   "mobil": {
+    "hedef": 295,
+    "adet": 416,
+    "hgo": 141,
+    "forecast": 141
+   },
+   "dsl": {
+    "hedef": 42,
+    "adet": 34,
+    "hgo": 81,
+    "forecast": 81
+   },
+   "iptv": {
+    "hedef": 20,
+    "adet": 7,
+    "hgo": 35,
+    "forecast": 35
+   },
+   "uydu": {
+    "hedef": 0,
+    "adet": 12,
+    "hgo": null,
+    "forecast": null
+   },
+   "tv": {
+    "hedef": 20,
+    "adet": 19,
+    "hgo": 95,
+    "forecast": 95
+   },
+   "akilliCihaz": {
+    "hedef": 52,
+    "adet": 43,
+    "hgo": 82.7,
+    "forecast": 83
+   },
+   "digerCihaz": {
+    "hedef": 15,
+    "adet": 6,
+    "hgo": 40,
+    "forecast": 40
+   },
+   "cihaz": {
+    "hedef": 67,
+    "adet": 49,
+    "hgo": 73.1,
+    "forecast": 73
    }
   }
  ]

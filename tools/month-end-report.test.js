@@ -87,4 +87,26 @@ const ytdPanel=run('merYtdPerformance(AC)');assert.equal((ytdPanel.match(/<artic
 ctx.transfer={period:'2026-01',ttm:{bayiler:{'1':dealer('1',100,90,'999')},pers:{}}};
 run("TC=merContext(source,'account','code:900')");assert.equal(run('merAccountMonthRows(TC,transfer).length'),0);
 run("MER_PARENTS['1']='900'");assert.equal(run('merAccountMonthRows(TC,transfer).length'),1);run('MER_PARENTS={}');
+// Cari includes national sibling branches; regional screens keep their boundary.
+const foreign=Object.assign([],ttm,{1:'ORTA ANADOLU',2:'23',5:'ANKARA'});
+const unrelated=Object.assign([],ttm,{1:'BATI ANADOLU',2:'24',4:'888'});
+ctx.ttmWB.Sheets['TTM BUAY'].push(foreign,unrelated);
+ctx.national=run('parseWB(ttmWB)');
+assert.equal(Object.keys(ctx.national.detay.bayiler).length,1);
+assert.equal(Object.keys(ctx.national.detay.cariBayiler).length,2,'Only national siblings of regional caris are kept');
+ctx.national.syData={calismaGun:30,calisilanGun:30};run('merCaptureUpload(national,null)');
+assert.equal(run('merGroups(MER_LIVE)[0].rows.length'),2);
+assert.equal(run("merContext(MER_LIVE,'region','').rows.length"),1);
+assert.equal(run("merAggregate(merContext(MER_LIVE,'account','code:4100170').rows,'DSL').a"),160);
+run('MER_LIVE=null;MER_ARCHIVES={};OS=merFromHistory(HIST2_DATA["2026-08"]);OC=merContext(OS,"account","code:7000514")');
+assert.deepEqual(Array.from(run('OC.rows.map(d=>d.kod).sort()')),['4057503','4100756','4100760','7000514']);
+assert.equal(run("merContext(OS,'region','').rows.length"),ctx.HIST2_DATA['2026-08'].dealers.length);
+assert.equal(run('merStats(OC,MER_TRENDS[0]).ytdA'),10403);
+assert.equal(run('merHistoricalValue(OC,"2025-04",MER_TRENDS[0]).rowCount'),2,'Later openings are not fabricated in older months');
+assert.equal(run('merHistoricalValue(OC,"2025-05",MER_TRENDS[0]).rowCount'),3);
+assert.equal(run('merHistoricalValue(OC,"2025-07",MER_TRENDS[0]).rowCount'),4);
+ctx.legacy=JSON.parse(JSON.stringify(run('OS')));delete ctx.legacy.ttm.cariBayiler;
+assert.equal(run('merGroups(legacy).find(g=>g.code==="7000514").rows.length'),4,'Closed legacy archive recovers matching-month external rows');
+ctx.partial=JSON.parse(JSON.stringify(ctx.legacy));ctx.partial.closed=false;ctx.partial.sample=false;
+assert.equal(run('merGroups(partial).find(g=>g.code==="7000514").rows.length'),2,'Closing history must not be mixed with an intra-month upload');
 console.log('PASS: weighted totals, missing values, account grouping, aligned YoY, channel coverage, workbook imports, archives, multi-page PDF.');
