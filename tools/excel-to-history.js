@@ -89,6 +89,7 @@ for (let i = 3; i < rows.length; i++) {
   const dealerRecord = {
     bayiKodu: String(r[2]).trim(),
     bayiAdi:  String(r[3] || '').trim(),
+    anaBayiKodu: String(r[4] || '').trim(),
     il:       String(r[5] || '').trim(),
     sy:       String(r[7] || '').trim(),
     postpaid:    prod([MAP.post]),

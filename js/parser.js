@@ -193,13 +193,14 @@ function parseWB(wb) {
     for (const r of rowsB.slice(hib + 1)) {
       if (!r || !r[3] || !r[1] || String(r[1]).trim().toUpperCase() !== "KUZEY ANADOLU") continue;
       const kod = r[2] ? String(r[2]).trim() : "";
+      if (!/^\d+$/.test(kod)) continue;
       const pr = {};
       for (const pn in BP) { const h = num(r[BP[pn][0]])||0, a = num(r[BP[pn][1]])||0; pr[pn] = {h:Math.round(h),a:Math.round(a),g:h>0?Math.round(a/h*1000)/10:null}; }
       const ph=num(r[49])||0,pa=num(r[50])||0,rh=num(r[53])||0,ra=num(r[54])||0,ih=num(r[69])||0,ia=num(r[70])||0,uh=num(r[73])||0,ua=num(r[74])||0,ch=num(r[77])||0,ca=num(r[78])||0,gh=num(r[81])||0,ga=num(r[82])||0;
       pr["Toplam Mobil"]={h:Math.round(ph+rh),a:Math.round(pa+ra),g:(ph+rh)>0?Math.round((pa+ra)/(ph+rh)*1000)/10:null};
       pr["Toplam TV"]={h:Math.round(ih+uh),a:Math.round(ia+ua),g:(ih+uh)>0?Math.round((ia+ua)/(ih+uh)*1000)/10:null};
       pr["Toplam Cihaz"]={h:Math.round(ch+gh),a:Math.round(ca+ga),g:(ch+gh)>0?Math.round((ca+ga)/(ch+gh)*1000)/10:null};
-      detayBayiler[kod] = {kod, b: shortB(r[3]), il: r[5]?String(r[5]).trim():"", sy: r[7]&&String(r[7]).trim()!=="-"?String(r[7]).trim():"", prods: pr};
+      detayBayiler[kod] = {kod, b: shortB(r[3]), fullName: String(r[3]).trim(), anaBayiKod: r[4] ? String(r[4]).trim() : '', il: r[5]?String(r[5]).trim():"", sy: r[7]&&String(r[7]).trim()!=="-"?String(r[7]).trim():"", prods: pr};
     }
     const PP = {Postpaid:[38,39],Prepaid:[41,42],DSL:[44,45],IPTV:[53,54],Uydu:[56,57],"Akıllı Cihaz":[59,60],"Diğer Cihaz":[62,63]};
     for (const r of rows.slice(hi + 1)) {
@@ -247,7 +248,7 @@ function parseWB(wb) {
 }
 
 /* ───── EDM PARSER — Dinamik kolon tespiti ───── */
-function parseEDMSheet(wb) {
+function parseEDMSheet(wb, options) {
   /* ═══════════════════════════════════════════════════════
      EDM BUAY Parser — Dinamik kolon tespiti v2
      Aktivasyon kolonunu ad + komşu-sütun taramasıyla bulur.
@@ -344,6 +345,7 @@ function parseEDMSheet(wb) {
 
   /* ── 4. Kolon haritası ── */
   const C = {
+    bolge:      ci('Bölge','Bolge'),
     anaBayiKod: ci('Ana Bayi Kodu','Ana Bayi No','Üst Bayi Kodu','Ana Bayi'),
     bayiTipi:   ci('Bayi Tipi','Kanal Tipi','Segment','Tip','Kanal'),
     bayiAdi:    ci('Bayi Adı','Bayi Ad','Bayi Adi','Bayi Unvan','Acenta Adı','Acenta Ad'),
@@ -412,7 +414,7 @@ function parseEDMSheet(wb) {
   mappingLines.forEach(l => console.log('[EDM] ' + l));
 
   /* ── 5b. SY sütunu bulunamadıysa J (0-tabanlı 9.) sütunu dene ── */
-  if (C.sy < 0 && hdrs.length > 9) {
+  if (C.sy < 0 && hdrs.length > 9 && !(options && options.region)) {
     C.sy = 9;
     log.push('SY sütunu isimle bulunamadı → J sütunu (indeks 9) deneniyor: "' + (hdrs[9]||'') + '"');
   }
@@ -457,11 +459,14 @@ function parseEDMSheet(wb) {
     if (!r) continue;
 
     /* Ana Bayi Kodu filtresi */
-    if (C.anaBayiKod >= 0 && gs(r, C.anaBayiKod) !== EDM_ANA_KOD) continue;
+    if (options && options.region) {
+      if (gs(r, C.bolge >= 0 ? C.bolge : 1).toLocaleUpperCase('tr-TR') !== APP_CONFIG.bolge) continue;
+    } else if (C.anaBayiKod >= 0 && gs(r, C.anaBayiKod) !== EDM_ANA_KOD) continue;
 
     const bayiAdi = gs(r,C.bayiAdi)||(r[3]?String(r[3]).trim():'');
     const bayiKod = gs(r,C.bayiKod)||(r[2]?String(r[2]).trim():'');
     if (!bayiAdi && !bayiKod) continue;
+    if (options && options.region && !/^\d+$/.test(bayiKod)) continue;
 
     const b   = shortB(bayiAdi||bayiKod);
     const bt  = gs(r,C.bayiTipi);
@@ -510,7 +515,15 @@ function parseEDMSheet(wb) {
       "Diğer Cihaz": {h:Math.round(cihDH),a:Math.round(cihDA),g:hg(cihDA,cihDH,null)},
       "Toplam Cihaz":{h:Math.round(cihH+cihDH),a:Math.round(cihA+cihDA),g:hg(cihA+cihDA,cihH+cihDH,null)},
     };
-    detayBayiler[bayiKod||b]={kod:bayiKod,b,il,bt,sy:sy_,st:st_,prods:pr};
+    if (C.iptvA >= 0) pr.IPTV = { h: gn(r,C.iptvH), a: gn(r,C.iptvA), g: hg(gn(r,C.iptvA),gn(r,C.iptvH),null) };
+    if (C.uydA >= 0) pr.Uydu = { h: gn(r,C.uydH), a: gn(r,C.uydA), g: hg(gn(r,C.uydA),gn(r,C.uydH),null) };
+    if (options && options.region) {
+      [['Postpaid',C.ppH,C.ppA],['Prepaid',C.fpH,C.fpA],['DSL',C.dslH,C.dslA],['Akıllı Cihaz',C.cihH,C.cihA],['Diğer Cihaz',C.cihDH,C.cihDA]].forEach(function(p) {
+        pr[p[0]] = {h:gn(r,p[1]),a:gn(r,p[2])};
+      });
+      pr['Toplam Mobil'] = C.mobA >= 0 ? {h:gn(r,C.mobH),a:gn(r,C.mobA)} : {h:C.ppH >= 0 && C.fpH >= 0 ? ppH+fpH : null,a:C.ppA >= 0 && C.fpA >= 0 ? ppA+fpA : null};
+    }
+    detayBayiler[bayiKod||b]={kod:bayiKod,b,fullName:bayiAdi,anaBayiKod:gs(r,C.anaBayiKod),il,bt,sy:sy_,st:st_,prods:pr};
     bayiCount++;
   }
 
@@ -579,12 +592,19 @@ function wire(boxId, inputId, isPrev) {
           /* Sprint 19: input değerlerini state'e senkronla */
           if (typeof syncDayInputs === 'function') syncDayInputs();
           /* EDM BUAY parse (mevcut Excel'den) */
+          if (typeof merCaptureUpload === 'function') merCaptureUpload(parsed, null);
           try {
             const wb2 = XLSX.read(new Uint8Array(e.target.result), { type: "array" });
             const edm = parseEDMSheet(wb2);
             EDM_DATA  = edm.data;
             EDM_DETAY = edm.detay;
             EDM_ERROR = edm.error;
+            if (typeof merCaptureUpload === 'function') {
+              const defaultEdmLog = EDM_COL_LOG;
+              const regional = parseEDMSheet(wb2, {region:true});
+              EDM_COL_LOG = defaultEdmLog;
+              merCaptureUpload(parsed, regional.error ? null : regional.detay);
+            }
             if (typeof updateKanalBadge === 'function') updateKanalBadge();
           } catch(edmErr) { EDM_ERROR = "EDM parse hatası: " + edmErr.message; }
           /* Sprint 3: EDM son yükleme + DATA_HEALTH */
