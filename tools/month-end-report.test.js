@@ -56,4 +56,11 @@ ctx.parsed=run('parseWB(ttmWB)');ctx.parsed.syData={calismaGun:30,calisilanGun:1
 ctx.parsed.syData.calisilanGun=30;run('merCaptureUpload(parsed,null)');assert.equal(run('MER_LIVE.closed'),true);assert.ok(storage.tt_month_end_archives_v1);
 ctx.fakeCanvas={width:4096,height:3072,toDataURL:()=> 'data:image/jpeg;base64,/9j/2Q=='};
 const bytes=run('merCanvasToPdfBytes([fakeCanvas,fakeCanvas])');const pdf=Buffer.from(bytes).toString('latin1');assert.ok(pdf.includes('/Count 2'));assert.ok(pdf.includes('xref\n0 9'));for(const offset of pdf.matchAll(/(\d{10}) 00000 n/g))assert.ok(/^\d+ 0 obj/.test(pdf.slice(+offset[1])),'PDF xref points to object');
+// Independent product scales keep lower-volume products readable.
+ctx.ytdFixture={products:['mobil','dsl','iptv','uydu','akilliCihaz'].map((hist,i)=>({hist,label:hist,s:{pairB:[6636,569,208,111,733][i],pairA:[5014,485,256,68,779][i]}})),source:{period:'2026-09'}};
+const minis=run('ytdFixture.products.map(merYtdMini)');
+for(const mini of minis){const heights=[...mini.matchAll(/height="([\d.]+)" rx/g)].map(m=>+m[1]);assert.equal(Math.max(...heights),46,'Each product has its own maximum');assert.ok(Math.min(...heights)>20,'Both years remain visible despite different product volumes');}
+assert.equal((run('merYtdChart(ytdFixture)').match(/class="mer-ytd-mini"/g)||[]).length,5);
+ctx.emptyProduct={hist:'dsl',label:'DSL',s:{pairA:0,pairB:null,ytdA:999}};
+const emptyMini=run('merYtdMini(emptyProduct)');assert.ok(emptyMini.includes('height="0"'),'Zero matched sales must remain zero');assert.ok(emptyMini.includes('—'),'Missing previous year must remain missing');assert.ok(!emptyMini.includes('999'),'Matched zero must not fall back to full-year total');
 console.log('PASS: weighted totals, missing values, account grouping, aligned YoY, channel coverage, workbook imports, archives, multi-page PDF.');

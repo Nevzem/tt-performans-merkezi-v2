@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-10-01 · Tek Sayfa Dashboard: Şube / Cari / Bölge';
+const APP_BUILD = '2026-10-01 · Ürün Bazlı Birikim Grafikleri · Tek Sayfa Dashboard';
