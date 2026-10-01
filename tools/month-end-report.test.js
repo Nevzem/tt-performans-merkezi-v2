@@ -109,4 +109,21 @@ ctx.legacy=JSON.parse(JSON.stringify(run('OS')));delete ctx.legacy.ttm.cariBayil
 assert.equal(run('merGroups(legacy).find(g=>g.code==="7000514").rows.length'),4,'Closed legacy archive recovers matching-month external rows');
 ctx.partial=JSON.parse(JSON.stringify(ctx.legacy));ctx.partial.closed=false;ctx.partial.sample=false;
 assert.equal(run('merGroups(partial).find(g=>g.code==="7000514").rows.length'),2,'Closing history must not be mixed with an intra-month upload');
+// Published September closing retains staff, EDM and all account branches.
+run('MER_LIVE=null;MER_ARCHIVES={};SEP=merSource("2026-09")');
+assert.equal(run('SEP.closed'),true);
+assert.equal(run('Object.keys(SEP.ttm.bayiler).length'),23);
+assert.equal(run('Object.values(SEP.ttm.pers).reduce((n,p)=>n+p.length,0)'),122);
+assert.equal(run('Object.keys(SEP.edm.bayiler).length'),243);
+assert.equal(run('merContext(SEP,"account","code:7000514").rows.length'),4);
+assert.equal(run('SEP.ttm.bayiler["4052718"].prods["Toplam Mobil"].a'),440);
+assert.equal(run('SEP.ttm.pers["4052718"].reduce((n,p)=>n+p.prods["Toplam Mobil"].a,0)'),440);
+assert.equal(run('merContext(SEP,"region","").rows.length'),266);
+run('MER_ARCHIVES["2026-09"]={period:"2026-09",closed:false,uploadedAt:"2099-01-01T00:00:00Z"}');
+assert.equal(run('merSource("2026-09").closed'),true,'An intra-month archive cannot hide the published closing');
+run('MER_ARCHIVES["2026-09"]={period:"2026-09",closed:true,uploadedAt:"2000-01-01T00:00:00Z"}');
+assert.equal(run('merSource("2026-09").ttm.bayiler["4052718"].prods["Toplam Mobil"].a'),440);
+run('MER_ARCHIVES["2026-09"]={period:"2026-09",closed:true,uploadedAt:"2099-01-01T00:00:00Z",revised:true}');
+assert.equal(run('merSource("2026-09").revised'),true,'Newer verified uploads remain usable');
+run('MER_ARCHIVES={}');
 console.log('PASS: weighted totals, missing values, account grouping, aligned YoY, channel coverage, workbook imports, archives, multi-page PDF.');

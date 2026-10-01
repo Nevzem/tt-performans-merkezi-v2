@@ -42,12 +42,15 @@ function merCaptureUpload(parsed,edm){
 function merCurrent(){return MER_LIVE||{period:merPeriodKey(typeof DONEM!=='undefined'?DONEM:null),ttm:typeof DETAY!=='undefined'?DETAY:null,edm:null,matrix:typeof MATRIX!=='undefined'?MATRIX:null,sy:typeof SYDATA!=='undefined'?SYDATA:null,sample:true,closed:false};}
 function merFromHistory(doc){
   if(!doc)return null;
+  if(doc.monthEnd)return Object.assign({},doc.monthEnd,{period:doc.period,sample:false,closed:true,history:false});
   function convert(records){var dealers={};(records||[]).forEach(function(d){var prods={};MER_PRODUCTS.forEach(function(p){if(d[p.hist])prods[p.key]={h:d[p.hist].hedef,a:d[p.hist].adet};});dealers[String(d.bayiKodu)]={kod:String(d.bayiKodu),b:d.bayiAdi,fullName:d.bayiAdi,anaBayiKod:d.anaBayiKodu||d.anaBayiKod||'',bolge:d.bolge||'KUZEY ANADOLU',il:d.il,sy:d.sy,prods:prods};});return dealers;}
   return {period:doc.period,ttm:{bayiler:convert(doc.dealers),cariBayiler:convert(doc.accountDealers),pers:{}},edm:null,matrix:null,benchmarks:doc.benchmarks,closed:true,sample:false,history:true};
 }
 function merSource(period){
   if(period==='current')return merCurrent();
-  return MER_ARCHIVES[period]||merFromHistory(typeof HIST2_DATA!=='undefined'?HIST2_DATA[period]:null);
+  var doc=typeof HIST2_DATA!=='undefined'?HIST2_DATA[period]:null,local=MER_ARCHIVES[period];
+  if(doc && doc.monthEnd && (!local || !local.closed || !local.uploadedAt || local.uploadedAt<=doc.monthEnd.publishedAt))return merFromHistory(doc);
+  return local||merFromHistory(doc);
 }
 function merSourceAt(period){return MER_LIVE && MER_LIVE.period===period?MER_LIVE:merSource(period);}
 function merRows(source,channel){return Object.values((source && source[channel.toLowerCase()] && source[channel.toLowerCase()].bayiler)||{}).map(function(d){return Object.assign({},d,{channel:channel,id:channel+':'+d.kod});});}
@@ -264,6 +267,7 @@ function merEnsureHistory(){
   if(!merHistoryPromise && typeof loadAllHistory==='function')merHistoryPromise=(async function(){
     if(typeof HIST2_LOADING!=='undefined' && HIST2_LOADING){while(HIST2_LOADING)await new Promise(function(r){setTimeout(r,50);});}
     if(!HIST2_LOADED)await loadAllHistory();
+    if(merPeriodSelection==='current' && !MER_LIVE && merCurrent().sample){var saved=Object.keys(HIST2_DATA).filter(function(p){return HIST2_DATA[p] && HIST2_DATA[p].monthEnd;}).sort().reverse()[0];if(saved)merPeriodSelection=saved;}
   })();
   return merHistoryPromise||Promise.resolve();
 }
