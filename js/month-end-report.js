@@ -286,10 +286,19 @@ async function merExportCanvases(includeDetails){
   document.body.appendChild(host);
   try{var canvases=[];for(var node of host.querySelectorAll('.mer-report'))canvases.push(await merRenderCanvas(node));return {canvases:canvases,ctx:ctx};}finally{host.remove();}
 }
-function merFileName(ctx,ext){return 'TT_Kapanis_'+ctx.scope+'_'+(ctx.scope==='branch'?ctx.code:ctx.scope==='account'?(ctx.group.code||'Cari'):'KuzeyAnadolu')+'_'+ctx.source.period+'.'+ext;}
+function merFileName(ctx,ext){
+  var code=ctx.scope==='account'?(ctx.group && ctx.group.code||'Cari'):ctx.scope==='branch'?ctx.code:'',name=ctx.rows && ctx.rows[0] && ctx.rows[0].b||ctx.name;
+  if(ctx.scope==='region')name=ctx.name;
+  var base=(code?code+' - ':'')+name;
+  return base.replace(/[<>:"/\\|?*\u0000-\u001f]/g,' ').replace(/\s+/g,' ').replace(/[.\s]+$/g,'').trim()+'.'+ext;
+}
+function merShareText(ctx){
+  var month=new Date(ctx.source.period+'-01T12:00:00Z').toLocaleDateString('tr-TR',{month:'long',timeZone:'UTC'}),code=ctx.scope==='account'?(ctx.group && ctx.group.code||'Cari'):ctx.scope==='branch'?ctx.code:'Kuzey Anadolu';
+  return month.charAt(0).toLocaleUpperCase('tr-TR')+month.slice(1)+' Kapanış - '+code;
+}
 function merExportBusy(busy){merExporting=busy;document.querySelectorAll('.mer-pdf-button,.mer-png-button').forEach(function(b){b.disabled=busy;});}
 async function exportMonthEndPNG(){
-  if(merExporting)return;merExportBusy(true);try{var out=await merExportCanvases(false);_openSharePreview(out.canvases[0].toDataURL('image/png'),merFileName(out.ctx,'png'));}catch(e){alert('Görsel oluşturulamadı: '+e.message);}finally{merExportBusy(false);}
+  if(merExporting)return;merExportBusy(true);try{var out=await merExportCanvases(false);_openSharePreview(out.canvases[0].toDataURL('image/png'),merFileName(out.ctx,'png'),{text:merShareText(out.ctx)});}catch(e){alert('Görsel oluşturulamadı: '+e.message);}finally{merExportBusy(false);}
 }
 /* The dashboard exports to one 16:9 PDF page. */
 function merCanvasToPdfBytes(canvases){
@@ -304,7 +313,7 @@ function merCanvasToPdfBytes(canvases){
 }
 async function exportMonthEndPDF(){
   if(merExporting)return;merExportBusy(true);try{var out=await merExportCanvases(false),blob=new Blob([merCanvasToPdfBytes(out.canvases)],{type:'application/pdf'}),name=merFileName(out.ctx,'pdf'),file=typeof File!=='undefined'?new File([blob],name,{type:'application/pdf'}):null;
-    if(file && navigator.share && navigator.canShare && navigator.canShare({files:[file]}))await navigator.share({files:[file],title:'Ay Kapanış Performans Karnesi'});
+    if(file && navigator.share && navigator.canShare && navigator.canShare({files:[file]}))await navigator.share({files:[file],text:merShareText(out.ctx)});
     else{var url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(function(){URL.revokeObjectURL(url);},30000);}
   }catch(e){if(e.name!=='AbortError')alert('PDF oluşturulamadı: '+e.message);}finally{merExportBusy(false);}
 }

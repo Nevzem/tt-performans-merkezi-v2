@@ -796,7 +796,7 @@ async function downloadCardPNG() {
 
 /* ─── PAYLAŞIM ÖNİZLEME MODALI ──────────────────────────────────── */
 
-function _openSharePreview(dataUrl, fname) {
+function _openSharePreview(dataUrl, fname, shareMeta) {
   var existing = document.getElementById('spm');
   if (existing) existing.remove();
 
@@ -818,6 +818,7 @@ function _openSharePreview(dataUrl, fname) {
 
   m._spmData  = dataUrl;
   m._spmFname = fname;
+  m._spmShareText = shareMeta && shareMeta.text || "";
 
   document.body.appendChild(m);
   document.body.style.overflow = 'hidden';
@@ -841,13 +842,13 @@ async function _shareSPM() {
   var fname   = m._spmFname;
 
   /* Önce Web Share API ile dosya paylaşımı (iOS Safari ✓)
-     Not: title/text bilinçli olarak YOK — WhatsApp bunları görselin yanına
-     mesaj metni olarak ekliyordu; artık yalnızca görsel paylaşılır (2026-07-05). */
+     Varsayılan yalnızca dosyadır; rapora ait açıklama varsa metin eklenir. */
   if (navigator.share) {
     try {
       var blob = _spmBlob(dataUrl);
       var file = new File([blob], fname, { type: 'image/png' });
       var sharePayload = { files: [file] };
+      if (m._spmShareText) sharePayload.text = m._spmShareText;
 
       if (navigator.canShare && navigator.canShare(sharePayload)) {
         await navigator.share(sharePayload);

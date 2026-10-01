@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-10-01 · Cari · Tüm Bölgelerdeki Şubeler';
+const APP_BUILD = '2026-10-01 · Kapanış · WhatsApp Dosya Adı ve Notu';
