@@ -30,7 +30,9 @@ ctx.HIST2_DATA=ctx.hist;run("MER_LIVE=null;MER_ARCHIVES={};C=merContext(source,'
 assert.equal(run('S.months'),3);assert.equal(run('S.pairMonths'),2,'Only same months in both years participate');
 assert.equal(run('S.pairB'),400);assert.equal(run('S.pairA'),850);assert.equal(run('S.ytdYoY'),112.5);
 assert.equal(run("merHistoricalValue(C,'2026-02',P).a"),300,'Embedded sample must not override historical closure');
-ctx.HIST2_DATA['2026-02'].dealers.pop();assert.equal(run("merHistoricalValue(C,'2026-02',P)"),null,'Absent branch is not treated as zero');
+ctx.HIST2_DATA['2026-02'].dealers.pop();assert.equal(run("merHistoricalValue(C,'2026-02',P).a"),60,'Cari month uses branches actually reported that month');
+assert.equal(run("merHistoricalValue(C,'2026-02',P).rowCount"),1,'Cari reports month-specific coverage');
+run("BC=merContext(source,'branch','2')");assert.equal(run("merHistoricalValue(BC,'2026-02',P)"),null,'Missing individual branch is not zero');
 ctx.source.edm={bayiler:{'3':dealer('3',500,250)},pers:{}};
 run("R=merContext(source,'region','')");assert.equal(run("merAggregate(R.rows,'DSL').g"),800/1500*100);
 assert.equal(run("merHistoricalValue(R,'2026-01',P)"),null,'Combined region cannot use TTM-only history');
@@ -69,4 +71,20 @@ assert.ok(run("merHgoRing(112,'#00b6a6','test')").includes('>%112</text>'));
 assert.ok(run("merHgoRing(null,'#00b6a6','missing')").includes('>—</text>'));
 ctx.cardFixture={products:[{key:'DSL',hist:'dsl',s:{g:112,a:112,h:100,gap:12}},{key:'IPTV',hist:'iptv',s:{g:80,a:64,h:80,gap:-16}},{key:'Uydu',hist:'uydu',s:{g:null,a:null,h:null,gap:null}}]};
 const cards=run('merSignals(cardFixture)');assert.ok(cards.includes('HEDEF ÜSTÜ'));assert.ok(cards.includes('+12 <small>adet</small>'));assert.ok(cards.includes('KALAN'));assert.ok(cards.includes('16 <small>adet</small>'));assert.ok(cards.includes('VERİ YOK'));
+// Real archives: Primetech opened a new branch; Asis has month-specific coverage.
+ctx.HIST2_DATA=Object.fromEntries(fs.readdirSync(path.join(root,'data/history')).filter(f=>/^20.*\.json$/.test(f)).map(f=>[f.slice(0,7),JSON.parse(fs.readFileSync(path.join(root,'data/history',f),'utf8'))]));
+run("MER_LIVE=null;MER_ARCHIVES={};MER_PARENTS={};HS=merFromHistory(HIST2_DATA['2026-08']);PG=merGroups(HS).find(g=>g.name.includes('PRİMETECH'));PC=merContext(HS,'account',PG.id);AG=merGroups(HS).find(g=>g.name.includes('ASİS'));AC=merContext(HS,'account',AG.id)");
+assert.equal(run("merStats(PC,MER_TRENDS[0]).months"),8,'New branch must not blank prior cari months');
+assert.equal(run("merStats(AC,MER_TRENDS[0]).months"),8,'All available Asis monthly totals are plotted');
+assert.equal(run("merHistoricalValue(AC,'2026-06',MER_TRENDS[0]).rowCount"),3);
+assert.equal(run("merHistoricalValue(AC,'2026-06',MER_TRENDS[0]).a"),1373);
+assert.equal(run("merHistoricalValue(AC,'2026-06',MER_TRENDS[0]).h"),1564);
+const tvStats=run("merStats(AC,{key:'Toplam TV',hist:'tv'})");assert.equal(tvStats.months,8);
+const tvExpected=run("merStats(AC,MER_PRODUCTS.find(p=>p.hist==='iptv')).ytdA+merStats(AC,MER_PRODUCTS.find(p=>p.hist==='uydu')).ytdA");assert.equal(tvStats.ytdA,tvExpected,'TV combines IPTV and Uydu for the same months');
+ctx.tvIncomplete={prods:{IPTV:{h:10,a:8}}};assert.equal(run("merAggregate([tvIncomplete],'Toplam TV').g"),null,'Missing TV split cannot become zero');
+const ytdPanel=run('merYtdPerformance(AC)');assert.equal((ytdPanel.match(/<article/g)||[]).length,4);assert.ok(!ytdPanel.includes('Diğer'));assert.ok(ytdPanel.includes('HGO'));assert.ok(ytdPanel.includes('adet ·'));
+// Explicit parent changes take precedence over current branch membership.
+ctx.transfer={period:'2026-01',ttm:{bayiler:{'1':dealer('1',100,90,'999')},pers:{}}};
+run("TC=merContext(source,'account','code:900')");assert.equal(run('merAccountMonthRows(TC,transfer).length'),0);
+run("MER_PARENTS['1']='900'");assert.equal(run('merAccountMonthRows(TC,transfer).length'),1);run('MER_PARENTS={}');
 console.log('PASS: weighted totals, missing values, account grouping, aligned YoY, channel coverage, workbook imports, archives, multi-page PDF.');

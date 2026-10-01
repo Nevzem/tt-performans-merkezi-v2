@@ -70,7 +70,7 @@ function merGroups(source){
 function merAggregate(rows,key){
   if(!rows.length)return {a:null,h:null,g:null};
   var a=0,h=0,actualKnown=true,targetKnown=true;
-  rows.forEach(function(d){var v=d.prods && d.prods[key];if(!v || v.a==null || !isFinite(v.a))actualKnown=false;else a+=Number(v.a);if(!v || v.h==null || !isFinite(v.h))targetKnown=false;else h+=Number(v.h);});
+  rows.forEach(function(d){var v=d.prods && d.prods[key];if(!v && key==='Toplam TV' && d.prods){var ip=d.prods.IPTV,tv=d.prods.Uydu;v={a:ip&&tv&&ip.a!=null&&tv.a!=null?Number(ip.a)+Number(tv.a):null,h:ip&&tv&&ip.h!=null&&tv.h!=null?Number(ip.h)+Number(tv.h):null};}if(!v || v.a==null || !isFinite(v.a))actualKnown=false;else a+=Number(v.a);if(!v || v.h==null || !isFinite(v.h))targetKnown=false;else h+=Number(v.h);});
   a=actualKnown?a:null;h=targetKnown?h:null;return {a:a,h:h,g:merRate(a,h)};
 }
 function merContext(source,scope,selection){
@@ -80,13 +80,28 @@ function merContext(source,scope,selection){
   else{rows=rows.concat(merRows(source,'EDM'));name='Kuzey Anadolu Bölgesi';code='TTM + EDM';}
   return {source:source,scope:scope,selection:selection,rows:rows,name:name,code:code,group:group,channels:scope==='region' && source.edm?['TTM','EDM']:['TTM']};
 }
-/* Strict scope matching prevents a partial archive being compared with a full
- * combined region, or silently treating absent branches/products as zero. */
+/* Cari histories use each month's reported branch membership. A missing
+ * branch never becomes a zero record, and missing individual branches stay null. */
+function merAccountMonthRows(ctx,src){
+  var codes=new Set(ctx.rows.map(function(d){return String(d.kod);}));
+  function legalName(d){return merName(d).trim().replace(/\s+/g,' ').replace(/[.\s]+$/g,'').toLocaleUpperCase('tr-TR');}
+  var names=new Set(ctx.rows.filter(function(d){return d.fullName;}).map(legalName));
+  return merRows(src,'TTM').filter(function(d){
+    var parent=MER_PARENTS[d.kod]||d.anaBayiKod;
+    if(parent && parent!=='-' && ctx.group && ctx.group.code)return String(parent)===String(ctx.group.code);
+    if(MER_PARENTS[d.kod])return 'code:'+MER_PARENTS[d.kod]===ctx.selection;
+    return codes.has(String(d.kod)) || names.has(legalName(d));
+  });
+}
 function merHistoricalValue(ctx,period,p){
   var src=merSourceAt(period);if(!src)return null;
   if(ctx.scope==='region'){
     if(!ctx.source.edm || !src.edm)return null;
     return merAggregate(merRows(src,'TTM').concat(merRows(src,'EDM')),p.key);
+  }
+  if(ctx.scope==='account'){
+    var members=merAccountMonthRows(ctx,src);if(!members.length)return null;
+    return Object.assign(merAggregate(members,p.key),{rowCount:members.length});
   }
   var all=merRows(src,'TTM'),rows=ctx.rows.map(function(d){return all.find(function(x){return x.kod===d.kod;});});
   if(rows.some(function(d){return !d;}))return null;
@@ -97,7 +112,7 @@ function merStats(ctx,p){
   var series=[],pairs=[],year=period && period.slice(0,4),month=period && +period.slice(5);
   if(period)for(var i=1;i<=month;i++){
     var dt=year+'-'+String(i).padStart(2,'0'),value=dt===period?current:merHistoricalValue(ctx,dt,p);
-    if(value && value.a!=null && value.h!=null)series.push({period:dt,a:value.a,h:value.h});
+    if(value && value.a!=null && value.h!=null)series.push({period:dt,a:value.a,h:value.h,rowCount:dt===period?ctx.rows.length:value.rowCount});
     var old=merHistoricalValue(ctx,(+year-1)+'-'+String(i).padStart(2,'0'),p);
     if(value && value.a!=null && old && old.a!=null)pairs.push({period:dt,a:value.a,b:old.a});
   }
@@ -139,16 +154,11 @@ function merModel(){
   if(source.sample)ctx.notes.push('Örnek veri; güncel kapanış Excel’ini yükleyin.');
   if(!source.closed)ctx.notes.push('Ara dönem verisi; ay kapanışı henüz doğrulanmadı.');
   if(ctx.scope==='region' && !source.edm)ctx.notes.push('EDM bölge verisi bulunamadı; yalnız TTM gösteriliyor.');
+  if(ctx.scope==='account')ctx.notes.push('Cari geçmişi: her ay dosyada bulunan bağlı şubelerin toplamı; şube sayıları grafikte gösterilir.');
   if(ctx.group && !ctx.group.verified)ctx.notes.push('Cari grubu şirket adıyla eşleştirildi. Ana cari kodunu eşleştirmelerden doğrulayın.');
   if(source.history)ctx.notes.push('Bu arşivde personel kırılımı bulunmuyor.');
   if(merStorageNote)ctx.notes.push(merStorageNote);
   return ctx;
-}
-function merInsights(ctx){
-  var base=ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;}) && p.s.g!=null;}),gaps=base.filter(function(p){return p.s.gap<0;}).sort(function(a,b){return a.s.g-b.s.g;}),best=base.slice().sort(function(a,b){return b.s.g-a.s.g;})[0];
-  var out=gaps.slice(0,2).map(function(p){return {tag:'ÖNCELİK',title:p.label+' · '+merN(-p.s.gap)+' adet açık',body:'Ay HGO '+merP(p.s.g)+'. Gelecek ay '+p.label+' satış planında bu açığı önceliklendirin.',tone:'low',hist:p.hist};});
-  if(best)out.push({tag:best.s.g>=100?'GÜÇLÜ ALAN':'GÖRECE GÜÇLÜ',title:best.label+' · '+(best.s.gap>0?'Hedef üstü '+merGap(best.s.gap):merP(best.s.g)),body:best.s.g>=100?'Hedef '+merN(best.s.gap)+' adet aşıldı. Başarılı satış uygulamasını diğer ürünlere taşıyın.':'En yüksek HGO bu üründe. Satış temposunu koruyup hedefin altındaki ürünlere destek verin.',tone:best.s.g>=100?'good':'watch',hist:best.hist});
-  return out.slice(0,3);
 }
 function merIcon(name){
   var paths={wifi:'<path d="M2 8a16 16 0 0 1 20 0M5 12a11 11 0 0 1 14 0M8 16a6 6 0 0 1 8 0"/><circle cx="12" cy="20" r="1"/>',satellite:'<path d="M5 7a12 12 0 0 0 12 12L5 7zM10 12l6-6m-2-3 7 7M3 22h15M8 19l-2 3M17 2a8 8 0 0 1 5 5"/>',box:'<path d="M3 6l9-4 9 4v12l-9 4-9-4zM3 6l9 5 9-5M12 11v11M8 4l9 5"/>',mobile:'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 5h4M11 19h2"/>',target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12L22 2m-5 0h5v5"/>',trend:'<path d="M3 19V9m7 10V5m7 14V2M2 22h20"/>',cup:'<path d="M7 3h10v7a5 5 0 0 1-10 0zM7 5H3v3a5 5 0 0 0 4 5m10-8h4v3a5 5 0 0 1-4 5M12 15v6m-4 0h8"/>',screen:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M12 17v4m-5 0h10"/>',people:'<circle cx="9" cy="7" r="3"/><path d="M2 21v-3a7 7 0 0 1 14 0v3m1-16a3 3 0 0 1 0 6m2 3a6 6 0 0 1 3 5v2"/>'};
@@ -180,17 +190,17 @@ function merYtdTable(ctx,full){
   var list=full?ctx.products:ctx.products.filter(function(p){return ['mobil','dsl','iptv','akilliCihaz'].includes(p.hist);});
   return '<table class="mer-data-table mer-ytd-table"><thead><tr><th>Ürün</th><th>Gerçek. / Hedef</th><th>HGO</th>'+(full?'<th>Hedef farkı</th><th>Eşleşen ay kıyası</th>':'')+'<th>Yıllık Δ</th></tr></thead><tbody>'+list.map(function(p){var s=p.s;return '<tr><th>'+p.label+'</th><td>'+merN(s.ytdA)+' / '+merN(s.ytdH)+'<small>'+s.months+'/'+s.expectedMonths+' ay</small></td><td><b class="'+merTone(s.ytdG)+'">'+merP(s.ytdG)+'</b></td>'+(full?'<td class="'+merDeltaTone(s.ytdGap)+'">'+merGap(s.ytdGap)+'</td><td>'+merN(s.pairB)+' → '+merN(s.pairA)+'<small>'+s.pairMonths+' eşleşen ay</small></td>':'')+'<td class="'+merDeltaTone(s.ytdYoY)+'">'+merSigned(s.ytdYoY,'%')+'<small>'+s.pairMonths+' eşleşen ay</small></td></tr>';}).join('')+'</tbody></table>';
 }
-function merSpark(s,color,period){
+function merSpark(s,color,period,account){
   var vals=[];for(var i=5;i>=0;i--){var dt=merShift(period,-i);var found=s.series.find(function(v){return v.period===dt;});vals.push(found||{period:dt,a:null,h:null});}
   var max=Math.max.apply(null,[1].concat(vals.map(function(v){return Math.max(v.a||0,v.h||0);})));max=Math.ceil(max/Math.pow(10,Math.floor(Math.log10(max))))*Math.pow(10,Math.floor(Math.log10(max)));
   var X=function(i){return 30+i*62;},Y=function(v){return 54-v/max*37;};
   var path=function(key){var d='',open=false;vals.forEach(function(v,i){if(v[key]==null){open=false;return;}d+=(open?' L':' M')+X(i)+','+Y(v[key]);open=true;});return d;};
   var grid=[0,.5,1].map(function(f){return '<path d="M30 '+Y(max*f)+'H340" stroke="#e1eaf5" stroke-width=".8"/><text x="24" y="'+(Y(max*f)+3)+'" text-anchor="end" font-size="8" fill="#8193ae">'+merN(max*f)+'</text>';}).join('');
   var areas='',segment=[];function closeArea(){if(segment.length>1){areas+='<path d="M'+X(segment[0])+',54 '+segment.map(function(i){return 'L'+X(i)+','+Y(vals[i].a);}).join(' ')+' L'+X(segment[segment.length-1])+',54Z" fill="'+color+'" opacity=".10"/>';}segment=[];}vals.forEach(function(v,i){if(v.a==null)closeArea();else segment.push(i);});closeArea();
-  return '<svg viewBox="0 0 350 74">'+grid+areas+'<path d="'+path('h')+'" fill="none" stroke="'+color+'" stroke-width="1.4" stroke-dasharray="4 3"/><path d="'+path('a')+'" fill="none" stroke="'+color+'" stroke-width="2.5"/>'+vals.map(function(v,i){return (v.a==null?'':'<circle cx="'+X(i)+'" cy="'+Y(v.a)+'" r="2.5" fill="white" stroke="'+color+'" stroke-width="1.5"/>')+'<text x="'+X(i)+'" y="70" text-anchor="middle" fill="#788cab" font-size="8">'+merMonthShort(v.period)+'</text>';}).join('')+'</svg>';
+  return '<svg viewBox="0 0 350 84">'+grid+areas+'<path d="'+path('h')+'" fill="none" stroke="'+color+'" stroke-width="1.4" stroke-dasharray="4 3"/><path d="'+path('a')+'" fill="none" stroke="'+color+'" stroke-width="2.5"/>'+vals.map(function(v,i){return (v.a==null?'':'<circle cx="'+X(i)+'" cy="'+Y(v.a)+'" r="2.5" fill="white" stroke="'+color+'" stroke-width="1.5"><title>'+merEsc(merPeriodLabel(v.period)+' · '+merN(v.a)+' adet'+(v.rowCount!=null?' · '+v.rowCount+' şube':''))+'</title></circle>')+'<text x="'+X(i)+'" y="70" text-anchor="middle" fill="#788cab" font-size="8">'+merMonthShort(v.period)+'</text>'+(account?'<text x="'+X(i)+'" y="81" text-anchor="middle" fill="#8193ae" font-size="7">'+(v.rowCount!=null?v.rowCount+' şb':'—')+'</text>':'');}).join('')+'</svg>';
 }
 function merTrends(ctx){
-  return '<div class="mer-trends">'+ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;});}).map(function(p){var d=merProductDesign(p.hist);return '<div class="mer-trend" style="--mer-product:'+d[2]+'"><div class="mer-trend-h"><b>'+d[0].toLocaleUpperCase('tr-TR')+'</b><div class="mer-trend-values">Hedef: '+merN(p.s.h)+' <i>│</i> <strong>Gerçekleşen: '+merN(p.s.a)+'</strong></div></div>'+merSpark(p.s,d[2],ctx.source.period)+'</div>';}).join('')+'</div>';
+  return '<div class="mer-trends">'+ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;});}).map(function(p){var d=merProductDesign(p.hist);return '<div class="mer-trend" style="--mer-product:'+d[2]+'"><div class="mer-trend-h"><b>'+d[0].toLocaleUpperCase('tr-TR')+'</b><div class="mer-trend-values">Hedef: '+merN(p.s.h)+' <i>│</i> <strong>Gerçekleşen: '+merN(p.s.a)+'</strong></div></div>'+merSpark(p.s,d[2],ctx.source.period,ctx.scope==='account')+'</div>';}).join('')+'</div>';
 }
 function merDetailTitle(ctx){return ctx.scope==='branch'?'PERSONEL PERFORMANSI':ctx.scope==='account'?'ŞUBE KARŞILAŞTIRMASI':'SATIŞ YÖNETİCİLERİ';}
 function merDetailsTable(ctx,rows){
@@ -207,6 +217,11 @@ function merYtdChart(ctx){
   var list=ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;});}),year=+ctx.source.period.slice(0,4);
   return '<div class="mer-ytd-legend"><span><i></i>'+(year-1)+'</span><span><i></i>'+year+'</span><small>Her ürün kendi ölçeğinde</small></div><div class="mer-ytd-grid">'+list.map(merYtdMini).join('')+'</div><p class="mer-ytd-note">Eşleşen aylar üzerinden yıllık kıyas · — veri yok</p>';
 }
+function merYtdPerformance(ctx){
+  var coverage=[];
+  var list=[{label:'Mobil',key:'Toplam Mobil',hist:'mobil'},{label:'DSL',key:'DSL',hist:'dsl'},{label:'TV',key:'Toplam TV',hist:'tv'},{label:'Cihaz',key:'Akıllı Cihaz',hist:'akilliCihaz'}];
+  return '<div class="mer-ytd-performance-grid">'+list.map(function(p){var v=merStats(ctx,p),color=p.hist==='tv'?'#ef007e':merProductDesign(p.hist)[2],known=v.ytdGap!=null,tone=!known?'neutral':v.ytdGap>=0?'good':'low',label=!known?'Veri yok':v.ytdGap>0?'Fazla':v.ytdGap===0?'Tamam':'Eksik',max=Math.max(120,v.ytdG||0),width=v.ytdG==null?0:Math.max(0,Math.min(100,v.ytdG/max*100));if(v.months<v.expectedMonths)coverage.push(p.label+' '+v.months+'/'+v.expectedMonths+' ay');return '<article style="--mer-product:'+color+'" title="'+merEsc(p.label+' · '+v.months+'/'+v.expectedMonths+' ay')+'"><div class="mer-ytd-metric"><h3>'+p.label+'</h3><b class="'+merTone(v.ytdG)+'">'+merP(v.ytdG)+' <small>HGO</small></b><span class="'+tone+'">'+(known?(v.ytdGap>0?'+':'')+merN(Math.abs(v.ytdGap))+' adet · '+label:'—')+'</span></div><div class="mer-ytd-bullet" role="img" aria-label="'+merEsc(p.label+' YTD HGO '+merP(v.ytdG))+'"><i style="width:'+width+'%"></i><em style="left:'+(100/max*100)+'%" title="%100 hedef"></em></div></article>';}).join('')+'</div><p class="mer-caption">Ocak–'+merEsc(merMonthShort(ctx.source.period))+' · TV: IPTV + Uydu TV'+(coverage.length?' · Veri: '+merEsc(coverage.join(', ')):'')+'</p>';
+}
 function merChannelTable(ctx){return '<table class="mer-data-table"><thead><tr><th>Ürün</th><th>TTM G / H</th><th>TTM HGO</th><th>EDM G / H</th><th>EDM HGO</th><th>Bölge G / H</th><th>Bölge HGO</th></tr></thead><tbody>'+ctx.products.map(function(p){var t=merAggregate(merRows(ctx.source,'TTM'),p.key),e=merAggregate(merRows(ctx.source,'EDM'),p.key);return '<tr><th>'+p.label+'</th><td>'+merN(t.a)+' / '+merN(t.h)+'</td><td>'+merP(t.g)+'</td><td>'+merN(e.a)+' / '+merN(e.h)+'</td><td>'+merP(e.g)+'</td><td>'+merN(p.s.a)+' / '+merN(p.s.h)+'</td><td>'+merP(p.s.g)+'</td></tr>';}).join('')+'</tbody></table>';}
 function merContributionTable(ctx){
   return '<table class="mer-data-table"><thead><tr><th>Şube / Bayi kodu</th>'+MER_TRENDS.map(function(p){return '<th>'+p.label+' katkı</th>';}).join('')+'</tr></thead><tbody>'+ctx.rows.map(function(d){return '<tr><th>'+merEsc(merName(d))+'<small>'+merEsc(d.kod+' · '+(d.il||''))+'</small></th>'+MER_TRENDS.map(function(p){var v=merAggregate([d],p.key),all=merAggregate(ctx.rows,p.key);return '<td>'+merP(merRate(v.a,all.a))+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table>';
@@ -216,9 +231,7 @@ function merFooter(ctx){
   return '<footer class="mer-report-footer"><div><span>'+merEsc(ctx.notes.join(' · '))+'</span><span>Kuzey Anadolu · TTM Performans Merkezi</span></div><div><span>HGO = gerçekleşen / hedef · — veri yok · Bölge Δ: TTM HGO farkı</span><span>'+merEsc(ctx.source.uploadedAt?'Yükleme '+new Date(ctx.source.uploadedAt).toLocaleDateString('tr-TR'):'Dönem '+ctx.source.period)+'</span></div></footer>';
 }
 function merSummary(ctx){
-  var insights=merInsights(ctx);
-  while(insights.length<3){var fallback=ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;});})[insights.length];insights.push({title:fallback.label+' · Satış temposu',body:fallback.s.mom==null?'Önceki ay verisini ekleyerek gelişimi karşılaştırın.':'Önceki aya göre değişim '+merSigned(fallback.s.mom,'%')+'. Ürün satış planını buna göre güncelleyin.',tone:merDeltaTone(fallback.s.mom),hist:fallback.hist});}
-  return '<section class="mer-report mer-summary" id="month-end-report">'+merHeader(ctx)+merSignals(ctx)+'<div class="mer-main"><div class="mer-panel mer-performance-panel"><h2>'+merIcon('trend')+'ÜRÜN BAZLI AY KAPANIŞI</h2>'+merPerformanceTable(ctx)+'</div><div class="mer-panel mer-trend-panel"><h2>'+merIcon('trend')+'ÜRÜN BAZLI TRENDLER<span class="mer-trend-key">● Gerçekleşen <i></i> Hedef</span></h2>'+merTrends(ctx)+'</div></div><div class="mer-bottom"><div class="mer-panel mer-actors-panel '+(ctx.details.length>5?'mer-dense':'')+'"><h2>'+merIcon('people')+merDetailTitle(ctx)+'<span>'+ctx.details.length+' '+(ctx.scope==='branch'?'personel':ctx.scope==='account'?'şube':'yönetici')+'</span></h2>'+merDetailsTable(ctx,ctx.details)+'<p class="mer-caption">HGO · gerçekleşen adet</p></div><div class="mer-panel mer-year-panel"><h2>'+merIcon('trend')+'YILIN BİRİKİMİ · OCAK–'+merEsc(merMonthShort(ctx.source.period).toLocaleUpperCase('tr-TR'))+'</h2>'+merYtdChart(ctx)+'</div><div class="mer-panel mer-focus"><h2>'+merIcon('target')+'GELECEK AYIN ODAĞI</h2>'+insights.slice(0,3).map(function(v,i){return '<article style="--mer-product:'+merProductDesign(v.hist)[2]+'"><span class="mer-focus-number">0'+(i+1)+'</span><span class="mer-focus-icon">'+merIcon(merProductDesign(v.hist)[3])+'</span><div><strong>'+merEsc(v.title)+'</strong><p>'+merEsc(v.body)+'</p></div><span class="mer-focus-arrow '+v.tone+'">'+'›'+'</span></article>';}).join('')+'</div></div>'+merFooter(ctx)+'</section>';
+  return '<section class="mer-report mer-summary" id="month-end-report">'+merHeader(ctx)+merSignals(ctx)+'<div class="mer-main"><div class="mer-panel mer-performance-panel"><h2>'+merIcon('trend')+'ÜRÜN BAZLI AY KAPANIŞI</h2>'+merPerformanceTable(ctx)+'</div><div class="mer-panel mer-trend-panel"><h2>'+merIcon('trend')+'ÜRÜN BAZLI TRENDLER<span class="mer-trend-key">● Gerçekleşen <i></i> Hedef</span></h2>'+merTrends(ctx)+'</div></div><div class="mer-bottom"><div class="mer-panel mer-actors-panel '+(ctx.details.length>5?'mer-dense':'')+'"><h2>'+merIcon('people')+merDetailTitle(ctx)+'<span>'+ctx.details.length+' '+(ctx.scope==='branch'?'personel':ctx.scope==='account'?'şube':'yönetici')+'</span></h2>'+merDetailsTable(ctx,ctx.details)+'<p class="mer-caption">HGO · gerçekleşen adet</p></div><div class="mer-panel mer-year-panel"><h2>'+merIcon('trend')+'YILIN BİRİKİMİ · OCAK–'+merEsc(merMonthShort(ctx.source.period).toLocaleUpperCase('tr-TR'))+'</h2>'+merYtdChart(ctx)+'</div><div class="mer-panel mer-ytd-performance"><h2>'+merIcon('target')+'YTD PERFORMANSI</h2>'+merYtdPerformance(ctx)+'</div></div>'+merFooter(ctx)+'</section>';
 }
 function merSetScope(value){merScope=value;merSelection='';renderMonthEndReport();}
 function merSetPeriod(value){merPeriodSelection=value;merSelection='';renderMonthEndReport();}
