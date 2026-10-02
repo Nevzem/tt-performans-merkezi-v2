@@ -456,6 +456,9 @@ function parseEDMSheet(wb, options) {
 
   const gs = (r,col) => (col>=0&&r&&r[col]!=null)?String(r[col]).trim():'';
   const gn = (r,col) => { if(col<0||!r||r[col]==null)return null; const v=num(r[col]); return v; };
+  // The workbook uses an explicit dash for products with no target/activity.
+  // Missing columns and genuinely blank cells remain unknown.
+  const gnProduct = (r,col) => col>=0 && r && typeof r[col]==='string' && r[col].trim()==='-' ? 0 : gn(r,col);
   const hg = (a,h,pre) => {
     if(pre!==null&&pre!==undefined&&!isNaN(pre)&&pre>0)return Math.round(pre*10)/10;
     return (a!==null&&h&&h>0)?Math.round(a/h*1000)/10:null;
@@ -525,9 +528,11 @@ function parseEDMSheet(wb, options) {
     if (C.uydA >= 0) pr.Uydu = { h: gn(r,C.uydH), a: gn(r,C.uydA), g: hg(gn(r,C.uydA),gn(r,C.uydH),null) };
     if (options && options.region) {
       [['Postpaid',C.ppH,C.ppA],['Prepaid',C.fpH,C.fpA],['DSL',C.dslH,C.dslA],['Akıllı Cihaz',C.cihH,C.cihA],['Diğer Cihaz',C.cihDH,C.cihDA]].forEach(function(p) {
-        pr[p[0]] = {h:gn(r,p[1]),a:gn(r,p[2])};
+        pr[p[0]] = {h:gnProduct(r,p[1]),a:gnProduct(r,p[2])};
       });
-      pr['Toplam Mobil'] = C.mobA >= 0 ? {h:gn(r,C.mobH),a:gn(r,C.mobA)} : {h:C.ppH >= 0 && C.fpH >= 0 ? ppH+fpH : null,a:C.ppA >= 0 && C.fpA >= 0 ? ppA+fpA : null};
+      if(C.iptvA>=0)pr.IPTV={h:gnProduct(r,C.iptvH),a:gnProduct(r,C.iptvA)};
+      if(C.uydA>=0)pr.Uydu={h:gnProduct(r,C.uydH),a:gnProduct(r,C.uydA)};
+      pr['Toplam Mobil'] = C.mobA >= 0 ? {h:gnProduct(r,C.mobH),a:gnProduct(r,C.mobA)} : {h:pr.Postpaid.h!=null && pr.Prepaid.h!=null ? pr.Postpaid.h+pr.Prepaid.h : null,a:pr.Postpaid.a!=null && pr.Prepaid.a!=null ? pr.Postpaid.a+pr.Prepaid.a : null};
     }
     detayBayiler[bayiKod||b]={kod:bayiKod,b,fullName:bayiAdi,anaBayiKod:gs(r,C.anaBayiKod),il,bt,sy:sy_,st:st_,prods:pr};
     bayiCount++;

@@ -48,6 +48,12 @@ assert.equal(run("Object.keys(parseEDMSheet(wb).detay.bayiler).includes('11')"),
 const noUydu=heads.slice(0,heads.indexOf('Uydu Hedef')).concat(heads.slice(heads.indexOf('Uydu Gerçekleşen')+1));
 ctx.noUydu={SheetNames:['EDM BUAY'],Sheets:{'EDM BUAY':[noUydu,edmRow('10','507868').slice(0,heads.indexOf('Uydu Hedef')).concat(edmRow('10','507868').slice(heads.indexOf('Uydu Gerçekleşen')+1))]}};
 assert.equal(run("parseEDMSheet(noUydu,{region:true}).detay.bayiler['10'].prods.Uydu"),undefined,'Do not fabricate absent IPTV/TV split');
+const dashRow=edmRow('13','507868');
+for(const name of ['Prepaid','DSL','IPTV','Uydu','Akıllı Cihaz','Diğer Cihaz'])for(const suffix of [' Hedef',' Gerçekleşen'])dashRow[heads.indexOf(name+suffix)]='-';
+ctx.dashWB={SheetNames:['EDM BUAY'],Sheets:{'EDM BUAY':[heads,edmRow('10','507868'),dashRow]}};
+assert.equal(run("merAggregate(Object.values(parseEDMSheet(dashWB,{region:true}).detay.bayiler),'DSL').a"),70,'Explicit no-activity dash must not blank the regional total');
+dashRow[heads.indexOf('DSL Gerçekleşen')]='';
+assert.equal(run("merAggregate(Object.values(parseEDMSheet(dashWB,{region:true}).detay.bayiler),'DSL').a"),null,'A genuinely blank product cell remains unknown');
 const ttmHeader=Array(90).fill('');ttmHeader[0]='Ana Bölge';
 const ttm=Array(90).fill(0);Object.assign(ttm,{0:'ANADOLU',1:'KUZEY ANADOLU',2:'22',3:'Uzun Şirket Tam Ticari Unvan',4:'4100170',5:'SAMSUN',7:'Yusuf Dilki'});for(const i of [49,53,57,69,73,77,81]){ttm[i]=100;ttm[i+1]=80;}
 const emp=Array(70).fill(0);Object.assign(emp,{0:'ANADOLU',1:'KUZEY ANADOLU',2:'22',3:ttm[3],4:'Yusuf Dilki',5:'SAMSUN',6:'Personel',7:'202609'});
@@ -100,7 +106,7 @@ assert.equal(run("merContext(MER_LIVE,'region','').rows.length"),1);
 assert.equal(run("merAggregate(merContext(MER_LIVE,'account','code:4100170').rows,'DSL').a"),160);
 run('MER_LIVE=null;MER_ARCHIVES={};OS=merFromHistory(HIST2_DATA["2026-08"]);OC=merContext(OS,"account","code:7000514")');
 assert.deepEqual(Array.from(run('OC.rows.map(d=>d.kod).sort()')),['4057503','4100756','4100760','7000514']);
-assert.equal(run("merContext(OS,'region','').rows.length"),ctx.HIST2_DATA['2026-08'].dealers.length);
+assert.equal(run("merContext(OS,'region','').rows.length"),267,'August region includes 23 TTM and 244 EDM branches');
 assert.equal(run('merStats(OC,MER_TRENDS[0]).ytdA'),10403);
 assert.equal(run('merHistoricalValue(OC,"2025-04",MER_TRENDS[0]).rowCount'),2,'Later openings are not fabricated in older months');
 assert.equal(run('merHistoricalValue(OC,"2025-05",MER_TRENDS[0]).rowCount'),3);
@@ -119,6 +125,17 @@ assert.equal(run('merContext(SEP,"account","code:7000514").rows.length'),4);
 assert.equal(run('SEP.ttm.bayiler["4052718"].prods["Toplam Mobil"].a'),440);
 assert.equal(run('SEP.ttm.pers["4052718"].reduce((n,p)=>n+p.prods["Toplam Mobil"].a,0)'),440);
 assert.equal(run('merContext(SEP,"region","").rows.length'),266);
+run('RC=merContext(SEP,"region","")');
+const septemberTotals={'Toplam Mobil':[16227,15656],DSL:[2364,2268],IPTV:[909,957],Uydu:[179,199],'Akıllı Cihaz':[3034,3209],'Diğer Cihaz':[1865,1906]};
+for(const [key,[h,a]] of Object.entries(septemberTotals)){
+  ctx.productKey=key;
+  assert.equal(run('merAggregate(RC.rows,productKey).h'),h,key+' target matches the closing workbook');
+  assert.equal(run('merAggregate(RC.rows,productKey).a'),a,key+' activations match the closing workbook');
+  const stats=run('merStats(RC,MER_PRODUCTS.find(p=>p.key===productKey))');
+  assert.equal(stats.months,3,'Region has July, August and September complete channel coverage');
+  assert.equal(stats.expectedMonths,9);
+  assert.equal(stats.pairMonths,0,'TTM-only prior year must not become a combined-region comparison');
+}
 run('MER_ARCHIVES["2026-09"]={period:"2026-09",closed:false,uploadedAt:"2099-01-01T00:00:00Z"}');
 assert.equal(run('merSource("2026-09").closed'),true,'An intra-month archive cannot hide the published closing');
 run('MER_ARCHIVES["2026-09"]={period:"2026-09",closed:true,uploadedAt:"2000-01-01T00:00:00Z"}');
