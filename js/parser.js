@@ -52,6 +52,21 @@ function findColByName(headers, ...names) {
   return -1;
 }
 
+// Match the product row and activation header together; never guess positions.
+function commitmentColumns(rows, headerIndex) {
+  const products=rows[headerIndex-1]||[],headers=rows[headerIndex]||[];
+  const names={dsl:'DSL Taahhüt',mobil:'Mobil Taahhüt',mobilUpsell:'Mobil Taahhüt Upsell'},cols={};
+  let product='';
+  headers.forEach(function(h,i){
+    if(products[i]!=null && String(products[i]).trim())product=String(products[i]).trim();
+    for(const key in names)if(product.toLocaleLowerCase('tr-TR')===names[key].toLocaleLowerCase('tr-TR') && /^(aktivasyon|gerçekleşen|adet)$/i.test(String(h||'').trim()))cols[key]=i;
+  });
+  return cols;
+}
+function readCommitments(row,cols) {
+  const values={};for(const key in cols){const v=row[cols[key]];values[key]=typeof v==='string'&&v.trim()==='-'?0:num(v);}
+  return values;
+}
 function parseWB(wb) {
   const out = { pers: { "Toplam Mobil": [], "Faturalı": [], "Faturasız": [], "DSL": [], "Toplam TV": [], "IPTV": [], "Uydu": [], "Cihaz": [] },
                 bayi: { "Postpaid": [], "Prepaid": [], "Toplam Mobil": [], "DSL": [], "Toplam TV": [], "Akıllı Cihaz": [], "Diğer Cihaz": [] } };
@@ -96,6 +111,7 @@ function parseWB(wb) {
   const rowsB = XLSX.utils.sheet_to_json(wb.Sheets[wsB], { header: 1, defval: null });
   let hib = rowsB.findIndex(r => r && String(r[0]).trim() === "Ana Bölge");
   if (hib === -1) throw new Error("TTM BUAY: 'Ana Bölge' başlığı bulunamadı.");
+  const ttmCommitmentCols=commitmentColumns(rowsB,hib);
   /* Sprint 3: TTM BUAY kolon kayması kontrolü */
   { const bh = rowsB[hib].map(c => c ? String(c).trim() : '');
     [['Postpaid Hedef',49,['Postpaid Hedef','Faturalı Hedef','PP Hedef']],
@@ -201,6 +217,7 @@ function parseWB(wb) {
       pr["Toplam TV"]={h:Math.round(ih+uh),a:Math.round(ia+ua),g:(ih+uh)>0?Math.round((ia+ua)/(ih+uh)*1000)/10:null};
       pr["Toplam Cihaz"]={h:Math.round(ch+gh),a:Math.round(ca+ga),g:(ch+gh)>0?Math.round((ca+ga)/(ch+gh)*1000)/10:null};
       const record = {kod, bolge: String(r[1]).trim(), b: shortB(r[3]), fullName: String(r[3]).trim(), anaBayiKod: r[4] ? String(r[4]).trim() : '', il: r[5]?String(r[5]).trim():"", sy: r[7]&&String(r[7]).trim()!=="-"?String(r[7]).trim():"", prods: pr};
+      record.commitments=readCommitments(r,ttmCommitmentCols);
       detayCariBayiler[kod] = record;
       if (String(r[1]).trim().toUpperCase() === "KUZEY ANADOLU") detayBayiler[kod] = record;
     }
@@ -534,7 +551,7 @@ function parseEDMSheet(wb, options) {
       if(C.uydA>=0)pr.Uydu={h:gnProduct(r,C.uydH),a:gnProduct(r,C.uydA)};
       pr['Toplam Mobil'] = C.mobA >= 0 ? {h:gnProduct(r,C.mobH),a:gnProduct(r,C.mobA)} : {h:pr.Postpaid.h!=null && pr.Prepaid.h!=null ? pr.Postpaid.h+pr.Prepaid.h : null,a:pr.Postpaid.a!=null && pr.Prepaid.a!=null ? pr.Postpaid.a+pr.Prepaid.a : null};
     }
-    detayBayiler[bayiKod||b]={kod:bayiKod,b,fullName:bayiAdi,anaBayiKod:gs(r,C.anaBayiKod),il,bt,sy:sy_,st:st_,prods:pr};
+    detayBayiler[bayiKod||b]={kod:bayiKod,b,fullName:bayiAdi,anaBayiKod:gs(r,C.anaBayiKod),il,bt,sy:sy_,st:st_,prods:pr,commitments:readCommitments(r,commitmentColumns(allRows,hi))};
     bayiCount++;
   }
 

@@ -10,6 +10,14 @@ vm.runInContext(fs.readFileSync(path.join(root,'js/data.js'),'utf8'),ctx);
 vm.runInContext(fs.readFileSync(path.join(root,'js/parser.js'),'utf8').replace(/^wire\("drop.*$/gm,''),ctx);
 vm.runInContext(fs.readFileSync(path.join(root,'js/month-end-report.js'),'utf8'),ctx);
 function run(code){return vm.runInContext(code,ctx);}
+ctx.commitmentHeaders=[['Mobil Taahhüt Upsell','DSL Taahhüt','Mobil Taahhüt','DSL Taahhüt','Mobil Taahhüt'],['Aktivasyon','Hedef','Hedef','Aktivasyon','Aktivasyon']];
+assert.equal(run('commitmentColumns(commitmentHeaders,1).dsl'),3,'Match activation under the exact product heading');
+assert.equal(run('commitmentColumns(commitmentHeaders,1).mobil'),4,'Mobil upsell is a separate metric');
+assert.equal(run('commitmentColumns(commitmentHeaders,1).mobilUpsell'),0);
+ctx.commitmentRow=[12,0,0,'-',null];
+assert.equal(run('readCommitments(commitmentRow,commitmentColumns(commitmentHeaders,1)).dsl'),0);
+assert.equal(run('readCommitments(commitmentRow,commitmentColumns(commitmentHeaders,1)).mobil'),null);
+assert.equal(run("merCommitmentTotal([{commitments:{dsl:5}},{commitments:{dsl:null}}],'dsl')"),null,'Missing commitments must not become zero');
 function dealer(code,h,a,parent='900'){return {kod:code,fullName:'Şirket '+code,anaBayiKod:parent,sy:'Yusuf Dilki',prods:Object.fromEntries(run('MER_PRODUCTS').map(p=>[p.key,{h,a}]))};}
 ctx.A=dealer('1',100,100);ctx.B=dealer('2',900,450);
 assert.ok(Math.abs(run("merAggregate([A,B],'DSL').g")-55)<1e-9,'HGO must be weighted by target');
@@ -126,6 +134,12 @@ assert.equal(run('SEP.ttm.bayiler["4052718"].prods["Toplam Mobil"].a'),440);
 assert.equal(run('SEP.ttm.pers["4052718"].reduce((n,p)=>n+p.prods["Toplam Mobil"].a,0)'),440);
 assert.equal(run('merContext(SEP,"region","").rows.length'),266);
 run('RC=merContext(SEP,"region","")');
+assert.equal(run("merCommitmentTotal(RC.rows,'dsl')"),333,'Regional DSL commitments equal 112 TTM + 221 EDM');
+assert.equal(run("merCommitmentTotal(merRows(SEP,'TTM'),'mobil')"),3512);
+assert.equal(run("merCommitmentTotal(merRows(SEP,'EDM'),'mobilUpsell')"),4618);
+assert.equal(run("merCommitmentTotal(merContext(SEP,'branch','4052718').rows,'dsl')"),3);
+assert.equal(run("merCommitmentTotal(merContext(SEP,'branch','4052718').rows,'mobil')"),190);
+assert.ok(run('merCommitments(RC)').includes('MOBİL TAAHHÜT UPSELL · EDM'),'Regional export identifies the distinct EDM metric');
 const septemberTotals={'Toplam Mobil':[16227,15656],DSL:[2364,2268],IPTV:[909,957],Uydu:[179,199],'Akıllı Cihaz':[3034,3209],'Diğer Cihaz':[1865,1906]};
 for(const [key,[h,a]] of Object.entries(septemberTotals)){
   ctx.productKey=key;

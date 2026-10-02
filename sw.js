@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-month-end-20261002a';
+const CACHE = 'ttpm-month-end-20261002b';
 
 const ASSETS = [
   '.',
