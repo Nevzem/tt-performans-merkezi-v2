@@ -250,9 +250,9 @@
    },
    "akilliCihaz": {
     "hedef": 81,
-    "adet": 89,
-    "hgo": 109.9,
-    "forecast": 110
+    "adet": 91,
+    "hgo": 112.3,
+    "forecast": 112
    },
    "digerCihaz": {
     "hedef": 78,
@@ -262,9 +262,9 @@
    },
    "cihaz": {
     "hedef": 159,
-    "adet": 188,
-    "hgo": 118.2,
-    "forecast": 118
+    "adet": 190,
+    "hgo": 119.5,
+    "forecast": 120
    }
   },
   {
@@ -516,9 +516,9 @@
    },
    "akilliCihaz": {
     "hedef": 115,
-    "adet": 114,
-    "hgo": 99.1,
-    "forecast": 99
+    "adet": 116,
+    "hgo": 100.9,
+    "forecast": 101
    },
    "digerCihaz": {
     "hedef": 75,
@@ -528,9 +528,9 @@
    },
    "cihaz": {
     "hedef": 190,
-    "adet": 188,
-    "hgo": 98.9,
-    "forecast": 99
+    "adet": 190,
+    "hgo": 100,
+    "forecast": 100
    }
   },
   {
@@ -583,7 +583,7 @@
    "akilliCihaz": {
     "hedef": 160,
     "adet": 162,
-    "hgo": 101.2,
+    "hgo": 101.3,
     "forecast": 101
    },
    "digerCihaz": {
@@ -648,9 +648,9 @@
    },
    "akilliCihaz": {
     "hedef": 69,
-    "adet": 52,
-    "hgo": 75.4,
-    "forecast": 75
+    "adet": 53,
+    "hgo": 76.8,
+    "forecast": 77
    },
    "digerCihaz": {
     "hedef": 63,
@@ -660,9 +660,9 @@
    },
    "cihaz": {
     "hedef": 132,
-    "adet": 116,
-    "hgo": 87.9,
-    "forecast": 88
+    "adet": 117,
+    "hgo": 88.6,
+    "forecast": 89
    }
   },
   {
@@ -978,9 +978,9 @@
    },
    "akilliCihaz": {
     "hedef": 51,
-    "adet": 77,
-    "hgo": 151,
-    "forecast": 151
+    "adet": 78,
+    "hgo": 152.9,
+    "forecast": 153
    },
    "digerCihaz": {
     "hedef": 42,
@@ -990,9 +990,9 @@
    },
    "cihaz": {
     "hedef": 93,
-    "adet": 116,
-    "hgo": 124.7,
-    "forecast": 125
+    "adet": 117,
+    "hgo": 125.8,
+    "forecast": 126
    },
    "anaBayiKodu": "7000514",
    "bolge": "KUZEY ANADOLU"
@@ -1178,9 +1178,9 @@
    },
    "akilliCihaz": {
     "hedef": 81,
-    "adet": 93,
-    "hgo": 114.8,
-    "forecast": 115
+    "adet": 95,
+    "hgo": 117.3,
+    "forecast": 117
    },
    "digerCihaz": {
     "hedef": 65,
@@ -1190,9 +1190,9 @@
    },
    "cihaz": {
     "hedef": 146,
-    "adet": 178,
-    "hgo": 121.9,
-    "forecast": 122
+    "adet": 180,
+    "hgo": 123.3,
+    "forecast": 123
    }
   },
   {
@@ -1597,5 +1597,7 @@
     "forecast": 77
    }
   }
- ]
+ ],
+ "verifiedClosingSource": true,
+ "verifiedClosingUpdatedAt": "2026-10-03"
 }
