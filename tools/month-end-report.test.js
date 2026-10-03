@@ -151,6 +151,7 @@ assert.equal(run('SEP.ttm.pers["4052718"].reduce((n,p)=>n+p.prods["Toplam Mobil"
 assert.equal(run('merContext(SEP,"region","").rows.length'),266);
 run('RC=merContext(SEP,"region","")');
 ctx.HIST2_CHANNEL_SUMMARY=JSON.parse(fs.readFileSync(path.join(root,'data/history/channel-activation-summary.json'),'utf8'));
+ctx.HIST2_REGION_BENCHMARKS=JSON.parse(fs.readFileSync(path.join(root,'data/history/region-benchmarks.json'),'utf8'));
 run('CAM=merRegionChannelAverages(RC)');
 assert.equal(run('CAM.monthCount'),9,'Regional channel averages use January-September YTD');
 assert.equal(Math.round(run('CAM.rows.mobil.current[0]*10'))/10,325.9,'September TTM Mobil is shown per sales point');
@@ -171,12 +172,38 @@ assert.ok(!regionSummary.includes('SATIŞ YÖNETİCİLERİ'),'Region no longer r
 assert.equal((regionSummary.match(/class="mer-channel-row"/g)||[]).length,6,'Simplified matrix has six product rows');
 assert.equal((regionSummary.match(/class="mer-channel-value /g)||[]).length,36,'Each product has YTD and selected-month TTM TTBN ESN values');
 assert.ok(!regionSummary.includes('mer-channel-bars'),'Regional comparison no longer renders mini bar charts');
+
+// Tüm Bölge ay kapanışı artık aynı kapsamlı (TTM + EDM) GM ve Türkiye HGO'larıyla kıyaslanır.
+assert.equal(run("merRegionBenchmark(RC,MER_PRODUCTS.find(p=>p.hist==='mobil'),'gm')"),104.2,'September Anadolu GM combined Mobil HGO');
+assert.equal(run("merRegionBenchmark(RC,MER_PRODUCTS.find(p=>p.hist==='mobil'),'tr')"),104.6,'September Türkiye combined Mobil HGO');
+assert.equal(run("merRegionBenchmark(RC,MER_PRODUCTS.find(p=>p.hist==='dsl'),'gm')"),98.2,'September Anadolu GM combined DSL HGO');
+run("RC.products=MER_PRODUCTS.map(function(p){return Object.assign({},p,{s:merStats(RC,p)});})");
+const regionPerformance=run('merPerformanceTable(RC)');
+assert.ok(regionPerformance.includes('GM Δ'),'Region closing table has GM comparison');
+assert.ok(regionPerformance.includes('TR Δ'),'Region closing table has Türkiye comparison');
+assert.ok(!regionPerformance.includes('Bölge Δ'),'Region closing table no longer compares the region with itself');
+
 assert.equal(run("merCommitmentTotal(RC.rows,'dsl')"),333,'Regional DSL commitments equal 112 TTM + 221 EDM');
 assert.equal(run("merCommitmentTotal(merRows(SEP,'TTM'),'mobil')"),3512);
 assert.equal(run("merCommitmentTotal(merRows(SEP,'EDM'),'mobilUpsell')"),4618);
 assert.equal(run("merCommitmentTotal(merContext(SEP,'branch','4052718').rows,'dsl')"),3);
 assert.equal(run("merCommitmentTotal(merContext(SEP,'branch','4052718').rows,'mobil')"),190);
-assert.ok(run('merCommitments(RC)').includes('MOBİL TAAHHÜT UPSELL · EDM'),'Regional export identifies the distinct EDM metric');
+const commitmentCards=run('merCommitments(RC)');
+assert.ok(commitmentCards.includes('MOBİL TAAHHÜT UPSELL · EDM'),'Regional export identifies the distinct EDM metric');
+assert.ok(commitmentCards.includes('IPTV / DSL ORANI · TTM'),'Regional KPI row includes TTM IPTV/DSL ratio');
+assert.ok(commitmentCards.includes('%58,2'),'September TTM IPTV/DSL ratio is 701 / 1205 = 58.2%');
+
+// Trend kartları Ocak'tan seçili aya kadar görünür; ürün başlığında tekrar Hedef/Gerçekleşen yazılmaz.
+const mobilStats=run("merStats(RC,MER_PRODUCTS.find(p=>p.hist==='mobil'))");
+assert.equal(mobilStats.series.length,9,'September trend has January-September data');
+ctx.mobilStats=mobilStats;
+const spark=run("merSpark(mobilStats,'#087cfa','2026-09',false)");
+assert.ok(spark.includes('Oca'),'Trend begins in January');
+assert.ok(spark.includes('Eyl'),'Trend reaches selected September');
+const trends=run('merTrends(RC)');
+assert.ok(!trends.includes('Hedef:'),'Trend product cards do not repeat target text');
+assert.ok(!trends.includes('Gerçekleşen:'),'Trend product cards do not repeat actual text');
+
 const septemberTotals={'Toplam Mobil':[16227,15656],DSL:[2364,2268],IPTV:[909,957],Uydu:[179,199],'Akıllı Cihaz':[3034,3209],'Diğer Cihaz':[1865,1906]};
 for(const [key,[h,a]] of Object.entries(septemberTotals)){
   ctx.productKey=key;
