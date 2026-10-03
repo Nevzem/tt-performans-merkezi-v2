@@ -744,14 +744,14 @@
    },
    "prepaid": {
     "hedef": 58,
-    "adet": 33,
-    "hgo": 56.9,
-    "forecast": 57
+    "adet": 34,
+    "hgo": 58.6,
+    "forecast": 59
    },
    "mobil": {
     "hedef": 368,
-    "adet": 355,
-    "hgo": 96.5,
+    "adet": 356,
+    "hgo": 96.7,
     "forecast": 97
    },
    "dsl": {
@@ -1597,5 +1597,7 @@
     "forecast": 100
    }
   }
- ]
+ ],
+ "verifiedClosingSource": true,
+ "verifiedClosingUpdatedAt": "2026-10-03"
 }
