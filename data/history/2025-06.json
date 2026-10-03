@@ -610,14 +610,14 @@
    },
    "prepaid": {
     "hedef": 76,
-    "adet": 118,
-    "hgo": 155.3,
-    "forecast": 155
+    "adet": 119,
+    "hgo": 156.6,
+    "forecast": 157
    },
    "mobil": {
     "hedef": 706,
-    "adet": 701,
-    "hgo": 99.3,
+    "adet": 702,
+    "hgo": 99.4,
     "forecast": 99
    },
    "dsl": {
@@ -1272,14 +1272,14 @@
    },
    "prepaid": {
     "hedef": 145,
-    "adet": 122,
-    "hgo": 84.1,
-    "forecast": 84
+    "adet": 123,
+    "hgo": 84.8,
+    "forecast": 85
    },
    "mobil": {
     "hedef": 361,
-    "adet": 325,
-    "hgo": 90,
+    "adet": 326,
+    "hgo": 90.3,
     "forecast": 90
    },
    "dsl": {
@@ -1303,7 +1303,7 @@
    "tv": {
     "hedef": 32,
     "adet": 38,
-    "hgo": 118.7,
+    "hgo": 118.8,
     "forecast": 119
    },
    "akilliCihaz": {
@@ -1595,5 +1595,7 @@
     "forecast": 168
    }
   }
- ]
+ ],
+ "verifiedClosingSource": true,
+ "verifiedClosingUpdatedAt": "2026-10-03"
 }
