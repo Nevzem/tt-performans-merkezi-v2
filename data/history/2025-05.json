@@ -28,9 +28,9 @@
    },
    "dsl": {
     "hedef": 60,
-    "adet": 46,
-    "hgo": 76.7,
-    "forecast": 77
+    "adet": 47,
+    "hgo": 78.3,
+    "forecast": 78
    },
    "iptv": {
     "hedef": 24,
@@ -556,9 +556,9 @@
    },
    "dsl": {
     "hedef": 106,
-    "adet": 111,
-    "hgo": 104.7,
-    "forecast": 105
+    "adet": 112,
+    "hgo": 105.7,
+    "forecast": 106
    },
    "iptv": {
     "hedef": 29,
@@ -1224,9 +1224,9 @@
    },
    "iptv": {
     "hedef": 20,
-    "adet": 21,
-    "hgo": 105,
-    "forecast": 105
+    "adet": 22,
+    "hgo": 110,
+    "forecast": 110
    },
    "uydu": {
     "hedef": 6,
@@ -1236,9 +1236,9 @@
    },
    "tv": {
     "hedef": 26,
-    "adet": 28,
-    "hgo": 107.7,
-    "forecast": 108
+    "adet": 29,
+    "hgo": 111.5,
+    "forecast": 112
    },
    "akilliCihaz": {
     "hedef": 121,
@@ -1284,9 +1284,9 @@
    },
    "dsl": {
     "hedef": 116,
-    "adet": 137,
-    "hgo": 118.1,
-    "forecast": 118
+    "adet": 140,
+    "hgo": 120.7,
+    "forecast": 121
    },
    "iptv": {
     "hedef": 28,
@@ -1595,5 +1595,7 @@
     "forecast": 111
    }
   }
- ]
+ ],
+ "verifiedClosingSource": true,
+ "verifiedClosingUpdatedAt": "2026-10-03"
 }
