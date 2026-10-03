@@ -12,6 +12,93 @@ var HIST2_MANIFEST = null;   /* { periods: ["2025-01", ...] }             */
 var HIST2_DATA     = {};     /* period → dosya JSON'u | null (eksik)      */
 var HIST2_LOADED   = false;  /* loadAllHistory tamamlandı mı              */
 var HIST2_LOADING  = false;
+var HIST2_CORRECTIONS = null;
+var HIST2_CORRECTIONS_PROMISE = null;
+var HIST2_CORRECTION_FILES = [
+  './data/history/corrections/g01.json',
+  './data/history/corrections/g02.json',
+  './data/history/corrections/g03.json',
+  './data/history/corrections/g04.json',
+  './data/history/corrections/g05.json',
+  './data/history/corrections/g06.json',
+  './data/history/corrections/g07.json',
+  './data/history/corrections/g08.json',
+  './data/history/corrections/g09.json',
+  './data/history/corrections/g10.json',
+  './data/history/corrections/g11.json'
+];
+
+function hist2CorrectionProduct(hedef, adet) {
+  hedef = Number(hedef) || 0;
+  adet = Number(adet) || 0;
+  var hgo = hedef > 0 ? Math.round(adet / hedef * 1000) / 10 : null;
+  return { hedef: Math.round(hedef), adet: Math.round(adet), hgo: hgo,
+           forecast: hgo !== null ? Math.round(hgo) : null };
+}
+
+function hist2ExpandCorrectionRow(r, strings) {
+  var post = hist2CorrectionProduct(r[6], r[7]);
+  var pre  = hist2CorrectionProduct(r[8], r[9]);
+  var dsl  = hist2CorrectionProduct(r[10], r[11]);
+  var iptv = hist2CorrectionProduct(r[12], r[13]);
+  var uydu = hist2CorrectionProduct(r[14], r[15]);
+  var ak   = hist2CorrectionProduct(r[16], r[17]);
+  var dig  = hist2CorrectionProduct(r[18], r[19]);
+  return {
+    bayiKodu: String(r[0] || ''),
+    bayiAdi: strings[r[1]] || '',
+    anaBayiKodu: String(r[2] || ''),
+    bolge: strings[r[3]] || '',
+    il: strings[r[4]] || '',
+    sy: strings[r[5]] || '',
+    postpaid: post,
+    prepaid: pre,
+    mobil: hist2CorrectionProduct(post.hedef + pre.hedef, post.adet + pre.adet),
+    dsl: dsl,
+    iptv: iptv,
+    uydu: uydu,
+    tv: hist2CorrectionProduct(iptv.hedef + uydu.hedef, iptv.adet + uydu.adet),
+    akilliCihaz: ak,
+    digerCihaz: dig,
+    cihaz: hist2CorrectionProduct(ak.hedef + dig.hedef, ak.adet + dig.adet)
+  };
+}
+
+async function loadHistoryCorrections() {
+  if (HIST2_CORRECTIONS) return HIST2_CORRECTIONS;
+  if (HIST2_CORRECTIONS_PROMISE) return HIST2_CORRECTIONS_PROMISE;
+  HIST2_CORRECTIONS_PROMISE = (async function() {
+    try {
+      var sr = await fetch('./data/history/corrections/strings.json');
+      if (!sr.ok) throw new Error('correction strings HTTP ' + sr.status);
+      var strings = await sr.json();
+      var periods = {};
+      await Promise.all(HIST2_CORRECTION_FILES.map(async function(file) {
+        try {
+          var resp = await fetch(file);
+          if (!resp.ok) return;
+          var pack = await resp.json();
+          Object.keys(pack || {}).forEach(function(period) {
+            var pair = pack[period] || [];
+            periods[period] = {
+              dealers: Array.isArray(pair[0]) ? pair[0].map(function(row) {
+                return hist2ExpandCorrectionRow(row, strings);
+              }) : [],
+              accountDealers: Array.isArray(pair[1]) ? pair[1].map(function(row) {
+                return hist2ExpandCorrectionRow(row, strings);
+              }) : []
+            };
+          });
+        } catch (e) {}
+      }));
+      HIST2_CORRECTIONS = periods;
+    } catch (e) {
+      HIST2_CORRECTIONS = {};
+    }
+    return HIST2_CORRECTIONS;
+  })();
+  return HIST2_CORRECTIONS_PROMISE;
+}
 
 var HIST2_PRODS = [
   { key: 'mobil', label: 'Mobil' },
@@ -39,13 +126,32 @@ async function loadHistoryManifest() {
 
 async function loadHistoryPeriod(period) {
   if (period in HIST2_DATA) return HIST2_DATA[period];
+  var corrections = await loadHistoryCorrections();
   try {
     var resp = await fetch('./data/history/' + period + '.json?_=' + Date.now());
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     var j = await resp.json();
+    if (j && corrections[period]) {
+      j.dealers = corrections[period].dealers;
+      j.accountDealers = corrections[period].accountDealers;
+      j.sourceRevision = '2026-10-03-verified-closing-files';
+    }
     HIST2_DATA[period] = (j && Array.isArray(j.dealers)) ? j : null;
   } catch (e) {
-    HIST2_DATA[period] = null;   /* eksik dosya = sessizce null */
+    if (corrections[period]) {
+      var ym = period.split('-').map(Number);
+      var lastDay = new Date(ym[0], ym[1], 0).getDate();
+      HIST2_DATA[period] = {
+        period: period,
+        reportDate: period + '-' + String(lastDay).padStart(2, '0'),
+        channel: 'TTM',
+        dealers: corrections[period].dealers,
+        accountDealers: corrections[period].accountDealers,
+        sourceRevision: '2026-10-03-verified-closing-files'
+      };
+    } else {
+      HIST2_DATA[period] = null;
+    }
   }
   return HIST2_DATA[period];
 }
