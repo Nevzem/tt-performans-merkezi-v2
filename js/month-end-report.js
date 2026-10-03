@@ -351,6 +351,8 @@ function merChannelAverageN(v){
   return v==null||!isFinite(v)?'—':Number(v).toLocaleString('tr-TR',{minimumFractionDigits:1,maximumFractionDigits:1});
 }
 function merChannelValue(v,gm,cls){
+  var kaZero=v!=null&&isFinite(v)&&Number(v)===0,gmZero=gm!=null&&isFinite(gm)&&Number(gm)===0;
+  if(kaZero&&gmZero)return '<div class="mer-channel-value '+cls+' neutral"><b class="mer-channel-empty">-</b></div>';
   var valid=v!=null&&gm!=null&&isFinite(v)&&isFinite(gm)&&Number(v)>0&&Number(gm)>0;
   var diff=valid?merChange(v,gm):null,tone=diff==null?'neutral':diff>=0?'good':'low';
   var kaText=merChannelAverageN(v),gmText=merChannelAverageN(gm);
