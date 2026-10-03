@@ -352,8 +352,9 @@ function merChannelAverageN(v){
 }
 function merChannelValue(v,gm,cls){
   var diff=merChange(v,gm),tone=diff==null?'neutral':diff>=0?'good':'low';
-  var gmText=diff==null?'/GM —':'/GM '+merSigned(diff,'%');
-  return '<div class="mer-channel-value '+cls+'" title="'+merEsc('Anadolu GM '+merChannelAverageN(gm)+' adet/nokta')+'"><b>'+merChannelAverageN(v)+'</b><small class="'+tone+'">'+gmText+'</small></div>';
+  var kaText=merChannelAverageN(v),gmText=merChannelAverageN(gm);
+  var diffText=diff==null?'(—)':'('+merSigned(diff,'%')+')';
+  return '<div class="mer-channel-value '+cls+'" title="'+merEsc('Kuzey Anadolu '+kaText+' / Anadolu GM '+gmText+' adet/nokta · fark '+(diff==null?'—':merSigned(diff,'%')))+'"><b><span>'+kaText+'</span><i>/</i><em>'+gmText+'</em></b><small class="'+tone+'">'+diffText+'</small></div>';
 }
 function merRegionChannelCard(ctx){
   var model=merRegionChannelAverages(ctx),monthName=merMonthShort(ctx.source.period)+' '+ctx.source.period.slice(0,4);
@@ -375,7 +376,7 @@ function merRegionChannelCard(ctx){
       '<div class="mer-channel-subhead"><span></span><b class="ttm">TTM</b><b class="ttbn">TTBN</b><b class="esn">ESN</b><b class="ttm">TTM</b><b class="ttbn">TTBN</b><b class="esn">ESN</b></div>'+
       rows+
     '</div>'+
-    '<p class="mer-caption">adet / nokta · /GM = Anadolu Grup Müdürlüğü nokta ortalamasına göre fark</p></div>';
+    '<p class="mer-caption">üst satır: Kuzey Anadolu / Anadolu GM adet-nokta ortalaması · alt satır: fark oranı</p></div>';
 }
 function merCompareCell(current,previous,label){
   var delta=current!=null&&previous!=null?current-previous:null,rate=merChange(current,previous);
