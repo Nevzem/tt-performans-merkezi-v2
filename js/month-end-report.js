@@ -233,34 +233,34 @@ function merDetailsTable(ctx,rows){
   var n=rows.length,font=n<=5?11:n<=8?10:n<=12?9:8,rowHeight=n?Math.min(27,115/n):27;
   return '<table class="mer-data-table mer-details-table '+(n>5?'mer-compact':'')+'" style="--mer-detail-font:'+font+'px;--mer-detail-row:'+rowHeight+'px"><thead><tr><th>'+({branch:'Personel',account:'Şube',region:'Satış yöneticisi'}[ctx.scope])+'</th>'+names.map(function(x){return '<th>'+x+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(r){var label=ctx.scope==='account'?r.sub:r.name;return '<tr><th title="'+merEsc(r.name)+'"><span class="mer-row-name">'+merEsc(label)+'</span></th>'+keys.map(function(key){var v=merAggregate([r],key);return '<td title="Hedef '+merN(v.h)+' · Gerçekleşen '+merN(v.a)+'"><b class="mer-pill '+merTone(v.g)+'">'+merP(v.g)+'</b><small>'+merN(v.a)+'</small></td>';}).join('')+'</tr>';}).join('')+'</tbody></table>'+(rows.length?'':'<div class="mer-empty">Bu dönem için '+(ctx.scope==='branch'?'personel':'detay')+' verisi bulunamadı.</div>');
 }
-function merYearCompareRow(p,current,previous){
+function merCompareCell(current,previous,label){
   var delta=current!=null&&previous!=null?current-previous:null,rate=merChange(current,previous);
   var tone=delta==null?'neutral':delta>0?'good':delta<0?'low':'neutral';
-  var label=p.hist==='mobil'?'Mobil':p.hist==='uydu'?'Uydu':p.label;
   var deltaText=delta==null?'—':(delta>0?'+':'')+merN(delta)+' adet';
   var rateText=rate==null?'—':merSigned(rate,'%');
-  return '<div class="mer-year-row" data-product="'+p.hist+'"><b>'+merEsc(label)+'</b><span class="mer-year-values"><em>'+merN(previous)+'</em><i>→</i><strong>'+merN(current)+'</strong></span><span class="mer-year-change '+tone+'"><b>'+rateText+'</b><small>'+deltaText+'</small></span></div>';
+  var detail=merN(previous)+' → '+merN(current);
+  return '<div class="mer-compare-cell '+tone+'" title="'+merEsc(label+' · '+detail+' · '+rateText+' · '+deltaText)+'"><b>'+rateText+'</b><small>'+deltaText+'</small></div>';
 }
 function merYtdChart(ctx){
   var list=ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;});});
   var year=+ctx.source.period.slice(0,4),monthLabel=merMonthShort(ctx.source.period);
   var prevPeriod=merShift(ctx.source.period,-1),prevMonthLabel=merMonthShort(prevPeriod);
   var matched=list.length?Math.min.apply(null,list.map(function(p){return p.s.pairMonths||0;})):0;
-  var ytdRows=list.map(function(p){
-    var current=p.s.pairB!=null?p.s.pairA:p.s.ytdA;
-    return merYearCompareRow(p,current,p.s.pairB);
+  var rows=list.map(function(p){
+    var label=p.hist==='mobil'?'Mobil':p.hist==='uydu'?'Uydu':p.label;
+    var color=merProductDesign(p.hist)[2];
+    var ytdCurrent=p.s.pairB!=null?p.s.pairA:p.s.ytdA;
+    return '<div class="mer-compare-row" style="--mer-product:'+color+'" data-product="'+p.hist+'">'+
+      '<div class="mer-compare-product"><i></i><b>'+merEsc(label)+'</b></div>'+
+      merCompareCell(ytdCurrent,p.s.pairB,'YTD')+
+      merCompareCell(p.s.a,p.s.prevYearA,'YoY')+
+      merCompareCell(p.s.a,p.s.prevA,'MoM')+
+    '</div>';
   }).join('');
-  var yoyRows=list.map(function(p){
-    return merYearCompareRow(p,p.s.a,p.s.prevYearA);
-  }).join('');
-  var momRows=list.map(function(p){
-    return merYearCompareRow(p,p.s.a,p.s.prevA);
-  }).join('');
-  return '<div class="mer-year-split">'+
-    '<section class="mer-year-block mer-year-ytd"><header><b>YTD</b><span>Ocak–'+merEsc(monthLabel)+' · '+matched+' eşleşen ay</span></header><div class="mer-year-list">'+ytdRows+'</div></section>'+
-    '<section class="mer-year-block mer-year-yoy"><header><b>YoY</b><span>'+merEsc(monthLabel)+' '+(year-1)+' → '+year+'</span></header><div class="mer-year-list">'+yoyRows+'</div></section>'+
-    '<section class="mer-year-block mer-year-mom"><header><b>MoM</b><span>'+merEsc(prevMonthLabel)+' → '+merEsc(monthLabel)+'</span></header><div class="mer-year-list">'+momRows+'</div></section>'+
-  '</div><p class="mer-ytd-note">YTD: yıl birikimli · YoY: geçen yıl aynı ay · MoM: bir önceki aya göre · — veri yok</p>';
+  return '<div class="mer-compare-matrix">'+
+    '<div class="mer-compare-head"><span>Ürün</span><b>YTD<small>Ocak–'+merEsc(monthLabel)+' · '+matched+' ay</small></b><b>YoY<small>'+merEsc(monthLabel)+' '+(year-1)+' → '+year+'</small></b><b>MoM<small>'+merEsc(prevMonthLabel)+' → '+merEsc(monthLabel)+'</small></b></div>'+
+    rows+
+  '</div><p class="mer-ytd-note">Yüzde değişim · alt satır net adet farkı · — veri yok</p>';
 }
 function merYtdPerformance(ctx){
   var coverage=[];
@@ -276,7 +276,7 @@ function merFooter(ctx){
   return '<footer class="mer-report-footer"><div><span>'+merEsc(ctx.notes.join(' · '))+'</span><span>Kuzey Anadolu · TTM Performans Merkezi</span></div><div><span>HGO = gerçekleşen / hedef · — veri yok · Bölge Δ: TTM HGO farkı</span><span>'+merEsc(ctx.source.uploadedAt?'Yükleme '+new Date(ctx.source.uploadedAt).toLocaleDateString('tr-TR'):'Dönem '+ctx.source.period)+'</span></div></footer>';
 }
 function merSummary(ctx){
-  return '<section class="mer-report mer-summary" id="month-end-report">'+merHeader(ctx)+merSignals(ctx)+'<div class="mer-main"><div class="mer-panel mer-performance-panel"><h2>'+merIcon('trend')+'ÜRÜN BAZLI AY KAPANIŞI</h2>'+merPerformanceTable(ctx)+merCommitments(ctx)+'</div><div class="mer-panel mer-trend-panel"><h2>'+merIcon('trend')+'ÜRÜN BAZLI TRENDLER<span class="mer-trend-key">● Gerçekleşen <i></i> Hedef</span></h2>'+merTrends(ctx)+'</div></div><div class="mer-bottom"><div class="mer-panel mer-actors-panel '+(ctx.details.length>5?'mer-dense':'')+'"><h2>'+merIcon('people')+merDetailTitle(ctx)+'<span>'+ctx.details.length+' '+(ctx.scope==='branch'?'personel':ctx.scope==='account'?'şube':'yönetici')+'</span></h2>'+merDetailsTable(ctx,ctx.details)+'<p class="mer-caption">HGO · gerçekleşen adet</p></div><div class="mer-panel mer-year-panel"><h2>'+merIcon('trend')+'YIL KARŞILAŞTIRMASI · YTD / YOY / MoM</h2>'+merYtdChart(ctx)+'</div><div class="mer-panel mer-ytd-performance"><h2>'+merIcon('target')+'YTD PERFORMANSI</h2>'+merYtdPerformance(ctx)+'</div></div>'+merFooter(ctx)+'</section>';
+  return '<section class="mer-report mer-summary" id="month-end-report">'+merHeader(ctx)+merSignals(ctx)+'<div class="mer-main"><div class="mer-panel mer-performance-panel"><h2>'+merIcon('trend')+'ÜRÜN BAZLI AY KAPANIŞI</h2>'+merPerformanceTable(ctx)+merCommitments(ctx)+'</div><div class="mer-panel mer-trend-panel"><h2>'+merIcon('trend')+'ÜRÜN BAZLI TRENDLER<span class="mer-trend-key">● Gerçekleşen <i></i> Hedef</span></h2>'+merTrends(ctx)+'</div></div><div class="mer-bottom"><div class="mer-panel mer-actors-panel '+(ctx.details.length>5?'mer-dense':'')+'"><h2>'+merIcon('people')+merDetailTitle(ctx)+'<span>'+ctx.details.length+' '+(ctx.scope==='branch'?'personel':ctx.scope==='account'?'şube':'yönetici')+'</span></h2>'+merDetailsTable(ctx,ctx.details)+'<p class="mer-caption">HGO · gerçekleşen adet</p></div><div class="mer-panel mer-year-panel"><h2>'+merIcon('trend')+'PERFORMANS KARŞILAŞTIRMASI</h2>'+merYtdChart(ctx)+'</div><div class="mer-panel mer-ytd-performance"><h2>'+merIcon('target')+'YTD PERFORMANSI</h2>'+merYtdPerformance(ctx)+'</div></div>'+merFooter(ctx)+'</section>';
 }
 function merSetScope(value){merScope=value;merSelection='';renderMonthEndReport();}
 function merSetPeriod(value){merPeriodSelection=value;merSelection='';renderMonthEndReport();}
