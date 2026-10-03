@@ -271,28 +271,46 @@ function merChannelPeriodData(ctx,period){
 }
 function merRegionChannelAverages(ctx){
   var period=ctx.source.period,year=period.slice(0,4),month=+period.slice(5),periods=[];
+  var channelNames=['TTM','TTBN','ESN'];
   for(var i=1;i<=month;i++){
     var key=year+'-'+String(i).padStart(2,'0'),data=merChannelPeriodData(ctx,key);
     if(data)periods.push({period:key,data:data});
   }
   var current=merChannelPeriodData(ctx,period),rows={};
   MER_CHANNEL_AVG_PRODUCTS.forEach(function(p){
-    var sums=[0,0,0],counts=[0,0,0];
+    var activationSums=[0,0,0],pointMonths=[0,0,0],coveredMonths=[0,0,0];
     periods.forEach(function(entry){
-      var vals=entry.data.values&&entry.data.values[p.hist];
+      var vals=entry.data.values&&entry.data.values[p.hist],counts=entry.data.counts||{};
       if(!vals)return;
-      vals.forEach(function(v,ix){if(v!=null&&isFinite(v)){sums[ix]+=Number(v);counts[ix]++;}});
+      vals.forEach(function(v,ix){
+        var pointCount=Number(counts[channelNames[ix]])||0;
+        if(v!=null&&isFinite(v)&&pointCount>0){
+          activationSums[ix]+=Number(v);
+          pointMonths[ix]+=pointCount;
+          coveredMonths[ix]++;
+        }
+      });
     });
+    var currentRaw=current&&current.values&&current.values[p.hist]?current.values[p.hist]:[null,null,null];
+    var currentCounts=current&&current.counts?current.counts:{};
     rows[p.hist]={
-      ytd:sums.map(function(v,ix){return counts[ix]?v/counts[ix]:null;}),
-      current:current&&current.values&&current.values[p.hist]?current.values[p.hist].slice():[null,null,null],
-      months:counts
+      ytd:activationSums.map(function(v,ix){return pointMonths[ix]?v/pointMonths[ix]:null;}),
+      current:currentRaw.map(function(v,ix){
+        var pointCount=Number(currentCounts[channelNames[ix]])||0;
+        return v!=null&&isFinite(v)&&pointCount>0?Number(v)/pointCount:null;
+      }),
+      pointMonths:pointMonths,
+      currentPoints:channelNames.map(function(name){return Number(currentCounts[name])||0;}),
+      months:coveredMonths
     };
   });
   return {period:period,monthCount:periods.length,rows:rows,current:current};
 }
+function merChannelAverageN(v){
+  return v==null||!isFinite(v)?'—':Number(v).toLocaleString('tr-TR',{minimumFractionDigits:1,maximumFractionDigits:1});
+}
 function merChannelValue(v,cls){
-  return '<div class="mer-channel-value '+cls+'"><b>'+merN(v)+'</b></div>';
+  return '<div class="mer-channel-value '+cls+'"><b>'+merChannelAverageN(v)+'</b></div>';
 }
 function merRegionChannelCard(ctx){
   var model=merRegionChannelAverages(ctx),monthName=merMonthShort(ctx.source.period)+' '+ctx.source.period.slice(0,4);
@@ -308,13 +326,13 @@ function merRegionChannelCard(ctx){
       merChannelValue(v.current[2],'esn')+
     '</div>';
   }).join('');
-  return '<div class="mer-panel mer-channel-panel"><h2>'+merIcon('trend')+'KANAL BAZLI AYLIK ORTALAMA<span>'+model.monthCount+' aylık YTD</span></h2>'+
+  return '<div class="mer-panel mer-channel-panel"><h2>'+merIcon('trend')+'SATIŞ NOKTASI BAŞI ORTALAMA AKTİVASYON<span>'+model.monthCount+' aylık YTD</span></h2>'+
     '<div class="mer-channel-matrix">'+
-      '<div class="mer-channel-group-head"><span>Ürün</span><b>YTD AYLIK ORTALAMA<small>Ocak–'+merEsc(merMonthShort(ctx.source.period))+'</small></b><b>SEÇİLİ AY<small>'+merEsc(monthName)+'</small></b></div>'+
+      '<div class="mer-channel-group-head"><span>Ürün</span><b>YTD ORTALAMA<small>Ocak–'+merEsc(merMonthShort(ctx.source.period))+'</small></b><b>SEÇİLİ AY ORTALAMA<small>'+merEsc(monthName)+'</small></b></div>'+
       '<div class="mer-channel-subhead"><span></span><b class="ttm">TTM</b><b class="ttbn">TTBN</b><b class="esn">ESN</b><b class="ttm">TTM</b><b class="ttbn">TTBN</b><b class="esn">ESN</b></div>'+
       rows+
     '</div>'+
-    '<p class="mer-caption">Aktivasyon adedi · YTD aylık ortalama = dönem toplamı / '+model.monthCount+' ay</p></div>';
+    '<p class="mer-caption">adet / satış noktası · YTD = toplam aktivasyon / toplam satış noktası-ay</p></div>';
 }
 function merCompareCell(current,previous,label){
   var delta=current!=null&&previous!=null?current-previous:null,rate=merChange(current,previous);
