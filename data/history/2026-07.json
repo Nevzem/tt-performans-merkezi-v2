@@ -1091,7 +1091,7 @@
    "akilliCihaz": {
     "hedef": 80,
     "adet": 215,
-    "hgo": 268.7,
+    "hgo": 268.8,
     "forecast": 269
    },
    "digerCihaz": {
@@ -1811,7 +1811,7 @@
    "mobil": {
     "hedef": 112,
     "adet": 133,
-    "hgo": 118.7,
+    "hgo": 118.8,
     "forecast": 119
    },
    "dsl": {
@@ -3350,7 +3350,7 @@
       "Akıllı Cihaz": {
        "h": 80,
        "a": 215,
-       "g": 268.7
+       "g": 268.8
       },
       "Diğer Cihaz": {
        "h": 102,
@@ -4727,7 +4727,7 @@
       "Toplam Mobil": {
        "h": 112,
        "a": 133,
-       "g": 118.7
+       "g": 118.8
       },
       "Toplam TV": {
        "h": 15,
@@ -5302,7 +5302,7 @@
       "Akıllı Cihaz": {
        "h": 80,
        "a": 215,
-       "g": 268.7
+       "g": 268.8
       },
       "Diğer Cihaz": {
        "h": 102,
@@ -26760,6 +26760,9 @@
   "sourceFile": "TemmuzKapanışAnadolu GM Satış Raporu Saha.xlsx",
   "sample": false,
   "closed": true,
-  "history": false
- }
+  "history": false,
+  "verifiedClosingSource": true
+ },
+ "verifiedClosingSource": true,
+ "verifiedClosingUpdatedAt": "2026-10-03"
 }
