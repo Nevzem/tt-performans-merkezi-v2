@@ -7,6 +7,7 @@ const root = path.join(__dirname, '..');
 const storage = {};
 const ctx = vm.createContext({console:{log(){},warn(){}},localStorage:{getItem:k=>storage[k],setItem:(k,v)=>{storage[k]=v;}},TextEncoder,Uint8Array,atob,Set,Date,document:{},XLSX:{utils:{sheet_to_json:s=>s}}});
 vm.runInContext(fs.readFileSync(path.join(root,'js/data.js'),'utf8'),ctx);
+vm.runInContext(fs.readFileSync(path.join(root,'js/history-loader.js'),'utf8'),ctx);
 vm.runInContext(fs.readFileSync(path.join(root,'js/parser.js'),'utf8').replace(/^wire\("drop.*$/gm,''),ctx);
 vm.runInContext(fs.readFileSync(path.join(root,'js/month-end-report.js'),'utf8'),ctx);
 function run(code){return vm.runInContext(code,ctx);}
@@ -87,6 +88,9 @@ ctx.cardFixture={products:[{key:'DSL',hist:'dsl',s:{g:112,a:112,h:100,gap:12}},{
 const cards=run('merSignals(cardFixture)');assert.ok(cards.includes('HEDEF ÜSTÜ'));assert.ok(cards.includes('+12 <small>adet</small>'));assert.ok(cards.includes('KALAN'));assert.ok(cards.includes('16 <small>adet</small>'));assert.ok(cards.includes('VERİ YOK'));
 // Real archives: Primetech opened a new branch; Asis has month-specific coverage.
 ctx.HIST2_DATA=Object.fromEntries(fs.readdirSync(path.join(root,'data/history')).filter(f=>/^20.*\.json$/.test(f)).map(f=>[f.slice(0,7),JSON.parse(fs.readFileSync(path.join(root,'data/history',f),'utf8'))]));
+ctx.edmPack=JSON.parse(fs.readFileSync(path.join(root,'data/history/edm-summary.json'),'utf8'));
+ctx.edmSummary=run('hist2ExpandEdmSummary(edmPack)');
+for(const [period,edm] of Object.entries(ctx.edmSummary))if(ctx.HIST2_DATA[period]&&!ctx.HIST2_DATA[period].monthEnd)ctx.HIST2_DATA[period].edm=edm;
 run("MER_LIVE=null;MER_ARCHIVES={};MER_PARENTS={};HS=merFromHistory(HIST2_DATA['2026-08']);PG=merGroups(HS).find(g=>g.name.includes('PRİMETECH'));PC=merContext(HS,'account',PG.id);AG=merGroups(HS).find(g=>g.name.includes('ASİS'));AC=merContext(HS,'account',AG.id)");
 assert.equal(run("merStats(PC,MER_TRENDS[0]).months"),8,'New branch must not blank prior cari months');
 assert.equal(run("merStats(AC,MER_TRENDS[0]).months"),8,'All available Asis monthly totals are plotted');
@@ -146,9 +150,11 @@ for(const [key,[h,a]] of Object.entries(septemberTotals)){
   assert.equal(run('merAggregate(RC.rows,productKey).h'),h,key+' target matches the closing workbook');
   assert.equal(run('merAggregate(RC.rows,productKey).a'),a,key+' activations match the closing workbook');
   const stats=run('merStats(RC,MER_PRODUCTS.find(p=>p.key===productKey))');
-  assert.equal(stats.months,3,'Region has July, August and September complete channel coverage');
+  assert.equal(stats.months,9,'Region has January-September complete TTM + EDM coverage');
   assert.equal(stats.expectedMonths,9);
-  assert.equal(stats.pairMonths,0,'TTM-only prior year must not become a combined-region comparison');
+  assert.equal(stats.pairMonths,8,'March 2025 is absent, so YoY uses only eight matched months');
+  const regionalYtd={'Toplam Mobil':[167296,157692],DSL:[21301,20015],IPTV:[6996,7269],Uydu:[1595,1776],'Akıllı Cihaz':[22771,24179],'Diğer Cihaz':[17316,17695]};
+  assert.deepEqual([stats.ytdH,stats.ytdA],regionalYtd[productKey],productKey+' YTD uses all verified 2026 closings');
 }
 run('MER_ARCHIVES["2026-09"]={period:"2026-09",closed:false,uploadedAt:"2099-01-01T00:00:00Z"}');
 assert.equal(run('merSource("2026-09").closed'),true,'An intra-month archive cannot hide the published closing');
