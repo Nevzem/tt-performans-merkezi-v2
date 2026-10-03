@@ -78,6 +78,13 @@ ctx.ytdFixture={products:['mobil','dsl','iptv','uydu','akilliCihaz','digerCihaz'
 const minis=run('ytdFixture.products.map(merYtdMini)');
 for(const mini of minis){const heights=[...mini.matchAll(/height="([\d.]+)" rx/g)].map(m=>+m[1]);assert.equal(Math.max(...heights),46,'Each product has its own maximum');assert.ok(Math.min(...heights)>20,'Both years remain visible despite different product volumes');}
 assert.equal((run('merYtdChart(ytdFixture)').match(/class="mer-ytd-mini"/g)||[]).length,6);
+const growthMini=run('merYtdMini(ytdFixture.products[0])');
+assert.ok(growthMini.includes('+25.0%')||growthMini.includes('+25,0%'),'YTD mini shows yearly growth rate');
+assert.ok(growthMini.includes('+1.622 adet')||growthMini.includes('+1622 adet'),'YTD mini shows signed unit difference');
+ctx.ytdLoss={hist:'dsl',label:'DSL',s:{pairA:80,pairB:100,ytdA:80}};
+const lossMini=run('merYtdMini(ytdLoss)');
+assert.ok(lossMini.includes('-20.0%')||lossMini.includes('-20,0%'));
+assert.ok(lossMini.includes('-20 adet'));
 ctx.emptyProduct={hist:'dsl',label:'DSL',s:{pairA:0,pairB:null,ytdA:999}};
 const emptyMini=run('merYtdMini(emptyProduct)');assert.ok(emptyMini.includes('height="0"'),'Zero matched sales must remain zero');assert.ok(emptyMini.includes('—'),'Missing previous year must remain missing');assert.ok(!emptyMini.includes('999'),'Matched zero must not fall back to full-year total');
 // A full ring caps its fill at 100%, while retaining the real HGO label.
