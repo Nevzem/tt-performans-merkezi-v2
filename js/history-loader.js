@@ -16,6 +16,8 @@ var HIST2_CORRECTIONS = null;
 var HIST2_CORRECTIONS_PROMISE = null;
 var HIST2_EDM_SUMMARY = null;
 var HIST2_EDM_SUMMARY_PROMISE = null;
+var HIST2_CHANNEL_SUMMARY = null;
+var HIST2_CHANNEL_SUMMARY_PROMISE = null;
 var HIST2_ALL_PROMISE = null;
 var HIST2_CORRECTION_FILES = [
   './data/history/corrections/g01.json',
@@ -152,6 +154,23 @@ async function loadHistoryEdmSummary() {
   return HIST2_EDM_SUMMARY_PROMISE;
 }
 
+async function loadHistoryChannelSummary() {
+  if (HIST2_CHANNEL_SUMMARY) return HIST2_CHANNEL_SUMMARY;
+  if (HIST2_CHANNEL_SUMMARY_PROMISE) return HIST2_CHANNEL_SUMMARY_PROMISE;
+  HIST2_CHANNEL_SUMMARY_PROMISE = (async function() {
+    try {
+      var resp = await fetch('./data/history/channel-activation-summary.json?_=' + Date.now());
+      if (!resp.ok) throw new Error('channel activation summary HTTP ' + resp.status);
+      var payload = await resp.json();
+      HIST2_CHANNEL_SUMMARY = payload && payload.periods ? payload : { periods: {} };
+    } catch (e) {
+      HIST2_CHANNEL_SUMMARY = { periods: {} };
+    }
+    return HIST2_CHANNEL_SUMMARY;
+  })();
+  return HIST2_CHANNEL_SUMMARY_PROMISE;
+}
+
 var HIST2_PRODS = [
   { key: 'mobil', label: 'Mobil' },
   { key: 'dsl',   label: 'DSL'   },
@@ -178,7 +197,7 @@ async function loadHistoryManifest() {
 
 async function loadHistoryPeriod(period) {
   if (period in HIST2_DATA) return HIST2_DATA[period];
-  var support = await Promise.all([loadHistoryCorrections(), loadHistoryEdmSummary()]);
+  var support = await Promise.all([loadHistoryCorrections(), loadHistoryEdmSummary(), loadHistoryChannelSummary()]);
   var corrections = support[0], edmSummary = support[1];
   try {
     var resp = await fetch('./data/history/' + period + '.json?_=' + Date.now());
@@ -221,6 +240,7 @@ async function loadAllHistory() {
   HIST2_LOADING = true;
   HIST2_ALL_PROMISE = (async function() {
     var mf = await loadHistoryManifest();
+    await loadHistoryChannelSummary();
     await Promise.all(mf.periods.map(function(p) { return loadHistoryPeriod(p); }));
     HIST2_LOADED = true;
   })();
