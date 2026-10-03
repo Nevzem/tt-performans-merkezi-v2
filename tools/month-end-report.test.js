@@ -164,7 +164,7 @@ for(const [key,[h,a]] of Object.entries(septemberTotals)){
   const stats=run('merStats(RC,MER_PRODUCTS.find(p=>p.key===productKey))');
   assert.equal(stats.months,9,'Region has January-September complete TTM + EDM coverage');
   assert.equal(stats.expectedMonths,9);
-  assert.equal(stats.pairMonths,8,'March 2025 is absent, so YoY uses only eight matched months');
+  assert.equal(stats.pairMonths,9,'January-September now has complete same-month YoY coverage');
   const regionalYtd={'Toplam Mobil':[167296,157692],DSL:[21301,20015],IPTV:[6996,7269],Uydu:[1595,1776],'Akıllı Cihaz':[22771,24179],'Diğer Cihaz':[17316,17695]};
   assert.deepEqual([stats.ytdH,stats.ytdA],regionalYtd[productKey],productKey+' YTD uses all verified 2026 closings');
 }
