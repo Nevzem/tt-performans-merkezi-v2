@@ -252,6 +252,34 @@ function parseWB(wb) {
     const g1 = sr.find(r => r && String(r[0]).trim() === "Çalışma Günü");
     const g2 = sr.find(r => r && String(r[0]).trim() === "Çalışılan Gün");
     syToplamGun = g1 ? num(g1[1]) : null; syGun = g2 ? num(g2[1]) : null;
+
+    // Tüm Bölge kıyası: SY ÖZET'teki birleşik TTM + EDM Anadolu GM ve Türkiye HGO'ları.
+    // Eski 2025 formatında IPTV/Uydu ayrı değil, yalnız Tivibu toplamı vardır.
+    const summaryHeaders = sr[3] || [];
+    const newSummaryLayout = summaryHeaders.some(function(v){ return String(v||'').trim().toLocaleUpperCase('tr-TR') === 'IPTV'; });
+    const benchCols = newSummaryLayout
+      ? {mobil:6,postpaid:9,prepaid:12,dsl:20,iptv:29,uydu:32,tv:35,akilliCihaz:38,digerCihaz:41}
+      : {mobil:6,postpaid:9,prepaid:12,dsl:20,iptv:null,uydu:null,tv:29,akilliCihaz:32,digerCihaz:35};
+    function summaryBenchmark(label) {
+      var row = null;
+      sr.forEach(function(r){
+        if(!r || !r[3]) return;
+        if(String(r[3]).trim().toLocaleUpperCase('tr-TR') !== label) return;
+        if(num(r[6]) !== null) row = r; // footer satırını alma
+      });
+      if(!row) return null;
+      var out = {};
+      Object.keys(benchCols).forEach(function(key){
+        var ix = benchCols[key], value = ix == null ? null : num(row[ix]);
+        out[key] = value == null ? null : Math.round(value * 1000) / 10;
+      });
+      return out;
+    }
+    matrix.regionBenchmarks = {
+      gm: summaryBenchmark('ANADOLU'),
+      tr: summaryBenchmark('TÜRKİYE')
+    };
+
     const TGT = APP_CONFIG.ttmSY;
     const PC = { "Mobil Toplam":[4,5,6], "Faturalı":[7,8,9], "Faturasız":[10,11,12], "Evde İnternet":[18,19,20], "IPTV":[27,28,29], "Uydu":[30,31,32], "Tivibu Toplam":[33,34,35], "Cihaz":[36,37,38], "Cihaz Diğer":[39,40,41] };
     for (const r of sr) {
