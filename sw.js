@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-month-end-20261002b';
+const CACHE = 'ttpm-history-20261003a';
 
 const ASSETS = [
   '.',
@@ -28,6 +28,18 @@ const ASSETS = [
   'js/detay.js',
   'js/history-loader.js',
   'js/history.js',
+  'data/history/corrections/strings.json',
+  'data/history/corrections/g01.json',
+  'data/history/corrections/g02.json',
+  'data/history/corrections/g03.json',
+  'data/history/corrections/g04.json',
+  'data/history/corrections/g05.json',
+  'data/history/corrections/g06.json',
+  'data/history/corrections/g07.json',
+  'data/history/corrections/g08.json',
+  'data/history/corrections/g09.json',
+  'data/history/corrections/g10.json',
+  'data/history/corrections/g11.json',
   'js/development.js',
   'js/manager-league.js',
   'js/september-campaign.js',
