@@ -160,9 +160,13 @@ assert.equal(Math.round(run('CAM.rows.mobil.ytd[0]*10'))/10,350.3,'TTM Mobil YTD
 assert.equal(Math.round(run('CAM.rows.mobil.ytd[1]*10'))/10,66.9,'TTBN Mobil YTD is weighted by sales-point months');
 assert.equal(Math.round(run('CAM.rows.mobil.ytd[2]*10'))/10,11.9,'ESN Mobil YTD is weighted by sales-point months');
 assert.deepEqual(Array.from(run('CAM.rows.mobil.currentPoints')),[23,121,121],'September channel point counts are retained');
+assert.equal(Math.round(run('CAM.rows.mobil.gmYtd[0]*10'))/10,302.5,'Anadolu GM TTM Mobil YTD point average is loaded');
+assert.equal(Math.round(run('CAM.rows.mobil.gmYtd[1]*10'))/10,63.9,'Anadolu GM TTBN Mobil YTD point average is loaded');
+assert.equal(Math.round(run('CAM.rows.mobil.gmCurrent[0]*10'))/10,301.1,'Anadolu GM September TTM Mobil point average is loaded');
 const regionSummary=run('merSummary(RC)');
-assert.ok(regionSummary.includes('SATIŞ NOKTASI BAŞI ORTALAMA AKTİVASYON'),'Region replaces sales-manager card with sales-point efficiency matrix');
-assert.ok(regionSummary.includes('adet / satış noktası'),'Regional matrix explains the per-point unit');
+assert.ok(regionSummary.includes('NOKTA BAŞI ORTALAMA AKTİVASYON'),'Region replaces sales-manager card with point-efficiency matrix');
+assert.ok(regionSummary.includes('adet / nokta'),'Regional matrix explains the per-point unit');
+assert.ok(regionSummary.includes('/GM'),'Every point-average cell includes an Anadolu GM comparison');
 assert.ok(!regionSummary.includes('SATIŞ YÖNETİCİLERİ'),'Region no longer renders the sales-manager table');
 assert.equal((regionSummary.match(/class="mer-channel-row"/g)||[]).length,6,'Simplified matrix has six product rows');
 assert.equal((regionSummary.match(/class="mer-channel-value /g)||[]).length,36,'Each product has YTD and selected-month TTM TTBN ESN values');
