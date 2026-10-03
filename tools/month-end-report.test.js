@@ -75,23 +75,22 @@ ctx.parsed=run('parseWB(ttmWB)');ctx.parsed.syData={calismaGun:30,calisilanGun:1
 ctx.parsed.syData.calisilanGun=30;run('merCaptureUpload(parsed,null)');assert.equal(run('MER_LIVE.closed'),true);assert.ok(storage.tt_month_end_archives_v1);
 ctx.fakeCanvas={width:4096,height:3072,toDataURL:()=> 'data:image/jpeg;base64,/9j/2Q=='};
 const bytes=run('merCanvasToPdfBytes([fakeCanvas,fakeCanvas])');const pdf=Buffer.from(bytes).toString('latin1');assert.ok(pdf.includes('/Count 2'));assert.ok(pdf.includes('xref\n0 9'));for(const offset of pdf.matchAll(/(\d{10}) 00000 n/g))assert.ok(/^\d+ 0 obj/.test(pdf.slice(+offset[1])),'PDF xref points to object');
-// Split year card: YTD accumulated comparison + selected-month YoY comparison.
+// Clean comparison matrix: one product row, three comparison columns.
 ctx.ytdFixture={products:['mobil','dsl','iptv','uydu','akilliCihaz','digerCihaz'].map((hist,i)=>({hist,key:['Toplam Mobil','DSL','IPTV','Uydu','Akıllı Cihaz','Diğer Cihaz'][i],label:hist,s:{pairB:[6636,569,208,111,733,720][i],pairA:[7010,610,256,90,779,930][i],ytdA:[7010,610,256,90,779,930][i],a:[900,80,40,12,95,110][i],prevYearA:[800,100,32,15,90,100][i],prevA:[850,100,35,13,92,115][i],pairMonths:8}})),source:{period:'2026-09'}};
 const yearCard=run('merYtdChart(ytdFixture)');
-assert.equal((yearCard.match(/class="mer-year-block/g)||[]).length,3,'Year card is split into YTD, YoY and MoM');
-assert.equal((yearCard.match(/class="mer-year-row"/g)||[]).length,18,'Six products are shown in YTD, YoY and MoM');
+assert.equal((yearCard.match(/class="mer-compare-row"/g)||[]).length,6,'Each product appears once');
+assert.equal((yearCard.match(/class="mer-compare-cell/g)||[]).length,18,'Each product has YTD, YoY and MoM cells');
 assert.ok(yearCard.includes('>YTD<'));
 assert.ok(yearCard.includes('>YoY<'));
 assert.ok(yearCard.includes('>MoM<'));
-ctx.ytdGrowth={hist:'dsl',label:'DSL',s:{}};
-const growthRow=run("merYearCompareRow(ytdGrowth,125,100)");
-assert.ok(growthRow.includes('+25.0%')||growthRow.includes('+25,0%'),'Comparison row shows growth rate');
-assert.ok(growthRow.includes('+25 adet'),'Comparison row shows signed unit difference');
-const lossRow=run("merYearCompareRow(ytdGrowth,80,100)");
-assert.ok(lossRow.includes('-20.0%')||lossRow.includes('-20,0%'));
-assert.ok(lossRow.includes('-20 adet'));
-const missingRow=run("merYearCompareRow(ytdGrowth,80,null)");
-assert.ok(missingRow.includes('—'),'Missing prior-year value stays unknown');
+const growthCell=run("merCompareCell(125,100,'test')");
+assert.ok(growthCell.includes('+25.0%')||growthCell.includes('+25,0%'),'Comparison cell shows growth rate');
+assert.ok(growthCell.includes('+25 adet'),'Comparison cell shows signed unit difference');
+const lossCell=run("merCompareCell(80,100,'test')");
+assert.ok(lossCell.includes('-20.0%')||lossCell.includes('-20,0%'));
+assert.ok(lossCell.includes('-20 adet'));
+const missingCell=run("merCompareCell(80,null,'test')");
+assert.ok(missingCell.includes('—'),'Missing comparison remains unknown');
 
 // A full ring caps its fill at 100%, while retaining the real HGO label.
 assert.ok(run("merHgoRing(112,'#00b6a6','test')").includes('stroke-dashoffset="0"'));
