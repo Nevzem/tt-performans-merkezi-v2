@@ -326,7 +326,7 @@ function merRegionChannelCard(ctx){
       merChannelValue(v.current[2],'esn')+
     '</div>';
   }).join('');
-  return '<div class="mer-panel mer-channel-panel"><h2>'+merIcon('trend')+'SATIŞ NOKTASI BAŞI ORTALAMA AKTİVASYON<span>'+model.monthCount+' aylık YTD</span></h2>'+
+  return '<div class="mer-panel mer-channel-panel"><h2>'+merIcon('trend')+'NOKTA BAŞI ORTALAMA AKTİVASYON<span>'+model.monthCount+' aylık YTD</span></h2>'+
     '<div class="mer-channel-matrix">'+
       '<div class="mer-channel-group-head"><span>Ürün</span><b>YTD ORTALAMA<small>Ocak–'+merEsc(merMonthShort(ctx.source.period))+'</small></b><b>SEÇİLİ AY ORTALAMA<small>'+merEsc(monthName)+'</small></b></div>'+
       '<div class="mer-channel-subhead"><span></span><b class="ttm">TTM</b><b class="ttbn">TTBN</b><b class="esn">ESN</b><b class="ttm">TTM</b><b class="ttbn">TTBN</b><b class="esn">ESN</b></div>'+
