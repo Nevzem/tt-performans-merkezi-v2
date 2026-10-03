@@ -159,8 +159,11 @@ assert.equal(Math.round(run('CAM.rows.mobil.ytd[0]')),7745,'TTM Mobil YTD monthl
 assert.equal(Math.round(run('CAM.rows.mobil.ytd[1]')),8294,'TTBN Mobil YTD monthly average');
 assert.equal(Math.round(run('CAM.rows.mobil.ytd[2]')),1477,'ESN Mobil YTD monthly average');
 const regionSummary=run('merSummary(RC)');
-assert.ok(regionSummary.includes('KANAL BAZLI AKTİVASYON ORTALAMASI'),'Region replaces sales-manager card with channel average chart');
+assert.ok(regionSummary.includes('KANAL BAZLI AYLIK ORTALAMA'),'Region replaces sales-manager card with simplified channel average matrix');
 assert.ok(!regionSummary.includes('SATIŞ YÖNETİCİLERİ'),'Region no longer renders the sales-manager table');
+assert.equal((regionSummary.match(/class="mer-channel-row"/g)||[]).length,6,'Simplified matrix has six product rows');
+assert.equal((regionSummary.match(/class="mer-channel-value /g)||[]).length,36,'Each product has YTD and selected-month TTM TTBN ESN values');
+assert.ok(!regionSummary.includes('mer-channel-bars'),'Regional comparison no longer renders mini bar charts');
 assert.equal(run("merCommitmentTotal(RC.rows,'dsl')"),333,'Regional DSL commitments equal 112 TTM + 221 EDM');
 assert.equal(run("merCommitmentTotal(merRows(SEP,'TTM'),'mobil')"),3512);
 assert.equal(run("merCommitmentTotal(merRows(SEP,'EDM'),'mobilUpsell')"),4618);
