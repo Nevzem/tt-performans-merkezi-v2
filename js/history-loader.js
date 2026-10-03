@@ -14,6 +14,9 @@ var HIST2_LOADED   = false;  /* loadAllHistory tamamlandı mı              */
 var HIST2_LOADING  = false;
 var HIST2_CORRECTIONS = null;
 var HIST2_CORRECTIONS_PROMISE = null;
+var HIST2_EDM_SUMMARY = null;
+var HIST2_EDM_SUMMARY_PROMISE = null;
+var HIST2_ALL_PROMISE = null;
 var HIST2_CORRECTION_FILES = [
   './data/history/corrections/g01.json',
   './data/history/corrections/g02.json',
@@ -100,6 +103,55 @@ async function loadHistoryCorrections() {
   return HIST2_CORRECTIONS_PROMISE;
 }
 
+function hist2EdmProduct(h, a) {
+  h = h === null || h === undefined ? null : Number(h);
+  a = a === null || a === undefined ? null : Number(a);
+  var out = { h: h, a: a };
+  if (h !== null && h > 0 && a !== null) out.g = Math.round(a / h * 1000) / 10;
+  return out;
+}
+
+function hist2ExpandEdmSummary(payload) {
+  var products = Array.isArray(payload && payload.products) ? payload.products : [];
+  var periods = payload && payload.periods || {};
+  var out = {};
+  Object.keys(periods).forEach(function(period) {
+    var bayiler = {};
+    (periods[period] || []).forEach(function(row, ix) {
+      var sy = row[0] || 'Yönetici bilgisi yok';
+      var count = Number(row[1]) || 1;
+      var values = Array.isArray(row[2]) ? row[2] : [];
+      var prods = {};
+      products.forEach(function(name, pi) {
+        prods[name] = hist2EdmProduct(values[pi * 2], values[pi * 2 + 1]);
+      });
+      var code = 'EDMSY-' + String(ix + 1).padStart(2, '0');
+      bayiler[code] = {
+        kod: code, b: sy, fullName: sy, anaBayiKod: '', il: '',
+        bt: 'EDM Özet', sy: sy, st: '', memberCount: count, prods: prods
+      };
+    });
+    out[period] = { bayiler: bayiler, summarized: true };
+  });
+  return out;
+}
+
+async function loadHistoryEdmSummary() {
+  if (HIST2_EDM_SUMMARY) return HIST2_EDM_SUMMARY;
+  if (HIST2_EDM_SUMMARY_PROMISE) return HIST2_EDM_SUMMARY_PROMISE;
+  HIST2_EDM_SUMMARY_PROMISE = (async function() {
+    try {
+      var resp = await fetch('./data/history/edm-summary.json?_=' + Date.now());
+      if (!resp.ok) throw new Error('EDM summary HTTP ' + resp.status);
+      HIST2_EDM_SUMMARY = hist2ExpandEdmSummary(await resp.json());
+    } catch (e) {
+      HIST2_EDM_SUMMARY = {};
+    }
+    return HIST2_EDM_SUMMARY;
+  })();
+  return HIST2_EDM_SUMMARY_PROMISE;
+}
+
 var HIST2_PRODS = [
   { key: 'mobil', label: 'Mobil' },
   { key: 'dsl',   label: 'DSL'   },
@@ -126,7 +178,8 @@ async function loadHistoryManifest() {
 
 async function loadHistoryPeriod(period) {
   if (period in HIST2_DATA) return HIST2_DATA[period];
-  var corrections = await loadHistoryCorrections();
+  var support = await Promise.all([loadHistoryCorrections(), loadHistoryEdmSummary()]);
+  var corrections = support[0], edmSummary = support[1];
   try {
     var resp = await fetch('./data/history/' + period + '.json?_=' + Date.now());
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -135,6 +188,10 @@ async function loadHistoryPeriod(period) {
       j.dealers = corrections[period].dealers;
       j.accountDealers = corrections[period].accountDealers;
       j.sourceRevision = '2026-10-03-verified-closing-files';
+    }
+    if (j && edmSummary[period] && !j.monthEnd) {
+      j.edm = edmSummary[period];
+      j.edmSourceRevision = '2026-10-03-verified-closing-files';
     }
     HIST2_DATA[period] = (j && Array.isArray(j.dealers)) ? j : null;
   } catch (e) {
@@ -147,7 +204,9 @@ async function loadHistoryPeriod(period) {
         channel: 'TTM',
         dealers: corrections[period].dealers,
         accountDealers: corrections[period].accountDealers,
-        sourceRevision: '2026-10-03-verified-closing-files'
+        edm: edmSummary[period] || null,
+        sourceRevision: '2026-10-03-verified-closing-files',
+        edmSourceRevision: edmSummary[period] ? '2026-10-03-verified-closing-files' : null
       };
     } else {
       HIST2_DATA[period] = null;
@@ -157,14 +216,19 @@ async function loadHistoryPeriod(period) {
 }
 
 async function loadAllHistory() {
-  if (HIST2_LOADED || HIST2_LOADING) return;
+  if (HIST2_LOADED) return;
+  if (HIST2_ALL_PROMISE) return HIST2_ALL_PROMISE;
   HIST2_LOADING = true;
-  try {
+  HIST2_ALL_PROMISE = (async function() {
     var mf = await loadHistoryManifest();
     await Promise.all(mf.periods.map(function(p) { return loadHistoryPeriod(p); }));
     HIST2_LOADED = true;
+  })();
+  try {
+    await HIST2_ALL_PROMISE;
   } finally {
     HIST2_LOADING = false;
+    HIST2_ALL_PROMISE = null;
   }
 }
 
