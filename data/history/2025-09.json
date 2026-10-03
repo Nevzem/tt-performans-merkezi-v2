@@ -148,15 +148,15 @@
    },
    "prepaid": {
     "hedef": 143,
-    "adet": 315,
-    "hgo": 220.3,
-    "forecast": 220
+    "adet": 312,
+    "hgo": 218.2,
+    "forecast": 218
    },
    "mobil": {
     "hedef": 458,
-    "adet": 481,
-    "hgo": 105,
-    "forecast": 105
+    "adet": 478,
+    "hgo": 104.4,
+    "forecast": 104
    },
    "dsl": {
     "hedef": 88,
@@ -544,15 +544,15 @@
    },
    "prepaid": {
     "hedef": 198,
-    "adet": 569,
-    "hgo": 287.4,
-    "forecast": 287
+    "adet": 563,
+    "hgo": 284.3,
+    "forecast": 284
    },
    "mobil": {
     "hedef": 733,
-    "adet": 873,
-    "hgo": 119.1,
-    "forecast": 119
+    "adet": 867,
+    "hgo": 118.3,
+    "forecast": 118
    },
    "dsl": {
     "hedef": 70,
@@ -580,9 +580,9 @@
    },
    "akilliCihaz": {
     "hedef": 89,
-    "adet": 94,
-    "hgo": 105.6,
-    "forecast": 106
+    "adet": 93,
+    "hgo": 104.5,
+    "forecast": 105
    },
    "digerCihaz": {
     "hedef": 95,
@@ -592,9 +592,9 @@
    },
    "cihaz": {
     "hedef": 184,
-    "adet": 193,
-    "hgo": 104.9,
-    "forecast": 105
+    "adet": 192,
+    "hgo": 104.3,
+    "forecast": 104
    }
   },
   {
@@ -676,14 +676,14 @@
    },
    "prepaid": {
     "hedef": 154,
-    "adet": 170,
-    "hgo": 110.4,
+    "adet": 169,
+    "hgo": 109.7,
     "forecast": 110
    },
    "mobil": {
     "hedef": 442,
-    "adet": 370,
-    "hgo": 83.7,
+    "adet": 369,
+    "hgo": 83.5,
     "forecast": 84
    },
    "dsl": {
@@ -876,15 +876,15 @@
    },
    "prepaid": {
     "hedef": 129,
-    "adet": 260,
-    "hgo": 201.6,
-    "forecast": 202
+    "adet": 257,
+    "hgo": 199.2,
+    "forecast": 199
    },
    "mobil": {
     "hedef": 391,
-    "adet": 429,
-    "hgo": 109.7,
-    "forecast": 110
+    "adet": 426,
+    "hgo": 109,
+    "forecast": 109
    },
    "dsl": {
     "hedef": 59,
@@ -978,9 +978,9 @@
    },
    "akilliCihaz": {
     "hedef": 52,
-    "adet": 41,
-    "hgo": 78.8,
-    "forecast": 79
+    "adet": 42,
+    "hgo": 80.8,
+    "forecast": 81
    },
    "digerCihaz": {
     "hedef": 55,
@@ -990,9 +990,9 @@
    },
    "cihaz": {
     "hedef": 107,
-    "adet": 85,
-    "hgo": 79.4,
-    "forecast": 79
+    "adet": 86,
+    "hgo": 80.4,
+    "forecast": 80
    }
   },
   {
@@ -1074,15 +1074,15 @@
    },
    "prepaid": {
     "hedef": 114,
-    "adet": 214,
-    "hgo": 187.7,
-    "forecast": 188
+    "adet": 211,
+    "hgo": 185.1,
+    "forecast": 185
    },
    "mobil": {
     "hedef": 509,
-    "adet": 575,
-    "hgo": 113,
-    "forecast": 113
+    "adet": 572,
+    "hgo": 112.4,
+    "forecast": 112
    },
    "dsl": {
     "hedef": 50,
@@ -1110,21 +1110,21 @@
    },
    "akilliCihaz": {
     "hedef": 95,
-    "adet": 120,
-    "hgo": 126.3,
-    "forecast": 126
+    "adet": 115,
+    "hgo": 121.1,
+    "forecast": 121
    },
    "digerCihaz": {
     "hedef": 86,
-    "adet": 80,
-    "hgo": 93,
-    "forecast": 93
+    "adet": 77,
+    "hgo": 89.5,
+    "forecast": 90
    },
    "cihaz": {
     "hedef": 181,
-    "adet": 200,
-    "hgo": 110.5,
-    "forecast": 111
+    "adet": 192,
+    "hgo": 106.1,
+    "forecast": 106
    }
   },
   {
@@ -1140,15 +1140,15 @@
    },
    "prepaid": {
     "hedef": 128,
-    "adet": 244,
-    "hgo": 190.6,
-    "forecast": 191
+    "adet": 243,
+    "hgo": 189.8,
+    "forecast": 190
    },
    "mobil": {
     "hedef": 513,
-    "adet": 470,
-    "hgo": 91.6,
-    "forecast": 92
+    "adet": 469,
+    "hgo": 91.4,
+    "forecast": 91
    },
    "dsl": {
     "hedef": 65,
@@ -1274,15 +1274,15 @@
    },
    "prepaid": {
     "hedef": 54,
-    "adet": 123,
-    "hgo": 227.8,
-    "forecast": 228
+    "adet": 119,
+    "hgo": 220.4,
+    "forecast": 220
    },
    "mobil": {
     "hedef": 274,
-    "adet": 310,
-    "hgo": 113.1,
-    "forecast": 113
+    "adet": 306,
+    "hgo": 111.7,
+    "forecast": 112
    },
    "dsl": {
     "hedef": 42,
@@ -1736,15 +1736,15 @@
    },
    "prepaid": {
     "hedef": 155,
-    "adet": 299,
-    "hgo": 192.9,
-    "forecast": 193
+    "adet": 296,
+    "hgo": 191,
+    "forecast": 191
    },
    "mobil": {
     "hedef": 400,
-    "adet": 516,
-    "hgo": 129,
-    "forecast": 129
+    "adet": 513,
+    "hgo": 128.3,
+    "forecast": 128
    },
    "dsl": {
     "hedef": 56,
@@ -1772,9 +1772,9 @@
    },
    "akilliCihaz": {
     "hedef": 94,
-    "adet": 119,
-    "hgo": 126.6,
-    "forecast": 127
+    "adet": 111,
+    "hgo": 118.1,
+    "forecast": 118
    },
    "digerCihaz": {
     "hedef": 64,
@@ -1784,9 +1784,9 @@
    },
    "cihaz": {
     "hedef": 158,
-    "adet": 198,
-    "hgo": 125.3,
-    "forecast": 125
+    "adet": 190,
+    "hgo": 120.3,
+    "forecast": 120
    }
   }
  ],
@@ -1874,15 +1874,15 @@
    },
    "prepaid": {
     "hedef": 56,
-    "adet": 323,
-    "hgo": 576.8,
-    "forecast": 577
+    "adet": 315,
+    "hgo": 562.5,
+    "forecast": 563
    },
    "mobil": {
     "hedef": 396,
-    "adet": 445,
-    "hgo": 112.4,
-    "forecast": 112
+    "adet": 437,
+    "hgo": 110.4,
+    "forecast": 110
    },
    "dsl": {
     "hedef": 46,
@@ -1910,9 +1910,9 @@
    },
    "akilliCihaz": {
     "hedef": 39,
-    "adet": 44,
-    "hgo": 112.8,
-    "forecast": 113
+    "adet": 39,
+    "hgo": 100,
+    "forecast": 100
    },
    "digerCihaz": {
     "hedef": 19,
@@ -1922,10 +1922,12 @@
    },
    "cihaz": {
     "hedef": 58,
-    "adet": 85,
-    "hgo": 146.6,
-    "forecast": 147
+    "adet": 80,
+    "hgo": 137.9,
+    "forecast": 138
    }
   }
- ]
+ ],
+ "verifiedClosingSource": true,
+ "verifiedClosingUpdatedAt": "2026-10-03"
 }
