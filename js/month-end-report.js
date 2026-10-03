@@ -133,7 +133,7 @@ function merStats(ctx,p){
   var prev=period?merHistoricalValue(ctx,merShift(period,-1),p):null,prevYear=period?merHistoricalValue(ctx,merShift(period,-12),p):null;
   var ytdA=series.length?series.reduce(function(a,v){return a+v.a;},0):null,ytdH=series.length?series.reduce(function(a,v){return a+v.h;},0):null;
   var pairA=pairs.length?pairs.reduce(function(a,v){return a+v.a;},0):null,pairB=pairs.length?pairs.reduce(function(a,v){return a+v.b;},0):null;
-  return Object.assign({},current,{gap:current.a==null || current.h==null || current.h<=0?null:current.a-current.h,mom:merChange(current.a,prev&&prev.a),yoy:merChange(current.a,prevYear&&prevYear.a),prevYearA:prevYear&&prevYear.a!=null?prevYear.a:null,prevYearH:prevYear&&prevYear.h!=null?prevYear.h:null,series:series,ytdA:ytdA,ytdH:ytdH,ytdG:merRate(ytdA,ytdH),ytdGap:ytdA==null||ytdH==null||ytdH<=0?null:ytdA-ytdH,ytdYoY:merChange(pairA,pairB),pairA:pairA,pairB:pairB,months:series.length,pairMonths:pairs.length,expectedMonths:month||0});
+  return Object.assign({},current,{gap:current.a==null || current.h==null || current.h<=0?null:current.a-current.h,mom:merChange(current.a,prev&&prev.a),prevA:prev&&prev.a!=null?prev.a:null,prevH:prev&&prev.h!=null?prev.h:null,yoy:merChange(current.a,prevYear&&prevYear.a),prevYearA:prevYear&&prevYear.a!=null?prevYear.a:null,prevYearH:prevYear&&prevYear.h!=null?prevYear.h:null,series:series,ytdA:ytdA,ytdH:ytdH,ytdG:merRate(ytdA,ytdH),ytdGap:ytdA==null||ytdH==null||ytdH<=0?null:ytdA-ytdH,ytdYoY:merChange(pairA,pairB),pairA:pairA,pairB:pairB,months:series.length,pairMonths:pairs.length,expectedMonths:month||0});
 }
 function merBenchmark(ctx,p,kind){
   if(ctx.scope==='region')return null; // TTM benchmarks do not describe EDM.
@@ -244,6 +244,7 @@ function merYearCompareRow(p,current,previous){
 function merYtdChart(ctx){
   var list=ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;});});
   var year=+ctx.source.period.slice(0,4),monthLabel=merMonthShort(ctx.source.period);
+  var prevPeriod=merShift(ctx.source.period,-1),prevMonthLabel=merMonthShort(prevPeriod);
   var matched=list.length?Math.min.apply(null,list.map(function(p){return p.s.pairMonths||0;})):0;
   var ytdRows=list.map(function(p){
     var current=p.s.pairB!=null?p.s.pairA:p.s.ytdA;
@@ -252,10 +253,14 @@ function merYtdChart(ctx){
   var yoyRows=list.map(function(p){
     return merYearCompareRow(p,p.s.a,p.s.prevYearA);
   }).join('');
+  var momRows=list.map(function(p){
+    return merYearCompareRow(p,p.s.a,p.s.prevA);
+  }).join('');
   return '<div class="mer-year-split">'+
     '<section class="mer-year-block mer-year-ytd"><header><b>YTD</b><span>Ocak–'+merEsc(monthLabel)+' · '+matched+' eşleşen ay</span></header><div class="mer-year-list">'+ytdRows+'</div></section>'+
     '<section class="mer-year-block mer-year-yoy"><header><b>YoY</b><span>'+merEsc(monthLabel)+' '+(year-1)+' → '+year+'</span></header><div class="mer-year-list">'+yoyRows+'</div></section>'+
-  '</div><p class="mer-ytd-note">YTD: yıl birikimli · YoY: seçili ay / geçen yıl aynı ay · — veri yok</p>';
+    '<section class="mer-year-block mer-year-mom"><header><b>MoM</b><span>'+merEsc(prevMonthLabel)+' → '+merEsc(monthLabel)+'</span></header><div class="mer-year-list">'+momRows+'</div></section>'+
+  '</div><p class="mer-ytd-note">YTD: yıl birikimli · YoY: geçen yıl aynı ay · MoM: bir önceki aya göre · — veri yok</p>';
 }
 function merYtdPerformance(ctx){
   var coverage=[];
@@ -271,7 +276,7 @@ function merFooter(ctx){
   return '<footer class="mer-report-footer"><div><span>'+merEsc(ctx.notes.join(' · '))+'</span><span>Kuzey Anadolu · TTM Performans Merkezi</span></div><div><span>HGO = gerçekleşen / hedef · — veri yok · Bölge Δ: TTM HGO farkı</span><span>'+merEsc(ctx.source.uploadedAt?'Yükleme '+new Date(ctx.source.uploadedAt).toLocaleDateString('tr-TR'):'Dönem '+ctx.source.period)+'</span></div></footer>';
 }
 function merSummary(ctx){
-  return '<section class="mer-report mer-summary" id="month-end-report">'+merHeader(ctx)+merSignals(ctx)+'<div class="mer-main"><div class="mer-panel mer-performance-panel"><h2>'+merIcon('trend')+'ÜRÜN BAZLI AY KAPANIŞI</h2>'+merPerformanceTable(ctx)+merCommitments(ctx)+'</div><div class="mer-panel mer-trend-panel"><h2>'+merIcon('trend')+'ÜRÜN BAZLI TRENDLER<span class="mer-trend-key">● Gerçekleşen <i></i> Hedef</span></h2>'+merTrends(ctx)+'</div></div><div class="mer-bottom"><div class="mer-panel mer-actors-panel '+(ctx.details.length>5?'mer-dense':'')+'"><h2>'+merIcon('people')+merDetailTitle(ctx)+'<span>'+ctx.details.length+' '+(ctx.scope==='branch'?'personel':ctx.scope==='account'?'şube':'yönetici')+'</span></h2>'+merDetailsTable(ctx,ctx.details)+'<p class="mer-caption">HGO · gerçekleşen adet</p></div><div class="mer-panel mer-year-panel"><h2>'+merIcon('trend')+'YIL KARŞILAŞTIRMASI · YTD / YOY</h2>'+merYtdChart(ctx)+'</div><div class="mer-panel mer-ytd-performance"><h2>'+merIcon('target')+'YTD PERFORMANSI</h2>'+merYtdPerformance(ctx)+'</div></div>'+merFooter(ctx)+'</section>';
+  return '<section class="mer-report mer-summary" id="month-end-report">'+merHeader(ctx)+merSignals(ctx)+'<div class="mer-main"><div class="mer-panel mer-performance-panel"><h2>'+merIcon('trend')+'ÜRÜN BAZLI AY KAPANIŞI</h2>'+merPerformanceTable(ctx)+merCommitments(ctx)+'</div><div class="mer-panel mer-trend-panel"><h2>'+merIcon('trend')+'ÜRÜN BAZLI TRENDLER<span class="mer-trend-key">● Gerçekleşen <i></i> Hedef</span></h2>'+merTrends(ctx)+'</div></div><div class="mer-bottom"><div class="mer-panel mer-actors-panel '+(ctx.details.length>5?'mer-dense':'')+'"><h2>'+merIcon('people')+merDetailTitle(ctx)+'<span>'+ctx.details.length+' '+(ctx.scope==='branch'?'personel':ctx.scope==='account'?'şube':'yönetici')+'</span></h2>'+merDetailsTable(ctx,ctx.details)+'<p class="mer-caption">HGO · gerçekleşen adet</p></div><div class="mer-panel mer-year-panel"><h2>'+merIcon('trend')+'YIL KARŞILAŞTIRMASI · YTD / YOY / MOM</h2>'+merYtdChart(ctx)+'</div><div class="mer-panel mer-ytd-performance"><h2>'+merIcon('target')+'YTD PERFORMANSI</h2>'+merYtdPerformance(ctx)+'</div></div>'+merFooter(ctx)+'</section>';
 }
 function merSetScope(value){merScope=value;merSelection='';renderMonthEndReport();}
 function merSetPeriod(value){merPeriodSelection=value;merSelection='';renderMonthEndReport();}
