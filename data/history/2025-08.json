@@ -942,15 +942,15 @@
    },
    "prepaid": {
     "hedef": 85,
-    "adet": 122,
-    "hgo": 143.5,
-    "forecast": 144
+    "adet": 123,
+    "hgo": 144.7,
+    "forecast": 145
    },
    "mobil": {
     "hedef": 335,
-    "adet": 359,
-    "hgo": 107.2,
-    "forecast": 107
+    "adet": 360,
+    "hgo": 107.5,
+    "forecast": 108
    },
    "dsl": {
     "hedef": 44,
@@ -1597,5 +1597,7 @@
     "forecast": 82
    }
   }
- ]
+ ],
+ "verifiedClosingSource": true,
+ "verifiedClosingUpdatedAt": "2026-10-03"
 }
