@@ -242,9 +242,10 @@ var MER_CHANNEL_AVG_PRODUCTS = [
   {hist:'akilliCihaz',label:'Cihaz',key:'Akıllı Cihaz'},
   {hist:'digerCihaz',label:'Diğer Cihaz',key:'Diğer Cihaz'}
 ];
-function merChannelStaticPeriod(period){
+function merChannelStaticPeriod(period,scope){
   var payload=typeof HIST2_CHANNEL_SUMMARY!=='undefined'?HIST2_CHANNEL_SUMMARY:null;
-  return payload&&payload.periods&&payload.periods[period]?payload.periods[period]:null;
+  var periods=payload&&(scope==='gm'?payload.gmPeriods:payload.periods);
+  return periods&&periods[period]?periods[period]:null;
 }
 function merChannelDynamicPeriod(source){
   if(!source)return null;
@@ -263,54 +264,64 @@ function merChannelDynamicPeriod(source){
   });
   return {counts:{TTM:ttm.length,TTBN:ttbn.length,ESN:esn.length},values:values};
 }
-function merChannelPeriodData(ctx,period){
-  var fixed=merChannelStaticPeriod(period);
+function merChannelPeriodData(ctx,period,scope){
+  var fixed=merChannelStaticPeriod(period,scope);
   if(fixed)return fixed;
+  if(scope==='gm')return null;
   var src=period===ctx.source.period?ctx.source:merSourceAt(period);
   return merChannelDynamicPeriod(src);
 }
+function merPointAverageSeries(periods,current,p,channelNames){
+  var activationSums=[0,0,0],pointMonths=[0,0,0],coveredMonths=[0,0,0];
+  periods.forEach(function(entry){
+    var vals=entry.data.values&&entry.data.values[p.hist],counts=entry.data.counts||{};
+    if(!vals)return;
+    vals.forEach(function(v,ix){
+      var pointCount=Number(counts[channelNames[ix]])||0;
+      if(v!=null&&isFinite(v)&&pointCount>0){
+        activationSums[ix]+=Number(v);
+        pointMonths[ix]+=pointCount;
+        coveredMonths[ix]++;
+      }
+    });
+  });
+  var currentRaw=current&&current.values&&current.values[p.hist]?current.values[p.hist]:[null,null,null];
+  var currentCounts=current&&current.counts?current.counts:{};
+  return {
+    ytd:activationSums.map(function(v,ix){return pointMonths[ix]?v/pointMonths[ix]:null;}),
+    current:currentRaw.map(function(v,ix){
+      var pointCount=Number(currentCounts[channelNames[ix]])||0;
+      return v!=null&&isFinite(v)&&pointCount>0?Number(v)/pointCount:null;
+    }),
+    pointMonths:pointMonths,
+    currentPoints:channelNames.map(function(name){return Number(currentCounts[name])||0;}),
+    months:coveredMonths
+  };
+}
 function merRegionChannelAverages(ctx){
-  var period=ctx.source.period,year=period.slice(0,4),month=+period.slice(5),periods=[];
+  var period=ctx.source.period,year=period.slice(0,4),month=+period.slice(5),periods=[],gmPeriods=[];
   var channelNames=['TTM','TTBN','ESN'];
   for(var i=1;i<=month;i++){
-    var key=year+'-'+String(i).padStart(2,'0'),data=merChannelPeriodData(ctx,key);
+    var key=year+'-'+String(i).padStart(2,'0');
+    var data=merChannelPeriodData(ctx,key,'region'),gm=merChannelPeriodData(ctx,key,'gm');
     if(data)periods.push({period:key,data:data});
+    if(gm)gmPeriods.push({period:key,data:gm});
   }
-  var current=merChannelPeriodData(ctx,period),rows={};
+  var current=merChannelPeriodData(ctx,period,'region'),gmCurrent=merChannelPeriodData(ctx,period,'gm'),rows={};
   MER_CHANNEL_AVG_PRODUCTS.forEach(function(p){
-    var activationSums=[0,0,0],pointMonths=[0,0,0],coveredMonths=[0,0,0];
-    periods.forEach(function(entry){
-      var vals=entry.data.values&&entry.data.values[p.hist],counts=entry.data.counts||{};
-      if(!vals)return;
-      vals.forEach(function(v,ix){
-        var pointCount=Number(counts[channelNames[ix]])||0;
-        if(v!=null&&isFinite(v)&&pointCount>0){
-          activationSums[ix]+=Number(v);
-          pointMonths[ix]+=pointCount;
-          coveredMonths[ix]++;
-        }
-      });
-    });
-    var currentRaw=current&&current.values&&current.values[p.hist]?current.values[p.hist]:[null,null,null];
-    var currentCounts=current&&current.counts?current.counts:{};
-    rows[p.hist]={
-      ytd:activationSums.map(function(v,ix){return pointMonths[ix]?v/pointMonths[ix]:null;}),
-      current:currentRaw.map(function(v,ix){
-        var pointCount=Number(currentCounts[channelNames[ix]])||0;
-        return v!=null&&isFinite(v)&&pointCount>0?Number(v)/pointCount:null;
-      }),
-      pointMonths:pointMonths,
-      currentPoints:channelNames.map(function(name){return Number(currentCounts[name])||0;}),
-      months:coveredMonths
-    };
+    var region=merPointAverageSeries(periods,current,p,channelNames);
+    var gm=merPointAverageSeries(gmPeriods,gmCurrent,p,channelNames);
+    rows[p.hist]=Object.assign(region,{gmYtd:gm.ytd,gmCurrent:gm.current,gmPointMonths:gm.pointMonths,gmCurrentPoints:gm.currentPoints});
   });
-  return {period:period,monthCount:periods.length,rows:rows,current:current};
+  return {period:period,monthCount:periods.length,gmMonthCount:gmPeriods.length,rows:rows,current:current,gmCurrent:gmCurrent};
 }
 function merChannelAverageN(v){
   return v==null||!isFinite(v)?'—':Number(v).toLocaleString('tr-TR',{minimumFractionDigits:1,maximumFractionDigits:1});
 }
-function merChannelValue(v,cls){
-  return '<div class="mer-channel-value '+cls+'"><b>'+merChannelAverageN(v)+'</b></div>';
+function merChannelValue(v,gm,cls){
+  var diff=merChange(v,gm),tone=diff==null?'neutral':diff>=0?'good':'low';
+  var gmText=diff==null?'/GM —':'/GM '+merSigned(diff,'%');
+  return '<div class="mer-channel-value '+cls+'" title="'+merEsc('Anadolu GM '+merChannelAverageN(gm)+' adet/nokta')+'"><b>'+merChannelAverageN(v)+'</b><small class="'+tone+'">'+gmText+'</small></div>';
 }
 function merRegionChannelCard(ctx){
   var model=merRegionChannelAverages(ctx),monthName=merMonthShort(ctx.source.period)+' '+ctx.source.period.slice(0,4);
@@ -318,12 +329,12 @@ function merRegionChannelCard(ctx){
     var v=model.rows[p.hist],color=merProductDesign(p.hist)[2];
     return '<div class="mer-channel-row" style="--mer-product:'+color+'">'+
       '<div class="mer-channel-product"><i></i><b>'+merEsc(p.label)+'</b></div>'+
-      merChannelValue(v.ytd[0],'ttm')+
-      merChannelValue(v.ytd[1],'ttbn')+
-      merChannelValue(v.ytd[2],'esn')+
-      merChannelValue(v.current[0],'ttm')+
-      merChannelValue(v.current[1],'ttbn')+
-      merChannelValue(v.current[2],'esn')+
+      merChannelValue(v.ytd[0],v.gmYtd[0],'ttm')+
+      merChannelValue(v.ytd[1],v.gmYtd[1],'ttbn')+
+      merChannelValue(v.ytd[2],v.gmYtd[2],'esn')+
+      merChannelValue(v.current[0],v.gmCurrent[0],'ttm')+
+      merChannelValue(v.current[1],v.gmCurrent[1],'ttbn')+
+      merChannelValue(v.current[2],v.gmCurrent[2],'esn')+
     '</div>';
   }).join('');
   return '<div class="mer-panel mer-channel-panel"><h2>'+merIcon('trend')+'NOKTA BAŞI ORTALAMA AKTİVASYON<span>'+model.monthCount+' aylık YTD</span></h2>'+
@@ -332,7 +343,7 @@ function merRegionChannelCard(ctx){
       '<div class="mer-channel-subhead"><span></span><b class="ttm">TTM</b><b class="ttbn">TTBN</b><b class="esn">ESN</b><b class="ttm">TTM</b><b class="ttbn">TTBN</b><b class="esn">ESN</b></div>'+
       rows+
     '</div>'+
-    '<p class="mer-caption">adet / satış noktası · YTD = toplam aktivasyon / toplam satış noktası-ay</p></div>';
+    '<p class="mer-caption">adet / nokta · /GM = Anadolu Grup Müdürlüğü nokta ortalamasına göre fark</p></div>';
 }
 function merCompareCell(current,previous,label){
   var delta=current!=null&&previous!=null?current-previous:null,rate=merChange(current,previous);
