@@ -44,7 +44,7 @@ function merFromHistory(doc){
   if(!doc)return null;
   if(doc.monthEnd)return Object.assign({},doc.monthEnd,{period:doc.period,sample:false,closed:true,history:false});
   function convert(records){var dealers={};(records||[]).forEach(function(d){var prods={};MER_PRODUCTS.forEach(function(p){if(d[p.hist])prods[p.key]={h:d[p.hist].hedef,a:d[p.hist].adet};});dealers[String(d.bayiKodu)]={kod:String(d.bayiKodu),b:d.bayiAdi,fullName:d.bayiAdi,anaBayiKod:d.anaBayiKodu||d.anaBayiKod||'',bolge:d.bolge||'KUZEY ANADOLU',il:d.il,sy:d.sy,prods:prods};});return dealers;}
-  return {period:doc.period,ttm:{bayiler:convert(doc.dealers),cariBayiler:convert(doc.accountDealers),pers:{}},edm:null,matrix:null,benchmarks:doc.benchmarks,closed:true,sample:false,history:true};
+  return {period:doc.period,ttm:{bayiler:convert(doc.dealers),cariBayiler:convert(doc.accountDealers),pers:{}},edm:doc.edm||null,matrix:null,benchmarks:doc.benchmarks,closed:true,sample:false,history:true};
 }
 function merSource(period){
   if(period==='current')return merCurrent();
@@ -153,7 +153,7 @@ function merDetailRows(ctx){
   if(ctx.scope==='branch')return ((ctx.source.ttm.pers||{})[ctx.selection]||[]).map(function(p){return {name:p.p,sub:'Personel',prods:p.prods};}).sort(function(a,b){var aa=merAggregate([a],'Toplam Mobil').a,bb=merAggregate([b],'Toplam Mobil').a;return (bb||0)-(aa||0)||a.name.localeCompare(b.name,'tr');});
   if(ctx.scope==='account')return ctx.rows.map(function(d){return {name:merName(d),sub:d.kod+' · '+(d.il||''),prods:d.prods};});
   var grouped={};ctx.rows.forEach(function(d){var name=d.sy||'Yönetici bilgisi yok',id=typeof normalizeSyName==='function'?normalizeSyName(name):name.toLocaleUpperCase('tr-TR');if(!grouped[id])grouped[id]={name:name,sub:'TTM + EDM',members:[]};grouped[id].members.push(d);});
-  return Object.values(grouped).map(function(g){var prods={};MER_PRODUCTS.forEach(function(p){prods[p.key]=merAggregate(g.members,p.key);});return {name:g.name,sub:g.members.length+' bayi · '+Array.from(new Set(g.members.map(function(d){return d.channel;}))).join(' + '),prods:prods};}).sort(function(a,b){return (b.prods['Toplam Mobil'].a||0)-(a.prods['Toplam Mobil'].a||0);});
+  return Object.values(grouped).map(function(g){var prods={};MER_PRODUCTS.forEach(function(p){prods[p.key]=merAggregate(g.members,p.key);});var branchCount=g.members.reduce(function(n,d){return n+(Number(d.memberCount)||1);},0);return {name:g.name,sub:branchCount+' bayi · '+Array.from(new Set(g.members.map(function(d){return d.channel;}))).join(' + '),prods:prods};}).sort(function(a,b){return (b.prods['Toplam Mobil'].a||0)-(a.prods['Toplam Mobil'].a||0);});
 }
 function merModel(){
   var source=merSource(merPeriodSelection)||merCurrent(),options;
@@ -172,6 +172,7 @@ function merModel(){
   if(ctx.scope==='account' && ctx.group && ctx.group.code==='7000514' && source.period>='2025-07' && ctx.rows.length<4 && !source.ttm.cariBayiler)ctx.notes.push('Öztürk’ün tüm şubeleri için güncel TTM Excel’ini yeniden yükleyin.');
   if(ctx.group && !ctx.group.verified)ctx.notes.push('Cari grubu şirket adıyla eşleştirildi. Ana cari kodunu eşleştirmelerden doğrulayın.');
   if(source.history)ctx.notes.push('Bu arşivde personel kırılımı bulunmuyor.');
+  if(source.edm && source.edm.summarized)ctx.notes.push('EDM geçmişi kapanış dosyasından satış yöneticisi bazında özetlenmiştir.');
   if(merStorageNote)ctx.notes.push(merStorageNote);
   return ctx;
 }
