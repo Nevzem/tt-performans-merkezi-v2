@@ -28,7 +28,8 @@ if (!src) { console.error('Kullanım: node tools/excel-to-history.js <xlsx-yolu>
 const wb = XLSX.read(fs.readFileSync(src), { type: 'buffer' });
 /* Kapanış paketlerinde özet sayfaları ilk sırada gelebiliyor. Geçmiş veri
    için bayi/ürün bloklarını içeren TTM BUAY sayfasını önceliklendir. */
-const sheetName = wb.SheetNames.includes('TTM BUAY') ? 'TTM BUAY' :\n  (wb.SheetNames.includes('Kokpitt Data TTM') ? 'Kokpitt Data TTM' : wb.SheetNames[0]);
+const sheetName = wb.SheetNames.includes('TTM BUAY') ? 'TTM BUAY' :
+  (wb.SheetNames.includes('Kokpitt Data TTM') ? 'Kokpitt Data TTM' : wb.SheetNames[0]);
 const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, defval: null });
 console.log('Kaynak sayfa:', sheetName);
 if (rows.length < 4) { console.error('Beklenen yapı bulunamadı (satır < 4)'); process.exit(1); }
