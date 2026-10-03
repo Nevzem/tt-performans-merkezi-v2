@@ -210,7 +210,7 @@ function merSignals(ctx){
 }
 function merPerformanceTable(ctx){
   var region=ctx.scope==='region';
-  var head='<th>Ürün</th><th>Hedef</th><th>Gerçekleşen</th><th>HGO</th><th>Fark</th><th>Aylık Δ</th><th>Yıllık Δ</th>'+(region?'<th>GM Δ</th><th>TR Δ</th>':'<th>Bölge Δ</th>');
+  var head='<th>Ürün</th><th>Hedef</th><th>Gerçekleşen</th><th>HGO</th><th>Fark</th>'+(region?'<th>GM Δ</th><th>TR Δ</th>':'<th>Bölge Δ</th>');
   return '<table class="mer-data-table mer-closing-table '+(region?'mer-region-closing':'')+'"><thead><tr>'+head+'</tr></thead><tbody>'+ctx.products.map(function(p){
     var v=p.s,tail;
     if(region){
@@ -221,7 +221,7 @@ function merPerformanceTable(ctx){
       var r=merBenchmark(ctx,p,'region'),diff=v.g==null||r==null?null:v.g-r;
       tail='<td class="'+merDeltaTone(diff)+'">'+merSigned(diff,' puan')+'</td>';
     }
-    return '<tr class="'+(p.hist==='mobil'?'mer-mobile-row':'')+'"><th><span class="mer-product-name" style="color:'+merProductDesign(p.hist)[2]+'">'+merIcon(merProductDesign(p.hist)[3])+'</span>'+p.label+'</th><td>'+merN(v.h)+'</td><td class="mer-actual">'+merN(v.a)+'</td><td><b class="mer-pill '+merTone(v.g)+'">'+merP(v.g)+'</b></td><td class="'+merDeltaTone(v.gap)+'">'+merGap(v.gap)+'</td><td class="'+merDeltaTone(v.mom)+'">'+merSigned(v.mom,'%')+'</td><td class="'+merDeltaTone(v.yoy)+'">'+merSigned(v.yoy,'%')+'</td>'+tail+'</tr>';
+    return '<tr class="'+(p.hist==='mobil'?'mer-mobile-row':'')+'"><th><span class="mer-product-name" style="color:'+merProductDesign(p.hist)[2]+'">'+merIcon(merProductDesign(p.hist)[3])+'</span>'+p.label+'</th><td>'+merN(v.h)+'</td><td class="mer-actual">'+merN(v.a)+'</td><td><b class="mer-pill '+merTone(v.g)+'">'+merP(v.g)+'</b></td><td class="'+merDeltaTone(v.gap)+'">'+merGap(v.gap)+'</td>'+tail+'</tr>';
   }).join('')+'</tbody></table>';
 }
 function merCommitmentTotal(rows,key){
