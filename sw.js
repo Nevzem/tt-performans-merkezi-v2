@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-history-20261003l';
+const CACHE = 'ttpm-history-20261003m';
 
 const ASSETS = [
   '.',
@@ -41,6 +41,7 @@ const ASSETS = [
   'data/history/corrections/g10.json',
   'data/history/corrections/g11.json',
   'data/history/channel-activation-summary.json',
+  'data/history/region-benchmarks.json',
   'js/development.js',
   'js/manager-league.js',
   'js/september-campaign.js',
