@@ -38,6 +38,7 @@ ctx.hist={};for(const year of [2025,2026])for(const month of [1,2,3]){if(year===
 ctx.HIST2_DATA=ctx.hist;run("MER_LIVE=null;MER_ARCHIVES={};C=merContext(source,'account','code:900');P=MER_PRODUCTS.find(p=>p.key==='DSL');S=merStats(C,P)");
 assert.equal(run('S.months'),3);assert.equal(run('S.pairMonths'),2,'Only same months in both years participate');
 assert.equal(run('S.pairB'),400);assert.equal(run('S.pairA'),850);assert.equal(run('S.ytdYoY'),112.5);
+assert.equal(run('S.prevYearA'),200,'YoY keeps the same-month prior-year actual for the split comparison card');
 assert.equal(run("merHistoricalValue(C,'2026-02',P).a"),300,'Embedded sample must not override historical closure');
 ctx.HIST2_DATA['2026-02'].dealers.pop();assert.equal(run("merHistoricalValue(C,'2026-02',P).a"),60,'Cari month uses branches actually reported that month');
 assert.equal(run("merHistoricalValue(C,'2026-02',P).rowCount"),1,'Cari reports month-specific coverage');
@@ -73,21 +74,23 @@ ctx.parsed=run('parseWB(ttmWB)');ctx.parsed.syData={calismaGun:30,calisilanGun:1
 ctx.parsed.syData.calisilanGun=30;run('merCaptureUpload(parsed,null)');assert.equal(run('MER_LIVE.closed'),true);assert.ok(storage.tt_month_end_archives_v1);
 ctx.fakeCanvas={width:4096,height:3072,toDataURL:()=> 'data:image/jpeg;base64,/9j/2Q=='};
 const bytes=run('merCanvasToPdfBytes([fakeCanvas,fakeCanvas])');const pdf=Buffer.from(bytes).toString('latin1');assert.ok(pdf.includes('/Count 2'));assert.ok(pdf.includes('xref\n0 9'));for(const offset of pdf.matchAll(/(\d{10}) 00000 n/g))assert.ok(/^\d+ 0 obj/.test(pdf.slice(+offset[1])),'PDF xref points to object');
-// Independent product scales keep lower-volume products readable.
-ctx.ytdFixture={products:['mobil','dsl','iptv','uydu','akilliCihaz','digerCihaz'].map((hist,i)=>({hist,key:['Toplam Mobil','DSL','IPTV','Uydu','Akıllı Cihaz','Diğer Cihaz'][i],label:hist,s:{pairB:[6636,569,208,111,733,720][i],pairA:[5014,485,256,68,779,930][i]}})),source:{period:'2026-09'}};
-const minis=run('ytdFixture.products.map(merYtdMini)');
-for(const mini of minis){const heights=[...mini.matchAll(/height="([\d.]+)" rx/g)].map(m=>+m[1]);assert.equal(Math.max(...heights),46,'Each product has its own maximum');assert.ok(Math.min(...heights)>20,'Both years remain visible despite different product volumes');}
-assert.equal((run('merYtdChart(ytdFixture)').match(/class="mer-ytd-mini"/g)||[]).length,6);
-ctx.ytdGrowth={hist:'dsl',label:'DSL',s:{pairA:125,pairB:100,ytdA:125}};
-const growthMini=run('merYtdMini(ytdGrowth)');
-assert.ok(growthMini.includes('+25.0%')||growthMini.includes('+25,0%'),'YTD mini shows yearly growth rate');
-assert.ok(growthMini.includes('+25 adet'),'YTD mini shows signed unit difference');
-ctx.ytdLoss={hist:'dsl',label:'DSL',s:{pairA:80,pairB:100,ytdA:80}};
-const lossMini=run('merYtdMini(ytdLoss)');
-assert.ok(lossMini.includes('-20.0%')||lossMini.includes('-20,0%'));
-assert.ok(lossMini.includes('-20 adet'));
-ctx.emptyProduct={hist:'dsl',label:'DSL',s:{pairA:0,pairB:null,ytdA:999}};
-const emptyMini=run('merYtdMini(emptyProduct)');assert.ok(emptyMini.includes('height="0"'),'Zero matched sales must remain zero');assert.ok(emptyMini.includes('—'),'Missing previous year must remain missing');assert.ok(!emptyMini.includes('999'),'Matched zero must not fall back to full-year total');
+// Split year card: YTD accumulated comparison + selected-month YoY comparison.
+ctx.ytdFixture={products:['mobil','dsl','iptv','uydu','akilliCihaz','digerCihaz'].map((hist,i)=>({hist,key:['Toplam Mobil','DSL','IPTV','Uydu','Akıllı Cihaz','Diğer Cihaz'][i],label:hist,s:{pairB:[6636,569,208,111,733,720][i],pairA:[7010,610,256,90,779,930][i],ytdA:[7010,610,256,90,779,930][i],a:[900,80,40,12,95,110][i],prevYearA:[800,100,32,15,90,100][i],pairMonths:8}})),source:{period:'2026-09'}};
+const yearCard=run('merYtdChart(ytdFixture)');
+assert.equal((yearCard.match(/class="mer-year-block/g)||[]).length,2,'Year card is split into YTD and YoY');
+assert.equal((yearCard.match(/class="mer-year-row"/g)||[]).length,12,'Six products are shown in both YTD and YoY');
+assert.ok(yearCard.includes('>YTD<'));
+assert.ok(yearCard.includes('>YoY<'));
+ctx.ytdGrowth={hist:'dsl',label:'DSL',s:{}};
+const growthRow=run("merYearCompareRow(ytdGrowth,125,100)");
+assert.ok(growthRow.includes('+25.0%')||growthRow.includes('+25,0%'),'Comparison row shows growth rate');
+assert.ok(growthRow.includes('+25 adet'),'Comparison row shows signed unit difference');
+const lossRow=run("merYearCompareRow(ytdGrowth,80,100)");
+assert.ok(lossRow.includes('-20.0%')||lossRow.includes('-20,0%'));
+assert.ok(lossRow.includes('-20 adet'));
+const missingRow=run("merYearCompareRow(ytdGrowth,80,null)");
+assert.ok(missingRow.includes('—'),'Missing prior-year value stays unknown');
+
 // A full ring caps its fill at 100%, while retaining the real HGO label.
 assert.ok(run("merHgoRing(112,'#00b6a6','test')").includes('stroke-dashoffset="0"'));
 assert.ok(run("merHgoRing(112,'#00b6a6','test')").includes('>%112</text>'));
