@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-10-03 · GM + TR · Nokta Ortalama Kıyas';
+const APP_BUILD = '2026-10-03 · Alt Kartlar · Hizalı ve Okunaklı';
