@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-10-03 · Yıl Birikimi · Oran + Adet Farkı';
+const APP_BUILD = '2026-10-03 · Yıl Karşılaştırması · YTD + YoY';
