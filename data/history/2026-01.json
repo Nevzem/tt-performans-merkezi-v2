@@ -1382,15 +1382,15 @@
    },
    "digerCihaz": {
     "hedef": 35,
-    "adet": 12,
-    "hgo": 34.3,
-    "forecast": 34
+    "adet": 11,
+    "hgo": 31.4,
+    "forecast": 31
    },
    "cihaz": {
     "hedef": 71,
-    "adet": 56,
-    "hgo": 78.9,
-    "forecast": 79
+    "adet": 55,
+    "hgo": 77.5,
+    "forecast": 78
    }
   },
   {
@@ -1448,15 +1448,15 @@
    },
    "digerCihaz": {
     "hedef": 85,
-    "adet": 45,
-    "hgo": 52.9,
-    "forecast": 53
+    "adet": 44,
+    "hgo": 51.8,
+    "forecast": 52
    },
    "cihaz": {
     "hedef": 171,
-    "adet": 124,
-    "hgo": 72.5,
-    "forecast": 73
+    "adet": 123,
+    "hgo": 71.9,
+    "forecast": 72
    }
   }
  ],
@@ -1597,5 +1597,7 @@
     "forecast": 122
    }
   }
- ]
+ ],
+ "verifiedClosingSource": true,
+ "verifiedClosingUpdatedAt": "2026-10-03"
 }
