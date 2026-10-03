@@ -291,29 +291,30 @@ function merRegionChannelAverages(ctx){
   });
   return {period:period,monthCount:periods.length,rows:rows,current:current};
 }
-function merChannelBars(values,max){
-  var classes=['ttm','ttbn','esn'];
-  return '<div class="mer-channel-bars">'+values.map(function(v,ix){
-    var width=v==null?0:Math.max(v>0?3:0,Math.min(100,Number(v)/max*100));
-    return '<div class="mer-channel-line '+classes[ix]+'"><i style="width:'+width+'%"></i><b>'+merN(v)+'</b></div>';
-  }).join('')+'</div>';
+function merChannelValue(v,cls){
+  return '<div class="mer-channel-value '+cls+'"><b>'+merN(v)+'</b></div>';
 }
 function merRegionChannelCard(ctx){
   var model=merRegionChannelAverages(ctx),monthName=merMonthShort(ctx.source.period)+' '+ctx.source.period.slice(0,4);
   var rows=MER_CHANNEL_AVG_PRODUCTS.map(function(p){
-    var v=model.rows[p.hist],all=(v.ytd||[]).concat(v.current||[]).filter(function(x){return x!=null&&isFinite(x);});
-    var max=Math.max.apply(null,[1].concat(all));
-    var color=merProductDesign(p.hist)[2];
+    var v=model.rows[p.hist],color=merProductDesign(p.hist)[2];
     return '<div class="mer-channel-row" style="--mer-product:'+color+'">'+
       '<div class="mer-channel-product"><i></i><b>'+merEsc(p.label)+'</b></div>'+
-      '<div class="mer-channel-cell">'+merChannelBars(v.ytd,max)+'</div>'+
-      '<div class="mer-channel-cell">'+merChannelBars(v.current,max)+'</div>'+
+      merChannelValue(v.ytd[0],'ttm')+
+      merChannelValue(v.ytd[1],'ttbn')+
+      merChannelValue(v.ytd[2],'esn')+
+      merChannelValue(v.current[0],'ttm')+
+      merChannelValue(v.current[1],'ttbn')+
+      merChannelValue(v.current[2],'esn')+
     '</div>';
   }).join('');
-  return '<div class="mer-panel mer-channel-panel"><h2>'+merIcon('trend')+'KANAL BAZLI AKTİVASYON ORTALAMASI<span>'+model.monthCount+' aylık YTD</span></h2>'+
-    '<div class="mer-channel-legend"><span><i class="ttm"></i>TTM</span><span><i class="ttbn"></i>TTBN</span><span><i class="esn"></i>ESN</span></div>'+
-    '<div class="mer-channel-matrix"><div class="mer-channel-head"><span>Ürün</span><b>YTD AYLIK ORT.<small>Ocak–'+merEsc(merMonthShort(ctx.source.period))+'</small></b><b>SEÇİLİ AY<small>'+merEsc(monthName)+'</small></b></div>'+rows+'</div>'+
-    '<p class="mer-caption">Aktivasyon adedi · YTD aylık ortalama = dönem toplamı / '+model.monthCount+' ay · Her ürün kendi ölçeğinde</p></div>';
+  return '<div class="mer-panel mer-channel-panel"><h2>'+merIcon('trend')+'KANAL BAZLI AYLIK ORTALAMA<span>'+model.monthCount+' aylık YTD</span></h2>'+
+    '<div class="mer-channel-matrix">'+
+      '<div class="mer-channel-group-head"><span>Ürün</span><b>YTD AYLIK ORTALAMA<small>Ocak–'+merEsc(merMonthShort(ctx.source.period))+'</small></b><b>SEÇİLİ AY<small>'+merEsc(monthName)+'</small></b></div>'+
+      '<div class="mer-channel-subhead"><span></span><b class="ttm">TTM</b><b class="ttbn">TTBN</b><b class="esn">ESN</b><b class="ttm">TTM</b><b class="ttbn">TTBN</b><b class="esn">ESN</b></div>'+
+      rows+
+    '</div>'+
+    '<p class="mer-caption">Aktivasyon adedi · YTD aylık ortalama = dönem toplamı / '+model.monthCount+' ay</p></div>';
 }
 function merCompareCell(current,previous,label){
   var delta=current!=null&&previous!=null?current-previous:null,rate=merChange(current,previous);
