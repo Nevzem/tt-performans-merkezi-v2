@@ -270,7 +270,7 @@ var MER_CHANNEL_AVG_PRODUCTS = [
   {hist:'mobil',label:'Mobil',key:'Toplam Mobil'},
   {hist:'dsl',label:'DSL',key:'DSL'},
   {hist:'iptv',label:'IPTV',key:'IPTV'},
-  {hist:'uydu',label:'Uydu TV',key:'Uydu'},
+  {hist:'uydu',label:'Uydu',key:'Uydu'},
   {hist:'akilliCihaz',label:'Cihaz',key:'Akıllı Cihaz'},
   {hist:'digerCihaz',label:'Diğer Cihaz',key:'Diğer Cihaz'}
 ];
