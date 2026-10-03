@@ -18,6 +18,8 @@ var HIST2_EDM_SUMMARY = null;
 var HIST2_EDM_SUMMARY_PROMISE = null;
 var HIST2_CHANNEL_SUMMARY = null;
 var HIST2_CHANNEL_SUMMARY_PROMISE = null;
+var HIST2_REGION_BENCHMARKS = null;
+var HIST2_REGION_BENCHMARKS_PROMISE = null;
 var HIST2_ALL_PROMISE = null;
 var HIST2_CORRECTION_FILES = [
   './data/history/corrections/g01.json',
@@ -171,6 +173,23 @@ async function loadHistoryChannelSummary() {
   return HIST2_CHANNEL_SUMMARY_PROMISE;
 }
 
+async function loadHistoryRegionBenchmarks() {
+  if (HIST2_REGION_BENCHMARKS) return HIST2_REGION_BENCHMARKS;
+  if (HIST2_REGION_BENCHMARKS_PROMISE) return HIST2_REGION_BENCHMARKS_PROMISE;
+  HIST2_REGION_BENCHMARKS_PROMISE = (async function() {
+    try {
+      var resp = await fetch('./data/history/region-benchmarks.json?_=' + Date.now());
+      if (!resp.ok) throw new Error('region benchmarks HTTP ' + resp.status);
+      var payload = await resp.json();
+      HIST2_REGION_BENCHMARKS = payload && payload.periods ? payload : { periods: {} };
+    } catch (e) {
+      HIST2_REGION_BENCHMARKS = { periods: {} };
+    }
+    return HIST2_REGION_BENCHMARKS;
+  })();
+  return HIST2_REGION_BENCHMARKS_PROMISE;
+}
+
 var HIST2_PRODS = [
   { key: 'mobil', label: 'Mobil' },
   { key: 'dsl',   label: 'DSL'   },
@@ -197,7 +216,7 @@ async function loadHistoryManifest() {
 
 async function loadHistoryPeriod(period) {
   if (period in HIST2_DATA) return HIST2_DATA[period];
-  var support = await Promise.all([loadHistoryCorrections(), loadHistoryEdmSummary(), loadHistoryChannelSummary()]);
+  var support = await Promise.all([loadHistoryCorrections(), loadHistoryEdmSummary(), loadHistoryChannelSummary(), loadHistoryRegionBenchmarks()]);
   var corrections = support[0], edmSummary = support[1];
   try {
     var resp = await fetch('./data/history/' + period + '.json?_=' + Date.now());
@@ -240,7 +259,7 @@ async function loadAllHistory() {
   HIST2_LOADING = true;
   HIST2_ALL_PROMISE = (async function() {
     var mf = await loadHistoryManifest();
-    await loadHistoryChannelSummary();
+    await Promise.all([loadHistoryChannelSummary(), loadHistoryRegionBenchmarks()]);
     await Promise.all(mf.periods.map(function(p) { return loadHistoryPeriod(p); }));
     HIST2_LOADED = true;
   })();
