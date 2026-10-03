@@ -188,6 +188,8 @@ run("RC.products=MER_PRODUCTS.map(function(p){return Object.assign({},p,{s:merSt
 const regionPerformance=run('merPerformanceTable(RC)');
 assert.ok(regionPerformance.includes('GM Δ'),'Region closing table has GM comparison');
 assert.ok(regionPerformance.includes('TR Δ'),'Region closing table has Türkiye comparison');
+assert.ok(!regionPerformance.includes('Aylık Δ'),'Closing table no longer duplicates monthly comparison');
+assert.ok(!regionPerformance.includes('Yıllık Δ'),'Closing table no longer duplicates yearly comparison');
 assert.ok(!regionPerformance.includes('Bölge Δ'),'Region closing table no longer compares the region with itself');
 
 assert.equal(run("merCommitmentTotal(RC.rows,'dsl')"),333,'Regional DSL commitments equal 112 TTM + 221 EDM');
