@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-10-03 · Geçmiş Kapanışlar · Kaynak Revizyonu';
+const APP_BUILD = '2026-10-03 · Geçmiş Kapanışlar · TTM + EDM Tam YTD';
