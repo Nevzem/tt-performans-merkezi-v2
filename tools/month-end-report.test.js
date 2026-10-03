@@ -170,6 +170,9 @@ assert.ok(regionSummary.includes('adet / nokta'),'Regional matrix explains the p
 const gmCell=run("merChannelValue(350.3,302.5,'ttm')");
 assert.ok(gmCell.includes('350,3')&&gmCell.includes('302,5'),'Point-average cell shows Kuzey Anadolu / Anadolu GM averages together');
 assert.ok(gmCell.includes('(+15,8%)'),'GM difference rate is shown below in parentheses');
+assert.ok(run("merChannelValue(0,10,'ttm')").includes('>-</small>'),'Zero Kuzey Anadolu value shows dash instead of ratio');
+assert.ok(run("merChannelValue(10,0,'ttm')").includes('>-</small>'),'Zero GM value shows dash instead of ratio');
+assert.ok(run("merChannelValue(0,0,'ttm')").includes('>-</small>'),'Both zero values show dash instead of ratio');
 assert.ok(!regionSummary.includes('SATIŞ YÖNETİCİLERİ'),'Region no longer renders the sales-manager table');
 assert.equal((regionSummary.match(/class="mer-channel-row"/g)||[]).length,6,'Simplified matrix has six product rows');
 assert.equal((regionSummary.match(/class="mer-channel-value /g)||[]).length,36,'Each product has YTD and selected-month TTM TTBN ESN values');
