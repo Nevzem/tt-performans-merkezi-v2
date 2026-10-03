@@ -135,12 +135,21 @@ function merStats(ctx,p){
   var pairA=pairs.length?pairs.reduce(function(a,v){return a+v.a;},0):null,pairB=pairs.length?pairs.reduce(function(a,v){return a+v.b;},0):null;
   return Object.assign({},current,{gap:current.a==null || current.h==null || current.h<=0?null:current.a-current.h,mom:merChange(current.a,prev&&prev.a),prevA:prev&&prev.a!=null?prev.a:null,prevH:prev&&prev.h!=null?prev.h:null,yoy:merChange(current.a,prevYear&&prevYear.a),prevYearA:prevYear&&prevYear.a!=null?prevYear.a:null,prevYearH:prevYear&&prevYear.h!=null?prevYear.h:null,series:series,ytdA:ytdA,ytdH:ytdH,ytdG:merRate(ytdA,ytdH),ytdGap:ytdA==null||ytdH==null||ytdH<=0?null:ytdA-ytdH,ytdYoY:merChange(pairA,pairB),pairA:pairA,pairB:pairB,months:series.length,pairMonths:pairs.length,expectedMonths:month||0});
 }
+function merRegionBenchmark(ctx,p,kind){
+  if(ctx.scope!=='region')return null;
+  var matrix=ctx.source.matrix||{}, live=matrix.regionBenchmarks&&matrix.regionBenchmarks[kind];
+  if(live && typeof live[p.hist]==='number')return live[p.hist];
+  var archive=typeof HIST2_REGION_BENCHMARKS!=='undefined'&&HIST2_REGION_BENCHMARKS&&HIST2_REGION_BENCHMARKS.periods&&HIST2_REGION_BENCHMARKS.periods[ctx.source.period];
+  if(archive && archive[kind] && typeof archive[kind][p.hist]==='number')return archive[kind][p.hist];
+  var fallback=kind==='gm'?matrix.anadolu:matrix.turkiye;
+  return fallback && typeof fallback[p.hist]==='number'?fallback[p.hist]:null;
+}
 function merBenchmark(ctx,p,kind){
-  if(ctx.scope==='region')return null; // TTM benchmarks do not describe EDM.
+  if(ctx.scope==='region')return kind==='gm'||kind==='tr'?merRegionBenchmark(ctx,p,kind):null;
   if(kind==='region')return merAggregate(merRows(ctx.source,'TTM'),p.key).g;
   var matrix=ctx.source.matrix;
   if(matrix && matrix.turkiye && typeof matrix.turkiye[p.hist]==='number')return matrix.turkiye[p.hist];
-  var tr=ctx.source.benchmarks && ctx.source.benchmarks.turkiye;
+  var tr=ctx.source.benchmarks && (ctx.source.benchmarks.turkiye||ctx.source.benchmarks.tr);
   return tr && tr[p.hist] && typeof tr[p.hist].hgo==='number'?tr[p.hist].hgo:null;
 }
 function merRank(ctx,p){
@@ -200,32 +209,55 @@ function merSignals(ctx){
   return '<div class="mer-signals">'+ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;});}).map(function(p){var d=merProductDesign(p.hist),v=p.s,known=v.gap!=null,label=!known?'VERİ YOK':v.gap>0?'HEDEF ÜSTÜ':v.gap===0?'HEDEF TAMAM':'KALAN',tone=!known?'neutral':v.gap>=0?'good':'low';return '<article class="mer-signal" style="--mer-product:'+d[2]+'"><div class="mer-signal-title">'+merIcon(d[3])+'<div><h3>'+d[0].toLocaleUpperCase('tr-TR')+'</h3><p>'+d[1]+'</p></div></div><div class="mer-signal-body">'+merHgoRing(v.g,d[2],p.hist)+'<dl><dt>HEDEF</dt><dd>'+merN(v.h)+'</dd><dt>GERÇEKLEŞEN</dt><dd>'+merN(v.a)+'</dd></dl></div><div class="mer-signal-gap '+tone+'"><span>'+merIcon(known&&v.gap>=0?'trend':'box')+label+'</span><strong>'+(known?(v.gap>0?'+':'')+merN(Math.abs(v.gap))+' <small>adet</small>':'—')+'</strong></div></article>';}).join('')+'</div>';
 }
 function merPerformanceTable(ctx){
-  return '<table class="mer-data-table mer-closing-table"><thead><tr><th>Ürün</th><th>Hedef</th><th>Gerçekleşen</th><th>HGO</th><th>Fark</th><th>Aylık Δ</th><th>Yıllık Δ</th><th>Bölge Δ</th></tr></thead><tbody>'+ctx.products.map(function(p){var v=p.s,r=merBenchmark(ctx,p,'region'),diff=v.g==null||r==null?null:v.g-r;return '<tr class="'+(p.hist==='mobil'?'mer-mobile-row':'')+'"><th><span class="mer-product-name" style="color:'+merProductDesign(p.hist)[2]+'">'+merIcon(merProductDesign(p.hist)[3])+'</span>'+p.label+'</th><td>'+merN(v.h)+'</td><td class="mer-actual">'+merN(v.a)+'</td><td><b class="mer-pill '+merTone(v.g)+'">'+merP(v.g)+'</b></td><td class="'+merDeltaTone(v.gap)+'">'+merGap(v.gap)+'</td><td class="'+merDeltaTone(v.mom)+'">'+merSigned(v.mom,'%')+'</td><td class="'+merDeltaTone(v.yoy)+'">'+merSigned(v.yoy,'%')+'</td><td class="'+merDeltaTone(diff)+'">'+merSigned(diff,' puan')+'</td></tr>';}).join('')+'</tbody></table>';
+  var region=ctx.scope==='region';
+  var head='<th>Ürün</th><th>Hedef</th><th>Gerçekleşen</th><th>HGO</th><th>Fark</th><th>Aylık Δ</th><th>Yıllık Δ</th>'+(region?'<th>GM Δ</th><th>TR Δ</th>':'<th>Bölge Δ</th>');
+  return '<table class="mer-data-table mer-closing-table '+(region?'mer-region-closing':'')+'"><thead><tr>'+head+'</tr></thead><tbody>'+ctx.products.map(function(p){
+    var v=p.s,tail;
+    if(region){
+      var gm=merRegionBenchmark(ctx,p,'gm'),tr=merRegionBenchmark(ctx,p,'tr');
+      var gmDiff=v.g==null||gm==null?null:v.g-gm,trDiff=v.g==null||tr==null?null:v.g-tr;
+      tail='<td class="'+merDeltaTone(gmDiff)+'" title="GM HGO '+merP(gm)+'">'+merSigned(gmDiff,' puan')+'</td><td class="'+merDeltaTone(trDiff)+'" title="TR HGO '+merP(tr)+'">'+merSigned(trDiff,' puan')+'</td>';
+    }else{
+      var r=merBenchmark(ctx,p,'region'),diff=v.g==null||r==null?null:v.g-r;
+      tail='<td class="'+merDeltaTone(diff)+'">'+merSigned(diff,' puan')+'</td>';
+    }
+    return '<tr class="'+(p.hist==='mobil'?'mer-mobile-row':'')+'"><th><span class="mer-product-name" style="color:'+merProductDesign(p.hist)[2]+'">'+merIcon(merProductDesign(p.hist)[3])+'</span>'+p.label+'</th><td>'+merN(v.h)+'</td><td class="mer-actual">'+merN(v.a)+'</td><td><b class="mer-pill '+merTone(v.g)+'">'+merP(v.g)+'</b></td><td class="'+merDeltaTone(v.gap)+'">'+merGap(v.gap)+'</td><td class="'+merDeltaTone(v.mom)+'">'+merSigned(v.mom,'%')+'</td><td class="'+merDeltaTone(v.yoy)+'">'+merSigned(v.yoy,'%')+'</td>'+tail+'</tr>';
+  }).join('')+'</tbody></table>';
 }
 function merCommitmentTotal(rows,key){
   if(!rows.length)return null;
   var total=0;for(var i=0;i<rows.length;i++){var value=rows[i].commitments&&rows[i].commitments[key];if(value==null||!isFinite(value))return null;total+=Number(value);}return total;
 }
 function merCommitments(ctx){
-  var list=[{label:'DSL TAAHHÜT',key:'dsl',rows:ctx.rows,color:'#00a99b'},{label:ctx.scope==='region'?'MOBİL TAAHHÜT · TTM':'MOBİL TAAHHÜT',key:'mobil',rows:ctx.rows.filter(function(r){return r.channel!=='EDM';}),color:'#087cfa'}];
+  var ttmRows=ctx.rows.filter(function(r){return r.channel!=='EDM';});
+  var list=[
+    {label:'DSL TAAHHÜT',key:'dsl',rows:ctx.rows,color:'#00a99b'},
+    {label:ctx.scope==='region'?'MOBİL TAAHHÜT · TTM':'MOBİL TAAHHÜT',key:'mobil',rows:ttmRows,color:'#087cfa'}
+  ];
   if(ctx.scope==='region')list.push({label:'MOBİL TAAHHÜT UPSELL · EDM',key:'mobilUpsell',rows:ctx.rows.filter(function(r){return r.channel==='EDM';}),color:'#9332f5'});
-  return '<div class="mer-commitments">'+list.map(function(p){return '<article style="--mer-product:'+p.color+'"><span>'+p.label+'</span><strong>'+merN(merCommitmentTotal(p.rows,p.key))+' <small>adet</small></strong></article>';}).join('')+'</div>';
+  var dsl=merAggregate(ttmRows,'DSL').a,iptv=merAggregate(ttmRows,'IPTV').a,ratio=dsl!=null&&dsl>0&&iptv!=null?iptv/dsl*100:null;
+  list.push({label:'IPTV / DSL ORANI · TTM',value:ratio,color:'#ef007e',percent:true});
+  return '<div class="mer-commitments">'+list.map(function(p){
+    var value=p.percent?merP(p.value):merN(merCommitmentTotal(p.rows,p.key))+' <small>adet</small>';
+    return '<article style="--mer-product:'+p.color+'"><span>'+p.label+'</span><strong>'+value+'</strong></article>';
+  }).join('')+'</div>';
 }
 function merYtdTable(ctx,full){
   var list=full?ctx.products:ctx.products.filter(function(p){return ['mobil','dsl','iptv','akilliCihaz'].includes(p.hist);});
   return '<table class="mer-data-table mer-ytd-table"><thead><tr><th>Ürün</th><th>Gerçek. / Hedef</th><th>HGO</th>'+(full?'<th>Hedef farkı</th><th>Eşleşen ay kıyası</th>':'')+'<th>Yıllık Δ</th></tr></thead><tbody>'+list.map(function(p){var s=p.s;return '<tr><th>'+p.label+'</th><td>'+merN(s.ytdA)+' / '+merN(s.ytdH)+'<small>'+s.months+'/'+s.expectedMonths+' ay</small></td><td><b class="'+merTone(s.ytdG)+'">'+merP(s.ytdG)+'</b></td>'+(full?'<td class="'+merDeltaTone(s.ytdGap)+'">'+merGap(s.ytdGap)+'</td><td>'+merN(s.pairB)+' → '+merN(s.pairA)+'<small>'+s.pairMonths+' eşleşen ay</small></td>':'')+'<td class="'+merDeltaTone(s.ytdYoY)+'">'+merSigned(s.ytdYoY,'%')+'<small>'+s.pairMonths+' eşleşen ay</small></td></tr>';}).join('')+'</tbody></table>';
 }
 function merSpark(s,color,period,account){
-  var vals=[];for(var i=5;i>=0;i--){var dt=merShift(period,-i);var found=s.series.find(function(v){return v.period===dt;});vals.push(found||{period:dt,a:null,h:null});}
+  var vals=[],month=+period.slice(5),year=period.slice(0,4);
+  for(var m=1;m<=month;m++){var dt=year+'-'+String(m).padStart(2,'0'),found=s.series.find(function(v){return v.period===dt;});vals.push(found||{period:dt,a:null,h:null});}
   var max=Math.max.apply(null,[1].concat(vals.map(function(v){return Math.max(v.a||0,v.h||0);})));max=Math.ceil(max/Math.pow(10,Math.floor(Math.log10(max))))*Math.pow(10,Math.floor(Math.log10(max)));
-  var X=function(i){return 30+i*62;},Y=function(v){return 54-v/max*37;};
+  var X=function(i){return vals.length<=1?185:30+i*(310/(vals.length-1));},Y=function(v){return 54-v/max*37;};
   var path=function(key){var d='',open=false;vals.forEach(function(v,i){if(v[key]==null){open=false;return;}d+=(open?' L':' M')+X(i)+','+Y(v[key]);open=true;});return d;};
-  var grid=[0,.5,1].map(function(f){return '<path d="M30 '+Y(max*f)+'H340" stroke="#e1eaf5" stroke-width=".8"/><text x="24" y="'+(Y(max*f)+3)+'" text-anchor="end" font-size="8" fill="#8193ae">'+merN(max*f)+'</text>';}).join('');
+  var grid=[0,.5,1].map(function(f){return '<path d="M30 '+Y(max*f)+'H340" stroke="#e1eaf5" stroke-width=".8"/><text x="24" y="'+(Y(max*f)+3)+'" text-anchor="end" font-size="7" fill="#8193ae">'+merN(max*f)+'</text>';}).join('');
   var areas='',segment=[];function closeArea(){if(segment.length>1){areas+='<path d="M'+X(segment[0])+',54 '+segment.map(function(i){return 'L'+X(i)+','+Y(vals[i].a);}).join(' ')+' L'+X(segment[segment.length-1])+',54Z" fill="'+color+'" opacity=".10"/>';}segment=[];}vals.forEach(function(v,i){if(v.a==null)closeArea();else segment.push(i);});closeArea();
-  return '<svg viewBox="0 0 350 84">'+grid+areas+'<path d="'+path('h')+'" fill="none" stroke="'+color+'" stroke-width="1.4" stroke-dasharray="4 3"/><path d="'+path('a')+'" fill="none" stroke="'+color+'" stroke-width="2.5"/>'+vals.map(function(v,i){return (v.a==null?'':'<circle cx="'+X(i)+'" cy="'+Y(v.a)+'" r="2.5" fill="white" stroke="'+color+'" stroke-width="1.5"><title>'+merEsc(merPeriodLabel(v.period)+' · '+merN(v.a)+' adet'+(v.rowCount!=null?' · '+v.rowCount+' şube':''))+'</title></circle><text class="mer-trend-count" x="'+X(i)+'" y="'+(Y(v.a)-7)+'" text-anchor="'+(i===0?'start':i===vals.length-1?'end':'middle')+'" font-size="9" font-weight="700" fill="'+color+'" stroke="#f8fcff" stroke-width="2.5" stroke-linejoin="round" paint-order="stroke">'+merN(v.a)+'</text>')+'<text x="'+X(i)+'" y="70" text-anchor="middle" fill="#788cab" font-size="8">'+merMonthShort(v.period)+'</text>'+(account?'<text x="'+X(i)+'" y="81" text-anchor="middle" fill="#8193ae" font-size="7">'+(v.rowCount!=null?v.rowCount+' şb':'—')+'</text>':'');}).join('')+'</svg>';
+  return '<svg viewBox="0 0 350 84">'+grid+areas+'<path d="'+path('h')+'" fill="none" stroke="'+color+'" stroke-width="1.3" stroke-dasharray="4 3"/><path d="'+path('a')+'" fill="none" stroke="'+color+'" stroke-width="2.2"/>'+vals.map(function(v,i){return (v.a==null?'':'<circle cx="'+X(i)+'" cy="'+Y(v.a)+'" r="2.1" fill="white" stroke="'+color+'" stroke-width="1.3"><title>'+merEsc(merPeriodLabel(v.period)+' · '+merN(v.a)+' adet'+(v.rowCount!=null?' · '+v.rowCount+' şube':''))+'</title></circle><text class="mer-trend-count" x="'+X(i)+'" y="'+(Y(v.a)-6)+'" text-anchor="'+(i===0?'start':i===vals.length-1?'end':'middle')+'" font-size="7.2" font-weight="700" fill="'+color+'" stroke="#f8fcff" stroke-width="2" stroke-linejoin="round" paint-order="stroke">'+merN(v.a)+'</text>')+'<text x="'+X(i)+'" y="70" text-anchor="middle" fill="#788cab" font-size="6.8">'+merMonthShort(v.period)+'</text>'+(account?'<text x="'+X(i)+'" y="81" text-anchor="middle" fill="#8193ae" font-size="6">'+(v.rowCount!=null?v.rowCount+' şb':'—')+'</text>':'');}).join('')+'</svg>';
 }
 function merTrends(ctx){
-  return '<div class="mer-trends">'+ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;});}).map(function(p){var d=merProductDesign(p.hist);return '<div class="mer-trend" style="--mer-product:'+d[2]+'"><div class="mer-trend-h"><b>'+d[0].toLocaleUpperCase('tr-TR')+'</b><div class="mer-trend-values">Hedef: '+merN(p.s.h)+' <i>│</i> <strong>Gerçekleşen: '+merN(p.s.a)+'</strong></div></div>'+merSpark(p.s,d[2],ctx.source.period,ctx.scope==='account')+'</div>';}).join('')+'</div>';
+  return '<div class="mer-trends">'+ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;});}).map(function(p){var d=merProductDesign(p.hist);return '<div class="mer-trend" style="--mer-product:'+d[2]+'"><div class="mer-trend-h"><b>'+d[0].toLocaleUpperCase('tr-TR')+'</b></div>'+merSpark(p.s,d[2],ctx.source.period,ctx.scope==='account')+'</div>';}).join('')+'</div>';
 }
 function merDetailTitle(ctx){return ctx.scope==='branch'?'PERSONEL PERFORMANSI':ctx.scope==='account'?'ŞUBE KARŞILAŞTIRMASI':'SATIŞ YÖNETİCİLERİ';}
 function merDetailsTable(ctx,rows){
