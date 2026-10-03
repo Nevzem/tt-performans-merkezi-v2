@@ -1711,7 +1711,7 @@
    "digerCihaz": {
     "hedef": 96,
     "adet": 126,
-    "hgo": 131.2,
+    "hgo": 131.3,
     "forecast": 131
    },
    "cihaz": {
@@ -4078,7 +4078,7 @@
       "Diğer Cihaz": {
        "h": 96,
        "a": 126,
-       "g": 131.2
+       "g": 131.3
       },
       "Toplam Mobil": {
        "h": 231,
@@ -27673,6 +27673,9 @@
   "sourceFile": "Ağustos KapanışAnadolu GM Satış Raporu Saha.xlsx",
   "sample": false,
   "closed": true,
-  "history": false
- }
+  "history": false,
+  "verifiedClosingSource": true
+ },
+ "verifiedClosingSource": true,
+ "verifiedClosingUpdatedAt": "2026-10-03"
 }
