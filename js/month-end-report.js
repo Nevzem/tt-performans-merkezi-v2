@@ -351,10 +351,12 @@ function merChannelAverageN(v){
   return v==null||!isFinite(v)?'—':Number(v).toLocaleString('tr-TR',{minimumFractionDigits:1,maximumFractionDigits:1});
 }
 function merChannelValue(v,gm,cls){
-  var diff=merChange(v,gm),tone=diff==null?'neutral':diff>=0?'good':'low';
+  var valid=v!=null&&gm!=null&&isFinite(v)&&isFinite(gm)&&Number(v)>0&&Number(gm)>0;
+  var diff=valid?merChange(v,gm):null,tone=diff==null?'neutral':diff>=0?'good':'low';
   var kaText=merChannelAverageN(v),gmText=merChannelAverageN(gm);
-  var diffText=diff==null?'(—)':'('+merSigned(diff,'%')+')';
-  return '<div class="mer-channel-value '+cls+'" title="'+merEsc('Kuzey Anadolu '+kaText+' / Anadolu GM '+gmText+' adet/nokta · fark '+(diff==null?'—':merSigned(diff,'%')))+'"><b><span>'+kaText+'</span><i>/</i><em>'+gmText+'</em></b><small class="'+tone+'">'+diffText+'</small></div>';
+  var diffText=valid?'('+merSigned(diff,'%')+')':'-';
+  var titleDiff=valid?merSigned(diff,'%'):'-';
+  return '<div class="mer-channel-value '+cls+'" title="'+merEsc('Kuzey Anadolu '+kaText+' / Anadolu GM '+gmText+' adet/nokta · fark '+titleDiff)+'"><b><span>'+kaText+'</span><i>/</i><em>'+gmText+'</em></b><small class="'+tone+'">'+diffText+'</small></div>';
 }
 function merRegionChannelCard(ctx){
   var model=merRegionChannelAverages(ctx),monthName=merMonthShort(ctx.source.period)+' '+ctx.source.period.slice(0,4);
