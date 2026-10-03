@@ -78,9 +78,10 @@ ctx.ytdFixture={products:['mobil','dsl','iptv','uydu','akilliCihaz','digerCihaz'
 const minis=run('ytdFixture.products.map(merYtdMini)');
 for(const mini of minis){const heights=[...mini.matchAll(/height="([\d.]+)" rx/g)].map(m=>+m[1]);assert.equal(Math.max(...heights),46,'Each product has its own maximum');assert.ok(Math.min(...heights)>20,'Both years remain visible despite different product volumes');}
 assert.equal((run('merYtdChart(ytdFixture)').match(/class="mer-ytd-mini"/g)||[]).length,6);
-const growthMini=run('merYtdMini(ytdFixture.products[0])');
+ctx.ytdGrowth={hist:'dsl',label:'DSL',s:{pairA:125,pairB:100,ytdA:125}};
+const growthMini=run('merYtdMini(ytdGrowth)');
 assert.ok(growthMini.includes('+25.0%')||growthMini.includes('+25,0%'),'YTD mini shows yearly growth rate');
-assert.ok(growthMini.includes('+1.622 adet')||growthMini.includes('+1622 adet'),'YTD mini shows signed unit difference');
+assert.ok(growthMini.includes('+25 adet'),'YTD mini shows signed unit difference');
 ctx.ytdLoss={hist:'dsl',label:'DSL',s:{pairA:80,pairB:100,ytdA:80}};
 const lossMini=run('merYtdMini(ytdLoss)');
 assert.ok(lossMini.includes('-20.0%')||lossMini.includes('-20,0%'));
