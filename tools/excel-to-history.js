@@ -28,7 +28,7 @@ if (!src) { console.error('Kullanım: node tools/excel-to-history.js <xlsx-yolu>
 const wb = XLSX.read(fs.readFileSync(src), { type: 'buffer' });
 /* Kapanış paketlerinde özet sayfaları ilk sırada gelebiliyor. Geçmiş veri
    için bayi/ürün bloklarını içeren TTM BUAY sayfasını önceliklendir. */
-const sheetName = wb.SheetNames.includes('TTM BUAY') ? 'TTM BUAY' : wb.SheetNames[0];
+const sheetName = wb.SheetNames.includes('TTM BUAY') ? 'TTM BUAY' :\n  (wb.SheetNames.includes('Kokpitt Data TTM') ? 'Kokpitt Data TTM' : wb.SheetNames[0]);
 const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, defval: null });
 console.log('Kaynak sayfa:', sheetName);
 if (rows.length < 4) { console.error('Beklenen yapı bulunamadı (satır < 4)'); process.exit(1); }
@@ -41,8 +41,12 @@ let lastG = '', lastP = '';
 for (let c = 9; c < hdrRow.length; c++) {
   if (grpRow[c])  lastG = String(grpRow[c]).trim();
   if (prodRow[c]) lastP = String(prodRow[c]).trim();
-  if (String(hdrRow[c] || '').trim() === 'Hedef')
-    blocks[(lastG + '|' + lastP).toUpperCase()] = c;
+  if (String(hdrRow[c] || '').trim() === 'Hedef') {
+    const blockKey = (lastG + '|' + lastP).toUpperCase();
+    /* Eski kapanışlarda aynı ürün etiketi toplam blokta tekrar edebilir.
+       İlk gerçek ürün bloğunu koru; toplam kolonunun üzerine yazmasına izin verme. */
+    if (!(blockKey in blocks)) blocks[blockKey] = c;
+  }
 }
 
 function findBlock() {
