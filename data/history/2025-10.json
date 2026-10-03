@@ -1448,14 +1448,14 @@
    },
    "digerCihaz": {
     "hedef": 53,
-    "adet": 74,
-    "hgo": 139.6,
-    "forecast": 140
+    "adet": 73,
+    "hgo": 137.7,
+    "forecast": 138
    },
    "cihaz": {
     "hedef": 140,
-    "adet": 163,
-    "hgo": 116.4,
+    "adet": 162,
+    "hgo": 115.7,
     "forecast": 116
    }
   }
@@ -1597,5 +1597,7 @@
     "forecast": 102
    }
   }
- ]
+ ],
+ "verifiedClosingSource": true,
+ "verifiedClosingUpdatedAt": "2026-10-03"
 }
