@@ -98,8 +98,11 @@ function ocFitCard() {
   var wrap=document.getElementById('oc-preview'),card=document.getElementById('october-campaign-card');
   if(!wrap || !card)return;
   var scale=Math.min(1,wrap.clientWidth/1024);
-  card.style.transform='scale('+scale+')';wrap.style.height=(1536*scale)+'px';
+  card.style.transform='scale('+scale+')';wrap.style.height=(ocCardHeight(card)*scale)+'px';
 }
+// Two-line dealer names make table rows taller than their CSS minimum.
+// Measure natural content for both the preview and exported image.
+function ocCardHeight(card) { return Math.ceil(Math.max(1536,card.offsetHeight||0,card.scrollHeight||0)); }
 function renderOctoberCampaign() {
   var cards=document.getElementById('cards');if(!cards)return;
   var current=typeof DETAY!=='undefined'?DETAY:null,previous=typeof PREV_DETAY!=='undefined'?PREV_DETAY:null,period=typeof DONEM!=='undefined'?DONEM:null;
@@ -126,8 +129,10 @@ async function downloadOctoberCampaignPNG() {
     if(document.fonts && document.fonts.ready)await document.fonts.ready;
     var image=new Image();image.src='assets/october-campaign-reference.png';await image.decode();
     var result=await createCleanExportClone(document.getElementById('october-campaign-card'),1024);wrapper=result.wrapper;
-    result.clone.style.width='1024px';result.clone.style.height='1536px';result.clone.style.background='#fff';
-    var canvas=await captureExportImage(result.clone,{scale:3,width:1024,height:1536,backgroundColor:'#fff'});
+    result.clone.style.width='1024px';result.clone.style.height='auto';result.clone.style.overflow='visible';result.clone.style.background='#fff';
+    var height=ocCardHeight(result.clone);
+    result.wrapper.style.height=height+'px';
+    var canvas=await captureExportImage(result.clone,{scale:3,width:1024,height:height,backgroundColor:'#fff'});
     _openSharePreview(canvas.toDataURL('image/png'),'TT_Ekim_Kampanyasi_2026.png');
   } catch(error) { alert('Görsel oluşturulamadı: '+error.message); }
   finally {cleanupExportClone(wrapper);if(button){button.disabled=false;button.textContent='Görseli indir / paylaş';}}

@@ -53,4 +53,20 @@ assert.equal((html.match(/<tbody>/g)||[]).length,4);assert.equal((html.match(/<t
 assert.ok(html.includes('Günün en yüksek puan artışı'));assert.ok(!html.includes('Bölge toplam'));
 assert.ok(html.includes('62 puan'));assert.ok(elements['october-campaign-card'].style.transform.includes('0.380859375'));
 assert.equal(elements['oc-preview'].style.height,'585px','Mobile preview preserves the full portrait');
-console.log('October campaign: groups, scoring, missing data, ties, daily changes, periods and workbook parser passed.');
+elements['october-campaign-card'].offsetHeight=1680;
+elements['october-campaign-card'].scrollHeight=1680;
+run('ocFitCard()');
+assert.equal(elements['oc-preview'].style.height,(1680*390/1024)+'px','Tall rows must extend the preview rather than clip group 4');
+assert.equal(run('ocCardHeight({offsetHeight:1600,scrollHeight:1700})'),1700,'Export includes all overflow content');
+ctx.Image=class{async decode(){}};
+const exportClone={style:{},offsetHeight:1680,scrollHeight:1680},exportWrapper={style:{}};
+let captureOptions,cleaned=false,shared=false;
+ctx.createCleanExportClone=async()=>({clone:exportClone,wrapper:exportWrapper});
+ctx.captureExportImage=async(_target,options)=>{captureOptions=options;return {toDataURL:()=> 'data:image/png;base64,test'};};
+ctx.cleanupExportClone=()=>{cleaned=true;};ctx._openSharePreview=()=>{shared=true;};ctx.alert=message=>{throw Error(message);};
+run('downloadOctoberCampaignPNG()').then(()=>{
+  assert.equal(captureOptions.height,1680,'PNG must retain all rows below the old 1536px limit');
+  assert.equal(captureOptions.width,1024);assert.equal(captureOptions.scale,3);
+  assert.equal(exportClone.style.height,'auto');assert.ok(cleaned && shared);
+  console.log('October campaign: scoring, groups, parser, dates, mobile preview and full-height PNG export passed.');
+}).catch(error=>{console.error(error);process.exitCode=1;});
