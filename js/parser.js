@@ -67,7 +67,81 @@ function readCommitments(row,cols) {
   const values={};for(const key in cols){const v=row[cols[key]];values[key]=typeof v==='string'&&v.trim()==='-'?0:num(v);}
   return values;
 }
-function parseWB(wb) {
+/* Report dates belong to the data, never the upload time or file modification time. */
+function reportDateISO(year,month,day) {
+  year=Number(year);month=Number(month);day=Number(day);
+  if(year<2000 || year>2100 || month<1 || month>12 || day<1 || day>31)return null;
+  var d=new Date(Date.UTC(year,month-1,day));
+  return d.getUTCFullYear()===year && d.getUTCMonth()===month-1 && d.getUTCDate()===day ? d.toISOString().slice(0,10) : null;
+}
+function reportDateNormalize(value) {
+  return String(value||'').replace(/[İIı]/g,'i').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
+}
+function reportDateCandidates(value,period,date1904) {
+  var found=[],add=function(y,m,d){var v=reportDateISO(y,m,d);if(v && v.slice(0,7)===period && !found.includes(v))found.push(v);};
+  if(value instanceof Date && !isNaN(value.getTime()))add(value.getUTCFullYear(),value.getUTCMonth()+1,value.getUTCDate());
+  else if(typeof value==='number' && value>=20000 && value<=80000) {
+    var serial=new Date((date1904?Date.UTC(1904,0,1):Date.UTC(1899,11,30))+Math.floor(value)*86400000);
+    add(serial.getUTCFullYear(),serial.getUTCMonth()+1,serial.getUTCDate());
+  } else {
+    var text=reportDateNormalize(value),match;
+    var iso=/(?:^|\D)((?:19|20)\d{2})[._\/-](\d{1,2})[._\/-](\d{1,2})(?=$|\D)/g;
+    while((match=iso.exec(text)))add(match[1],match[2],match[3]);
+    var dmy=/(?:^|\D)(\d{1,2})[._\/-](\d{1,2})[._\/-]((?:19|20)\d{2})(?=$|\D)/g;
+    while((match=dmy.exec(text)))add(match[3],match[2],match[1]);
+    var compact=/(?:^|\D)(\d{8})(?=$|\D)/g;
+    while((match=compact.exec(text))) {
+      add(match[1].slice(0,4),match[1].slice(4,6),match[1].slice(6));
+      add(match[1].slice(4),match[1].slice(2,4),match[1].slice(0,2));
+    }
+    var months=['ocak','subat','mart','nisan','mayis','haziran','temmuz','agustos','eylul','ekim','kasim','aralik'];
+    var named=/(?:^|[^\d])(\d{1,2})\s*(ocak|subat|mart|nisan|mayis|haziran|temmuz|agustos|eylul|ekim|kasim|aralik)\s*((?:19|20)\d{2})(?=$|\D)/g;
+    while((match=named.exec(text)))add(match[3],months.indexOf(match[2])+1,match[1]);
+    // A full date takes priority; short filename dates need the workbook's year.
+    if(!found.length && period && !/(?:19|20)\d{2}/.test(text)) {
+      var short=/(?:^|\D)(\d{1,2})[._\/-](\d{1,2})(?=$|\D)/g;
+      while((match=short.exec(text)))add(period.slice(0,4),match[2],match[1]);
+    }
+  }
+  return found;
+}
+function workbookReportDate(wb,period,fileName,days) {
+  period=String(period||'').replace(/^(\d{4})[\/-]?(\d{2})$/,'$1-$2');
+  if(!/^\d{4}-\d{2}$/.test(period))return {date:null,source:null};
+  var date1904=!!(wb.Workbook && wb.Workbook.WBProps && wb.Workbook.WBProps.date1904),candidates=[];
+  var labels=[{re:/^(?:veri tarihi|veri kesim tarihi|veri guncelleme tarihi|data date|as of date)\b/,priority:3},
+    {re:/^(?:rapor tarihi|raporlama tarihi|report date|rapor tarih)\b/,priority:2},
+    {re:/^(?:guncelleme tarihi|son guncelleme tarihi)\b/,priority:1}];
+  wb.SheetNames.filter(function(n){return /^(TTM BUAY|ÇALIŞAN|SY ÖZET)$/i.test(n.trim()) || /^(rapor|bilgi|report|summary|parametre)/i.test(n.trim());}).forEach(function(name){
+    var sheet=wb.Sheets[name],rows;
+    // Limit metadata reads to the header area, excluding unrelated transaction dates.
+    if(sheet && sheet['!ref'] && XLSX.utils.decode_range && XLSX.utils.encode_range) {
+      var range=XLSX.utils.decode_range(sheet['!ref']);range.e.r=Math.min(range.e.r,range.s.r+39);
+      rows=XLSX.utils.sheet_to_json(sheet,{header:1,defval:null,range:XLSX.utils.encode_range(range)});
+    } else rows=XLSX.utils.sheet_to_json(sheet,{header:1,defval:null}).slice(0,40);
+    rows.forEach(function(row,ri){row.forEach(function(cell,ci){
+      if(typeof cell!=='string')return;
+      var text=reportDateNormalize(cell),label=labels.find(function(l){return l.re.test(text);});if(!label)return;
+      var values=[cell];
+      for(var n=1;n<=3;n++){values.push(row[ci+n]);if(rows[ri+n])values.push(rows[ri+n][ci]);}
+      values.forEach(function(v){reportDateCandidates(v,period,date1904).forEach(function(date){candidates.push({date:date,source:name+' · '+cell.split(/[:\d]/)[0].trim(),priority:label.priority});});});
+    });});
+  });
+  if(candidates.length) {
+    var top=Math.max.apply(null,candidates.map(function(c){return c.priority;})),best=candidates.filter(function(c){return c.priority===top;});
+    if(new Set(best.map(function(c){return c.date;})).size===1)return best[0];
+    return {date:null,source:'Rapor tarihleri çelişiyor'};
+  }
+  var fromName=reportDateCandidates(fileName,period,false);
+  if(fromName.length===1)return {date:fromName[0],source:'Dosya adı'};
+  if(fromName.length>1)return {date:null,source:'Dosya adında birden fazla tarih var'};
+  var year=Number(period.slice(0,4)),month=Number(period.slice(5)),calendarDays=new Date(Date.UTC(year,month,0)).getUTCDate();
+  // Infer a calendar date only when total days prove this is a calendar-day summary.
+  if(days && days.calismaGun===calendarDays && Number.isInteger(days.calisilanGun) && days.calisilanGun>=1 && days.calisilanGun<=calendarDays)
+    return {date:reportDateISO(year,month,days.calisilanGun),source:'SY ÖZET · Çalışılan Gün'};
+  return {date:null,source:null};
+}
+function parseWB(wb, options) {
   const out = { pers: { "Toplam Mobil": [], "Faturalı": [], "Faturasız": [], "DSL": [], "Toplam TV": [], "IPTV": [], "Uydu": [], "Cihaz": [] },
                 bayi: { "Postpaid": [], "Prepaid": [], "Toplam Mobil": [], "DSL": [], "Toplam TV": [], "Akıllı Cihaz": [], "Diğer Cihaz": [] } };
   const mxRows = [];
@@ -297,7 +371,8 @@ function parseWB(wb) {
     }
   }
   const dfmt = donem && donem.length === 6 ? donem.slice(0,4) + "/" + donem.slice(4) : (donem || "—");
-  return { data: out, donem: dfmt, persCount, bayiCount, warnings, matrix, kupa: kupaRows, detay: { period: dfmt, reportDate: null, bayiler: detayBayiler, cariBayiler: detayCariBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
+  const fileName=options && options.fileName || '',reportDate=workbookReportDate(wb,dfmt,fileName,{calismaGun:syToplamGun,calisilanGun:syGun});
+  return { data: out, donem: dfmt, persCount, bayiCount, warnings, matrix, kupa: kupaRows, detay: { period: dfmt, reportDate: reportDate.date, reportDateSource: reportDate.source, sourceFileName:fileName, bayiler: detayBayiler, cariBayiler: detayCariBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
 }
 
 /* ───── EDM PARSER — Dinamik kolon tespiti ───── */
@@ -620,7 +695,7 @@ function wire(boxId, inputId, isPrev) {
       const msg = document.getElementById("pmsg");
       try {
         await ensureXLSX();
-        const parsed = parseWB(XLSX.read(new Uint8Array(e.target.result), { type: "array" }));
+        const parsed = parseWB(XLSX.read(new Uint8Array(e.target.result), { type: "array" }), {fileName:f.name});
         const _setBoxLabel = (b, name) => {
           const el = b.querySelector(".drop-sub") || b.querySelector(".t2");
           if (el) el.textContent = "✅ " + name;

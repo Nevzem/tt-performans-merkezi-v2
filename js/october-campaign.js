@@ -89,10 +89,10 @@ function ocRow(r) {
   return '<tr class="'+(r.rank===1?'oc-leader':'')+'" title="'+ocEsc(title)+'"><td>'+ocNumber(r.rank)+'</td><td>'+ocEsc(r.code)+'</td><td class="oc-dealer"><strong>'+ocEsc(r.name)+'</strong><small>'+ocEsc(r.city)+'</small></td><td class="oc-score">'+ocNumber(r.total)+'</td><td class="'+tone(r.delta)+'">'+ocSigned(r.delta)+'</td><td class="'+tone(r.movement)+'">'+movement+'</td></tr>';
 }
 function ocDateLabel(v) { return ocValidDate(v) ? new Date(v+'T12:00:00Z').toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric',timeZone:'UTC'}) : '1–31 Ekim 2026'; }
-function ocSetDate(previous,value) {
-  var source=previous ? (typeof PREV_DETAY!=='undefined'?PREV_DETAY:null) : (typeof DETAY!=='undefined'?DETAY:null);
-  if(source && ocPeriod(source.period||(previous?null:DONEM))===OC_PERIOD) source.reportDate=ocValidDate(value)?value:null;
-  renderOctoberCampaign();
+function ocReportDateInfo(source,label,period) {
+  var valid=source && ocPeriod(source.period||period)===OC_PERIOD;
+  var date=valid && ocValidDate(source.reportDate) ? ocDateLabel(source.reportDate) : valid ? 'Raporda tarih bulunamadı' : 'Ekim raporu bekleniyor';
+  return '<div class="oc-report-date"><span>'+ocEsc(label)+'</span><strong>'+ocEsc(date)+'</strong><small>'+ocEsc(valid ? source.reportDateSource||'Dosyadan otomatik' : 'Ayarlar’dan rapor yükleyin')+'</small></div>';
 }
 function ocFitCard() {
   var wrap=document.getElementById('oc-preview'),card=document.getElementById('october-campaign-card');
@@ -109,13 +109,13 @@ function renderOctoberCampaign() {
   var model=ocModel(current,previous,period),missing=model.groups.flat().filter(function(r){return r.total==null;}).length;
   var date=current && current.reportDate,label=ocDateLabel(date);
   var status=!model.valid ? 'Ekim 2026 TTM raporunu Ayarlar’dan yükleyin.' : missing ? missing+' bayi için veri eksik. Eksik ürünler satır açıklamasında gösterilir.' : '23 bayinin Ekim puanları hesaplandı.';
-  var compareHint=model.compare ? 'Son 24 saat: '+ocDateLabel(previous.reportDate)+' → '+label : 'Son 24 saat için ardışık iki Ekim raporu ve rapor tarihleri gerekli.';
+  var compareHint=model.compare ? 'Son 24 saat: '+ocDateLabel(previous.reportDate)+' → '+label : 'Son 24 saat için ardışık iki Ekim raporu yükleyin. Tarihler dosyalardan otomatik alınır.';
   var best=model.best.length ? model.best.slice(0,2).map(function(r){return ocEsc(r.code)+' · '+ocEsc(r.name)+' ('+ocEsc(r.city)+') · <em>'+ocSigned(r.delta)+' puan</em>';}).join('<br>')+(model.best.length>2 ? '<br>+'+(model.best.length-2)+' bayi aynı artışı paylaşıyor.' : '') : model.fullComparison ? 'Pozitif artış kaydedilmedi.' : model.compare ? 'Eksik karşılaştırma verisi var.' : 'Karşılaştırma raporu bekleniyor.';
   cards.className='cards single oc-page';cards.style.maxWidth='1120px';
   cards.innerHTML='<div class="oc-actions"><div><b>Ekim Kampanyası · Günlük takip</b><small>'+ocEsc(status)+'</small><small>'+ocEsc(compareHint)+'</small></div><button id="oc-download" onclick="downloadOctoberCampaignPNG()">Görseli indir / paylaş</button></div>'+
-    '<div class="oc-dates"><label>Güncel rapor tarihi<input type="date" min="2026-10-01" max="2026-10-31" value="'+ocEsc(ocValidDate(date)?date:'')+'" onchange="ocSetDate(false,this.value)"></label><label>Önceki rapor tarihi<input type="date" min="2026-10-01" max="2026-10-31" value="'+ocEsc(previous && ocValidDate(previous.reportDate)?previous.reportDate:'')+'" onchange="ocSetDate(true,this.value)"></label><small>Dosyaların kapsadığı son günü seçin. Eşit puanlar aynı sırayı paylaşır; “—” eksik veri veya karşılaştırma olmadığını gösterir.</small></div>'+
+    '<div class="oc-dates">'+ocReportDateInfo(current,'Güncel rapor',period)+ocReportDateInfo(previous,'Önceki rapor',null)+'<small>Tarihler yüklenen raporlardan otomatik belirlenir. Eşit puanlar aynı sırayı paylaşır; “—” eksik veri veya karşılaştırma olmadığını gösterir.</small></div>'+
     '<div id="oc-preview" class="oc-preview"><section id="october-campaign-card" class="oc-card" aria-label="Ekim 2026 TTM günlük puan tablosu">'+
-    '<header class="oc-hero"><span class="oc-region">KUZEY ANADOLU</span><h1>EKİM 2026</h1><h2>TTM GÜNLÜK PUAN TABLOSU</h2><div class="oc-date">▦ '+ocEsc(label)+'</div><p>'+(!model.valid?'Ekim raporu bekleniyor':!ocValidDate(date)?'Ekim birikimli puanlar · Rapor tarihi seçin':'1–'+Number(date.slice(8))+' Ekim birikimli puanlar')+'</p></header>'+
+    '<header class="oc-hero"><span class="oc-region">KUZEY ANADOLU</span><h1>EKİM 2026</h1><h2>TTM GÜNLÜK PUAN TABLOSU</h2><div class="oc-date">▦ '+ocEsc(label)+'</div><p>'+(!model.valid?'Ekim raporu bekleniyor':!ocValidDate(date)?'Ekim birikimli puanlar · Dosyada rapor tarihi bulunamadı':'1–'+Number(date.slice(8))+' Ekim birikimli puanlar')+'</p></header>'+
     '<main class="oc-tables">'+model.groups.map(function(rows,i){return '<section class="oc-group oc-group-'+(i+1)+'"><div class="oc-group-title"><b><span>❯❯</span> '+(i+1)+'. GRUP</b><strong>'+rows.length+' BAYİ</strong></div><table><colgroup><col class="oc-col-rank"><col class="oc-col-code"><col class="oc-col-dealer"><col class="oc-col-score"><col class="oc-col-delta"><col class="oc-col-move"></colgroup><thead><tr><th>Sıra</th><th>Bayi kodu</th><th>Bayi</th><th>Toplam puan</th><th>Son 24 saat</th><th>Sıra değişimi</th></tr></thead><tbody>'+rows.map(ocRow).join('')+'</tbody></table></section>';}).join('')+'</main>'+
     '<footer class="oc-footer"><div class="oc-best"><b>Günün en yüksek puan artışı</b><div>'+best+'</div></div><div class="oc-legend"><p><span class="oc-up">↑</span> Yükseldi <span class="oc-down">↓</span> Geriledi <span>━</span> Sırası aynı</p><small>Sıra değişimi, önceki güne göre grup içindeki değişimi gösterir.</small><div class="oc-weights">Adet başına: Mobil 5 · DSL 6 · IPTV 4 · Uydu 3<br>Akıllı cihaz 2 · Diğer cihaz 2 · Mobil taahhüt 1 · DSL taahhüt 3</div></div></footer></section></div>';
   if(ocResizeObserver)ocResizeObserver.disconnect();
