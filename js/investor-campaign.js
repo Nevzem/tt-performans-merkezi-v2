@@ -71,6 +71,10 @@ function icModel(source,period,fallback) {
     else if(!forecast)estimate={reward:null,status:'Forecast gerekli',tone:'pending'};
     return {code:branch[0],name:branch[1],city:branch[2],dsl:dslHgo,mobil:mobilHgo,reward:estimate.reward,status:estimate.status,tone:estimate.tone};
   });
+  rows.sort(function(a,b){
+    return (a.reward==null)-(b.reward==null) || (b.reward||0)-(a.reward||0) ||
+      (b.dsl==null?-1:b.dsl)-(a.dsl==null?-1:a.dsl) || (b.mobil==null?-1:b.mobil)-(a.mobil==null?-1:a.mobil);
+  });
   return {valid:valid,forecast:forecast,rows:rows};
 }
 function icPercent(value) { return value==null?'—':'%'+value.toLocaleString('tr-TR'); }
@@ -87,7 +91,7 @@ function icDateLabel(source,valid) {
 function icCardHTML(model,source) {
   var date=icDateLabel(source,model.valid),reportState=!model.valid?'EKİM RAPORU BEKLENİYOR':!model.forecast?'FORECAST BEKLENİYOR':'AY SONU FORECAST';
   return '<section id="investor-campaign-card" class="ic-card" aria-label="Ekim Yatırımcı Kampanyası · 23 bayi">'+
-    '<header class="ic-header"><div class="ic-heading"><span class="ic-region">KUZEY ANADOLU</span><h1>EKİM YATIRIMCI KAMPANYASI</h1><p>Şimdi İnternet Zamanı · Günlük Takip</p></div><div class="ic-meta"><strong>'+icEsc(date)+'</strong><span>'+reportState+'</span><small>23 BAYİ · ŞUBE BAZINDA TAKİP</small></div></header>'+
+    '<header class="ic-header"><div class="ic-heading"><span class="ic-region">KUZEY ANADOLU</span><h1>EKİM YATIRIMCI KAMPANYASI</h1><p>Şimdi İnternet Zamanı · Günlük Takip</p></div><div class="ic-meta"><strong>'+icEsc(date)+'</strong><span>'+reportState+'</span><small>23 BAYİ · ÖDÜLE GÖRE SIRALAMA</small></div></header>'+
     '<main class="ic-table-wrap"><table class="ic-table"><colgroup><col style="width:14%"><col style="width:22%"><col style="width:14%"><col style="width:14%"><col style="width:17%"><col style="width:19%"></colgroup><thead><tr><th>Bayi kodu</th><th>Bayi / İl</th><th>DSL HGO<small>Forecast</small></th><th>Mobil HGO<small>Forecast</small></th><th>Tahmini ödül</th><th>Durum</th></tr></thead><tbody>'+model.rows.map(icRow).join('')+'</tbody></table></main>'+
     '<footer class="ic-footer"><b>HGO: Hedef gerçekleştirme oranı.</b><span>Ay sonu forecastına göre tahmini ödül. Dönem sonu kampanya kontrollerine tabidir.</span></footer></section>';
 }

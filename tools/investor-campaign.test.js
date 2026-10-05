@@ -13,24 +13,24 @@ assert.equal(reward(80,94,120).reward,0);assert.equal(reward(80,150,99).reward,0
 function dealer(a=12,h=60,ma=18,mh=100){return {bolge:'KUZEY ANADOLU',prods:{DSL:{a,h,g:a/h*100},Postpaid:{a:ma,h:mh,g:ma/mh*100},Prepaid:{a:0,h:0,g:null}}};}
 const source={period:'2026/10',reportDate:'2026-10-05',forecastDays:{d:5,t:31},bayiler:Object.fromEntries(run('IC_BRANCHES').map(b=>[b[0],dealer()]))};
 ctx.source=source;
-assert.equal(run('icModel(source,null,{d:1,t:31}).rows[0].dsl'),124,'Use uploaded report days, not stale manual forecast days');
-assert.equal(run('icModel(source).rows[0].mobil'),112);assert.equal(run('icModel(source).rows[0].reward'),50000,'Projected DSL quantity sets reward tier');
+assert.equal(run('icModel(source,null,{d:1,t:31}).rows.find(r=>r.code==="4100089").dsl'),124,'Use uploaded report days, not stale manual forecast days');
+assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").mobil'),112);assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").reward'),50000,'Projected DSL quantity sets reward tier');
 source.forecastDays.d=6;
-assert.equal(run('icModel(source,null,{d:5,t:31}).rows[0].dsl'),103,'Next daily report updates projection automatically');
-assert.equal(run('icModel(source).rows[0].reward'),0,'Mobil forecast below100 blocks reward');
+assert.equal(run('icModel(source,null,{d:5,t:31}).rows.find(r=>r.code==="4100089").dsl'),103,'Next daily report updates projection automatically');
+assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").reward'),0,'Mobil forecast below100 blocks reward');
 source.forecastDays={d:31,t:31};source.bayiler['4100089']=dealer(39.5,39.5/0.995,100,100);
-assert.equal(run('icModel(source).rows[0].dsl'),100);assert.equal(run('icModel(source).rows[0].reward'),30000,'99.5% HGO and39.5 DSL round up only once');
-source.bayiler['4100089']=dealer(49.5,49.5,100,100);assert.equal(run('icModel(source).rows[0].reward'),35000,'49.5 quantity reaches50 tier');
-source.bayiler['4100089']=dealer(59.5,59.5,100,100);assert.equal(run('icModel(source).rows[0].reward'),40000,'59.5 quantity reaches60 tier');
-source.bayiler['4100089']=dealer(40,40,99.49,100);assert.equal(run('icModel(source).rows[0].reward'),0);
-source.bayiler['4100089']=dealer(40,40,99.5,100);assert.equal(run('icModel(source).rows[0].reward'),30000);
-source.bayiler['4100089'].campaignActuals={DSL:null,Postpaid:100,Prepaid:0};assert.equal(run('icModel(source).rows[0].reward'),null,'Blank raw activations are not zero');
-source.bayiler['4100089']=dealer(40,40,100,100);source.bayiler['4100089'].campaignTargets={DSL:40,Postpaid:100,Prepaid:null};assert.equal(run('icModel(source).rows[0].mobil'),null,'Blank component target prevents incomplete Mobil HGO');
-source.bayiler['4100089']=dealer(0,0);assert.equal(run('icModel(source).rows[0].dsl'),null,'No target means noHGO or reward');
+assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").dsl'),100);assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").reward'),30000,'99.5% HGO and39.5 DSL round up only once');
+source.bayiler['4100089']=dealer(49.5,49.5,100,100);assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").reward'),35000,'49.5 quantity reaches50 tier');
+source.bayiler['4100089']=dealer(59.5,59.5,100,100);assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").reward'),40000,'59.5 quantity reaches60 tier');
+source.bayiler['4100089']=dealer(40,40,99.49,100);assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").reward'),0);
+source.bayiler['4100089']=dealer(40,40,99.5,100);assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").reward'),30000);
+source.bayiler['4100089'].campaignActuals={DSL:null,Postpaid:100,Prepaid:0};assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").reward'),null,'Blank raw activations are not zero');
+source.bayiler['4100089']=dealer(40,40,100,100);source.bayiler['4100089'].campaignTargets={DSL:40,Postpaid:100,Prepaid:null};assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").mobil'),null,'Blank component target prevents incomplete Mobil HGO');
+source.bayiler['4100089']=dealer(0,0);assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").dsl'),null,'No target means noHGO or reward');
 delete source.bayiler['4100089'];assert.equal(run('icModel(source).rows.length'),23,'Missing branch stays visible');
-source.bayiler['4100089']={...dealer(),bolge:'BAŞKENT'};assert.equal(run('icModel(source).rows[0].dsl'),null,'Do not include outside-region branch');
+source.bayiler['4100089']={...dealer(),bolge:'BAŞKENT'};assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").dsl'),null,'Do not include outside-region branch');
 source.period='2026/09';assert.equal(run('icModel(source,"2026/10").valid'),false);assert.equal(run('icModel(source).rows.every(r=>r.reward===null)'),true);
-source.period='2026/10';source.forecastDays=null;assert.equal(run('icModel(source).forecast'),null);assert.equal(run('icModel(source).rows[0].status'),'Forecast gerekli');
+source.period='2026/10';source.forecastDays=null;assert.equal(run('icModel(source).forecast'),null);assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").status'),'Forecast gerekli');
 assert.equal(run('icModel(source,null,{d:5,t:31}).forecast.k'),6.2,'Explicit settings fallback is available');
 assert.equal(run('icDays({d:32,t:31})'),null);assert.equal(run('icDays({d:0,t:31})'),null);
 // Real XLSX parser/forecast metadata contract, including changing daily reports.
@@ -43,7 +43,7 @@ function workbook(day=5){
 }
 ctx.wb=XLSX.read(XLSX.write(workbook(),{type:'buffer',bookType:'xlsx'}),{type:'buffer'});
 run("parsed=parseWB(wb,{fileName:'TTM 05.10.2026.xlsx'});source=parsed.detay");
-assert.equal(run('source.forecastDays.d'),5);assert.equal(run('source.forecastDays.t'),31);assert.equal(run('source.reportDate'),'2026-10-05');assert.equal(run('icModel(source).rows[0].reward'),50000);
+assert.equal(run('source.forecastDays.d'),5);assert.equal(run('source.forecastDays.t'),31);assert.equal(run('source.reportDate'),'2026-10-05');assert.equal(run('icModel(source).rows.find(r=>r.code==="4100089").reward'),50000);
 const html=run('icCardHTML(icModel(source),source)');
 assert.equal((html.match(/<tbody>/g)||[]).length,1);assert.equal((html.match(/<tr>/g)||[]).length,24,'Oneheader plus23 complete dealer rows');
 for(const b of run('IC_BRANCHES'))assert.ok(html.includes(b[0]),b[0]);
@@ -54,4 +54,9 @@ ctx.document={getElementById:id=>elements[id]};run('DETAY=source;DONEM="2026/10"
 assert.equal(elements['ic-preview'].style.height,(1640*390/1024)+'px','Natural height preserved in mobile preview');
 assert.equal(run('icCardHeight(document.getElementById("investor-campaign-card"))'),1640);
 if(process.argv[2]){fs.mkdirSync(process.argv[2],{recursive:true});for(const day of [5,6])fs.writeFileSync(path.join(process.argv[2],'investor-report-'+day+'.xlsx'),XLSX.write(workbook(day),{type:'buffer',bookType:'xlsx'}));}
+// Award order is descending, tied rewards use forecastHGO, missing values come last.
+const sortedSource={period:'2026/10',forecastDays:{d:31,t:31},bayiler:{'4100089':{bolge:'KUZEY ANADOLU',prods:{DSL:{a:40,h:40},Postpaid:{a:100,h:100},Prepaid:{a:0,h:0}}},'4052718':{bolge:'KUZEY ANADOLU',prods:{DSL:{a:72,h:60},Postpaid:{a:100,h:100},Prepaid:{a:0,h:0}}},'4100781':{bolge:'KUZEY ANADOLU',prods:{DSL:{a:80,h:60},Postpaid:{a:100,h:100},Prepaid:{a:0,h:0}}},'4054927':{bolge:'KUZEY ANADOLU',prods:{DSL:{a:38,h:40},Postpaid:{a:100,h:100},Prepaid:{a:0,h:0}}},'4036313':{bolge:'KUZEY ANADOLU',prods:{DSL:{a:30,h:40},Postpaid:{a:100,h:100},Prepaid:{a:0,h:0}}}}};
+ctx.source=sortedSource;
+assert.deepEqual(Array.from(run('icModel(source).rows.slice(0,5).map(r=>r.code)')),['4100781','4052718','4100089','4054927','4036313']);
+assert.equal(run('icModel(source).rows[5].reward'),null,'Unknown awards follow knownzero awards');
 console.log('Investor campaign passed: all reward tiers and official examples, forecast projection, rounding boundaries, missing data,23branches, privacy and realXLSX uploads.');
