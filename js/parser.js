@@ -294,6 +294,9 @@ function parseWB(wb, options) {
       record.commitments=readCommitments(r,ttmCommitmentCols);
       record.campaignActuals={};
       for (const pn in BP) { const raw=r[BP[pn][1]]; record.campaignActuals[pn]=typeof raw==='string' && raw.trim()==='-' ? 0 : num(raw); }
+      // Preserve blank coverage and unrounded targets for campaign forecasts.
+      record.campaignTargets={};
+      for (const pn in BP) record.campaignTargets[pn]=num(r[BP[pn][0]]);
       detayCariBayiler[kod] = record;
       if (String(r[1]).trim().toUpperCase() === "KUZEY ANADOLU") detayBayiler[kod] = record;
     }
@@ -372,7 +375,7 @@ function parseWB(wb, options) {
   }
   const dfmt = donem && donem.length === 6 ? donem.slice(0,4) + "/" + donem.slice(4) : (donem || "—");
   const fileName=options && options.fileName || '',reportDate=workbookReportDate(wb,dfmt,fileName,{calismaGun:syToplamGun,calisilanGun:syGun});
-  return { data: out, donem: dfmt, persCount, bayiCount, warnings, matrix, kupa: kupaRows, detay: { period: dfmt, reportDate: reportDate.date, reportDateSource: reportDate.source, sourceFileName:fileName, bayiler: detayBayiler, cariBayiler: detayCariBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
+  return { data: out, donem: dfmt, persCount, bayiCount, warnings, matrix, kupa: kupaRows, detay: { period: dfmt, reportDate: reportDate.date, reportDateSource: reportDate.source, sourceFileName:fileName, forecastDays: {d:syGun,t:syToplamGun}, bayiler: detayBayiler, cariBayiler: detayCariBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
 }
 
 /* ───── EDM PARSER — Dinamik kolon tespiti ───── */

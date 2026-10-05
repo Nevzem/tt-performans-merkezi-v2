@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-october-20261005c';
+const CACHE = 'ttpm-investor-20261005d';
 
 const ASSETS = [
   '.',
@@ -14,7 +14,7 @@ const ASSETS = [
   'js/version.js',
   'css/style.css',
   'css/development.css',
-  'css/manager-league.css',
+  'css/investor-campaign.css',
   'css/month-end-report.css',
   'css/october-campaign.css',
   'assets/october-campaign-reference.png',
@@ -43,7 +43,7 @@ const ASSETS = [
   'data/history/channel-activation-summary.json',
   'data/history/region-benchmarks.json',
   'js/development.js',
-  'js/manager-league.js',
+  'js/investor-campaign.js',
   'js/october-campaign.js',
   'js/month-end-report.js',
   'js/filters.js',
@@ -53,8 +53,6 @@ const ASSETS = [
   'js/vendor/html2canvas.min.js',
   'icons/icon-180.png',
   'icons/icon-512.png',
-  'assets/manager-league-template.jpeg',
-  'assets/manager-league-template-v2.jpg',
 ];
 
 self.addEventListener('install', function (e) {
