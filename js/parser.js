@@ -218,6 +218,8 @@ function parseWB(wb) {
       pr["Toplam Cihaz"]={h:Math.round(ch+gh),a:Math.round(ca+ga),g:(ch+gh)>0?Math.round((ca+ga)/(ch+gh)*1000)/10:null};
       const record = {kod, bolge: String(r[1]).trim(), b: shortB(r[3]), fullName: String(r[3]).trim(), anaBayiKod: r[4] ? String(r[4]).trim() : '', il: r[5]?String(r[5]).trim():"", sy: r[7]&&String(r[7]).trim()!=="-"?String(r[7]).trim():"", prods: pr};
       record.commitments=readCommitments(r,ttmCommitmentCols);
+      record.campaignActuals={};
+      for (const pn in BP) { const raw=r[BP[pn][1]]; record.campaignActuals[pn]=typeof raw==='string' && raw.trim()==='-' ? 0 : num(raw); }
       detayCariBayiler[kod] = record;
       if (String(r[1]).trim().toUpperCase() === "KUZEY ANADOLU") detayBayiler[kod] = record;
     }
@@ -295,7 +297,7 @@ function parseWB(wb) {
     }
   }
   const dfmt = donem && donem.length === 6 ? donem.slice(0,4) + "/" + donem.slice(4) : (donem || "—");
-  return { data: out, donem: dfmt, persCount, bayiCount, warnings, matrix, kupa: kupaRows, detay: { bayiler: detayBayiler, cariBayiler: detayCariBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
+  return { data: out, donem: dfmt, persCount, bayiCount, warnings, matrix, kupa: kupaRows, detay: { period: dfmt, reportDate: null, bayiler: detayBayiler, cariBayiler: detayCariBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
 }
 
 /* ───── EDM PARSER — Dinamik kolon tespiti ───── */
