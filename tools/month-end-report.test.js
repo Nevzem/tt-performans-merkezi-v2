@@ -282,8 +282,8 @@ assert.equal(run("merForecastHgo(forecastCtx,50)"),100,'Forecast HGO uses total/
 ctx.forecastSource.sy.calisilanGun=30;
 assert.equal(run("merForecastHgo(forecastCtx,104.2)"),104.2,'Closed month forecast equals current HGO');
 const signalHtml=run("merSignals(Object.assign({},GC,{source:{sy:{calismaGun:30,calisilanGun:15}},products:[Object.assign({},MER_TRENDS[0],{s:{g:50,h:100,a:50,gap:-50}})]}))");
-assert.ok(signalHtml.includes('AKTİVASYON'),'Product card labels actual as activation');
-assert.ok(signalHtml.includes('FORECAST HGO'),'Product card shows Forecast HGO');
+assert.ok(signalHtml.includes('AKT.'),'Product card uses compact activation label');
+assert.ok(signalHtml.includes('F. HGO'),'Product card shows compact Forecast HGO label');
 assert.ok(signalHtml.includes('%100,0'),'Product card forecast value is rendered');
 assert.ok(groupPerformance.includes('Faturalı'),'Group month closing explicitly includes Postpaid');
 assert.ok(groupPerformance.includes('Faturasız'),'Group month closing explicitly includes Prepaid');
