@@ -249,7 +249,7 @@ function merHgoRing(value,color,id){
 function merHeader(ctx){
   var status=ctx.source.sample?'ÖRNEK VERİ':ctx.source.closed?'AY KAPANIŞI':'ARA DÖNEM';
   var name=ctx.name;var short=ctx.rows[0] && ctx.rows[0].b;
-  if(short && short.length<name.length && ctx.scope!=='region')name=short;
+  if(short && short.length<name.length && ctx.scope!=='region' && ctx.scope!=='group')name=short;
   if(name.length>60)name=name.slice(0,57)+'…';
   var scope=ctx.scope==='branch'?'ŞUBE · '+ctx.code:ctx.scope==='account'?'CARİ TOPLAMI · '+ctx.rows.length+' ŞUBE':ctx.scope==='group'?'ANADOLU · TTM + EDM':'TTM + EDM · '+ctx.rows.length+' BAYİ';
   return '<header class="mer-head"><svg class="mer-header-art" viewBox="0 0 340 100" fill="none"><path d="M10 95L90 45 155 15 228 51 335 80M10 98L145 94 155 15 175 96 228 51 277 96M38 95L90 45 145 94 155 15 228 51 335 80" stroke="#00baff" stroke-width="1.2"/><path d="M145 96L155 15 175 96" stroke="#ed0789" stroke-width="2"/><path d="M10 90L90 40 155 10 228 46 335 75M10 100L90 50 155 20 228 56 335 85" stroke="#1264e2" opacity=".6"/></svg><div class="mer-wordmark">Türk Telekom<svg viewBox="0 0 55 55"><path d="M6 9L19 17 6 25Z" fill="#057cac"/><path d="M22 4L48 19 22 35Z" fill="#18b8db"/><path d="M13 30L34 42 13 54Z" fill="#00a8ca"/><path d="M38 1L49 7 38 14Z" fill="#e6007e"/></svg></div><div class="mer-head-main"><h1>AY SONU PERFORMANS KARNESİ</h1><p title="'+merEsc(ctx.name)+'">'+merEsc(name)+' <span>· '+merEsc(scope)+'</span></p></div><div class="mer-head-scopes">'+[['branch','Şube'],['account','Cari'],['region','Tüm Bölge'],['group','Grup Müdürlüğü']].map(function(v){return '<button class="'+(ctx.scope===v[0]?'active':'')+'" onclick="merSetScope(\''+v[0]+'\')">'+v[1]+'</button>';}).join('')+'</div><div class="mer-period"><strong>'+merEsc(merPeriodLabel(ctx.source.period).toLocaleUpperCase('tr-TR'))+'</strong><span class="mer-status">'+status+'</span></div></header>';
@@ -281,6 +281,7 @@ function merCommitmentTotal(rows,key){
   var total=0;for(var i=0;i<rows.length;i++){var value=rows[i].commitments&&rows[i].commitments[key];if(value==null||!isFinite(value))return null;total+=Number(value);}return total;
 }
 function merCommitments(ctx){
+  if(ctx.scope==='group'&&!ctx.rows.length)return '';
   var ttmRows=ctx.rows.filter(function(r){return r.channel!=='EDM';});
   var wide=ctx.scope==='region'||ctx.scope==='group';
   var list=[
@@ -476,7 +477,7 @@ function merContributionTable(ctx){
 function merNotes(ctx){return '<div class="mer-notes">'+(ctx.notes.length?ctx.notes.map(merEsc).join(' · '):'Kapsam: '+(ctx.scope==='group'?'Anadolu Grup Müdürlüğü TTM + EDM':ctx.scope==='region'?'Kuzey Anadolu TTM + EDM':'Kuzey Anadolu TTM'))+'</div>';}
 function merFooter(ctx){
   var deltaNote=ctx.scope==='region'?'GM / TR Δ: HGO puan farkı':ctx.scope==='group'?'TR Δ: HGO puan farkı':'Bölge Δ: TTM HGO farkı';
-  return '<footer class="mer-report-footer"><div><span>'+merEsc(ctx.notes.join(' · '))+'</span><span>Kuzey Anadolu · TTM Performans Merkezi</span></div><div><span>HGO = gerçekleşen / hedef · — veri yok · '+deltaNote+'</span><span>'+merEsc(ctx.source.uploadedAt?'Yükleme '+new Date(ctx.source.uploadedAt).toLocaleDateString('tr-TR'):'Dönem '+ctx.source.period)+'</span></div></footer>';
+  return '<footer class="mer-report-footer"><div><span>'+merEsc(ctx.notes.join(' · '))+'</span><span>'+(ctx.scope==='group'?'Anadolu Grup Müdürlüğü':'Kuzey Anadolu')+' · TTM Performans Merkezi</span></div><div><span>HGO = gerçekleşen / hedef · — veri yok · '+deltaNote+'</span><span>'+merEsc(ctx.source.uploadedAt?'Yükleme '+new Date(ctx.source.uploadedAt).toLocaleDateString('tr-TR'):'Dönem '+ctx.source.period)+'</span></div></footer>';
 }
 function merSummary(ctx){
   var detailUnit=ctx.scope==='branch'?'personel':ctx.scope==='group'?'bölge':'şube';
@@ -527,7 +528,7 @@ async function merExportCanvases(includeDetails){
 }
 function merFileName(ctx,ext){
   var code=ctx.scope==='account'?(ctx.group && ctx.group.code||'Cari'):ctx.scope==='branch'?ctx.code:ctx.scope==='group'?'Anadolu Grup Müdürlüğü':'',name=ctx.rows && ctx.rows[0] && ctx.rows[0].b||ctx.name;
-  if(ctx.scope==='region')name=ctx.name;
+  if(ctx.scope==='region'||ctx.scope==='group')name=ctx.name;
   var base=(code?code+' - ':'')+name;
   return base.replace(/[<>:"/\\|?*\u0000-\u001f]/g,' ').replace(/\s+/g,' ').replace(/[.\s]+$/g,'').trim()+'.'+ext;
 }
