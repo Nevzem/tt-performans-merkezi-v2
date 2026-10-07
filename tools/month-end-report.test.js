@@ -258,5 +258,8 @@ assert.ok(groupHeader.includes('Grup Müdürlüğü'),'Month-end header exposes 
 assert.ok(groupHeader.includes('Anadolu Grup Müdürlüğü'),'Group header keeps the correct group name');
 const groupPerformance=run("GC.products=MER_PRODUCTS.map(function(p){return Object.assign({},p,{s:merStats(GC,p)});});merPerformanceTable(GC)");
 assert.ok(groupPerformance.includes('TR Δ'),'Group closing compares against Türkiye');
+assert.ok(groupPerformance.includes('Faturalı'),'Group month closing explicitly includes Postpaid');
+assert.ok(groupPerformance.includes('Faturasız'),'Group month closing explicitly includes Prepaid');
+assert.ok(groupPerformance.indexOf('Faturalı')<groupPerformance.indexOf('Faturasız') && groupPerformance.indexOf('Faturasız')<groupPerformance.indexOf('Toplam Mobil'),'Closing product order starts with Postpaid, Prepaid, Total Mobile');
 assert.ok(!groupPerformance.includes('GM Δ'),'Group closing does not compare Anadolu GM against itself');
 console.log('PASS: weighted totals, missing values, account grouping, aligned YoY, channel coverage, workbook imports, archives, group directorate, multi-page PDF.');
