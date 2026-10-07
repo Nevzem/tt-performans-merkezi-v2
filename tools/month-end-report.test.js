@@ -53,6 +53,7 @@ for(const p of ['Postpaid','Prepaid','Toplam Mobil','DSL','IPTV','Uydu','Akıll�
 const edmRow=(code,parent,region='KUZEY ANADOLU')=>['ANADOLU',region,code,'EDM '+code,parent,'SAMSUN','Yusuf Dilki',...Array(8).fill([100,70]).flat()];
 ctx.wb={SheetNames:['EDM BUAY'],Sheets:{'EDM BUAY':[heads,edmRow('10','507868'),edmRow('11','507999'),edmRow('12','507868','BATI ANADOLU'),edmRow('','507868')]}};
 assert.equal(run("Object.keys(parseEDMSheet(wb,{region:true}).detay.bayiler).length"),2,'Region includes all parents, excludes other region and rollup');
+assert.equal(run("Object.keys(parseEDMSheet(wb,{group:true}).detay.bayiler).length"),3,'Group includes all Anadolu regions and excludes non-numeric rollups');
 assert.equal(run("parseEDMSheet(wb,{region:true}).detay.bayiler['11'].prods.IPTV.a"),70);
 assert.equal(run("parseEDMSheet(wb,{region:true}).detay.bayiler['11'].anaBayiKod"),'507999');
 assert.equal(run("Object.keys(parseEDMSheet(wb).detay.bayiler).includes('11')"),false,'Existing EDM screen keeps its parent filter');
@@ -247,4 +248,15 @@ assert.equal(run('merSource("2026-09").ttm.bayiler["4052718"].prods["Toplam Mobi
 run('MER_ARCHIVES["2026-09"]={period:"2026-09",closed:true,uploadedAt:"2099-01-01T00:00:00Z",revised:true}');
 assert.equal(run('merSource("2026-09").revised'),true,'Newer verified uploads remain usable');
 run('MER_ARCHIVES={}');
-console.log('PASS: weighted totals, missing values, account grouping, aligned YoY, channel coverage, workbook imports, archives, multi-page PDF.');
+// Grup Müdürlüğü: Anadolu GM verified historical summaries power month closing/trend/YTD.
+run("GC=merContext(SEP,'group','');GP=MER_PRODUCTS.find(p=>p.hist==='mobil');GH=merGroupHistoricalValue('2026-09',GP)");
+assert.equal(run('GC.name'),'Anadolu Grup Müdürlüğü');
+assert.equal(run('GH.a'),54467,'Anadolu GM September Mobil = TTM + TTBN + ESN');
+assert.equal(run('GH.g'),104.2,'Anadolu GM HGO uses verified combined GM benchmark');
+const groupHeader=run('merHeader(GC)');
+assert.ok(groupHeader.includes('Grup Müdürlüğü'),'Month-end header exposes Group Directorate scope');
+assert.ok(groupHeader.includes('Anadolu Grup Müdürlüğü'),'Group header keeps the correct group name');
+const groupPerformance=run("GC.products=MER_PRODUCTS.map(function(p){return Object.assign({},p,{s:merStats(GC,p)});});merPerformanceTable(GC)");
+assert.ok(groupPerformance.includes('TR Δ'),'Group closing compares against Türkiye');
+assert.ok(!groupPerformance.includes('GM Δ'),'Group closing does not compare Anadolu GM against itself');
+console.log('PASS: weighted totals, missing values, account grouping, aligned YoY, channel coverage, workbook imports, archives, group directorate, multi-page PDF.');
