@@ -56,6 +56,7 @@ assert.equal(run("Object.keys(parseEDMSheet(wb,{region:true}).detay.bayiler).len
 assert.equal(run("parseEDMSheet(wb,{region:true}).detay.bayiler['11'].prods.IPTV.a"),70);
 assert.equal(run("parseEDMSheet(wb,{region:true}).detay.bayiler['11'].anaBayiKod"),'507999');
 assert.equal(run("Object.keys(parseEDMSheet(wb).detay.bayiler).includes('11')"),false,'Existing EDM screen keeps its parent filter');
+assert.equal(run("Object.keys(parseEDMSheet(wb,{group:true}).detay.bayiler).length"),3,'Group scope includes every Anadolu EDM row regardless of regional parent');
 const noUydu=heads.slice(0,heads.indexOf('Uydu Hedef')).concat(heads.slice(heads.indexOf('Uydu Gerçekleşen')+1));
 ctx.noUydu={SheetNames:['EDM BUAY'],Sheets:{'EDM BUAY':[noUydu,edmRow('10','507868').slice(0,heads.indexOf('Uydu Hedef')).concat(edmRow('10','507868').slice(heads.indexOf('Uydu Gerçekleşen')+1))]}};
 assert.equal(run("parseEDMSheet(noUydu,{region:true}).detay.bayiler['10'].prods.Uydu"),undefined,'Do not fabricate absent IPTV/TV split');
@@ -71,6 +72,7 @@ const emp=Array(70).fill(0);Object.assign(emp,{0:'ANADOLU',1:'KUZEY ANADOLU',2:'
 ctx.ttmWB={SheetNames:['ÇALIŞAN','TTM BUAY'],Sheets:{'ÇALIŞAN':[['Ana Bölge'],emp],'TTM BUAY':[ttmHeader,ttm]}};
 assert.equal(run("parseWB(ttmWB).detay.bayiler['22'].anaBayiKod"),'4100170');
 assert.equal(run("parseWB(ttmWB).detay.bayiler['22'].fullName"),'Uzun Şirket Tam Ticari Unvan');
+assert.equal(run("Object.keys(parseWB(ttmWB).detay.grupBayiler).length"),1,'TTM parser exposes Anadolu group rows separately from Kuzey Anadolu rows');
 ctx.parsed=run('parseWB(ttmWB)');ctx.parsed.syData={calismaGun:30,calisilanGun:10};run('merCaptureUpload(parsed,null)');assert.equal(run('MER_LIVE.closed'),false);assert.equal(run('MER_LIVE.sample'),false);
 ctx.parsed.syData.calisilanGun=30;run('merCaptureUpload(parsed,null)');assert.equal(run('MER_LIVE.closed'),true);assert.ok(storage.tt_month_end_archives_v1);
 ctx.fakeCanvas={width:4096,height:3072,toDataURL:()=> 'data:image/jpeg;base64,/9j/2Q=='};
@@ -123,6 +125,7 @@ const unrelated=Object.assign([],ttm,{1:'BATI ANADOLU',2:'24',4:'888'});
 ctx.ttmWB.Sheets['TTM BUAY'].push(foreign,unrelated);
 ctx.national=run('parseWB(ttmWB)');
 assert.equal(Object.keys(ctx.national.detay.bayiler).length,1);
+assert.equal(Object.keys(ctx.national.detay.grupBayiler).length,3,'Group rows retain every Anadolu TTM region');
 assert.equal(Object.keys(ctx.national.detay.cariBayiler).length,2,'Only national siblings of regional caris are kept');
 ctx.national.syData={calismaGun:30,calisilanGun:30};run('merCaptureUpload(national,null)');
 assert.equal(run('merGroups(MER_LIVE)[0].rows.length'),2);
@@ -184,6 +187,18 @@ assert.ok(!regionSummary.includes('mer-channel-bars'),'Regional comparison no lo
 assert.equal(run("merRegionBenchmark(RC,MER_PRODUCTS.find(p=>p.hist==='mobil'),'gm')"),104.2,'September Anadolu GM combined Mobil HGO');
 assert.equal(run("merRegionBenchmark(RC,MER_PRODUCTS.find(p=>p.hist==='mobil'),'tr')"),104.6,'September Türkiye combined Mobil HGO');
 assert.equal(run("merRegionBenchmark(RC,MER_PRODUCTS.find(p=>p.hist==='dsl'),'gm')"),98.2,'September Anadolu GM combined DSL HGO');
+// Grup Müdürlüğü = Anadolu scope. Archived cards use verified Anadolu GM summaries when branch-level group rows are absent.
+run('GC=merContext(SEP,"group","")');
+assert.equal(run('GC.rows.length'),0,'Legacy closing archive has no raw Anadolu group rows');
+assert.equal(run("merStats(GC,MER_PRODUCTS.find(p=>p.hist==='mobil')).a"),54467,'September Anadolu group Mobil activations come from TTM + TTBN + ESN summaries');
+assert.equal(run("merStats(GC,MER_PRODUCTS.find(p=>p.hist==='mobil')).g"),104.2,'September Anadolu group Mobil HGO uses the verified GM benchmark');
+assert.equal(run("merStats(GC,MER_PRODUCTS.find(p=>p.hist==='dsl')).a"),7304,'September Anadolu group DSL activations are complete');
+assert.equal(run("merStats(GC,MER_PRODUCTS.find(p=>p.hist==='mobil')).months"),9,'Group trend has January-September verified coverage');
+run("GC.products=MER_PRODUCTS.map(function(p){return Object.assign({},p,{s:merStats(GC,p)});})");
+const groupPerformance=run('merPerformanceTable(GC)');
+assert.ok(groupPerformance.includes('TR Δ'),'Group closing table compares Anadolu with Türkiye');
+assert.ok(!groupPerformance.includes('GM Δ'),'Group closing table does not compare Anadolu with itself');
+assert.ok(run('merHeader(GC)').includes('Grup Müdürlüğü'),'Group scope appears in the month-end header');
 run("RC.products=MER_PRODUCTS.map(function(p){return Object.assign({},p,{s:merStats(RC,p)});})");
 const regionPerformance=run('merPerformanceTable(RC)');
 assert.ok(regionPerformance.includes('GM Δ'),'Region closing table has GM comparison');
