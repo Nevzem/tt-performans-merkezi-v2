@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-10-07 · Ay Sonu Karnesi · Grup Müdürlüğü';
+const APP_BUILD = '2026-10-07 · Ay Sonu Karnesi · Grup Müdürlüğü + Faturalı/Faturasız';
