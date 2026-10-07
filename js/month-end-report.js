@@ -259,8 +259,13 @@ function merSignals(ctx){
 }
 function merPerformanceTable(ctx){
   var region=ctx.scope==='region',group=ctx.scope==='group';
+  /* Ay kapanışı ürün seti sabittir: Faturalı/Faturasız bu tablodan filtrelenmez. */
+  var closingProducts=MER_PRODUCTS.map(function(base){
+    var current=(ctx.products||[]).find(function(p){return p.key===base.key;});
+    return current||Object.assign({},base,{s:merStats(ctx,base)});
+  });
   var head='<th>Ürün</th><th>Hedef</th><th>Gerçekleşen</th><th>HGO</th><th>Fark</th>'+(region?'<th>GM Δ</th><th>TR Δ</th>':group?'<th>TR Δ</th>':'<th>Bölge Δ</th>');
-  return '<table class="mer-data-table mer-closing-table '+(region?'mer-region-closing':'')+'"><thead><tr>'+head+'</tr></thead><tbody>'+ctx.products.map(function(p){
+  return '<table class="mer-data-table mer-closing-table '+(region?'mer-region-closing':'')+'"><thead><tr>'+head+'</tr></thead><tbody>'+closingProducts.map(function(p){
     var v=p.s,tail;
     if(region){
       var gm=merRegionBenchmark(ctx,p,'gm'),tr=merRegionBenchmark(ctx,p,'tr');
