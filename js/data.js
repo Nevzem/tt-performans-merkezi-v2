@@ -19,6 +19,7 @@ const LOAD_KEY_EDM = "tt_son_yukleme_edm";
    ───────────────────────────────── */
 const APP_CONFIG = {
   bolge:         'KUZEY ANADOLU',
+  grup:          'ANADOLU',
   edmAnaBayiKod: '507868',
   trendMaxDays:  30,
   /* SY ÖZET sheet filtresi — büyük harf, parser.js kullanır */
