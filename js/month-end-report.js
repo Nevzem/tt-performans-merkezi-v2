@@ -31,10 +31,11 @@ function merPeriodLabel(period){return period?new Date(period+'-01T12:00:00Z').t
 function merMonthShort(period){return new Date(period+'-01T12:00:00Z').toLocaleDateString('tr-TR',{month:'short',timeZone:'UTC'});}
 function merTone(v){return v == null?'neutral':v>=100?'good':v>=80?'watch':'low';}
 function merDeltaTone(v){return v == null?'neutral':v>=0?'good':'low';}
-function merCaptureUpload(parsed,edm){
+function merCaptureUpload(parsed,edm,groupEdm){
   var period=merPeriodKey(parsed.donem); if(!period)return;
-  var days=parsed.syData||{};
-  MER_LIVE={period:period,ttm:parsed.detay,edm:edm,matrix:parsed.matrix,sy:parsed.syData,uploadedAt:new Date().toISOString(),sample:false,closed:!!(days.calismaGun>0 && days.calisilanGun>=days.calismaGun)};
+  var days=parsed.syData||{},groupTtm=parsed.detay&&parsed.detay.grupBayiler?{bayiler:parsed.detay.grupBayiler,pers:{}}:null;
+  var group=merRollupGroup({ttm:groupTtm,edm:groupEdm});
+  MER_LIVE={period:period,ttm:parsed.detay,edm:edm,group:group,matrix:parsed.matrix,sy:parsed.syData,uploadedAt:new Date().toISOString(),sample:false,closed:!!(days.calismaGun>0 && days.calisilanGun>=days.calismaGun)};
   MER_ARCHIVES[period]=MER_LIVE;
   try{localStorage.setItem(MER_STORE,JSON.stringify(MER_ARCHIVES));merStorageNote='';}catch(e){merStorageNote='Bu ayın raporu cihazda saklanamadı. Ayrıntılı PDF’yi indirin.';}
   merPeriodSelection='current';
@@ -54,6 +55,43 @@ function merSource(period){
 }
 function merSourceAt(period){return MER_LIVE && MER_LIVE.period===period?MER_LIVE:merSource(period);}
 function merRows(source,channel){return Object.values((source && source[channel.toLowerCase()] && source[channel.toLowerCase()].bayiler)||{}).map(function(d){return Object.assign({},d,{channel:channel,id:channel+':'+d.kod});});}
+function merGroupRows(source,channel){
+  var bucket=source&&source.group&&source.group[channel.toLowerCase()];
+  return Object.values((bucket&&bucket.bayiler)||{}).map(function(d){return Object.assign({},d,{channel:channel,id:'GROUP:'+channel+':'+d.kod});});
+}
+function merRollupRegionRows(detail,channel){
+  var buckets={};Object.values((detail&&detail.bayiler)||{}).forEach(function(d){
+    var region=(d.bolge||'Bölge bilgisi yok').trim()||'Bölge bilgisi yok',key=region.toLocaleUpperCase('tr-TR');
+    if(!buckets[key])buckets[key]={name:region,members:[]};buckets[key].members.push(d);
+  });
+  var out={};Object.keys(buckets).sort(function(a,b){return a.localeCompare(b,'tr');}).forEach(function(key){
+    var g=buckets[key],row={kod:key,b:g.name,fullName:g.name,bolge:g.name,memberCount:g.members.length,prods:{},commitments:{}};
+    MER_PRODUCTS.forEach(function(p){row.prods[p.key]=merAggregate(g.members,p.key);});
+    ['dsl','mobil','mobilUpsell'].forEach(function(k){row.commitments[k]=merCommitmentTotal(g.members,k);});
+    out[channel+':'+key]=row;
+  });return out;
+}
+function merRollupGroup(group){
+  if(!group)return null;
+  var ttm=merRollupRegionRows(group.ttm,'TTM'),edm=merRollupRegionRows(group.edm,'EDM');
+  if(!Object.keys(ttm).length&&!Object.keys(edm).length)return null;
+  return {ttm:{bayiler:ttm,pers:{}},edm:{bayiler:edm,pers:{}}};
+}
+function merGroupHistoricalValue(period,p){
+  var pack=typeof HIST2_CHANNEL_SUMMARY!=='undefined'&&HIST2_CHANNEL_SUMMARY&&HIST2_CHANNEL_SUMMARY.gmPeriods&&HIST2_CHANNEL_SUMMARY.gmPeriods[period];
+  var bench=typeof HIST2_REGION_BENCHMARKS!=='undefined'&&HIST2_REGION_BENCHMARKS&&HIST2_REGION_BENCHMARKS.periods&&HIST2_REGION_BENCHMARKS.periods[period];
+  var hgo=bench&&bench.gm&&typeof bench.gm[p.hist]==='number'?bench.gm[p.hist]:null;
+  if(!pack)return hgo==null?null:{a:null,h:null,g:hgo};
+  function total(values){return Array.isArray(values)&&values.length&&!values.some(function(v){return v==null||!isFinite(v);})?values.reduce(function(a,v){return a+Number(v);},0):null;}
+  var actual=null;
+  if(p.hist==='tv'){
+    var ip=total(pack.values&&pack.values.iptv),uy=total(pack.values&&pack.values.uydu);
+    actual=ip==null||uy==null?null:ip+uy;
+  }else actual=total(pack.values&&pack.values[p.hist]);
+  if(actual==null)return hgo==null?null:{a:null,h:null,g:hgo};
+  var target=hgo!=null&&hgo>0?actual/(hgo/100):null;
+  return {a:actual,h:target,g:hgo};
+}
 /* National branches are available only to cari reports. Uploaded rows win;
  * closed legacy archives can recover matching-month external history. */
 function merAccountRows(source){
@@ -91,8 +129,9 @@ function merContext(source,scope,selection){
   var rows=merRows(source,'TTM'),name='',code='',group=null;
   if(scope==='branch'){rows=rows.filter(function(d){return d.kod===selection;});name=rows.length?merName(rows[0]):'Şube bulunamadı';code=selection;}
   else if(scope==='account'){group=merGroups(source).find(function(g){return g.id===selection;});rows=group?group.rows:[];name=group?group.name:'Cari bulunamadı';code=group && group.code || 'Ana kod doğrulanmadı';}
+  else if(scope==='group'){rows=merGroupRows(source,'TTM').concat(merGroupRows(source,'EDM'));name='Anadolu Grup Müdürlüğü';code='TTM + EDM';}
   else{rows=rows.concat(merRows(source,'EDM'));name='Kuzey Anadolu Bölgesi';code='TTM + EDM';}
-  return {source:source,scope:scope,selection:selection,rows:rows,name:name,code:code,group:group,channels:scope==='region' && source.edm?['TTM','EDM']:['TTM']};
+  return {source:source,scope:scope,selection:selection,rows:rows,name:name,code:code,group:group,channels:(scope==='region'||scope==='group')?['TTM','EDM']:['TTM']};
 }
 /* Cari histories use each month's reported branch membership. A missing
  * branch never becomes a zero record, and missing individual branches stay null. */
@@ -109,6 +148,10 @@ function merAccountMonthRows(ctx,src){
 }
 function merHistoricalValue(ctx,period,p){
   var src=merSourceAt(period);if(!src)return null;
+  if(ctx.scope==='group'){
+    var groupRows=merGroupRows(src,'TTM').concat(merGroupRows(src,'EDM'));
+    return groupRows.length?merAggregate(groupRows,p.key):merGroupHistoricalValue(period,p);
+  }
   if(ctx.scope==='region'){
     if(!ctx.source.edm || !src.edm)return null;
     return merAggregate(merRows(src,'TTM').concat(merRows(src,'EDM')),p.key);
@@ -122,7 +165,7 @@ function merHistoricalValue(ctx,period,p){
   return merAggregate(rows,p.key);
 }
 function merStats(ctx,p){
-  var current=merAggregate(ctx.rows,p.key),period=ctx.source.period;
+  var current=(ctx.scope==='group'&&!ctx.rows.length?merGroupHistoricalValue(ctx.source.period,p):merAggregate(ctx.rows,p.key))||{a:null,h:null,g:null},period=ctx.source.period;
   var series=[],pairs=[],year=period && period.slice(0,4),month=period && +period.slice(5);
   if(period)for(var i=1;i<=month;i++){
     var dt=year+'-'+String(i).padStart(2,'0'),value=dt===period?current:merHistoricalValue(ctx,dt,p);
@@ -136,7 +179,7 @@ function merStats(ctx,p){
   return Object.assign({},current,{gap:current.a==null || current.h==null || current.h<=0?null:current.a-current.h,mom:merChange(current.a,prev&&prev.a),prevA:prev&&prev.a!=null?prev.a:null,prevH:prev&&prev.h!=null?prev.h:null,yoy:merChange(current.a,prevYear&&prevYear.a),prevYearA:prevYear&&prevYear.a!=null?prevYear.a:null,prevYearH:prevYear&&prevYear.h!=null?prevYear.h:null,series:series,ytdA:ytdA,ytdH:ytdH,ytdG:merRate(ytdA,ytdH),ytdGap:ytdA==null||ytdH==null||ytdH<=0?null:ytdA-ytdH,ytdYoY:merChange(pairA,pairB),pairA:pairA,pairB:pairB,months:series.length,pairMonths:pairs.length,expectedMonths:month||0});
 }
 function merRegionBenchmark(ctx,p,kind){
-  if(ctx.scope!=='region')return null;
+  if(ctx.scope!=='region'&&ctx.scope!=='group')return null;
   var matrix=ctx.source.matrix||{}, live=matrix.regionBenchmarks&&matrix.regionBenchmarks[kind];
   if(live && typeof live[p.hist]==='number')return live[p.hist];
   var archive=typeof HIST2_REGION_BENCHMARKS!=='undefined'&&HIST2_REGION_BENCHMARKS&&HIST2_REGION_BENCHMARKS.periods&&HIST2_REGION_BENCHMARKS.periods[ctx.source.period];
@@ -153,7 +196,7 @@ function merBenchmark(ctx,p,kind){
   return tr && tr[p.hist] && typeof tr[p.hist].hgo==='number'?tr[p.hist].hgo:null;
 }
 function merRank(ctx,p){
-  if(ctx.scope==='region')return null;
+  if(ctx.scope==='region'||ctx.scope==='group')return null;
   var entries=ctx.scope==='account'?merGroups(ctx.source).map(function(g){return {id:g.id,rows:g.rows};}):merRows(ctx.source,'TTM').map(function(d){return {id:d.kod,rows:[d]};});
   entries=entries.map(function(e){return {id:e.id,v:merAggregate(e.rows,p.key)};}).filter(function(e){return e.v.g!=null;}).sort(function(a,b){return b.v.g-a.v.g || b.v.a-a.v.a || a.id.localeCompare(b.id);});
   var ix=entries.findIndex(function(e){return e.id===ctx.selection;});return ix<0?null:(ix+1)+' / '+entries.length;
@@ -161,6 +204,10 @@ function merRank(ctx,p){
 function merDetailRows(ctx){
   if(ctx.scope==='branch')return ((ctx.source.ttm.pers||{})[ctx.selection]||[]).map(function(p){return {name:p.p,sub:'Personel',prods:p.prods};}).sort(function(a,b){var aa=merAggregate([a],'Toplam Mobil').a,bb=merAggregate([b],'Toplam Mobil').a;return (bb||0)-(aa||0)||a.name.localeCompare(b.name,'tr');});
   if(ctx.scope==='account')return ctx.rows.map(function(d){return {name:merName(d),sub:d.kod+' · '+(d.il||''),prods:d.prods};});
+  if(ctx.scope==='group'){
+    var regions={};ctx.rows.forEach(function(d){var name=d.bolge||merName(d)||'Bölge bilgisi yok',id=name.toLocaleUpperCase('tr-TR');if(!regions[id])regions[id]={name:name,sub:'TTM + EDM',members:[]};regions[id].members.push(d);});
+    return Object.values(regions).map(function(g){var prods={};MER_PRODUCTS.forEach(function(p){prods[p.key]=merAggregate(g.members,p.key);});var branchCount=g.members.reduce(function(n,d){return n+(Number(d.memberCount)||1);},0);return {name:g.name,sub:branchCount+' bayi · '+Array.from(new Set(g.members.map(function(d){return d.channel;}))).join(' + '),prods:prods};}).sort(function(a,b){return (b.prods['Toplam Mobil'].a||0)-(a.prods['Toplam Mobil'].a||0);});
+  }
   var grouped={};ctx.rows.forEach(function(d){var name=d.sy||'Yönetici bilgisi yok',id=typeof normalizeSyName==='function'?normalizeSyName(name):name.toLocaleUpperCase('tr-TR');if(!grouped[id])grouped[id]={name:name,sub:'TTM + EDM',members:[]};grouped[id].members.push(d);});
   return Object.values(grouped).map(function(g){var prods={};MER_PRODUCTS.forEach(function(p){prods[p.key]=merAggregate(g.members,p.key);});var branchCount=g.members.reduce(function(n,d){return n+(Number(d.memberCount)||1);},0);return {name:g.name,sub:branchCount+' bayi · '+Array.from(new Set(g.members.map(function(d){return d.channel;}))).join(' + '),prods:prods};}).sort(function(a,b){return (b.prods['Toplam Mobil'].a||0)-(a.prods['Toplam Mobil'].a||0);});
 }
@@ -177,6 +224,8 @@ function merModel(){
   if(source.sample)ctx.notes.push('Örnek veri; güncel kapanış Excel’ini yükleyin.');
   if(!source.closed)ctx.notes.push('Ara dönem verisi; ay kapanışı henüz doğrulanmadı.');
   if(ctx.scope==='region' && !source.edm)ctx.notes.push('EDM bölge verisi bulunamadı; yalnız TTM gösteriliyor.');
+  if(ctx.scope==='group' && !ctx.rows.length)ctx.notes.push('Arşiv Grup Müdürlüğü toplamları doğrulanmış Anadolu kapanış özetlerinden gösteriliyor; bölge kırılımı için güncel kapanış Excel’ini yükleyin.');
+  if(ctx.scope==='group' && ctx.rows.length && (!source.group || !source.group.edm || !Object.keys(source.group.edm.bayiler||{}).length))ctx.notes.push('Grup Müdürlüğü EDM verisi bulunamadı; yalnız TTM gösteriliyor.');
   if(ctx.scope==='account')ctx.notes.push('Cari: diğer bölgelerdeki bağlı şubeler dahil; geçmişte her ayın raporlanan şubeleri toplanır.');
   if(ctx.scope==='account' && ctx.group && ctx.group.code==='7000514' && source.period>='2025-07' && ctx.rows.length<4 && !source.ttm.cariBayiler)ctx.notes.push('Öztürk’ün tüm şubeleri için güncel TTM Excel’ini yeniden yükleyin.');
   if(ctx.group && !ctx.group.verified)ctx.notes.push('Cari grubu şirket adıyla eşleştirildi. Ana cari kodunu eşleştirmelerden doğrulayın.');
@@ -202,21 +251,24 @@ function merHeader(ctx){
   var name=ctx.name;var short=ctx.rows[0] && ctx.rows[0].b;
   if(short && short.length<name.length && ctx.scope!=='region')name=short;
   if(name.length>60)name=name.slice(0,57)+'…';
-  var scope=ctx.scope==='branch'?'ŞUBE · '+ctx.code:ctx.scope==='account'?'CARİ TOPLAMI · '+ctx.rows.length+' ŞUBE':'TTM + EDM · '+ctx.rows.length+' BAYİ';
-  return '<header class="mer-head"><svg class="mer-header-art" viewBox="0 0 340 100" fill="none"><path d="M10 95L90 45 155 15 228 51 335 80M10 98L145 94 155 15 175 96 228 51 277 96M38 95L90 45 145 94 155 15 228 51 335 80" stroke="#00baff" stroke-width="1.2"/><path d="M145 96L155 15 175 96" stroke="#ed0789" stroke-width="2"/><path d="M10 90L90 40 155 10 228 46 335 75M10 100L90 50 155 20 228 56 335 85" stroke="#1264e2" opacity=".6"/></svg><div class="mer-wordmark">Türk Telekom<svg viewBox="0 0 55 55"><path d="M6 9L19 17 6 25Z" fill="#057cac"/><path d="M22 4L48 19 22 35Z" fill="#18b8db"/><path d="M13 30L34 42 13 54Z" fill="#00a8ca"/><path d="M38 1L49 7 38 14Z" fill="#e6007e"/></svg></div><div class="mer-head-main"><h1>AY SONU PERFORMANS KARNESİ</h1><p title="'+merEsc(ctx.name)+'">'+merEsc(name)+' <span>· '+merEsc(scope)+'</span></p></div><div class="mer-head-scopes">'+[['branch','Şube'],['account','Cari'],['region','Tüm Bölge']].map(function(v){return '<button class="'+(ctx.scope===v[0]?'active':'')+'" onclick="merSetScope(\''+v[0]+'\')">'+v[1]+'</button>';}).join('')+'</div><div class="mer-period"><strong>'+merEsc(merPeriodLabel(ctx.source.period).toLocaleUpperCase('tr-TR'))+'</strong><span class="mer-status">'+status+'</span></div></header>';
+  var scope=ctx.scope==='branch'?'ŞUBE · '+ctx.code:ctx.scope==='account'?'CARİ TOPLAMI · '+ctx.rows.length+' ŞUBE':ctx.scope==='group'?'ANADOLU · TTM + EDM':'TTM + EDM · '+ctx.rows.length+' BAYİ';
+  return '<header class="mer-head"><svg class="mer-header-art" viewBox="0 0 340 100" fill="none"><path d="M10 95L90 45 155 15 228 51 335 80M10 98L145 94 155 15 175 96 228 51 277 96M38 95L90 45 145 94 155 15 228 51 335 80" stroke="#00baff" stroke-width="1.2"/><path d="M145 96L155 15 175 96" stroke="#ed0789" stroke-width="2"/><path d="M10 90L90 40 155 10 228 46 335 75M10 100L90 50 155 20 228 56 335 85" stroke="#1264e2" opacity=".6"/></svg><div class="mer-wordmark">Türk Telekom<svg viewBox="0 0 55 55"><path d="M6 9L19 17 6 25Z" fill="#057cac"/><path d="M22 4L48 19 22 35Z" fill="#18b8db"/><path d="M13 30L34 42 13 54Z" fill="#00a8ca"/><path d="M38 1L49 7 38 14Z" fill="#e6007e"/></svg></div><div class="mer-head-main"><h1>AY SONU PERFORMANS KARNESİ</h1><p title="'+merEsc(ctx.name)+'">'+merEsc(name)+' <span>· '+merEsc(scope)+'</span></p></div><div class="mer-head-scopes">'+[['branch','Şube'],['account','Cari'],['region','Tüm Bölge'],['group','Grup Müdürlüğü']].map(function(v){return '<button class="'+(ctx.scope===v[0]?'active':'')+'" onclick="merSetScope(\''+v[0]+'\')">'+v[1]+'</button>';}).join('')+'</div><div class="mer-period"><strong>'+merEsc(merPeriodLabel(ctx.source.period).toLocaleUpperCase('tr-TR'))+'</strong><span class="mer-status">'+status+'</span></div></header>';
 }
 function merSignals(ctx){
   return '<div class="mer-signals">'+ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;});}).map(function(p){var d=merProductDesign(p.hist),v=p.s,known=v.gap!=null,label=!known?'VERİ YOK':v.gap>0?'HEDEF ÜSTÜ':v.gap===0?'HEDEF TAMAM':'KALAN',tone=!known?'neutral':v.gap>=0?'good':'low';return '<article class="mer-signal" style="--mer-product:'+d[2]+'"><div class="mer-signal-title">'+merIcon(d[3])+'<div><h3>'+d[0].toLocaleUpperCase('tr-TR')+'</h3><p>'+d[1]+'</p></div></div><div class="mer-signal-body">'+merHgoRing(v.g,d[2],p.hist)+'<dl><dt>HEDEF</dt><dd>'+merN(v.h)+'</dd><dt>GERÇEKLEŞEN</dt><dd>'+merN(v.a)+'</dd></dl></div><div class="mer-signal-gap '+tone+'"><span>'+merIcon(known&&v.gap>=0?'trend':'box')+label+'</span><strong>'+(known?(v.gap>0?'+':'')+merN(Math.abs(v.gap))+' <small>adet</small>':'—')+'</strong></div></article>';}).join('')+'</div>';
 }
 function merPerformanceTable(ctx){
-  var region=ctx.scope==='region';
-  var head='<th>Ürün</th><th>Hedef</th><th>Gerçekleşen</th><th>HGO</th><th>Fark</th>'+(region?'<th>GM Δ</th><th>TR Δ</th>':'<th>Bölge Δ</th>');
+  var region=ctx.scope==='region',group=ctx.scope==='group';
+  var head='<th>Ürün</th><th>Hedef</th><th>Gerçekleşen</th><th>HGO</th><th>Fark</th>'+(region?'<th>GM Δ</th><th>TR Δ</th>':group?'<th>TR Δ</th>':'<th>Bölge Δ</th>');
   return '<table class="mer-data-table mer-closing-table '+(region?'mer-region-closing':'')+'"><thead><tr>'+head+'</tr></thead><tbody>'+ctx.products.map(function(p){
     var v=p.s,tail;
     if(region){
       var gm=merRegionBenchmark(ctx,p,'gm'),tr=merRegionBenchmark(ctx,p,'tr');
       var gmDiff=v.g==null||gm==null?null:v.g-gm,trDiff=v.g==null||tr==null?null:v.g-tr;
       tail='<td class="'+merDeltaTone(gmDiff)+'" title="GM HGO '+merP(gm)+'">'+merSigned(gmDiff,' puan')+'</td><td class="'+merDeltaTone(trDiff)+'" title="TR HGO '+merP(tr)+'">'+merSigned(trDiff,' puan')+'</td>';
+    }else if(group){
+      var tr=merRegionBenchmark(ctx,p,'tr'),trDiff=v.g==null||tr==null?null:v.g-tr;
+      tail='<td class="'+merDeltaTone(trDiff)+'" title="TR HGO '+merP(tr)+'">'+merSigned(trDiff,' puan')+'</td>';
     }else{
       var r=merBenchmark(ctx,p,'region'),diff=v.g==null||r==null?null:v.g-r;
       tail='<td class="'+merDeltaTone(diff)+'">'+merSigned(diff,' puan')+'</td>';
@@ -230,11 +282,12 @@ function merCommitmentTotal(rows,key){
 }
 function merCommitments(ctx){
   var ttmRows=ctx.rows.filter(function(r){return r.channel!=='EDM';});
+  var wide=ctx.scope==='region'||ctx.scope==='group';
   var list=[
     {label:'DSL TAAHHÜT',key:'dsl',rows:ctx.rows,color:'#00a99b'},
-    {label:ctx.scope==='region'?'MOBİL TAAHHÜT · TTM':'MOBİL TAAHHÜT',key:'mobil',rows:ttmRows,color:'#087cfa'}
+    {label:wide?'MOBİL TAAHHÜT · TTM':'MOBİL TAAHHÜT',key:'mobil',rows:ttmRows,color:'#087cfa'}
   ];
-  if(ctx.scope==='region')list.push({label:'MOBİL TAAHHÜT UPSELL · EDM',key:'mobilUpsell',rows:ctx.rows.filter(function(r){return r.channel==='EDM';}),color:'#9332f5'});
+  if(wide)list.push({label:'MOBİL TAAHHÜT UPSELL · EDM',key:'mobilUpsell',rows:ctx.rows.filter(function(r){return r.channel==='EDM';}),color:'#9332f5'});
   var dsl=merAggregate(ttmRows,'DSL').a,iptv=merAggregate(ttmRows,'IPTV').a,ratio=dsl!=null&&dsl>0&&iptv!=null?iptv/dsl*100:null;
   list.push({label:'IPTV / DSL ORANI · TTM',value:ratio,color:'#ef007e',percent:true});
   return '<div class="mer-commitments">'+list.map(function(p){
@@ -259,11 +312,11 @@ function merSpark(s,color,period,account){
 function merTrends(ctx){
   return '<div class="mer-trends">'+ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;});}).map(function(p){var d=merProductDesign(p.hist);return '<div class="mer-trend" style="--mer-product:'+d[2]+'"><div class="mer-trend-h"><b>'+d[0].toLocaleUpperCase('tr-TR')+'</b></div>'+merSpark(p.s,d[2],ctx.source.period,ctx.scope==='account')+'</div>';}).join('')+'</div>';
 }
-function merDetailTitle(ctx){return ctx.scope==='branch'?'PERSONEL PERFORMANSI':ctx.scope==='account'?'ŞUBE KARŞILAŞTIRMASI':'SATIŞ YÖNETİCİLERİ';}
+function merDetailTitle(ctx){return ctx.scope==='branch'?'PERSONEL PERFORMANSI':ctx.scope==='account'?'ŞUBE KARŞILAŞTIRMASI':ctx.scope==='group'?'BÖLGE MÜDÜRLÜKLERİ':'SATIŞ YÖNETİCİLERİ';}
 function merDetailsTable(ctx,rows){
   var keys=['Toplam Mobil','DSL','IPTV','Uydu','Akıllı Cihaz','Diğer Cihaz'],names=['Mobil','DSL','IPTV','Uydu TV','Cihaz','Diğer Cihaz'];
   var n=rows.length,font=n<=5?11:n<=8?10:n<=12?9:8,rowHeight=n?Math.min(27,115/n):27;
-  return '<table class="mer-data-table mer-details-table '+(n>5?'mer-compact':'')+'" style="--mer-detail-font:'+font+'px;--mer-detail-row:'+rowHeight+'px"><thead><tr><th>'+({branch:'Personel',account:'Şube',region:'Satış yöneticisi'}[ctx.scope])+'</th>'+names.map(function(x){return '<th>'+x+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(r){var label=ctx.scope==='account'?r.sub:r.name;return '<tr><th title="'+merEsc(r.name)+'"><span class="mer-row-name">'+merEsc(label)+'</span></th>'+keys.map(function(key){var v=merAggregate([r],key);return '<td title="Hedef '+merN(v.h)+' · Gerçekleşen '+merN(v.a)+'"><b class="mer-pill '+merTone(v.g)+'">'+merP(v.g)+'</b><small>'+merN(v.a)+'</small></td>';}).join('')+'</tr>';}).join('')+'</tbody></table>'+(rows.length?'':'<div class="mer-empty">Bu dönem için '+(ctx.scope==='branch'?'personel':'detay')+' verisi bulunamadı.</div>');
+  return '<table class="mer-data-table mer-details-table '+(n>5?'mer-compact':'')+'" style="--mer-detail-font:'+font+'px;--mer-detail-row:'+rowHeight+'px"><thead><tr><th>'+({branch:'Personel',account:'Şube',region:'Satış yöneticisi',group:'Bölge'}[ctx.scope])+'</th>'+names.map(function(x){return '<th>'+x+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(r){var label=ctx.scope==='account'?r.sub:r.name;return '<tr><th title="'+merEsc(r.name)+'"><span class="mer-row-name">'+merEsc(label)+'</span></th>'+keys.map(function(key){var v=merAggregate([r],key);return '<td title="Hedef '+merN(v.h)+' · Gerçekleşen '+merN(v.a)+'"><b class="mer-pill '+merTone(v.g)+'">'+merP(v.g)+'</b><small>'+merN(v.a)+'</small></td>';}).join('')+'</tr>';}).join('')+'</tbody></table>'+(rows.length?'':'<div class="mer-empty">Bu dönem için '+(ctx.scope==='branch'?'personel':'detay')+' verisi bulunamadı.</div>');
 }
 
 var MER_CHANNEL_AVG_PRODUCTS = [
@@ -420,13 +473,14 @@ function merChannelTable(ctx){return '<table class="mer-data-table"><thead><tr><
 function merContributionTable(ctx){
   return '<table class="mer-data-table"><thead><tr><th>Şube / Bayi kodu</th>'+MER_TRENDS.map(function(p){return '<th>'+p.label+' katkı</th>';}).join('')+'</tr></thead><tbody>'+ctx.rows.map(function(d){return '<tr><th>'+merEsc(merName(d))+'<small>'+merEsc(d.kod+' · '+(d.il||''))+'</small></th>'+MER_TRENDS.map(function(p){var v=merAggregate([d],p.key),all=merAggregate(ctx.rows,p.key);return '<td>'+merP(merRate(v.a,all.a))+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table>';
 }
-function merNotes(ctx){return '<div class="mer-notes">'+(ctx.notes.length?ctx.notes.map(merEsc).join(' · '):'Kapsam: '+(ctx.scope==='region'?'Kuzey Anadolu TTM + EDM':'Kuzey Anadolu TTM'))+'</div>';}
+function merNotes(ctx){return '<div class="mer-notes">'+(ctx.notes.length?ctx.notes.map(merEsc).join(' · '):'Kapsam: '+(ctx.scope==='group'?'Anadolu Grup Müdürlüğü TTM + EDM':ctx.scope==='region'?'Kuzey Anadolu TTM + EDM':'Kuzey Anadolu TTM'))+'</div>';}
 function merFooter(ctx){
-  var deltaNote=ctx.scope==='region'?'GM / TR Δ: HGO puan farkı':'Bölge Δ: TTM HGO farkı';
+  var deltaNote=ctx.scope==='region'?'GM / TR Δ: HGO puan farkı':ctx.scope==='group'?'TR Δ: HGO puan farkı':'Bölge Δ: TTM HGO farkı';
   return '<footer class="mer-report-footer"><div><span>'+merEsc(ctx.notes.join(' · '))+'</span><span>Kuzey Anadolu · TTM Performans Merkezi</span></div><div><span>HGO = gerçekleşen / hedef · — veri yok · '+deltaNote+'</span><span>'+merEsc(ctx.source.uploadedAt?'Yükleme '+new Date(ctx.source.uploadedAt).toLocaleDateString('tr-TR'):'Dönem '+ctx.source.period)+'</span></div></footer>';
 }
 function merSummary(ctx){
-  var detailPanel=ctx.scope==='region'?merRegionChannelCard(ctx):'<div class="mer-panel mer-actors-panel '+(ctx.details.length>5?'mer-dense':'')+'"><h2>'+merIcon('people')+merDetailTitle(ctx)+'<span>'+ctx.details.length+' '+(ctx.scope==='branch'?'personel':'şube')+'</span></h2>'+merDetailsTable(ctx,ctx.details)+'<p class="mer-caption">HGO · gerçekleşen adet</p></div>';
+  var detailUnit=ctx.scope==='branch'?'personel':ctx.scope==='group'?'bölge':'şube';
+  var detailPanel=ctx.scope==='region'?merRegionChannelCard(ctx):'<div class="mer-panel mer-actors-panel '+(ctx.details.length>5?'mer-dense':'')+'"><h2>'+merIcon('people')+merDetailTitle(ctx)+'<span>'+ctx.details.length+' '+detailUnit+'</span></h2>'+merDetailsTable(ctx,ctx.details)+'<p class="mer-caption">HGO · gerçekleşen adet</p></div>';
   return '<section class="mer-report mer-summary" id="month-end-report">'+merHeader(ctx)+merSignals(ctx)+'<div class="mer-main"><div class="mer-panel mer-performance-panel"><h2>'+merIcon('trend')+'ÜRÜN BAZLI AY KAPANIŞI</h2>'+merPerformanceTable(ctx)+merCommitments(ctx)+'</div><div class="mer-panel mer-trend-panel"><h2>'+merIcon('trend')+'ÜRÜN BAZLI TRENDLER<span class="mer-trend-key">● Gerçekleşen <i></i> Hedef</span></h2>'+merTrends(ctx)+'</div></div><div class="mer-bottom">'+detailPanel+'<div class="mer-panel mer-year-panel"><h2>'+merIcon('trend')+'PERFORMANS KARŞILAŞTIRMASI</h2>'+merYtdChart(ctx)+'</div><div class="mer-panel mer-ytd-performance"><h2>'+merIcon('target')+'YTD PERFORMANSI</h2>'+merYtdPerformance(ctx)+'</div></div>'+merFooter(ctx)+'</section>';
 }
 function merSetScope(value){merScope=value;merSelection='';renderMonthEndReport();}
@@ -457,7 +511,7 @@ function renderMonthEndReport(){
   if(!ctx.source.period){cards.innerHTML='<div class="mer-empty">Rapor dönemi bulunamadı. Güncel Excel raporunu yükleyin.</div>';return;}
   var periods=Array.from(new Set(Object.keys(MER_ARCHIVES).concat(typeof HIST2_DATA!=='undefined'?Object.keys(HIST2_DATA).filter(function(p){return HIST2_DATA[p];}):[]))).sort().reverse();
   var po='<option value="current" '+(merPeriodSelection==='current'?'selected':'')+'>Güncel · '+merPeriodLabel(merCurrent().period)+'</option>'+periods.map(function(p){return '<option value="'+p+'" '+(merPeriodSelection===p?'selected':'')+'>'+merPeriodLabel(p)+'</option>';}).join('');
-  cards.innerHTML='<div class="mer-toolbar"><div class="mer-scope-toggle">'+[['branch','Şube'],['account','Cari'],['region','Tüm Bölge']].map(function(v){return '<button class="'+(merScope===v[0]?'active':'')+'" onclick="merSetScope(\''+v[0]+'\')">'+v[1]+'</button>';}).join('')+'</div><select aria-label="Rapor dönemi" onchange="merSetPeriod(this.value)">'+po+'</select>'+(ctx.options.length?'<select class="mer-dealer-select" aria-label="Bayi veya cari" onchange="merSetSelection(this.value)">'+ctx.options.map(function(o){return '<option value="'+merEsc(o.id)+'" '+(o.id===merSelection?'selected':'')+'>'+merEsc(o.label)+'</option>';}).join('')+'</select>':'')+'<button class="mer-pdf-button" onclick="exportMonthEndPDF()">Tek Sayfa PDF</button><button class="mer-png-button" onclick="exportMonthEndPNG()">PNG Paylaş</button></div><div class="mer-scroll">'+merSummary(ctx)+'</div>'+merMappingUI(ctx.source);
+  cards.innerHTML='<div class="mer-toolbar"><div class="mer-scope-toggle">'+[['branch','Şube'],['account','Cari'],['region','Tüm Bölge'],['group','Grup Müdürlüğü']].map(function(v){return '<button class="'+(merScope===v[0]?'active':'')+'" onclick="merSetScope(\''+v[0]+'\')">'+v[1]+'</button>';}).join('')+'</div><select aria-label="Rapor dönemi" onchange="merSetPeriod(this.value)">'+po+'</select>'+(ctx.options.length?'<select class="mer-dealer-select" aria-label="Bayi veya cari" onchange="merSetSelection(this.value)">'+ctx.options.map(function(o){return '<option value="'+merEsc(o.id)+'" '+(o.id===merSelection?'selected':'')+'>'+merEsc(o.label)+'</option>';}).join('')+'</select>':'')+'<button class="mer-pdf-button" onclick="exportMonthEndPDF()">Tek Sayfa PDF</button><button class="mer-png-button" onclick="exportMonthEndPNG()">PNG Paylaş</button></div><div class="mer-scroll">'+merSummary(ctx)+'</div>'+merMappingUI(ctx.source);
   merFit();
   merEnsureHistory().then(function(){if(typeof section==='undefined'||section==='monthEnd'){if(!document.querySelector('.mer-toolbar'))return;var all=typeof HIST2_DATA!=='undefined'?Object.keys(HIST2_DATA).length:0;if(cards.dataset.merHistory!==String(all)){cards.dataset.merHistory=String(all);renderMonthEndReport();}}});
 }
@@ -472,13 +526,13 @@ async function merExportCanvases(includeDetails){
   try{var canvases=[];for(var node of host.querySelectorAll('.mer-report'))canvases.push(await merRenderCanvas(node));return {canvases:canvases,ctx:ctx};}finally{host.remove();}
 }
 function merFileName(ctx,ext){
-  var code=ctx.scope==='account'?(ctx.group && ctx.group.code||'Cari'):ctx.scope==='branch'?ctx.code:'',name=ctx.rows && ctx.rows[0] && ctx.rows[0].b||ctx.name;
+  var code=ctx.scope==='account'?(ctx.group && ctx.group.code||'Cari'):ctx.scope==='branch'?ctx.code:ctx.scope==='group'?'Anadolu Grup Müdürlüğü':'',name=ctx.rows && ctx.rows[0] && ctx.rows[0].b||ctx.name;
   if(ctx.scope==='region')name=ctx.name;
   var base=(code?code+' - ':'')+name;
   return base.replace(/[<>:"/\\|?*\u0000-\u001f]/g,' ').replace(/\s+/g,' ').replace(/[.\s]+$/g,'').trim()+'.'+ext;
 }
 function merShareText(ctx){
-  var month=new Date(ctx.source.period+'-01T12:00:00Z').toLocaleDateString('tr-TR',{month:'long',timeZone:'UTC'}),code=ctx.scope==='account'?(ctx.group && ctx.group.code||'Cari'):ctx.scope==='branch'?ctx.code:'Kuzey Anadolu';
+  var month=new Date(ctx.source.period+'-01T12:00:00Z').toLocaleDateString('tr-TR',{month:'long',timeZone:'UTC'}),code=ctx.scope==='account'?(ctx.group && ctx.group.code||'Cari'):ctx.scope==='branch'?ctx.code:ctx.scope==='group'?'Anadolu Grup Müdürlüğü':'Kuzey Anadolu';
   return month.charAt(0).toLocaleUpperCase('tr-TR')+month.slice(1)+' Kapanış - '+code;
 }
 function merExportBusy(busy){merExporting=busy;document.querySelectorAll('.mer-pdf-button,.mer-png-button').forEach(function(b){b.disabled=busy;});}
