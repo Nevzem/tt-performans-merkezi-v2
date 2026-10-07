@@ -277,7 +277,7 @@ function parseWB(wb, options) {
   });
 
   // ── Bayi Detayı ──
-  const detayBayiler = {}, detayCariBayiler = {}, detayPers = {};
+  const detayBayiler = {}, detayCariBayiler = {}, detayGrupBayiler = {}, detayPers = {};
   {
     const BP = {Postpaid:[49,50],Prepaid:[53,54],DSL:[57,58],IPTV:[69,70],Uydu:[73,74],"Akıllı Cihaz":[77,78],"Diğer Cihaz":[81,82]};
     for (const r of rowsB.slice(hib + 1)) {
@@ -290,7 +290,8 @@ function parseWB(wb, options) {
       pr["Toplam Mobil"]={h:Math.round(ph+rh),a:Math.round(pa+ra),g:(ph+rh)>0?Math.round((pa+ra)/(ph+rh)*1000)/10:null};
       pr["Toplam TV"]={h:Math.round(ih+uh),a:Math.round(ia+ua),g:(ih+uh)>0?Math.round((ia+ua)/(ih+uh)*1000)/10:null};
       pr["Toplam Cihaz"]={h:Math.round(ch+gh),a:Math.round(ca+ga),g:(ch+gh)>0?Math.round((ca+ga)/(ch+gh)*1000)/10:null};
-      const record = {kod, bolge: String(r[1]).trim(), b: shortB(r[3]), fullName: String(r[3]).trim(), anaBayiKod: r[4] ? String(r[4]).trim() : '', il: r[5]?String(r[5]).trim():"", sy: r[7]&&String(r[7]).trim()!=="-"?String(r[7]).trim():"", prods: pr};
+      const anaBolge = r[0] ? String(r[0]).trim() : '';
+      const record = {kod, anaBolge, bolge: String(r[1]).trim(), bolgeMuduru: r[6]&&String(r[6]).trim()!=="-"?String(r[6]).trim():"", b: shortB(r[3]), fullName: String(r[3]).trim(), anaBayiKod: r[4] ? String(r[4]).trim() : '', il: r[5]?String(r[5]).trim():"", sy: r[7]&&String(r[7]).trim()!=="-"?String(r[7]).trim():"", prods: pr};
       record.commitments=readCommitments(r,ttmCommitmentCols);
       record.campaignActuals={};
       for (const pn in BP) { const raw=r[BP[pn][1]]; record.campaignActuals[pn]=typeof raw==='string' && raw.trim()==='-' ? 0 : num(raw); }
@@ -298,6 +299,7 @@ function parseWB(wb, options) {
       record.campaignTargets={};
       for (const pn in BP) record.campaignTargets[pn]=num(r[BP[pn][0]]);
       detayCariBayiler[kod] = record;
+      if (anaBolge.toLocaleUpperCase('tr-TR') === (APP_CONFIG.grup || 'ANADOLU')) detayGrupBayiler[kod] = record;
       if (String(r[1]).trim().toUpperCase() === "KUZEY ANADOLU") detayBayiler[kod] = record;
     }
     const cariParents = new Set(Object.values(detayBayiler).map(d=>d.anaBayiKod).filter(Boolean));
@@ -375,7 +377,7 @@ function parseWB(wb, options) {
   }
   const dfmt = donem && donem.length === 6 ? donem.slice(0,4) + "/" + donem.slice(4) : (donem || "—");
   const fileName=options && options.fileName || '',reportDate=workbookReportDate(wb,dfmt,fileName,{calismaGun:syToplamGun,calisilanGun:syGun});
-  return { data: out, donem: dfmt, persCount, bayiCount, warnings, matrix, kupa: kupaRows, detay: { period: dfmt, reportDate: reportDate.date, reportDateSource: reportDate.source, sourceFileName:fileName, forecastDays: {d:syGun,t:syToplamGun}, bayiler: detayBayiler, cariBayiler: detayCariBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
+  return { data: out, donem: dfmt, persCount, bayiCount, warnings, matrix, kupa: kupaRows, detay: { period: dfmt, reportDate: reportDate.date, reportDateSource: reportDate.source, sourceFileName:fileName, forecastDays: {d:syGun,t:syToplamGun}, bayiler: detayBayiler, cariBayiler: detayCariBayiler, grupBayiler: detayGrupBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
 }
 
 /* ───── EDM PARSER — Dinamik kolon tespiti ───── */
@@ -476,7 +478,9 @@ function parseEDMSheet(wb, options) {
 
   /* ── 4. Kolon haritası ── */
   const C = {
+    anaBolge:   ci('Ana Bölge','Ana Bolge'),
     bolge:      ci('Bölge','Bolge'),
+    bolgeMuduru:ci('Bölge Müdürü','Bolge Muduru'),
     anaBayiKod: ci('Ana Bayi Kodu','Ana Bayi No','Üst Bayi Kodu','Ana Bayi'),
     bayiTipi:   ci('Bayi Tipi','Kanal Tipi','Segment','Tip','Kanal'),
     bayiAdi:    ci('Bayi Adı','Bayi Ad','Bayi Adi','Bayi Unvan','Acenta Adı','Acenta Ad'),
@@ -593,7 +597,9 @@ function parseEDMSheet(wb, options) {
     if (!r) continue;
 
     /* Ana Bayi Kodu filtresi */
-    if (options && options.region) {
+    if (options && options.group) {
+      if (gs(r, C.anaBolge >= 0 ? C.anaBolge : 0).toLocaleUpperCase('tr-TR') !== (APP_CONFIG.grup || 'ANADOLU')) continue;
+    } else if (options && options.region) {
       if (gs(r, C.bolge >= 0 ? C.bolge : 1).toLocaleUpperCase('tr-TR') !== APP_CONFIG.bolge) continue;
     } else if (C.anaBayiKod >= 0 && gs(r, C.anaBayiKod) !== EDM_ANA_KOD) continue;
 
@@ -659,7 +665,7 @@ function parseEDMSheet(wb, options) {
       if(C.uydA>=0)pr.Uydu={h:gnProduct(r,C.uydH),a:gnProduct(r,C.uydA)};
       pr['Toplam Mobil'] = C.mobA >= 0 ? {h:gnProduct(r,C.mobH),a:gnProduct(r,C.mobA)} : {h:pr.Postpaid.h!=null && pr.Prepaid.h!=null ? pr.Postpaid.h+pr.Prepaid.h : null,a:pr.Postpaid.a!=null && pr.Prepaid.a!=null ? pr.Postpaid.a+pr.Prepaid.a : null};
     }
-    detayBayiler[bayiKod||b]={kod:bayiKod,b,fullName:bayiAdi,anaBayiKod:gs(r,C.anaBayiKod),il,bt,sy:sy_,st:st_,prods:pr,commitments:readCommitments(r,commitmentColumns(allRows,hi))};
+    detayBayiler[bayiKod||b]={kod:bayiKod,b,fullName:bayiAdi,anaBolge:gs(r,C.anaBolge),bolge:gs(r,C.bolge),bolgeMuduru:gs(r,C.bolgeMuduru),anaBayiKod:gs(r,C.anaBayiKod),il,bt,sy:sy_,st:st_,prods:pr,commitments:readCommitments(r,commitmentColumns(allRows,hi))};
     bayiCount++;
   }
 
@@ -738,8 +744,9 @@ function wire(boxId, inputId, isPrev) {
             if (typeof merCaptureUpload === 'function') {
               const defaultEdmLog = EDM_COL_LOG;
               const regional = parseEDMSheet(wb2, {region:true});
+              const group = parseEDMSheet(wb2, {group:true});
               EDM_COL_LOG = defaultEdmLog;
-              merCaptureUpload(parsed, regional.error ? null : regional.detay);
+              merCaptureUpload(parsed, regional.error ? null : regional.detay, group.error ? null : group.detay);
             }
             if (typeof updateKanalBadge === 'function') updateKanalBadge();
           } catch(edmErr) { EDM_ERROR = "EDM parse hatası: " + edmErr.message; }
