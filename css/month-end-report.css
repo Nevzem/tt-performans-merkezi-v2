@@ -19,3 +19,12 @@
 .mer-closing-table tbody th,.mer-closing-table tbody td{padding-top:2px;padding-bottom:2px}.mer-closing-table .mer-pill{line-height:15px;padding:2px 5px}.mer-region-closing{font-size:10.5px}.mer-region-closing th:first-child{width:126px}.mer-region-closing thead th{font-size:9.2px;padding-left:2px;padding-right:2px}.mer-region-closing tbody th,.mer-region-closing tbody td{font-size:10px;padding-left:3px;padding-right:3px}.mer-region-closing .mer-pill{min-width:58px;font-size:10.5px}
 
 .mer-group-details th:first-child{width:170px}.mer-group-details .mer-region-manager{display:block;margin:1px 0 0;font-size:7px;line-height:9px;color:#607d9f;overflow:hidden;text-overflow:ellipsis}.mer-group-details .mer-group-gm-row{background:#e8f4ff!important}.mer-group-details .mer-group-gm-row th{font-weight:850;color:#08265e}
+
+/* Ay Sonu Karnesi · ürün kartı güncel + forecast HGO */
+.mer-signal-body{gap:9px}
+.mer-signal-metrics{display:grid!important;grid-template-columns:auto 1fr;column-gap:8px;row-gap:1px;align-content:center}
+.mer-signal-metrics dt{font-size:8.5px!important;line-height:11px!important}
+.mer-signal-metrics dd{font-size:14px!important;line-height:15px!important;margin:0!important;text-align:right}
+.mer-signal-metrics .mer-forecast-hgo{font-size:15px!important;font-weight:850!important}
+.mer-signal-gap{position:relative;padding-right:9px}
+.mer-signal-gap em{position:absolute;right:8px;top:-13px;font-size:7px;font-style:normal;font-weight:650;color:#7893b1}
