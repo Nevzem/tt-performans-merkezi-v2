@@ -606,7 +606,7 @@ function parseEDMSheet(wb, options) {
     const bayiAdi = gs(r,C.bayiAdi)||(r[3]?String(r[3]).trim():'');
     const bayiKod = gs(r,C.bayiKod)||(r[2]?String(r[2]).trim():'');
     if (!bayiAdi && !bayiKod) continue;
-    if (options && options.region && !/^\d+$/.test(bayiKod)) continue;
+    if (options && (options.region || options.group) && !/^\d+$/.test(bayiKod)) continue;
 
     const b   = shortB(bayiAdi||bayiKod);
     const bt  = gs(r,C.bayiTipi);
@@ -657,7 +657,7 @@ function parseEDMSheet(wb, options) {
     };
     if (C.iptvA >= 0) pr.IPTV = { h: gn(r,C.iptvH), a: gn(r,C.iptvA), g: hg(gn(r,C.iptvA),gn(r,C.iptvH),null) };
     if (C.uydA >= 0) pr.Uydu = { h: gn(r,C.uydH), a: gn(r,C.uydA), g: hg(gn(r,C.uydA),gn(r,C.uydH),null) };
-    if (options && options.region) {
+    if (options && (options.region || options.group)) {
       [['Postpaid',C.ppH,C.ppA],['Prepaid',C.fpH,C.fpA],['DSL',C.dslH,C.dslA],['Akıllı Cihaz',C.cihH,C.cihA],['Diğer Cihaz',C.cihDH,C.cihDA]].forEach(function(p) {
         pr[p[0]] = {h:gnProduct(r,p[1]),a:gnProduct(r,p[2])};
       });
