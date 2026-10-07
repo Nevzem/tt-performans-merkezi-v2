@@ -184,6 +184,17 @@ function merHistoricalValue(ctx,period,p){
   if(rows.some(function(d){return !d;}))return null;
   return merAggregate(rows,p.key);
 }
+function merForecastInfo(source){
+  var sy=source&&source.sy||{},total=Number(sy.calismaGun)||0,elapsed=Number(sy.calisilanGun)||0;
+  if(!(total>0&&elapsed>0&&elapsed<=total) && typeof DAY_NOW!=='undefined' && typeof DAY_TOTAL!=='undefined'){
+    elapsed=Number(DAY_NOW)||0;total=Number(DAY_TOTAL)||0;
+  }
+  return total>0&&elapsed>0&&elapsed<=total?{elapsed:elapsed,total:total,factor:total/elapsed}:null;
+}
+function merForecastHgo(ctx,hgo){
+  var f=merForecastInfo(ctx&&ctx.source);
+  return hgo==null||!f?null:hgo*f.factor;
+}
 function merStats(ctx,p){
   var current=(ctx.scope==='group'&&!ctx.rows.length?merGroupHistoricalValue(ctx.source.period,p):merAggregate(ctx.rows,p.key))||{a:null,h:null,g:null},period=ctx.source.period;
   var series=[],pairs=[],year=period && period.slice(0,4),month=period && +period.slice(5);
@@ -287,7 +298,11 @@ function merHeader(ctx){
   return '<header class="mer-head"><svg class="mer-header-art" viewBox="0 0 340 100" fill="none"><path d="M10 95L90 45 155 15 228 51 335 80M10 98L145 94 155 15 175 96 228 51 277 96M38 95L90 45 145 94 155 15 228 51 335 80" stroke="#00baff" stroke-width="1.2"/><path d="M145 96L155 15 175 96" stroke="#ed0789" stroke-width="2"/><path d="M10 90L90 40 155 10 228 46 335 75M10 100L90 50 155 20 228 56 335 85" stroke="#1264e2" opacity=".6"/></svg><div class="mer-wordmark">Türk Telekom<svg viewBox="0 0 55 55"><path d="M6 9L19 17 6 25Z" fill="#057cac"/><path d="M22 4L48 19 22 35Z" fill="#18b8db"/><path d="M13 30L34 42 13 54Z" fill="#00a8ca"/><path d="M38 1L49 7 38 14Z" fill="#e6007e"/></svg></div><div class="mer-head-main"><h1>AY SONU PERFORMANS KARNESİ</h1><p title="'+merEsc(ctx.name)+'">'+merEsc(name)+' <span>· '+merEsc(scope)+'</span></p></div><div class="mer-head-scopes">'+[['branch','Şube'],['account','Cari'],['region','Tüm Bölge'],['group','Grup Müdürlüğü']].map(function(v){return '<button class="'+(ctx.scope===v[0]?'active':'')+'" onclick="merSetScope(\''+v[0]+'\')">'+v[1]+'</button>';}).join('')+'</div><div class="mer-period"><strong>'+merEsc(merPeriodLabel(ctx.source.period).toLocaleUpperCase('tr-TR'))+'</strong><span class="mer-status">'+status+'</span></div></header>';
 }
 function merSignals(ctx){
-  return '<div class="mer-signals">'+ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;});}).map(function(p){var d=merProductDesign(p.hist),v=p.s,known=v.gap!=null,label=!known?'VERİ YOK':v.gap>0?'HEDEF ÜSTÜ':v.gap===0?'HEDEF TAMAM':'KALAN',tone=!known?'neutral':v.gap>=0?'good':'low';return '<article class="mer-signal" style="--mer-product:'+d[2]+'"><div class="mer-signal-title">'+merIcon(d[3])+'<div><h3>'+d[0].toLocaleUpperCase('tr-TR')+'</h3><p>'+d[1]+'</p></div></div><div class="mer-signal-body">'+merHgoRing(v.g,d[2],p.hist)+'<dl><dt>HEDEF</dt><dd>'+merN(v.h)+'</dd><dt>GERÇEKLEŞEN</dt><dd>'+merN(v.a)+'</dd></dl></div><div class="mer-signal-gap '+tone+'"><span>'+merIcon(known&&v.gap>=0?'trend':'box')+label+'</span><strong>'+(known?(v.gap>0?'+':'')+merN(Math.abs(v.gap))+' <small>adet</small>':'—')+'</strong></div></article>';}).join('')+'</div>';
+  var forecastInfo=merForecastInfo(ctx.source);
+  return '<div class="mer-signals">'+ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;});}).map(function(p){
+    var d=merProductDesign(p.hist),v=p.s,forecast=merForecastHgo(ctx,v.g),known=v.gap!=null,label=!known?'VERİ YOK':v.gap>0?'HEDEF ÜSTÜ':v.gap===0?'HEDEF TAMAM':'KALAN',tone=!known?'neutral':v.gap>=0?'good':'low';
+    return '<article class="mer-signal" style="--mer-product:'+d[2]+'"><div class="mer-signal-title">'+merIcon(d[3])+'<div><h3>'+d[0].toLocaleUpperCase('tr-TR')+'</h3><p>'+d[1]+'</p></div></div><div class="mer-signal-body">'+merHgoRing(v.g,d[2],p.hist)+'<dl class="mer-signal-metrics"><dt>HEDEF</dt><dd>'+merN(v.h)+'</dd><dt>AKTİVASYON</dt><dd>'+merN(v.a)+'</dd><dt>HGO</dt><dd>'+merP(v.g)+'</dd><dt>FORECAST HGO</dt><dd class="mer-forecast-hgo '+merTone(forecast)+'">'+merP(forecast)+'</dd></dl></div><div class="mer-signal-gap '+tone+'"><span>'+merIcon(known&&v.gap>=0?'trend':'box')+label+'</span><strong>'+(known?(v.gap>0?'+':'')+merN(Math.abs(v.gap))+' <small>adet</small>':'—')+'</strong>'+(forecastInfo?'<em>'+forecastInfo.elapsed+'/'+forecastInfo.total+' gün</em>':'')+'</div></article>';
+  }).join('')+'</div>';
 }
 function merPerformanceTable(ctx){
   var region=ctx.scope==='region',group=ctx.scope==='group';
