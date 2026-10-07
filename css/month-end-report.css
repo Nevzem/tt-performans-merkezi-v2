@@ -21,10 +21,23 @@
 .mer-group-details th:first-child{width:170px}.mer-group-details .mer-region-manager{display:block;margin:1px 0 0;font-size:7px;line-height:9px;color:#607d9f;overflow:hidden;text-overflow:ellipsis}.mer-group-details .mer-group-gm-row{background:#e8f4ff!important}.mer-group-details .mer-group-gm-row th{font-weight:850;color:#08265e}
 
 /* Ay Sonu Karnesi · ürün kartı güncel + forecast HGO */
-.mer-signal-body{gap:9px}
-.mer-signal-metrics{display:grid!important;grid-template-columns:auto 1fr;column-gap:8px;row-gap:1px;align-content:center}
-.mer-signal-metrics dt{font-size:8.5px!important;line-height:11px!important}
-.mer-signal-metrics dd{font-size:14px!important;line-height:15px!important;margin:0!important;text-align:right}
-.mer-signal-metrics .mer-forecast-hgo{font-size:15px!important;font-weight:850!important}
-.mer-signal-gap{position:relative;padding-right:9px}
-.mer-signal-gap em{position:absolute;right:8px;top:-13px;font-size:7px;font-style:normal;font-weight:650;color:#7893b1}
+.mer-signal{overflow:hidden}
+.mer-signal-title{gap:9px}
+.mer-signal-title>div{min-width:0}
+.mer-signal-title>svg{width:26px;height:23px}
+.mer-signal h3{font-size:14px;line-height:17px;overflow:hidden;text-overflow:ellipsis}
+.mer-signal-title p{font-size:9px;line-height:12px;overflow:hidden;text-overflow:ellipsis}
+.mer-signal-body{display:grid;grid-template-columns:102px minmax(0,1fr);align-items:center;gap:6px;height:129px;min-width:0}
+.mer-hgo-ring{width:96px;height:96px}
+.mer-ring-value{font-size:19px}
+.mer-ring-label{font-size:9px}
+.mer-signal-metrics{display:grid!important;grid-template-columns:46px minmax(0,1fr);column-gap:5px;row-gap:3px;align-content:center;min-width:0;width:100%;overflow:hidden}
+.mer-signal-metrics dt{font-size:7.7px!important;line-height:10px!important;letter-spacing:-.1px;overflow:hidden;text-overflow:ellipsis}
+.mer-signal-metrics dd{font-size:11.5px!important;line-height:12px!important;margin:0!important;text-align:right;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:clip}
+.mer-signal-metrics .mer-forecast-hgo{font-size:12.5px!important;line-height:13px!important;font-weight:850!important}
+.mer-signal-gap{position:relative;padding:0 8px;gap:4px}
+.mer-signal-gap>span{gap:5px;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.mer-signal-gap svg{width:16px;height:16px}
+.mer-signal-gap strong{font-size:13px;max-width:54%;overflow:hidden;text-overflow:ellipsis}
+.mer-signal-gap small{font-size:8px}
+.mer-signal-gap em{position:absolute;right:8px;top:-12px;font-size:6.5px;font-style:normal;font-weight:650;color:#7893b1;white-space:nowrap}
