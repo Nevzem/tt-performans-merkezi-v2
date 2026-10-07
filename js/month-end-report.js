@@ -57,6 +57,13 @@ function merSourceAt(period){return MER_LIVE && MER_LIVE.period===period?MER_LIV
 function merRows(source,channel){return Object.values((source && source[channel.toLowerCase()] && source[channel.toLowerCase()].bayiler)||{}).map(function(d){return Object.assign({},d,{channel:channel,id:channel+':'+d.kod});});}
 function merGroupRows(source,channel){
   var bucket=source&&source.group&&source.group[channel.toLowerCase()];
+  /* "Güncel" görünüm eski bir yerel arşivden açılmışsa Grup Müdürlüğü
+     kırılımını aynı dönemin doğrulanmış yayınlanmış kapanışından tamamla. */
+  if((!bucket||!Object.keys(bucket.bayiler||{}).length) && source && source.period && typeof HIST2_DATA!=='undefined'){
+    var doc=HIST2_DATA[source.period],published=doc&&doc.monthEnd&&doc.monthEnd.group;
+    var publishedBucket=published&&published[channel.toLowerCase()];
+    if(publishedBucket&&Object.keys(publishedBucket.bayiler||{}).length)bucket=publishedBucket;
+  }
   return Object.values((bucket&&bucket.bayiler)||{}).map(function(d){return Object.assign({},d,{channel:channel,id:'GROUP:'+channel+':'+d.kod});});
 }
 function merRollupRegionRows(detail,channel){
@@ -78,6 +85,19 @@ function merRollupGroup(group){
   return {ttm:{bayiler:ttm,pers:{}},edm:{bayiler:edm,pers:{}}};
 }
 function merGroupHistoricalValue(period,p){
+  /* Önce doğrulanmış kapanıştaki gerçek Grup Müdürlüğü satırlarını kullan.
+     Bu özellikle Faturalı/Faturasız hedef ve gerçekleşen adetlerini korur. */
+  if(typeof HIST2_DATA!=='undefined'){
+    var doc=HIST2_DATA[period],published=doc&&doc.monthEnd&&doc.monthEnd.group;
+    if(published){
+      var pubRows=[];
+      ['ttm','edm'].forEach(function(ch){Object.values((published[ch]&&published[ch].bayiler)||{}).forEach(function(d){pubRows.push(d);});});
+      if(pubRows.length){
+        var exact=merAggregate(pubRows,p.key);
+        if(exact.a!=null||exact.h!=null)return exact;
+      }
+    }
+  }
   var pack=typeof HIST2_CHANNEL_SUMMARY!=='undefined'&&HIST2_CHANNEL_SUMMARY&&HIST2_CHANNEL_SUMMARY.gmPeriods&&HIST2_CHANNEL_SUMMARY.gmPeriods[period];
   var bench=typeof HIST2_REGION_BENCHMARKS!=='undefined'&&HIST2_REGION_BENCHMARKS&&HIST2_REGION_BENCHMARKS.periods&&HIST2_REGION_BENCHMARKS.periods[period];
   var hgo=bench&&bench.gm&&typeof bench.gm[p.hist]==='number'?bench.gm[p.hist]:null;
