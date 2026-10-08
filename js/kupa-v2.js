@@ -80,8 +80,8 @@ function kupaApplyPeriodRules(rows) {
   rows.sort(function(a,b){
     return (a.toplam==null)-(b.toplam==null) ||
       ((b.toplam||0)-(a.toplam||0)) ||
-      (period==='2026-09' ? ((b.cihaz||0)-(a.cihaz||0)) : ((b.iptv||0)-(a.iptv||0))) ||
-      ((b.dsl||0)-(a.dsl||0)) || String(a.kod).localeCompare(String(b.kod),'tr');
+      (period==='2026-09' ? ((b.cihaz||0)-(a.cihaz||0)) || ((b.dsl||0)-(a.dsl||0)) : 0) ||
+      String(a.kod).localeCompare(String(b.kod),'tr');
   });
   return rows;
 }
@@ -268,7 +268,7 @@ function _kbBiggestMovers(K, prevSnap) {
   });
   return { up: up, leastUp: leastUp };
 }
-function renderKupaMovers(K, prevSnap) {
+function renderKupaMovers(K, prevSnap, bonusRows) {
   var m = _kbBiggestMovers(K, prevSnap);
   var leastUpEmpty = prevSnap ? 'Bugün puanı yükselen bayi yok' : 'Henüz karşılaştırma verisi yok';
 
@@ -287,7 +287,7 @@ function renderKupaMovers(K, prevSnap) {
   /* Monthly bonus KPI; meeting the KPI does not by itself establish a payout. */
   var october = kupaPeriod() === '2026-10';
   var aldiN = 0, yakinN = 0, disiN = 0, bilinN = 0;
-  K.forEach(function(r) {
+  (bonusRows || K).forEach(function(r) {
     var hgo = october ? r.iptv : r.cihaz;
     if (hgo == null) bilinN++;
     else if (hgo >= 105) aldiN++;
@@ -379,7 +379,7 @@ function renderKupaV2() {
     renderKupaRules() +
     renderKupaPodium(K, prevSnap) +
     renderKupaTable(K, prevSnap) +
-    renderKupaMovers(K, prevSnap) +
+    renderKupaMovers(K, prevSnap, allRows) +
     (allRows.length > K.length ? '<div class="kb-missing">' + (allRows.length-K.length) + ' bayi eksik DSL/Mobil HGO nedeniyle sıralamaya alınmadı.</div>' : '') +
     renderKupaBanner() +
   '</div>';
