@@ -1,4 +1,4 @@
-/* October 2026: fixed groups, Mobil/DSL current HGO; other products stay quantity-based. Preview-only branch. */
+/* October 2026: fixed groups, Mobil/DSL HGO; other products remain quantity based. */
 var OC_PERIOD = '2026-10';
 var OC_GROUPS = [
   [['4100089','Kılavuzlar','Kırıkkale'],['4052718','Asis','Samsun'],['4100781','Asis','Çorum'],['4054927','Eymen','Çankırı'],['4036313','Bakan Telekom','Tokat']],
@@ -13,7 +13,7 @@ var OC_RULES = [
   {key:'mobil',label:'Mobil taahhüt',points:1,commitment:true},
   {key:'dsl',label:'DSL taahhüt',points:3,commitment:true}
 ];
-// Only used to compare against the previous October calculation in this preview branch.
+// Previous quantity calculation is retained for the optional comparison panel.
 var OC_LEGACY_RULES = OC_RULES.map(function(rule){
   if(rule.key==='Toplam Mobil')return {key:rule.key,label:'Mobil',points:5};
   if(rule.key==='DSL')return {key:rule.key,label:'DSL',points:6};
@@ -130,7 +130,7 @@ function ocComparisonHTML(current,period) {
         return '<tr><td>'+ocNumber(r.rank)+'</td><td><strong>'+ocEsc(r.name)+'</strong><small>'+ocEsc(r.code)+' · '+ocEsc(r.city)+'</small></td><td>'+ocNumber(r.oldTotal)+'</td><td><b>'+ocNumber(r.total)+'</b></td><td class="'+scoreTone+'">'+ocSigned(r.pointDiff)+'</td><td>'+ocNumber(r.oldRank)+'</td><td class="'+rankTone+'">'+ocSigned(r.rankDiff)+'</td></tr>';
       }).join('')+'</tbody></table></div></div>';
   }).join('');
-  return '<section class="oc-simulation" aria-label="Canlıya alınmamış eski ve yeni Ekim puan karşılaştırması"><header><b>HGO PUANLAMA · ÖN İZLEME</b><span>CANLIDA DEĞİL</span></header><p>Eski: Mobil adet × 5, DSL adet × 6. Yeni: Mobil HGO (%) × 4, DSL HGO (%) × 5. Diğer ürünler değişmiyor. HGO, yüklenen Ekim raporunun gerçekleşen/hedef oranından hesaplanır; forecast uygulanmaz.</p><p><strong>'+complete+' / 23 bayi karşılaştırılabildi.</strong> '+(complete<23?'Eksik veri için puan ve sıra farkı gösterilmez. Ekim raporunu Ayarlar’dan yükleyin.':'Yeni puana göre grup içi sıralama aşağıdadır.')+' Puan ölçeği değiştiği için fark, satış değişimini değil hesaplama yöntemi değişikliğini gösterir.</p>'+tables+'</section>';
+  return '<details class="oc-compare-details"><summary>Eski – Yeni Puan Karşılaştırması <small>Grup bazlı ayrıntıları göster</small></summary><section class="oc-simulation" aria-label="Eski ve yeni Ekim puan karşılaştırması"><header><b>HGO PUAN KARŞILAŞTIRMASI</b><span>AYNI RAPOR</span></header><p>Eski: Mobil adet × 5, DSL adet × 6. Yeni: Mobil HGO (%) × 4, DSL HGO (%) × 5. Diğer ürünler değişmiyor. HGO, yüklenen Ekim raporunun gerçekleşen/hedef oranından hesaplanır; forecast uygulanmaz.</p><p><strong>'+complete+' / 23 bayi karşılaştırılabildi.</strong> '+(complete<23?'Eksik veri için puan ve sıra farkı gösterilmez. Ekim raporunu Ayarlar’dan yükleyin.':'Yeni puana göre grup içi sıralama aşağıdadır.')+' Puan ölçeği değiştiği için fark, satış değişimini değil hesaplama yöntemi değişikliğini gösterir.</p>'+tables+'</section></details>';
 }
 function ocSigned(n) { return n==null ? '—' : (n>0?'+':'')+ocNumber(n); }
 function ocRow(r) {
