@@ -20,67 +20,89 @@
       ilk 10 sıralama tablosu, Günün Yükseleni/En Az Yükseleni/Bonus kartları,
       alt motivasyon banner'ı.
 
-   Eylül'26 hesaplaması: DSL HGO ×8 (maks. 1.040), Mobil HGO ×5
-   (maks. 650) + IPTV HGO ×3 (maks. 390).
-   Akıllı Cihaz HGO %105+ bonus hakkı verir. "Lidere fark" ve "Bonus
-   Durumu" tier'ları bu alanlardan türetilen sunum hesaplarıdır.
+   Eylül arşiv puanları korunur. Ekim: DSL HGO ×7 + Mobil HGO ×5.
+   Bonus koşulu IPTV HGO %105, ödüller bilgilendirme amaçlı gösterilir.
    ════════════════════════════════════════════════════════════════════ */
 
 /* ─── 1) GÜNLÜK ANLIK GÖRÜNTÜ DEPOSU ──────────────────────────────────── */
-const KUPA_SNAP_KEY = "tt_kuzey_kupa_snap_2026_09_v1";
-let _kupaSnapMem = null;
-
+const KUPA_SNAP_KEYS = {
+  '2026-09': 'tt_kuzey_kupa_snap_2026_09_v1',
+  '2026-10': 'tt_kuzey_kupa_snap_2026_10_v1'
+};
+let _kupaSnapMem = null, _kupaSnapMemKey = null;
 const KUPA_EYLUL_26 = Object.freeze({
   dslMultiplier: 8, mobilMultiplier: 5, iptvMultiplier: 3,
-  dslMax: 1040, mobilMax: 650, iptvMax: 390,
-  bonusCihazHgo: 105
+  dslMax: 1040, mobilMax: 650, iptvMax: 390, bonusCihazHgo: 105
 });
-
-/* Gömülü başlangıç verisi eski kampanya alanlarıyla kaydedilmiş olabilir.
-   Excel'den gelen güncel satırlar da aynı fonksiyondan güvenle geçebilir. */
-function kupaApplyEylul26Rules(rows) {
+const KUPA_EKIM_26 = Object.freeze({
+  dslMultiplier: 7, mobilMultiplier: 5, bonusIptvHgo: 105,
+  mainPrize: 2250, bonusPrize: 1250
+});
+function kupaPeriod() {
+  var m = String(typeof DONEM !== 'undefined' ? DONEM : '').match(/^2026[/-](09|10)$/);
+  return m ? '2026-' + m[1] : null;
+}
+function kupaSnapKey() { return KUPA_SNAP_KEYS[kupaPeriod()] || null; }
+function kupaHgo(v) {
+  return typeof v === 'number' && Number.isFinite(v) && v >= 0 ? Math.round(v*10)/10 : null;
+}
+/* Two separate monthly rulesets. October IPTV earns no points and has no announced cap. */
+function kupaApplyPeriodRules(rows) {
+  var period = kupaPeriod();
+  if (!period) return [];
   var cihazRows = (typeof DATA !== 'undefined' && DATA.bayi && DATA.bayi['Akıllı Cihaz']) || [];
   rows.forEach(function(r) {
-    if (typeof r.cihaz !== 'number') {
-      var cihazRow = cihazRows.find(function(c) {
-        return c.p === r.b && String(c.b || '').split(' · ')[0] === String(r.kod);
-      });
-      r.cihaz = cihazRow && typeof cihazRow.g === 'number' ? cihazRow.g : 0;
+    if (period === '2026-09') {
+      if (typeof r.cihaz !== 'number') {
+        var cihazRow = cihazRows.find(function(c){
+          return c.p === r.b && String(c.b||'').split(' · ')[0] === String(r.kod);
+        });
+        r.cihaz = cihazRow && typeof cihazRow.g === 'number' ? cihazRow.g : 0;
+      }
+      r.dsl = Math.round((Number(r.dsl)||0)*10)/10;
+      r.mob = Math.round((Number(r.mob)||0)*10)/10;
+      r.iptv = Math.round((Number(r.iptv)||0)*10)/10;
+      r.cihaz = Math.round((Number(r.cihaz)||0)*10)/10;
+      r.pDsl = Math.min(KUPA_EYLUL_26.dslMax, Math.max(0,Math.round(r.dsl*8*10)/10));
+      r.pMob = Math.min(KUPA_EYLUL_26.mobilMax,Math.max(0,Math.round(r.mob*5*10)/10));
+      r.pIptv = Math.min(KUPA_EYLUL_26.iptvMax,Math.max(0,Math.round(r.iptv*3*10)/10));
+      r.toplam = Math.round((r.pDsl+r.pMob+r.pIptv)*10)/10;
+      r.bonus = r.cihaz >= 105;
+    } else {
+      r.dsl = kupaHgo(r.dsl); r.mob = kupaHgo(r.mob); r.iptv = kupaHgo(r.iptv);
+      r.pDsl = r.dsl == null ? null : Math.round(r.dsl*7*10)/10;
+      r.pMob = r.mob == null ? null : Math.round(r.mob*5*10)/10;
+      r.pIptv = 0;
+      r.toplam = r.pDsl == null || r.pMob == null ? null : Math.round((r.pDsl+r.pMob)*10)/10;
+      r.bonus = r.iptv != null && r.iptv >= KUPA_EKIM_26.bonusIptvHgo;
     }
-    r.dsl = Math.round((Number(r.dsl) || 0) * 10) / 10;
-    r.mob = Math.round((Number(r.mob) || 0) * 10) / 10;
-    r.iptv = Math.round((Number(r.iptv) || 0) * 10) / 10;
-    r.cihaz = Math.round((Number(r.cihaz) || 0) * 10) / 10;
-    r.pDsl = Math.min(KUPA_EYLUL_26.dslMax, Math.max(0, Math.round(r.dsl * KUPA_EYLUL_26.dslMultiplier * 10) / 10));
-    r.pMob = Math.min(KUPA_EYLUL_26.mobilMax, Math.max(0, Math.round(r.mob * KUPA_EYLUL_26.mobilMultiplier * 10) / 10));
-    r.pIptv = Math.min(KUPA_EYLUL_26.iptvMax, Math.max(0, Math.round(r.iptv * KUPA_EYLUL_26.iptvMultiplier * 10) / 10));
-    r.toplam = Math.round((r.pDsl + r.pMob + r.pIptv) * 10) / 10;
-    r.bonus = r.cihaz >= KUPA_EYLUL_26.bonusCihazHgo;
   });
-  rows.sort(function(a, b) {
-    return (b.toplam - a.toplam) || (b.cihaz - a.cihaz) || (b.dsl - a.dsl) || String(a.kod).localeCompare(String(b.kod), 'tr');
+  rows.sort(function(a,b){
+    return (a.toplam==null)-(b.toplam==null) ||
+      ((b.toplam||0)-(a.toplam||0)) ||
+      (period==='2026-09' ? ((b.cihaz||0)-(a.cihaz||0)) || ((b.dsl||0)-(a.dsl||0)) : 0) ||
+      String(a.kod).localeCompare(String(b.kod),'tr');
   });
   return rows;
 }
-
-if (typeof KUPA !== 'undefined') kupaApplyEylul26Rules(KUPA);
-
 function kupaSnapLoad() {
-  if (_kupaSnapMem) return _kupaSnapMem;
-  try { const s = localStorage.getItem(KUPA_SNAP_KEY); _kupaSnapMem = s ? JSON.parse(s) : {}; }
+  var key=kupaSnapKey(); if(!key)return {};
+  if (_kupaSnapMem && _kupaSnapMemKey===key) return _kupaSnapMem;
+  try { const s = localStorage.getItem(key); _kupaSnapMem = s ? JSON.parse(s) : {}; }
   catch (e) { _kupaSnapMem = {}; }
-  return _kupaSnapMem;
+  _kupaSnapMemKey=key; return _kupaSnapMem;
 }
 function kupaSnapSave(obj) {
-  _kupaSnapMem = obj;
-  try { localStorage.setItem(KUPA_SNAP_KEY, JSON.stringify(obj)); return true; }
+  var key=kupaSnapKey(); if(!key)return false;
+  _kupaSnapMem = obj;_kupaSnapMemKey=key;
+  try { localStorage.setItem(key, JSON.stringify(obj)); return true; }
   catch (e) { return false; }
 }
 /* Her güncel rapor yüklendiğinde / açılışta bugünün KUPA anlık görüntüsünü
    kaydeder — js/render.js:trendCapture() ile aynı çağrı noktalarından
    tetiklenir (js/app.js ilk yükleme, js/parser.js Excel yükleme sonrası). */
 function kupaSnapCapture(forceDate) {
-  const K = kupaApplyEylul26Rules(KUPA || []);
+  const K = kupaApplyPeriodRules(KUPA || []).filter(function(r){return r.toplam!=null;});
   if (!K.length) return;
   const store = kupaSnapLoad();
   const today = forceDate || new Date().toISOString().slice(0, 10);
@@ -97,7 +119,8 @@ function kupaSnapCapture(forceDate) {
 function kupaSnapPrev() {
   const store = kupaSnapLoad();
   const today = new Date().toISOString().slice(0, 10);
-  const days = Object.keys(store).filter(function(d) { return d < today; }).sort();
+  const period=kupaPeriod();
+  const days = Object.keys(store).filter(function(d) { return d < today && d.slice(0,7)===period; }).sort();
   if (!days.length) return null;
   return store[days[days.length - 1]];
 }
@@ -108,7 +131,7 @@ function kupaSnapPrev() {
 function kupaRowsSnapshot(rows) {
   if (!rows || !rows.length) return null;
   var cloned = rows.map(function(r) { return Object.assign({}, r); });
-  var ordered = kupaApplyEylul26Rules(cloned);
+  var ordered = kupaApplyPeriodRules(cloned).filter(function(r){return r.toplam!=null;});
   var snap = {};
   ordered.forEach(function(r, i) {
     snap[String(r.kod)] = { toplam: r.toplam, rank: i + 1 };
@@ -116,12 +139,13 @@ function kupaRowsSnapshot(rows) {
   return snap;
 }
 function kupaComparisonSnapshot() {
-  var uploadedPrevious = (typeof KUPA_PREV !== 'undefined') ? kupaRowsSnapshot(KUPA_PREV) : null;
+  var prevPeriod = (typeof PREV_DETAY !== 'undefined' && PREV_DETAY) ? String(PREV_DETAY.period||'').replace('/', '-') : null;
+  var uploadedPrevious = prevPeriod === kupaPeriod() && typeof KUPA_PREV !== 'undefined' ? kupaRowsSnapshot(KUPA_PREV) : null;
   return uploadedPrevious || kupaSnapPrev();
 }
 
 /* ─── BİÇİMLENDİRME ────────────────────────────────────────────────────── */
-function _kbN1(n) { return n.toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }); }
+function _kbN1(n) { return typeof n==='number' && Number.isFinite(n) ? n.toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : '—'; }
 function _kbTrendHTML(delta) {
   if (delta == null) return '<span class="kb-tr eq">—</span>';
   var r = Math.round(delta * 10) / 10;
@@ -204,7 +228,7 @@ function _kbRankBadge(rank) {
 function _kbTableRow(row, rank, leaderToplam, prevSnap) {
   var prev = prevSnap ? prevSnap[row.kod] : null;
   var delta = prev ? (row.toplam - prev.toplam) : null;
-  var fark = rank === 1 ? '–' : _kbN1(leaderToplam - row.toplam);
+  var fark = rank === 1 || row.toplam==null || leaderToplam==null ? '–' : _kbN1(leaderToplam - row.toplam);
   return '<div class="kb-trow">' +
     _kbRankBadge(rank) +
     '<span class="kb-trow-crown">' + KB_CROWN_ICON + '</span>' +
@@ -244,7 +268,7 @@ function _kbBiggestMovers(K, prevSnap) {
   });
   return { up: up, leastUp: leastUp };
 }
-function renderKupaMovers(K, prevSnap) {
+function renderKupaMovers(K, prevSnap, bonusRows) {
   var m = _kbBiggestMovers(K, prevSnap);
   var leastUpEmpty = prevSnap ? 'Bugün puanı yükselen bayi yok' : 'Henüz karşılaştırma verisi yok';
 
@@ -260,12 +284,15 @@ function renderKupaMovers(K, prevSnap) {
       '<div class="kb-mini-sub lowup">' + (m.leastUp.rankChange > 0 ? m.leastUp.rankChange + ' SIRA YÜKSELDİ ▲' : 'PUANI ARTTI') + '</div>'
     : '<div class="kb-mini-empty">' + leastUpEmpty + '</div>';
 
-  /* ── Bonus Durumu (Akıllı Cihaz HGO %105+) — mevcut r.cihaz/r.bonus
-     alanlarından 3 kademeli sayım: bonus aldı (cihaz≥105) · yakın
-     (100-104,9) · dışı (<100). */
-  var aldiN = 0, yakinN = 0, disiN = 0;
-  K.forEach(function(r) {
-    if (r.cihaz >= 105) aldiN++; else if (r.cihaz >= 100) yakinN++; else disiN++;
+  /* Monthly bonus KPI; meeting the KPI does not by itself establish a payout. */
+  var october = kupaPeriod() === '2026-10';
+  var aldiN = 0, yakinN = 0, disiN = 0, bilinN = 0;
+  (bonusRows || K).forEach(function(r) {
+    var hgo = october ? r.iptv : r.cihaz;
+    if (hgo == null) bilinN++;
+    else if (hgo >= 105) aldiN++;
+    else if (hgo >= 100) yakinN++;
+    else disiN++;
   });
 
   return '<div class="kb-bottom-grid">' +
@@ -275,12 +302,13 @@ function renderKupaMovers(K, prevSnap) {
     '<div class="kb-mini kb-mini-lowup"><div class="kb-mini-title">' + KB_LOW_UP_ICON.replace('width="26" height="26"', 'width="15" height="15"') + ' GÜNÜN EN AZ YÜKSELENİ</div>' +
       '<div class="kb-mini-body"><span class="kb-mini-ic lowup">' + KB_LOW_UP_ICON + '</span><div class="kb-mini-txt">' + leastUpHTML + '</div></div>' +
     '</div>' +
-    '<div class="kb-mini kb-mini-bonus"><div class="kb-mini-title">' + KB_GIFT_ICON.replace('width="26" height="26"', 'width="15" height="15"') + ' BONUS DURUMU <small>(AKILLI CİHAZ HGO %105+)</small></div>' +
+    '<div class="kb-mini kb-mini-bonus"><div class="kb-mini-title">' + KB_GIFT_ICON.replace('width="26" height="26"', 'width="15" height="15"') + ' BONUS DURUMU <small>(' + (october ? 'IPTV' : 'AKILLI CİHAZ') + ' HGO %105+)</small></div>' +
       '<div class="kb-mini-body"><span class="kb-mini-ic bonus">' + KB_GIFT_ICON + '</span>' +
         '<div class="kb-mini-tiers">' +
-          '<div class="kb-tier"><span class="kb-dot g"></span><b>' + aldiN + ' BAYİ</b><small>BONUS ALDI</small></div>' +
+          '<div class="kb-tier"><span class="kb-dot g"></span><b>' + aldiN + ' BAYİ</b><small>ŞARTI SAĞLADI</small></div>' +
           '<div class="kb-tier"><span class="kb-dot y"></span><b>' + yakinN + ' BAYİ</b><small>%100 - %104,9 ARASI</small></div>' +
           '<div class="kb-tier"><span class="kb-dot r"></span><b>' + disiN + ' BAYİ</b><small>BONUS DIŞI</small></div>' +
+          (bilinN ? '<div class="kb-tier"><span class="kb-dot y"></span><b>' + bilinN + ' BAYİ</b><small>HGO EKSİK</small></div>' : '') +
         '</div>' +
       '</div>' +
     '</div>' +
@@ -289,23 +317,31 @@ function renderKupaMovers(K, prevSnap) {
 
 /* ─── HEADER + BANNER ──────────────────────────────────────────────────── */
 function renderKupaHeader() {
-  var dateStr = new Date().toLocaleDateString('tr-TR');
+  var dateStr = typeof DETAY !== 'undefined' && DETAY && /^2026-(09|10)-\d{2}$/.test(DETAY.reportDate || '')
+    ? new Date(DETAY.reportDate+'T12:00:00Z').toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'UTC'})
+    : new Date().toLocaleDateString('tr-TR');
+  var monthText = kupaPeriod() === '2026-09' ? 'EYLÜL 2026' : 'EKİM 2026';
   return '<div class="kb-hero">' +
     '<div class="kb-hero-trophy">' + _kbTrophySVG() + '</div>' +
     '<div class="kb-hero-txt">' +
       '<div class="kb-title"><span class="w">KUPA</span> <span class="g">BENDE</span></div>' +
-      '<div class="kb-subtitle">EYLÜL 2026 · KUZEY ANADOLU GÜNLÜK SIRALAMA</div>' +
+      '<div class="kb-subtitle">' + monthText + ' · KUZEY ANADOLU GÜNLÜK SIRALAMA</div>' +
       '<div class="kb-date-pill">' + KB_CAL_ICON + '<span>' + dateStr + '</span></div>' +
     '</div>' +
   '</div>';
 }
 function renderKupaRules() {
-  return '<div class="kb-rules" aria-label="Eylül 2026 kampanya kuralları">' +
+  if (kupaPeriod()==='2026-09') return '<div class="kb-rules" aria-label="Eylül 2026 kampanya kuralları">' +
     '<div><b>DSL ×8</b><small>MAKS. 1.040 P</small></div>' +
     '<div><b>MOBİL ×5</b><small>MAKS. 650 P</small></div>' +
     '<div><b>IPTV ×3</b><small>MAKS. 390 P</small></div>' +
     '<div class="bonus"><b>CİHAZ ≥%105</b><small>BONUS</small></div>' +
   '</div>';
+  return '<div class="kb-rules kb-oct-rules" aria-label="Ekim 2026 Kupa Bende puanlama">' +
+    '<div><b>DSL ×7</b><small>HER %1 HGO</small></div>' +
+    '<div><b>MOBİL ×5</b><small>HER %1 HGO</small></div>' +
+    '<div class="bonus"><b>IPTV ≥%105</b><small>BONUS ŞARTI</small></div>' +
+  '</div><div class="kb-prize-info"><span>🏆 ANA ÖDÜL <b>2.250 TL</b></span><span>🎁 BONUS ÖDÜL <b>1.250 TL</b></span><small>Ödül hakedişi kampanya şartlarına tabidir.</small></div>';
 }
 function renderKupaBanner() {
   return '<div class="kb-banner">' +
@@ -319,7 +355,9 @@ function renderKupaBanner() {
    id="kupa-card" KORUNUR — js/filters.js:downloadCardPNG() ve
    js/export.js bu id'yi arıyor, PNG export bu sayede değişmeden çalışır. */
 function renderKupaV2() {
-  var K = kupaApplyEylul26Rules(KUPA || []);
+  var period = kupaPeriod();
+  var allRows = kupaApplyPeriodRules(KUPA || []);
+  var K = allRows.filter(function(r) {return r.toplam != null;});
   var cards = document.getElementById('cards');
   cards.className = 'cards single';
   cards.style.maxWidth = '420px';
@@ -328,7 +366,7 @@ function renderKupaV2() {
     cards.innerHTML = '<div class="kb-page" id="kupa-card">' +
       renderKupaHeader() +
       renderKupaRules() +
-      '<div class="kb-empty">Veri yok</div>' +
+      '<div class="kb-empty">' + (!period ? 'Kupa Bende için Ekim 2026 TTM raporunu yükleyin.' : 'Kupa puanı için geçerli HGO verisi bulunamadı.') + '</div>' +
       '</div>';
     return;
   }
@@ -341,7 +379,8 @@ function renderKupaV2() {
     renderKupaRules() +
     renderKupaPodium(K, prevSnap) +
     renderKupaTable(K, prevSnap) +
-    renderKupaMovers(K, prevSnap) +
+    renderKupaMovers(K, prevSnap, allRows) +
+    (allRows.length > K.length ? '<div class="kb-missing">' + (allRows.length-K.length) + ' bayi eksik DSL/Mobil HGO nedeniyle sıralamaya alınmadı.</div>' : '') +
     renderKupaBanner() +
   '</div>';
 }

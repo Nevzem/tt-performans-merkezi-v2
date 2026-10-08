@@ -188,3 +188,12 @@
 .kb-banner-h span { color: var(--kb-gold); }
 .kb-banner-s { color: var(--kb-muted); font-size: 9px; font-weight: 700; margin-top: 2px; }
 .kb-banner-target { color: rgba(255,255,255,0.5); flex-shrink: 0; }
+
+/* October Kupa Bende - prize information and new HGO rules. */
+.kb-rules.kb-oct-rules{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kb-oct-rules b{font-size:10px}.kb-oct-rules small{font-size:7px}
+.kb-prize-info{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:6px}
+.kb-prize-info span{background:rgba(225,177,71,.09);border:1px solid rgba(225,177,71,.43);border-radius:8px;padding:6px 4px;text-align:center;font-size:7.6px;font-weight:800;color:#eeddbb}
+.kb-prize-info span b{display:block;font-size:14px;color:#f6ce79}
+.kb-prize-info small{grid-column:1/-1;color:#a8b8d1;font-size:7.3px;text-align:center}
+.kb-missing{margin-top:10px;color:#f3c988;border:1px solid #927441;border-radius:8px;padding:7px;font-size:9px;font-weight:700;text-align:center}

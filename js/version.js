@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-10-08 · Ekim Kampanyası Mobil DSL HGO Puanlaması';
+const APP_BUILD = '2026-10-08 · Ekim Kupa Bende DSL x7 Mobil x5 IPTV Bonus';
