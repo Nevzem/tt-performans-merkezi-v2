@@ -10,19 +10,21 @@ const run=s=>vm.runInContext(s,ctx);
 const groups=run('OC_GROUPS');
 assert.deepEqual(Array.from(groups,g=>g.length),[5,5,6,7]);
 assert.equal(new Set(groups.flat().map(d=>d[0])).size,23);
-function dealer(n=1){return {prods:Object.fromEntries(['Postpaid','Prepaid','DSL','IPTV','Uydu','Akıllı Cihaz','Diğer Cihaz'].map(key=>[key,{a:n,h:100000,g:0.01}])),commitments:{mobil:n,dsl:n,mobilUpsell:900}};}
-ctx.d=dealer();assert.equal(run('ocScore(d).total'),31,'Mobil sums Postpaid + Prepaid; no HGO threshold or upsell points');
+function dealer(n=1){return {prods:Object.fromEntries(['Postpaid','Prepaid','DSL','IPTV','Uydu','Akıllı Cihaz','Diğer Cihaz'].map(key=>[key,{a:n,h:10,g:n*10}])),commitments:{mobil:n,dsl:n,mobilUpsell:900}};}
+ctx.d=dealer();assert.equal(run('ocScore(d).total'),105,'Mobil and DSL HGO points, other quantities unchanged');
+assert.equal(run('ocScore(d,OC_LEGACY_RULES).total'),31,'Old quantity scoring retained for comparison');
 ctx.d.prods.Postpaid.a=10;ctx.d.prods.Prepaid.a=2;ctx.d.prods.DSL.a=3;ctx.d.prods.IPTV.a=4;ctx.d.prods.Uydu.a=5;ctx.d.prods['Akıllı Cihaz'].a=6;ctx.d.prods['Diğer Cihaz'].a=7;ctx.d.commitments={mobil:8,dsl:9};
-assert.equal(run('ocScore(d).total'),170);
+assert.equal(run('ocScore(d).total'),482);
+assert.equal(run('ocScore(d,OC_LEGACY_RULES).total'),170);
 delete ctx.d.commitments.dsl;assert.equal(run('ocScore(d).total'),null,'Unknown commitments cannot be silently counted as zero');
 ctx.d=dealer(0);assert.equal(run('ocScore(d).total'),0,'Explicit zeros remain valid');
 ctx.d.campaignActuals={Postpaid:0,Prepaid:null};assert.equal(run('ocScore(d).total'),null,'Raw workbook blanks override legacy coerced zero');
 function source(date,n){return {period:'2026/10',reportDate:date,bayiler:Object.fromEntries(groups.flat().map(d=>[d[0],dealer(n)]))};}
 ctx.current=source('2026-10-05',2);ctx.previous=source('2026-10-04',1);
-assert.equal(run('ocModel(current,previous).groups[0][0].delta'),31);
+assert.equal(run('ocModel(current,previous).groups[0][0].delta'),105);
 assert.equal(run('ocModel(current,previous).groups[0][4].rank'),1,'All tied scores share rank');
 assert.equal(run('ocModel(current,previous).best.length'),23,'All equal daily leaders are retained');
-assert.equal(run("ocGroups(current,'2026/09')[0][0].total"),62,'Source metadata takes priority over shared period');
+assert.equal(run("ocGroups(current,'2026/09')[0][0].total"),210,'Source metadata takes priority over shared period');
 ctx.previous.reportDate='2026-10-03';assert.equal(run('ocModel(current,previous).groups[0][0].delta'),null,'A two-day difference is not Son 24 saat');
 ctx.previous.reportDate='2026-10-04';ctx.previous.period='2026/09';assert.equal(run('ocModel(current,previous).compare'),false,'Prior-month report cannot be compared');
 ctx.previous.period='2026/10';delete ctx.previous.bayiler['4100781'];
@@ -30,6 +32,13 @@ assert.equal(run('ocModel(current,previous).groups[0][0].movement'),null,'Incomp
 assert.equal(run('ocModel(current,previous).best.length'),0,'Daily winner requires all 23 comparisons');
 ctx.current.period='2026/09';assert.equal(run('ocModel(current,previous).groups.flat().every(r=>r.total===null)'),true,'September results are not October results');
 assert.equal(run("ocValidDate('2026-10-99')"),false);assert.equal(run("ocValidDate('2026-10-00')"),false);assert.equal(run("ocValidDate('2026-10-31')"),true);
+// HGO is one-decimal, follows the current report and never interprets blanks as zero.
+ctx.d=dealer(1);ctx.d.prods.Postpaid.h=8;ctx.d.prods.Prepaid.h=12;ctx.d.prods.DSL.h=8;
+assert.equal(run("ocHgo(d,'Toplam Mobil')"),10);
+assert.equal(run("ocHgo(d,'DSL')"),12.5);
+assert.equal(run('ocScore(d).total'),117.5);
+ctx.d.campaignTargets={Postpaid:1,Prepaid:null,DSL:10};assert.equal(run('ocScore(d).total'),null);
+ctx.d=dealer(1);ctx.d.prods.DSL.h=0;assert.equal(run('ocScore(d).total'),null);
 // Real parser contract: period, exact commitment activations, and blank coverage.
 const person=Array(90).fill(null);person[0]='ANADOLU';person[1]='KUZEY ANADOLU';person[2]='4100089';person[3]='Kılavuzlar';person[6]='Personel';person[7]='202610';
 const branch=Array(96).fill(null);branch[0]='ANADOLU';branch[1]='KUZEY ANADOLU';branch[2]='4100089';branch[3]='Kılavuzlar';
@@ -44,14 +53,19 @@ ctx.current=source('2026-10-05',1);ctx.previous=source('2026-10-04',1);
 ctx.current.bayiler['4100781']=dealer(3);ctx.previous.bayiler['4052718']=dealer(2);
 assert.equal(run("ocModel(current,previous).groups[0][0].code"),'4100781');
 assert.equal(run("ocModel(current,previous).groups[0][0].movement"),1,'Movement stays within the fixed group');
-assert.equal(run("ocModel(current,previous).groups[0].find(r=>r.code==='4052718').delta"),-31,'Corrections may reduce cumulative points');
+assert.equal(run("ocModel(current,previous).groups[0].find(r=>r.code==='4052718').delta"),-105,'Corrections may reduce cumulative points');
 const elements={cards:{style:{}},'oc-preview':{clientWidth:390,style:{}},'october-campaign-card':{style:{}}};
 ctx.document={getElementById:id=>elements[id]};ctx.DETAY=ctx.current;ctx.PREV_DETAY=ctx.previous;
 run('DETAY=current;PREV_DETAY=previous;DONEM="2026/10";renderOctoberCampaign()');
 const html=elements.cards.innerHTML;
-assert.equal((html.match(/<tbody>/g)||[]).length,4);assert.equal((html.match(/<tr class=/g)||[]).length,23);
+assert.equal((html.match(/<tbody>/g)||[]).length,8,'Four campaign tables plus four optional comparison tables');assert.equal((html.match(/<tr class=/g)||[]).length,23);
 assert.ok(html.includes('Günün en yüksek puan artışı'));assert.ok(!html.includes('Bölge toplam'));
-assert.ok(html.includes('62 puan'));assert.ok(elements['october-campaign-card'].style.transform.includes('0.380859375'));
+assert.ok(html.includes('210 puan'));assert.ok(html.includes('Eski – Yeni Puan Karşılaştırması'));
+assert.ok(!html.includes('CANLIDA DEĞİL'),'Live page must not contain preview-only warning');
+assert.ok(html.includes('Eski puan') && html.includes('Yeni puan'));
+assert.equal((html.match(/<details class="oc-compare-details"/g)||[]).length,1);
+assert.equal((html.match(/<section class="oc-simulation"/g)||[]).length,1);
+assert.equal(run("ocComparison(current,'2026/10').flat().length"),23);assert.ok(elements['october-campaign-card'].style.transform.includes('0.380859375'));
 assert.equal(elements['oc-preview'].style.height,'585px','Mobile preview preserves the full portrait');
 elements['october-campaign-card'].offsetHeight=1680;
 elements['october-campaign-card'].scrollHeight=1680;
