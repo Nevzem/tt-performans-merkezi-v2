@@ -58,10 +58,12 @@ const elements={cards:{style:{}},'oc-preview':{clientWidth:390,style:{}},'octobe
 ctx.document={getElementById:id=>elements[id]};ctx.DETAY=ctx.current;ctx.PREV_DETAY=ctx.previous;
 run('DETAY=current;PREV_DETAY=previous;DONEM="2026/10";renderOctoberCampaign()');
 const html=elements.cards.innerHTML;
-assert.equal((html.match(/<tbody>/g)||[]).length,4);assert.equal((html.match(/<tr class=/g)||[]).length,23);
+assert.equal((html.match(/<tbody>/g)||[]).length,8,'Four campaign tables plus four optional comparison tables');assert.equal((html.match(/<tr class=/g)||[]).length,23);
 assert.ok(html.includes('Günün en yüksek puan artışı'));assert.ok(!html.includes('Bölge toplam'));
-assert.ok(html.includes('210 puan'));assert.ok(html.includes('HGO PUANLAMA · ÖN İZLEME'));
+assert.ok(html.includes('210 puan'));assert.ok(html.includes('Eski – Yeni Puan Karşılaştırması'));
+assert.ok(!html.includes('CANLIDA DEĞİL'),'Live page must not contain preview-only warning');
 assert.ok(html.includes('Eski puan') && html.includes('Yeni puan'));
+assert.equal((html.match(/<details class="oc-compare-details"/g)||[]).length,1);
 assert.equal((html.match(/<section class="oc-simulation"/g)||[]).length,1);
 assert.equal(run("ocComparison(current,'2026/10').flat().length"),23);assert.ok(elements['october-campaign-card'].style.transform.includes('0.380859375'));
 assert.equal(elements['oc-preview'].style.height,'585px','Mobile preview preserves the full portrait');
