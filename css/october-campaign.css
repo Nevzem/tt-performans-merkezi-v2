@@ -22,3 +22,10 @@
 .oc-sim-group .oc-up{color:#007333;font-weight:800}
 .oc-sim-group .oc-down{color:#be283b;font-weight:800}
 @media(max-width:720px){.oc-simulation{padding:11px}.oc-simulation>header b{font-size:15px}}
+
+/* Keep optional old/new comparison collapsed, so daily 23-bayi scorecard stays first. */
+.oc-compare-details{max-width:1024px;margin:0 auto 14px;border:1px solid #c7d8e8;border-radius:12px;background:#f4f9fd;color:#183d60}
+.oc-compare-details>summary{cursor:pointer;padding:12px 16px;font-weight:800;font-size:14px;list-style-position:inside}
+.oc-compare-details>summary small{font-weight:500;font-size:11px;color:#64748b;margin-left:8px}
+.oc-compare-details .oc-simulation{margin:0;border:0;border-top:1px solid #c7d8e8;border-radius:0 0 12px 12px}
+@media(max-width:720px){.oc-compare-details>summary small{display:block;padding-left:19px;margin:4px 0 0}}
