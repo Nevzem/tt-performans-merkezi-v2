@@ -1,4 +1,4 @@
-/* October 2026: fixed branch groups, actual quantities only, no projections. */
+/* October 2026: fixed groups, Mobil/DSL current HGO; other products stay quantity-based. Preview-only branch. */
 var OC_PERIOD = '2026-10';
 var OC_GROUPS = [
   [['4100089','Kılavuzlar','Kırıkkale'],['4052718','Asis','Samsun'],['4100781','Asis','Çorum'],['4054927','Eymen','Çankırı'],['4036313','Bakan Telekom','Tokat']],
@@ -7,12 +7,18 @@ var OC_GROUPS = [
   [['502046','İlk İletişim','Samsun'],['4100776','Yağmuroğlu','Tokat'],['4100087','Kılavuzlar','Kırıkkale'],['4100343','Yağmuroğlu','Tokat'],['501699','Taş-Ka','Yozgat'],['4100170','Asis','Samsun'],['4100990','Primetech','Samsun']]
 ];
 var OC_RULES = [
-  {key:'Toplam Mobil',label:'Mobil',points:5}, {key:'DSL',label:'DSL',points:6},
+  {key:'Toplam Mobil',label:'Mobil HGO',points:4,hgo:true}, {key:'DSL',label:'DSL HGO',points:5,hgo:true},
   {key:'IPTV',label:'IPTV',points:4}, {key:'Uydu',label:'Uydu',points:3},
   {key:'Akıllı Cihaz',label:'Akıllı cihaz',points:2}, {key:'Diğer Cihaz',label:'Diğer cihaz',points:2},
   {key:'mobil',label:'Mobil taahhüt',points:1,commitment:true},
   {key:'dsl',label:'DSL taahhüt',points:3,commitment:true}
 ];
+// Only used to compare against the previous October calculation in this preview branch.
+var OC_LEGACY_RULES = OC_RULES.map(function(rule){
+  if(rule.key==='Toplam Mobil')return {key:rule.key,label:'Mobil',points:5};
+  if(rule.key==='DSL')return {key:rule.key,label:'DSL',points:6};
+  return rule;
+});
 var ocResizeObserver = null;
 function ocEsc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 function ocNumber(v) { return v == null ? '—' : Number(v).toLocaleString('tr-TR'); }
@@ -37,20 +43,39 @@ function ocActual(dealer,key) {
   }
   return ocQuantity((prods[key]||{}).a);
 }
-function ocScore(dealer) {
-  var missing=[],total=0,breakdown=[];
-  OC_RULES.forEach(function(rule){
-    var quantity=rule.commitment ? ocQuantity((dealer && dealer.commitments||{})[rule.key]) : ocActual(dealer,rule.key);
-    if(quantity==null) missing.push(rule.label); else total+=quantity*rule.points;
-    breakdown.push({label:rule.label,quantity:quantity,points:rule.points});
-  });
-  return {total:missing.length ? null : total,missing:missing,breakdown:breakdown};
+function ocTarget(dealer,key) {
+  if(!dealer)return null;
+  var raw=dealer.campaignTargets,prods=dealer.prods||{};
+  function target(product) {
+    var value=raw ? raw[product] : (prods[product]||{}).h;
+    return typeof value==='number' && Number.isFinite(value) && value>=0 ? value : null;
+  }
+  if(key==='Toplam Mobil') {
+    var p=target('Postpaid'),q=target('Prepaid');
+    return p==null || q==null ? null : p+q;
+  }
+  return target(key);
 }
-function ocGroups(source,period) {
+function ocHgo(dealer,key) {
+  var actual=ocActual(dealer,key),target=ocTarget(dealer,key);
+  // Missing or zero targets must not silently award HGO points.
+  return actual==null || target==null || target<=0 ? null : Math.round(actual/target*1000)/10;
+}
+function ocRoundScore(value) { return Math.round(value*10)/10; }
+function ocScore(dealer,rules) {
+  var missing=[],total=0,breakdown=[];
+  (rules||OC_RULES).forEach(function(rule){
+    var quantity=rule.commitment ? ocQuantity((dealer && dealer.commitments||{})[rule.key]) : rule.hgo ? ocHgo(dealer,rule.key) : ocActual(dealer,rule.key);
+    if(quantity==null) missing.push(rule.label); else total+=quantity*rule.points;
+    breakdown.push({label:rule.label,quantity:quantity,points:rule.points,hgo:!!rule.hgo});
+  });
+  return {total:missing.length ? null : ocRoundScore(total),missing:missing,breakdown:breakdown};
+}
+function ocGroups(source,period,rules) {
   var valid=source && ocPeriod(source.period||period)===OC_PERIOD;
   return OC_GROUPS.map(function(group){
     var rows=group.map(function(d,index){
-      var score=ocScore(valid ? (source.bayiler||{})[d[0]] : null);
+      var score=ocScore(valid ? (source.bayiler||{})[d[0]] : null,rules);
       return {code:d[0],name:d[1],city:d[2],index:index,total:score.total,missing:score.missing,breakdown:score.breakdown,rank:null};
     });
     rows.sort(function(a,b){return (a.total==null)-(b.total==null) || (b.total||0)-(a.total||0) || a.index-b.index;});
@@ -81,9 +106,35 @@ function ocModel(current,previous,period) {
   var max=best.length ? Math.max.apply(null,best.map(function(r){return r.delta;})) : null;
   return {groups:groups,compare:compare,fullComparison:fullComparison,best:fullComparison ? best.filter(function(r){return r.delta===max;}) : [],valid:!!current && ocPeriod(current.period||period)===OC_PERIOD};
 }
+function ocComparison(current,period) {
+  var newer=ocGroups(current,period,OC_RULES),older=ocGroups(current,period,OC_LEGACY_RULES);
+  return newer.map(function(rows,gi){
+    var oldByCode={};older[gi].forEach(function(r){oldByCode[r.code]=r;});
+    return rows.map(function(r){
+      var old=oldByCode[r.code],canCompare=r.total!=null && old.total!=null;
+      return {code:r.code,name:r.name,city:r.city,rank:r.rank,total:r.total,
+        oldRank:old.rank,oldTotal:old.total,
+        pointDiff:canCompare?ocRoundScore(r.total-old.total):null,
+        rankDiff:canCompare?old.rank-r.rank:null};
+    });
+  });
+}
+function ocComparisonHTML(current,period) {
+  var groups=ocComparison(current,period),rows=groups.flat();
+  var complete=rows.filter(function(r){return r.pointDiff!=null;}).length;
+  var tables=groups.map(function(group,gi){
+    return '<div class="oc-sim-group"><h4>'+(gi+1)+'. GRUP <small>'+group.length+' bayi</small></h4><div class="oc-sim-scroll"><table><thead><tr><th>Yeni sıra</th><th>Bayi / Kod</th><th>Eski puan</th><th>Yeni puan</th><th>Puan farkı</th><th>Eski sıra</th><th>Sıra farkı</th></tr></thead><tbody>'+
+      group.map(function(r){
+        var scoreTone=r.pointDiff==null?'oc-neutral':r.pointDiff>0?'oc-up':r.pointDiff<0?'oc-down':'oc-neutral';
+        var rankTone=r.rankDiff==null?'oc-neutral':r.rankDiff>0?'oc-up':r.rankDiff<0?'oc-down':'oc-neutral';
+        return '<tr><td>'+ocNumber(r.rank)+'</td><td><strong>'+ocEsc(r.name)+'</strong><small>'+ocEsc(r.code)+' · '+ocEsc(r.city)+'</small></td><td>'+ocNumber(r.oldTotal)+'</td><td><b>'+ocNumber(r.total)+'</b></td><td class="'+scoreTone+'">'+ocSigned(r.pointDiff)+'</td><td>'+ocNumber(r.oldRank)+'</td><td class="'+rankTone+'">'+ocSigned(r.rankDiff)+'</td></tr>';
+      }).join('')+'</tbody></table></div></div>';
+  }).join('');
+  return '<section class="oc-simulation" aria-label="Canlıya alınmamış eski ve yeni Ekim puan karşılaştırması"><header><b>HGO PUANLAMA · ÖN İZLEME</b><span>CANLIDA DEĞİL</span></header><p>Eski: Mobil adet × 5, DSL adet × 6. Yeni: Mobil HGO (%) × 4, DSL HGO (%) × 5. Diğer ürünler değişmiyor. HGO, yüklenen Ekim raporunun gerçekleşen/hedef oranından hesaplanır; forecast uygulanmaz.</p><p><strong>'+complete+' / 23 bayi karşılaştırılabildi.</strong> '+(complete<23?'Eksik veri için puan ve sıra farkı gösterilmez. Ekim raporunu Ayarlar’dan yükleyin.':'Yeni puana göre grup içi sıralama aşağıdadır.')+' Puan ölçeği değiştiği için fark, satış değişimini değil hesaplama yöntemi değişikliğini gösterir.</p>'+tables+'</section>';
+}
 function ocSigned(n) { return n==null ? '—' : (n>0?'+':'')+ocNumber(n); }
 function ocRow(r) {
-  var title=r.total==null ? 'Eksik veri: '+r.missing.join(', ') : r.breakdown.map(function(b){return b.label+': '+b.quantity+' × '+b.points;}).join(' · ');
+  var title=r.total==null ? 'Eksik veri: '+r.missing.join(', ') : r.breakdown.map(function(b){return b.label+': '+ocNumber(b.quantity)+(b.hgo?'%':'')+' × '+b.points;}).join(' · ');
   var movement=r.movement==null ? '—' : r.movement===0 ? '━' : (r.movement>0?'↑ ':'↓ ')+Math.abs(r.movement);
   var tone=function(n){return n==null||n===0?'oc-neutral':n>0?'oc-up':'oc-down';};
   return '<tr class="'+(r.rank===1?'oc-leader':'')+'" title="'+ocEsc(title)+'"><td>'+ocNumber(r.rank)+'</td><td>'+ocEsc(r.code)+'</td><td class="oc-dealer"><strong>'+ocEsc(r.name)+'</strong><small>'+ocEsc(r.city)+'</small></td><td class="oc-score">'+ocNumber(r.total)+'</td><td class="'+tone(r.delta)+'">'+ocSigned(r.delta)+'</td><td class="'+tone(r.movement)+'">'+movement+'</td></tr>';
@@ -114,10 +165,10 @@ function renderOctoberCampaign() {
   cards.className='cards single oc-page';cards.style.maxWidth='1120px';
   cards.innerHTML='<div class="oc-actions"><div><b>Ekim Kampanyası · Günlük takip</b><small>'+ocEsc(status)+'</small><small>'+ocEsc(compareHint)+'</small></div><button id="oc-download" onclick="downloadOctoberCampaignPNG()">Görseli indir / paylaş</button></div>'+
     '<div class="oc-dates">'+ocReportDateInfo(current,'Güncel rapor',period)+ocReportDateInfo(previous,'Önceki rapor',null)+'<small>Tarihler yüklenen raporlardan otomatik belirlenir. Eşit puanlar aynı sırayı paylaşır; “—” eksik veri veya karşılaştırma olmadığını gösterir.</small></div>'+
-    '<div id="oc-preview" class="oc-preview"><section id="october-campaign-card" class="oc-card" aria-label="Ekim 2026 TTM günlük puan tablosu">'+
+    ocComparisonHTML(current,period)+'<div id="oc-preview" class="oc-preview"><section id="october-campaign-card" class="oc-card" aria-label="Ekim 2026 TTM günlük puan tablosu">'+
     '<header class="oc-hero"><span class="oc-region">KUZEY ANADOLU</span><h1>EKİM 2026</h1><h2>TTM GÜNLÜK PUAN TABLOSU</h2><div class="oc-date">▦ '+ocEsc(label)+'</div><p>'+(!model.valid?'Ekim raporu bekleniyor':!ocValidDate(date)?'Ekim birikimli puanlar · Dosyada rapor tarihi bulunamadı':'1–'+Number(date.slice(8))+' Ekim birikimli puanlar')+'</p></header>'+
     '<main class="oc-tables">'+model.groups.map(function(rows,i){return '<section class="oc-group oc-group-'+(i+1)+'"><div class="oc-group-title"><b><span>❯❯</span> '+(i+1)+'. GRUP</b><strong>'+rows.length+' BAYİ</strong></div><table><colgroup><col class="oc-col-rank"><col class="oc-col-code"><col class="oc-col-dealer"><col class="oc-col-score"><col class="oc-col-delta"><col class="oc-col-move"></colgroup><thead><tr><th>Sıra</th><th>Bayi kodu</th><th>Bayi</th><th>Toplam puan</th><th>Son 24 saat</th><th>Sıra değişimi</th></tr></thead><tbody>'+rows.map(ocRow).join('')+'</tbody></table></section>';}).join('')+'</main>'+
-    '<footer class="oc-footer"><div class="oc-best"><b>Günün en yüksek puan artışı</b><div>'+best+'</div></div><div class="oc-legend"><p><span class="oc-up">↑</span> Yükseldi <span class="oc-down">↓</span> Geriledi <span>━</span> Sırası aynı</p><small>Sıra değişimi, önceki güne göre grup içindeki değişimi gösterir.</small><div class="oc-weights">Adet başına: Mobil 5 · DSL 6 · IPTV 4 · Uydu 3<br>Akıllı cihaz 2 · Diğer cihaz 2 · Mobil taahhüt 1 · DSL taahhüt 3</div></div></footer></section></div>';
+    '<footer class="oc-footer"><div class="oc-best"><b>Günün en yüksek puan artışı</b><div>'+best+'</div></div><div class="oc-legend"><p><span class="oc-up">↑</span> Yükseldi <span class="oc-down">↓</span> Geriledi <span>━</span> Sırası aynı</p><small>Sıra değişimi, önceki güne göre grup içindeki değişimi gösterir.</small><div class="oc-weights">HGO: Mobil %1 × 4 · DSL %1 × 5<br>Adet: IPTV 4 · Uydu 3 · Akıllı cihaz 2 · Diğer cihaz 2 · Mobil taahhüt 1 · DSL taahhüt 3</div></div></footer></section></div>';
   if(ocResizeObserver)ocResizeObserver.disconnect();
   if(typeof ResizeObserver!=='undefined'){ocResizeObserver=new ResizeObserver(ocFitCard);ocResizeObserver.observe(document.getElementById('oc-preview'));}
   ocFitCard();
