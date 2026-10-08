@@ -225,9 +225,9 @@ function parseWB(wb, options) {
         // ── Kupa Bende kampanyası ──
         const fat = mh>0 ? Math.round(pa_/ph_*1000)/10 : 0;
         const fsz = rh_>0 ? Math.round(ra_/rh_*1000)/10 : 0;
-        const dslh = dh_>0 ? Math.round(da_/dh_*1000)/10 : 0;
-        const iptvh = ih_>0 ? Math.round(ia_/ih_*1000)/10 : 0;
-        const mobh = mh>0 ? Math.round(ma/mh*1000)/10 : 0;
+        const dslh = dh_>0 ? Math.round(da_/dh_*1000)/10 : null;
+        const iptvh = ih_>0 ? Math.round(ia_/ih_*1000)/10 : null;
+        const mobh = mh>0 ? Math.round(ma/mh*1000)/10 : null;
         const cihazh = ch_>0 ? Math.round(ca_/ch_*1000)/10 : 0;
         // Kupa Bende Eylül'26: ürün puanları %130 HGO'da tavan yapar.
         const pDsl = Math.min(1040, dslh*8), pMob = Math.min(650, mobh*5), pIptv = Math.min(390, iptvh*3);
