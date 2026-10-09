@@ -218,6 +218,29 @@ function merRegionBenchmark(ctx,p,kind){
   var fallback=kind==='gm'?matrix.anadolu:matrix.turkiye;
   return fallback && typeof fallback[p.hist]==='number'?fallback[p.hist]:null;
 }
+/* Same-month comparison basis:
+ * SY ÖZET GM/TR columns are Frcst HGO, whereas regional product data is current HGO.
+ * Forecast the region using worked/total days before subtracting GM/TR forecast.
+ * For closed reports the current HGO is already month-end HGO.
+ * Do not silently fall back to TTM-only raw matrix values as GM/TR comparators. */
+function merClosingHgo(ctx,actualHgo){
+  if(actualHgo==null)return null;
+  if(ctx.source && ctx.source.closed)return actualHgo;
+  return merForecastHgo(ctx,actualHgo);
+}
+function merClosingBenchmark(ctx,p,kind){
+  if(ctx.scope!=='region' && ctx.scope!=='group')return null;
+  // GM/TR are TTM + EDM. Never compare them with an incomplete single-channel scope.
+  if(ctx.scope==='region' && (!ctx.source.edm || !merRows(ctx.source,'EDM').length))return null;
+  if(ctx.scope==='group' && ctx.rows.length && !merGroupRows(ctx.source,'EDM').length)return null;
+  var matrix=ctx.source.matrix||{},live=matrix.regionBenchmarks&&matrix.regionBenchmarks[kind];
+  if(live && typeof live[p.hist]==='number' && isFinite(live[p.hist]))return live[p.hist];
+  var archive=typeof HIST2_REGION_BENCHMARKS!=='undefined'&&HIST2_REGION_BENCHMARKS&&
+    HIST2_REGION_BENCHMARKS.periods&&HIST2_REGION_BENCHMARKS.periods[ctx.source.period];
+  var entry=archive&&archive[kind];
+  if(entry&&typeof entry[p.hist]==='number'&&isFinite(entry[p.hist]))return entry[p.hist];
+  return null; // Other matrix fallbacks are not the all-channel closing forecast.
+}
 function merBenchmark(ctx,p,kind){
   if(ctx.scope==='region')return kind==='gm'||kind==='tr'?merRegionBenchmark(ctx,p,kind):null;
   if(kind==='region')return merAggregate(merRows(ctx.source,'TTM'),p.key).g;
@@ -267,6 +290,7 @@ function merModel(){
   if(source.sample)ctx.notes.push('Örnek veri; güncel kapanış Excel’ini yükleyin.');
   if(!source.closed)ctx.notes.push('Ara dönem verisi; ay kapanışı henüz doğrulanmadı.');
   if(ctx.scope==='region' && !source.edm)ctx.notes.push('EDM bölge verisi bulunamadı; yalnız TTM gösteriliyor.');
+  if((ctx.scope==='region'||ctx.scope==='group')&&!source.closed&&!merForecastInfo(source))ctx.notes.push('GM/TR ay sonu kıyası için çalışma günü ve çalışılan gün bilgisi gerekli.');
   if(ctx.scope==='group' && !ctx.rows.length)ctx.notes.push('Arşiv Grup Müdürlüğü toplamları doğrulanmış Anadolu kapanış özetlerinden gösteriliyor; bölge kırılımı için güncel kapanış Excel’ini yükleyin.');
   if(ctx.scope==='group' && ctx.rows.length && (!source.group || !source.group.edm || !Object.keys(source.group.edm.bayiler||{}).length))ctx.notes.push('Grup Müdürlüğü EDM verisi bulunamadı; yalnız TTM gösteriliyor.');
   if(ctx.scope==='account')ctx.notes.push('Cari: diğer bölgelerdeki bağlı şubeler dahil; geçmişte her ayın raporlanan şubeleri toplanır.');
@@ -311,21 +335,22 @@ function merPerformanceTable(ctx){
     var current=(ctx.products||[]).find(function(p){return p.key===base.key;});
     return current||Object.assign({},base,{s:merStats(ctx,base)});
   });
-  var head='<th>Ürün</th><th>Hedef</th><th>Gerçekleşen</th><th>HGO</th><th>Fark</th>'+(region?'<th>GM Δ</th><th>TR Δ</th>':group?'<th>TR Δ</th>':'<th>Bölge Δ</th>');
-  return '<table class="mer-data-table mer-closing-table '+(region?'mer-region-closing':'')+'"><thead><tr>'+head+'</tr></thead><tbody>'+closingProducts.map(function(p){
-    var v=p.s,tail;
+  var wide=region||group;
+  var head='<th>Ürün</th><th>Hedef</th><th>Gerçekleşen</th><th>HGO</th>'+(wide?'<th title="Bölge veya grup ay sonu tahmini HGO">F. HGO</th>':'')+'<th>Fark</th>'+(region?'<th title="Bölge ay sonu tahmini eksi GM ay sonu tahmini">GM Δ</th><th title="Bölge ay sonu tahmini eksi Türkiye ay sonu tahmini">TR Δ</th>':group?'<th title="Grup ay sonu tahmini eksi Türkiye ay sonu tahmini">TR Δ</th>':'<th>Bölge Δ</th>');
+  return '<table class="mer-data-table mer-closing-table '+(wide?'mer-region-closing':'')+'"><thead><tr>'+head+'</tr></thead><tbody>'+closingProducts.map(function(p){
+    var v=p.s,tail,closing=wide?merClosingHgo(ctx,v.g):null;
     if(region){
-      var gm=merRegionBenchmark(ctx,p,'gm'),tr=merRegionBenchmark(ctx,p,'tr');
-      var gmDiff=v.g==null||gm==null?null:v.g-gm,trDiff=v.g==null||tr==null?null:v.g-tr;
-      tail='<td class="'+merDeltaTone(gmDiff)+'" title="GM HGO '+merP(gm)+'">'+merSigned(gmDiff,' puan')+'</td><td class="'+merDeltaTone(trDiff)+'" title="TR HGO '+merP(tr)+'">'+merSigned(trDiff,' puan')+'</td>';
+      var gm=merClosingBenchmark(ctx,p,'gm'),tr=merClosingBenchmark(ctx,p,'tr');
+      var gmDiff=closing==null||gm==null?null:closing-gm,trDiff=closing==null||tr==null?null:closing-tr;
+      tail='<td class="'+merDeltaTone(gmDiff)+'" title="Bölge ay sonu HGO '+merP(closing)+' · GM ay sonu HGO '+merP(gm)+'">'+merSigned(gmDiff,' puan')+'</td><td class="'+merDeltaTone(trDiff)+'" title="Bölge ay sonu HGO '+merP(closing)+' · Türkiye ay sonu HGO '+merP(tr)+'">'+merSigned(trDiff,' puan')+'</td>';
     }else if(group){
-      var tr=merRegionBenchmark(ctx,p,'tr'),trDiff=v.g==null||tr==null?null:v.g-tr;
-      tail='<td class="'+merDeltaTone(trDiff)+'" title="TR HGO '+merP(tr)+'">'+merSigned(trDiff,' puan')+'</td>';
+      var tr=merClosingBenchmark(ctx,p,'tr'),trDiff=closing==null||tr==null?null:closing-tr;
+      tail='<td class="'+merDeltaTone(trDiff)+'" title="Grup ay sonu HGO '+merP(closing)+' · Türkiye ay sonu HGO '+merP(tr)+'">'+merSigned(trDiff,' puan')+'</td>';
     }else{
       var r=merBenchmark(ctx,p,'region'),diff=v.g==null||r==null?null:v.g-r;
       tail='<td class="'+merDeltaTone(diff)+'">'+merSigned(diff,' puan')+'</td>';
     }
-    return '<tr class="'+(p.hist==='mobil'?'mer-mobile-row':'')+'"><th><span class="mer-product-name" style="color:'+merProductDesign(p.hist)[2]+'">'+merIcon(merProductDesign(p.hist)[3])+'</span>'+p.label+'</th><td>'+merN(v.h)+'</td><td class="mer-actual">'+merN(v.a)+'</td><td><b class="mer-pill '+merTone(v.g)+'">'+merP(v.g)+'</b></td><td class="'+merDeltaTone(v.gap)+'">'+merGap(v.gap)+'</td>'+tail+'</tr>';
+    return '<tr class="'+(p.hist==='mobil'?'mer-mobile-row':'')+'"><th><span class="mer-product-name" style="color:'+merProductDesign(p.hist)[2]+'">'+merIcon(merProductDesign(p.hist)[3])+'</span>'+p.label+'</th><td>'+merN(v.h)+'</td><td class="mer-actual">'+merN(v.a)+'</td><td><b class="mer-pill '+merTone(v.g)+'">'+merP(v.g)+'</b></td>'+(wide?'<td class="mer-closing-forecast"><b class="mer-pill '+merTone(closing)+'">'+merP(closing)+'</b></td>':'')+'<td class="'+merDeltaTone(v.gap)+'">'+merGap(v.gap)+'</td>'+tail+'</tr>';
   }).join('')+'</tbody></table>';
 }
 function merCommitmentTotal(rows,key){
@@ -532,7 +557,7 @@ function merContributionTable(ctx){
 }
 function merNotes(ctx){return '<div class="mer-notes">'+(ctx.notes.length?ctx.notes.map(merEsc).join(' · '):'Kapsam: '+(ctx.scope==='group'?'Anadolu Grup Müdürlüğü TTM + EDM':ctx.scope==='region'?'Kuzey Anadolu TTM + EDM':'Kuzey Anadolu TTM'))+'</div>';}
 function merFooter(ctx){
-  var deltaNote=ctx.scope==='region'?'GM / TR Δ: HGO puan farkı':ctx.scope==='group'?'TR Δ: HGO puan farkı':'Bölge Δ: TTM HGO farkı';
+  var deltaNote=ctx.scope==='region'?'GM / TR Δ: aynı ay sonu HGO puan farkı':ctx.scope==='group'?'TR Δ: aynı ay sonu HGO puan farkı':'Bölge Δ: TTM HGO farkı';
   return '<footer class="mer-report-footer"><div><span>'+merEsc(ctx.notes.join(' · '))+'</span><span>'+(ctx.scope==='group'?'Anadolu Grup Müdürlüğü':'Kuzey Anadolu')+' · TTM Performans Merkezi</span></div><div><span>HGO = gerçekleşen / hedef · — veri yok · '+deltaNote+'</span><span>'+merEsc(ctx.source.uploadedAt?'Yükleme '+new Date(ctx.source.uploadedAt).toLocaleDateString('tr-TR'):'Dönem '+ctx.source.period)+'</span></div></footer>';
 }
 function merSummary(ctx){

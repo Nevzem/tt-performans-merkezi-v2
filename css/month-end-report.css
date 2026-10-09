@@ -41,3 +41,10 @@
 .mer-signal-gap strong{font-size:13px;max-width:54%;overflow:hidden;text-overflow:ellipsis}
 .mer-signal-gap small{font-size:8px}
 .mer-signal-gap em{position:absolute;right:8px;top:-12px;font-size:6.5px;font-style:normal;font-weight:650;color:#7893b1;white-space:nowrap}
+
+/* Same-basis closing comparison: current HGO and forecast HGO appear separately. */
+.mer-region-closing .mer-closing-forecast .mer-pill{background:#e9f2ff;color:#0c5cba;font-size:9.5px;min-width:49px;padding:2px 3px}
+.mer-region-closing thead th{font-size:8.9px}
+.mer-region-closing tbody th,.mer-region-closing tbody td{padding-left:2px;padding-right:2px}
+.mer-region-closing tbody td{font-size:9.4px}
+.mer-region-closing .mer-pill{min-width:48px;font-size:9.5px;padding-left:2px;padding-right:2px}
