@@ -230,6 +230,9 @@ function merClosingHgo(ctx,actualHgo){
 }
 function merClosingBenchmark(ctx,p,kind){
   if(ctx.scope!=='region' && ctx.scope!=='group')return null;
+  // GM/TR are TTM + EDM. Never compare them with an incomplete single-channel scope.
+  if(ctx.scope==='region' && (!ctx.source.edm || !merRows(ctx.source,'EDM').length))return null;
+  if(ctx.scope==='group' && ctx.rows.length && !merGroupRows(ctx.source,'EDM').length)return null;
   var matrix=ctx.source.matrix||{},live=matrix.regionBenchmarks&&matrix.regionBenchmarks[kind];
   if(live && typeof live[p.hist]==='number' && isFinite(live[p.hist]))return live[p.hist];
   var archive=typeof HIST2_REGION_BENCHMARKS!=='undefined'&&HIST2_REGION_BENCHMARKS&&
