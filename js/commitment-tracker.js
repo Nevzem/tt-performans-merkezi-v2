@@ -82,7 +82,7 @@ function ctPngSlice(rows,page){
 }
 function ctSetPngPage(v){CT_PNG_PAGE=Math.max(1,Math.floor(Number(v)||1));ctUpdateResults();}
 function ctPngControls(rows){
-  if(rows.length<=CT_PNG_PAGE_SIZE)return '<span>23 şubeye kadar tek PNG’de · Liste: '+rows.length+' şube</span>';
+  if(rows.length<=CT_PNG_PAGE_SIZE)return '<span>24 şubeye kadar tek PNG’de · Liste: '+rows.length+' şube</span>';
   var pages=ctPngPageCount(rows),parts=[];
   for(var i=1;i<=pages;i++)parts.push('<option value="'+i+'"'+(i===CT_PNG_PAGE?' selected':'')+'>Sayfa '+i+' / '+pages+'</option>');
   return '<label>Paylaşılacak sayfa <select aria-label="PNG sayfası" onchange="ctSetPngPage(this.value)">'+parts.join('')+'</select></label>'+
