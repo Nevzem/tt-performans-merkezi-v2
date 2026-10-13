@@ -1,0 +1,39 @@
+/* Dedicated commitment tracker: responsive cards and auditable branch rows. */
+.ct-cards{width:100%;max-width:1180px!important;margin:0 auto}
+.ct-page{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#193655;background:#f6faff;padding:20px;border:1px solid #dce8f4;border-radius:19px;box-shadow:0 10px 25px #173b5a0b;min-width:0}
+.ct-hero{display:flex;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(110deg,#0e3769,#1664a0);color:white;padding:22px;border-radius:15px}
+.ct-eyebrow{font-size:10px;letter-spacing:1.5px;color:#acdffa;font-weight:800}
+.ct-hero h2{font-size:25px;line-height:1.2;margin:7px 0;font-weight:850;color:white}
+.ct-hero p{font-size:12px;color:#d3e9f9;margin:0}
+.ct-export{border:1px solid #b3d5f0;background:white;color:#0e4d81;border-radius:10px;padding:11px 14px;font-size:12px;font-weight:850;cursor:pointer;white-space:nowrap}
+.ct-export:disabled{opacity:.5;cursor:not-allowed}
+.ct-notice{font-size:12px;line-height:1.5;color:#617993;background:white;border-left:3px solid #4ba2eb;border-radius:7px;padding:10px 12px;margin:14px 0}
+.ct-channels{display:flex;gap:7px;overflow-x:auto;padding:3px 0 10px}
+.ct-tab{padding:10px 12px;border:1px solid #d8e5f1;background:#fff;color:#30516e;border-radius:10px;white-space:nowrap;cursor:pointer;font-size:12px;font-weight:750}
+.ct-tab span{font-size:10px;border-radius:15px;padding:2px 6px;background:#eaf2fa;margin-left:5px}
+.ct-tab.active{background:#1265ad;border-color:#1265ad;color:#fff}
+.ct-tab.active span{background:#ffffff35}
+.ct-filters{display:grid;grid-template-columns:1.8fr 1fr 1.2fr;gap:10px;margin:6px 0 14px}
+.ct-filters label{display:flex;flex-direction:column;gap:5px;font-size:11px;color:#607d9d;font-weight:800}
+.ct-filters input,.ct-filters select{font:inherit;font-size:12px;font-weight:600;color:#1d4265;border:1px solid #d4e3f1;background:#fff;border-radius:9px;padding:10px 9px;min-width:0;outline-color:#1384d2}
+.ct-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:11px}
+.ct-kpi{background:white;border:1px solid #dce8f4;border-radius:12px;padding:13px 15px;min-width:0;display:flex;flex-direction:column;gap:5px}
+.ct-kpi span{font-size:11px;color:#617f9b;font-weight:800}
+.ct-kpi b{font-size:27px;color:#104c83;font-weight:850;line-height:1.1}
+.ct-kpi small{font-size:10px;line-height:1.3;color:#7b90a7}
+.ct-kpi:nth-child(2) b{color:#1478ba}
+.ct-kpi:nth-child(3) b{color:#744cb8}
+.ct-count{font-size:11px;color:#637d98;font-weight:750;margin:9px 0 7px}
+.ct-table-scroll{max-height:590px;overflow:auto;border:1px solid #dbe7f3;border-radius:12px;background:#fff}
+.ct-table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;text-align:left;min-width:750px}
+.ct-table th{background:#eaf3fb;color:#2b5781;font-size:11px;font-weight:850;padding:13px 10px;position:sticky;top:0;z-index:1;border-bottom:1px solid #dce8f4;white-space:nowrap}
+.ct-table td{padding:11px 10px;border-bottom:1px solid #ecf1f8;color:#2a4968;vertical-align:middle}
+.ct-table tbody tr:nth-child(even){background:#f7fbff}
+.ct-table tbody tr:hover{background:#eef8ff}
+.ct-name strong{display:block;font-size:12px;color:#173b60}
+.ct-name small,.ct-table td small{display:block;font-size:10px;color:#728ba4;margin-top:4px}
+.ct-table td.ct-amount{text-align:right;font-size:14px;font-weight:850;color:#174e7d;font-variant-numeric:tabular-nums}
+.ct-table th:nth-last-child(-n+3){text-align:right}
+.ct-foot{font-size:10.5px;color:#72899f;line-height:1.6;padding:12px 3px 0}
+.ct-empty{text-align:center;background:#fff;padding:40px 18px;color:#7891a8;border:1px solid #dce8f4;border-radius:12px;font-size:13px}
+@media(max-width:700px){.ct-page{padding:10px;border-radius:12px}.ct-hero{padding:16px 12px;align-items:flex-start}.ct-hero h2{font-size:19px}.ct-hero p{font-size:10px}.ct-export{font-size:11px;padding:10px 9px}.ct-filters{grid-template-columns:1fr 1fr}.ct-filters label:first-child{grid-column:1/-1}.ct-summary{gap:5px}.ct-kpi{padding:10px 8px}.ct-kpi span{font-size:9px;min-height:26px}.ct-kpi b{font-size:20px}.ct-kpi small{font-size:8px}.ct-channels{gap:5px}.ct-tab{padding:9px 10px;font-size:11px}}
