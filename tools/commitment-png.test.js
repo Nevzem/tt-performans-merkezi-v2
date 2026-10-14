@@ -33,6 +33,11 @@ const ctx=vm.createContext({
   console,document,MER_LIVE:null,MER_ARCHIVES:{},
   captureExportImage:async(target,opts)=>{
     exportCount++;assert.match(target.markup,/Şube Bazlı/);
+    assert.match(target.markup,/79 bayi/);
+    assert.match(target.markup,/23 bayi/);
+    assert.match(target.markup,/56 bayi/);
+    for(let code=1;code<=79;code++)assert.ok(target.markup.includes('>'+code+'</td>'), 'Every branch included: '+code);
+    assert.doesNotMatch(target.markup,/Yönetici|İL \/ KANAL|FORECAST DEĞİL/);
     assert.equal(opts.scale,2);assert.equal(opts.width,1120);
     return {toDataURL:()=> 'data:image/png;base64,eA=='};
   },
@@ -55,25 +60,26 @@ assert.equal(run('ctPngPageCount(ctViewRows())'),1);
 const html=run('ctPngMarkup(ctViewRows(),ctPngSlice(ctViewRows(),1),ctSource().value,false)');
 assert.match(html,/13\.10\.2026/);
 assert.match(html,/Şube Bazlı/);
-assert.match(html,/FORECAST DEĞİL/);
-assert.match(html,/23 şubeyi kapsar/);
+assert.doesNotMatch(html,/FORECAST DEĞİL|İL \/ KANAL|Yönetici/);
+assert.match(html,/23 bayi/);
 assert.match(html,/&lt;&amp;&gt; Mağazası/);
-assert.match(html,/SAYFA 1 \/ 1/);
+assert.doesNotMatch(html,/SAYFA/);
 run("CT_CHANNEL='TTBN';CT_PNG_PAGE=2;");
 assert.equal(run('ctViewRows().length'),55);
 assert.equal(run('ctPngPageCount(ctViewRows())'),3);
 assert.equal(run('ctPngSlice(ctViewRows(),2).rows.length'),24);
 assert.equal(run('ctPngSlice(ctViewRows(),3).rows.length'),7);
-assert.match(run('ctPngControls(ctViewRows())'),/Sayfa 2 \/ 3/);
-assert.match(run('ctPngMarkup(ctViewRows(),ctPngSlice(ctViewRows(),2),ctSource().value,false)'),/25–48 \/ 55 şube/);
+assert.match(run('ctPngControls(ctViewRows())'),/Tüm 79 bayi/);
+assert.match(run('ctPngMarkup(ctViewRows(),ctPngSlice(ctViewRows(),2),ctSource().value,false)'),/55 bayi/);
 run("CT_CHANNEL='TTM';CT_PNG_PAGE=1;");
 (async()=>{
+  run("CT_CHANNEL='TTM';CT_QUERY='does not match any branch';CT_CITY='TOKAT'");
   await run('ctSharePNG()');
   assert.equal(exportCount,1);
   assert.equal(shareCount,1);
   assert.equal(cleanupCount,1);
-  assert.equal(outputName,'TT_Taahhut_TTM_13102026_Sayfa1.png');
+  assert.equal(outputName,'TT_Taahhut_TTM_EDM_13102026.png');
   assert.equal(controls['ct-png-button'].disabled,false);
   assert.equal(controls['ct-png-button'].textContent,'↗ PNG Paylaş');
-  console.log('PASS: premium PNG exports current filtered branch data, paginates EDM, escapes names, shares and cleans up.');
+  console.log('PASS: premium PNG exports all TTM + EDM branches with separate totals, escapes names, shares and cleans up.');
 })().catch(e=>{console.error(e);process.exitCode=1;});
