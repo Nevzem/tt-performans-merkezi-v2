@@ -81,12 +81,9 @@ function ctPngSlice(rows,page){
   return {rows:rows.slice((p-1)*CT_PNG_PAGE_SIZE,p*CT_PNG_PAGE_SIZE),page:p,pages:n,from:(p-1)*CT_PNG_PAGE_SIZE+1,to:Math.min(p*CT_PNG_PAGE_SIZE,rows.length)};
 }
 function ctSetPngPage(v){CT_PNG_PAGE=Math.max(1,Math.floor(Number(v)||1));ctUpdateResults();}
-function ctPngControls(rows){
-  if(rows.length<=CT_PNG_PAGE_SIZE)return '<span>24 şubeye kadar tek PNG’de · Liste: '+rows.length+' şube</span>';
-  var pages=ctPngPageCount(rows),parts=[];
-  for(var i=1;i<=pages;i++)parts.push('<option value="'+i+'"'+(i===CT_PNG_PAGE?' selected':'')+'>Sayfa '+i+' / '+pages+'</option>');
-  return '<label>Paylaşılacak sayfa <select aria-label="PNG sayfası" onchange="ctSetPngPage(this.value)">'+parts.join('')+'</select></label>'+
-    '<span>Her PNG en fazla '+CT_PNG_PAGE_SIZE+' şube içerir · '+rows.length+' şube</span>';
+function ctPngControls(){
+  var rows=ctRows(ctSource().value);
+  return '<span>TTM + EDM · Tüm '+rows.length+' bayi aynı PNG’de</span>';
 }
 function ctUpdateResults(){
   var source=ctSource().value,all=ctRows(source),rows=ctViewRows(all);
@@ -98,7 +95,7 @@ function ctUpdateResults(){
   var pagePicker=document.getElementById('ct-png-controls');
   if(pagePicker)pagePicker.innerHTML=ctPngControls(rows);
   var pngButton=document.getElementById('ct-png-button');
-  if(pngButton)pngButton.disabled=!rows.length;
+  if(pngButton)pngButton.disabled=!all.length;
   document.querySelectorAll('.ct-tab').forEach(function(b){b.classList.toggle('active',b.dataset.ctChannel===CT_CHANNEL);b.setAttribute('aria-pressed',String(b.dataset.ctChannel===CT_CHANNEL));});
 }
 function ctSetChannel(v){CT_CHANNEL=v;CT_CITY='all';CT_PNG_PAGE=1;renderCommitmentTracker();}
@@ -122,9 +119,8 @@ function ctCsv(){
   document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
 }
 
-/* Premium PNG report is generated from exactly the filtered table data.
- * The Share preview uses the app's existing iOS Web Share / download support.
- * Paging caps height so large EDM lists are shareable on mobile. */
+/* Approved premium report includes all TTM and EDM branches in one image.
+ * Actual quantities stay separate; canvas scale adapts to full list height. */
 function ctPngChannelLabel(){
   return {TTM:'TTM',TTBN:'EDM · TTBN',ESN:'EDM · ESN',OTHER:'EDM · Diğer',ALL:'Tüm kanallar'}[CT_CHANNEL]||'TTM';
 }
@@ -137,41 +133,44 @@ function ctPngStats(rows){
   var ttm=rows.filter(function(r){return r.kind==='TTM';});
   var edm=rows.filter(function(r){return r.kind!=='TTM';});
   return [
-    {label:'DSL TAAHHÜT',value:ctTotal(rows,'dsl'),detail:'TTM + EDM · güncel adet',tone:'dsl'},
-    {label:'MOBİL TAAHHÜT',value:ctTotal(ttm,'mobileTTM'),detail:'TTM · güncel adet',tone:'mobile'},
-    {label:'MOBİL UPSELL',value:ctTotal(edm,'mobileUpsell'),detail:'EDM · güncel adet',tone:'upsell'}
+    {channel:'TTM',label:'Mobil Taahhüt',value:ctTotal(ttm,'mobileTTM'),tone:'mobile'},
+    {channel:'TTM',label:'DSL Taahhüt',value:ctTotal(ttm,'dsl'),tone:'dsl'},
+    {channel:'EDM',label:'Mobil Taahhüt Upsell',value:ctTotal(edm,'mobileUpsell'),tone:'upsell'},
+    {channel:'EDM',label:'DSL Taahhüt',value:ctTotal(edm,'dsl'),tone:'edm-dsl'}
   ].map(function(card){
-    var stat=card.value,coverage=stat.covered!==stat.size&&stat.size?' · '+stat.covered+'/'+stat.size+' veri':'';
-    return '<div class="ct-png-stat '+card.tone+'"><span>'+card.label+'</span><strong>'+ctN(stat.value)+'</strong><small>'+card.detail+coverage+'</small></div>';
+    var stat=card.value,coverage=stat.size&&stat.covered!==stat.size?'<small class="ct-png-coverage">'+stat.covered+'/'+stat.size+' bayi verisi</small>':'';
+    return '<div class="ct-png-stat '+card.tone+'"><div class="ct-png-stat-label"><span class="ct-png-icon">'+ctPngIcon(card.tone.indexOf('dsl')!==-1?'wifi':'phone',card.tone)+'</span><div><b>'+card.channel+'</b><span>'+card.label+'</span></div></div><strong>'+ctN(stat.value)+'</strong>'+coverage+'<div class="ct-png-accent"></div></div>';
   }).join('');
+}
+function ctPngIcon(kind,tone){
+  var color={mobile:'#37c4ff',dsl:'#3ee6ce',upsell:'#c782ff','edm-dsl':'#ffc05e'}[tone]||'#65daff';
+  var path=kind==='phone'?'<rect x="8" y="3" width="16" height="26" rx="3"/><path d="M13 25h6"/>':kind==='wifi'?'<path d="M3 12c7-8 19-8 26 0M7 17c5-6 13-6 18 0M12 22c2-3 6-3 8 0"/><circle cx="16" cy="27" r="1"/>':'<path d="M5 27V18h4v9M14 27V10h4v17M23 27V3h4v24"/>';
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="'+color+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">'+path+'</svg>';
+}
+function ctPngPanel(rows,edm){
+  var name=edm?'EDM':'TTM';
+  var list=rows.map(function(row,index){
+    return '<tr><td><span class="ct-png-rank rank-'+Math.min(index+1,4)+'">'+(index+1)+'</span></td>'+
+      '<td class="ct-png-code">'+ctEsc(row.code)+'</td><td class="ct-png-branch">'+ctEsc(row.name)+'</td>'+
+      '<td><span class="ct-png-quantity mobile">'+ctN(edm?row.mobileUpsell:row.mobileTTM)+'</span></td>'+
+      '<td><span class="ct-png-quantity dsl">'+ctN(row.dsl)+'</span></td></tr>';
+  }).join('');
+  return '<section class="ct-png-panel '+(edm?'edm':'ttm')+'"><header><span class="ct-png-panel-icon">'+ctPngIcon('bars',edm?'upsell':'mobile')+'</span><h2><b>'+name+'</b> Şubeleri</h2><small>'+rows.length+' bayi</small></header>'+
+    '<table class="ct-png-table"><colgroup><col style="width:9%"><col style="width:21%"><col style="width:36%"><col style="width:17%"><col style="width:17%"></colgroup><thead><tr><th>#</th><th>Bayi Kodu</th><th>Bayi Adı</th><th>Mobil'+(edm?'<small>Upsell</small>':'')+'</th><th>DSL</th></tr></thead><tbody>'+list+'</tbody></table>'+
+    (!rows.length?'<div class="ct-png-no-data">'+name+' raporu yüklenmedi</div>':'')+'</section>';
 }
 function ctPngMarkup(rows,pageInfo,source,stored){
-  var slice=pageInfo.rows,channel=ctPngChannelLabel();
-  var city=CT_CITY==='all'?'Tüm iller':CT_CITY,filter=CT_QUERY?' · Arama: '+CT_QUERY:'';
-  var table=slice.map(function(row,index){
-    return '<tr><td class="ct-png-index">'+(pageInfo.from+index)+'</td>'+
-      '<td class="ct-png-branch"><b>'+ctEsc(row.name)+'</b><small>'+ctEsc(row.code)+(row.manager?' · '+ctEsc(row.manager):'')+'</small></td>'+
-      '<td class="ct-png-city">'+ctEsc(row.city)+'<small>'+ctEsc(row.kind==='TTM'?'TTM':row.kind==='OTHER'?'EDM · Diğer':'EDM · '+row.kind)+'</small></td>'+
-      '<td class="ct-png-number">'+ctN(row.dsl)+'</td>'+
-      '<td class="ct-png-number">'+ctN(row.mobileTTM)+'</td>'+
-      '<td class="ct-png-number">'+ctN(row.mobileUpsell)+'</td></tr>';
-  }).join('');
+  var ttm=rows.filter(function(r){return r.kind==='TTM';}),edm=rows.filter(function(r){return r.kind!=='TTM';});
   return '<article class="ct-png-sheet" aria-label="Şube Bazlı Taahhüt Paylaşım Raporu">'+
-    '<div class="ct-png-hero"><div class="ct-png-brand"><span class="ct-png-brandmark">▥</span><b>TT PERFORMANS MERKEZİ</b><i>KUZEY ANADOLU</i></div>'+
-    '<div class="ct-png-hero-body"><div><div class="ct-png-label">GÜNCEL AKTİVASYON RAPORU</div>'+
-    '<h1>Şube Bazlı<br>Taahhüt Takibi</h1><p>DSL · Mobil Taahhüt · EDM Mobil Upsell</p></div>'+
-    '<div class="ct-png-date"><small>RAPOR TARİHİ</small><b>'+ctEsc(ctPngDate(source))+'</b><span>'+ctEsc(channel)+'</span></div></div>'+
-    '<div class="ct-png-hero-foot"><span>GERÇEKLEŞEN ADETLER</span><span>FORECAST DEĞİL</span></div></div>'+
+    '<div class="ct-png-hero"><div class="ct-png-growth" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>'+
+    '<div class="ct-png-date">'+ctEsc(ctPngDate(source))+'</div><h1>Şube Bazlı<br><span>Taahhüt Takibi</span></h1><p>KUZEY ANADOLU</p></div>'+
     '<div class="ct-png-main"><div class="ct-png-stats">'+ctPngStats(rows)+'</div>'+
-    '<div class="ct-png-section"><div><h2>ŞUBE PERFORMANS LİSTESİ</h2><p>'+ctEsc(channel)+' · '+ctEsc(city)+ctEsc(filter)+'</p></div>'+
-    '<div class="ct-png-page">SAYFA '+pageInfo.page+' / '+pageInfo.pages+'<small>'+pageInfo.from+'–'+pageInfo.to+' / '+rows.length+' şube</small></div></div>'+
-    '<table class="ct-png-table"><thead><tr><th>#</th><th>ŞUBE / BAYİ KODU</th><th>İL / KANAL</th><th>DSL TAAHHÜT</th><th>MOBİL TAAHHÜT<br>TTM</th><th>MOBİL UPSELL<br>EDM</th></tr></thead><tbody>'+table+'</tbody></table>'+
-    '<div class="ct-png-notice">TTM Mobil Taahhüt ve EDM Mobil Taahhüt Upsell ayrı KPI’lardır; birbirine eklenmez. <b>—</b> veri bulunamadığını veya ilgili kanala uygulanmadığını gösterir. Üstteki toplamlar seçili filtreye ait tüm '+rows.length+' şubeyi kapsar.</div></div>'+
-    '<div class="ct-png-footer"><div><b>TT PERFORMANS MERKEZİ</b><span>Şube Bazlı Taahhüt Performansı</span></div>'+
-    '<div>'+ctEsc(stored?'Tarayıcıda saklanmış rapor · Güncelliği kontrol edin.':'Yüklenen satış raporundan üretilmiştir.')+'</div></div></article>';
+    '<div class="ct-png-strip"><span>'+ctPngIcon('bars')+' Güncel gerçekleşen adetler</span><span>'+rows.length+' bayi</span></div>'+
+    '<div class="ct-png-panels">'+ctPngPanel(ttm,false)+ctPngPanel(edm,true)+'</div></div>'+
+    '<footer class="ct-png-footer"><b>TT PERFORMANS MERKEZİ</b><span>'+ctEsc(stored?'Son yüklenen rapor':'Güncel satış raporu')+' · '+ctEsc(ctPngDate(source))+'</span></footer></article>';
 }
 async function ctSharePNG(){
-  var sourceInfo=ctSource(),source=sourceInfo.value,all=ctViewRows(ctRows(source));
+  var sourceInfo=ctSource(),source=sourceInfo.value,all=ctRows(source);
   if(!source||!all.length){alert('Önce geçerli satış raporu yükleyip paylaşılacak şubeleri seçin.');return;}
   if(typeof captureExportImage!=='function'||typeof _openSharePreview!=='function'){
     alert('PNG paylaşım bileşenleri yüklenmedi. Sayfayı yenileyip yeniden deneyin.');return;
@@ -180,17 +179,26 @@ async function ctSharePNG(){
   var host=null;
   if(button){button.disabled=true;button.textContent='PNG hazırlanıyor…';}
   try{
-    var page=ctPngSlice(all,CT_PNG_PAGE);
+    // Export both channels in full, regardless of the on-screen channel/search.
+    var page={rows:all,page:1,pages:1};
+    all.sort(function(a,b){
+      var av=a.kind==='TTM'?a.mobileTTM:a.mobileUpsell,bv=b.kind==='TTM'?b.mobileTTM:b.mobileUpsell;
+      return (av==null)-(bv==null)||(bv||0)-(av||0)||a.name.localeCompare(b.name,'tr')||a.code.localeCompare(b.code,'tr');
+    });
     host=document.createElement('div');host.className='ct-png-host';
-    host.style.cssText='position:fixed;left:-20000px;top:0;width:1120px;z-index:-1;pointer-events:none;overflow:visible;background:#f3f8fe;';
+    host.style.cssText='position:fixed;left:-20000px;top:0;width:1120px;z-index:-1;pointer-events:none;overflow:visible;background:#03142f;';
     host.innerHTML=ctPngMarkup(all,page,source,sourceInfo.saved);
     document.body.appendChild(host);
     var sheet=host.firstElementChild;
-    var canvas=await captureExportImage(sheet,{scale:2,backgroundColor:'#f3f8fe',width:1120,windowWidth:1240});
+    if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+    // Keep complete long lists within iOS canvas pixel and dimension limits.
+    var height=Math.ceil(sheet.scrollHeight||sheet.offsetHeight||1400);
+    var scale=Math.min(2,Math.sqrt(15000000/(1120*height)),16000/height);
+    var canvas=await captureExportImage(sheet,{scale:scale,backgroundColor:'#03142f',width:1120,height:height,windowWidth:1240,windowHeight:height});
     var fileDate=ctPngDate(source).replace(/[^0-9]/g,'');
-    var fileName='TT_Taahhut_'+CT_CHANNEL+'_'+fileDate+'_Sayfa'+page.page+'.png';
+    var fileName='TT_Taahhut_TTM_EDM_'+fileDate+'.png';
     var dataUrl=canvas.toDataURL('image/png');
-    _openSharePreview(dataUrl,fileName,{text:'Kuzey Anadolu · '+ctPngChannelLabel()+' · Şube Bazlı Taahhüt · '+ctPngDate(source)+' · Sayfa '+page.page+'/'+page.pages});
+    _openSharePreview(dataUrl,fileName,{text:'Kuzey Anadolu · TTM + EDM · Şube Bazlı Taahhüt · '+ctPngDate(source)});
   }catch(e){
     alert('PNG oluşturulamadı: '+(e&&e.message||e));
   }finally{

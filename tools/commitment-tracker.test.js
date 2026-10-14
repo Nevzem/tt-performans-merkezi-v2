@@ -13,7 +13,7 @@ const run=x=>vm.runInContext(x,ctx);
 const r=(code,mobile,dsl,kind='TTM',city='Samsun')=>({
   kod:code,fullName:code==='1'?'<Deneme> Telekom':'Şube '+code,
   il:city,bolge:'KUZEY ANADOLU',sy:'Yönetici 1',bt:kind,
-  commitments:kind==='TTM'?{mobil, dsl}:{mobilUpsell:mobile,dsl}
+  commitments:kind==='TTM'?{mobil:mobile, dsl}:{mobilUpsell:mobile,dsl}
 });
 ctx.MER_LIVE={
   period:'2026-10',ttm:{reportDate:'2026-10-13',bayiler:{

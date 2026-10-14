@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-10-13 · Şube Bazlı Taahhüt PNG Paylaşımı';
+const APP_BUILD = '2026-10-14 · Taahhüt Takibi Premium TTM + EDM';
