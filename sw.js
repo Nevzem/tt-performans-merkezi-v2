@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-investor-20261019-ttm-clean';
+const CACHE = 'ttpm-investor-20261019-ttm-sort2';
 
 const ASSETS = [
   '.',

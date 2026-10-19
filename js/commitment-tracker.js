@@ -2,9 +2,14 @@
  * TTM Mobil Taahhüt and EDM Mobil Taahhüt Upsell are different KPIs.
  * All figures are reported actuals, never forecasts. */
 var CT_CHANNEL='TTM', CT_QUERY='', CT_CITY='all', CT_SORT='mobile', CT_PNG_PAGE=1, CT_PNG_PAGE_SIZE=24;
+var CT_SORT_OPTIONS=[['mobile','Mobil taahhüt: çoktan aza'],['mobileAsc','Mobil taahhüt: azdan çoğa'],['dsl','DSL taahhüt: çoktan aza'],['dslAsc','DSL taahhüt: azdan çoğa'],['name','Bayi adı: A → Z'],['city','İle göre'],['code','Bayi koduna göre']];
 function ctEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function ctNorm(s){return String(s==null?'':s).toLocaleUpperCase('tr-TR').trim();}
 function ctN(n){return n==null?'—':n.toLocaleString('tr-TR');}
+function ctShortName(name){
+  var short=String(name==null?'—':name).trim().split(/\s+/).slice(0,2).join(' '),chars=Array.from(short);
+  return chars.length>26?chars.slice(0,25).join('')+'…':short;
+}
 function ctQuantity(value){return typeof value==='number' && Number.isSafeInteger(value) && value>=0?value:null;}
 function ctSource(){
   if(typeof MER_LIVE!=='undefined' && MER_LIVE && MER_LIVE.ttm)return {value:MER_LIVE,saved:false};
@@ -43,15 +48,18 @@ function ctViewRows(all){
     return (CT_CITY==='all'||ctNorm(r.city)===ctNorm(CT_CITY))&&
       (!q||ctNorm([r.code,r.name,r.city,r.manager,r.kind].join(' ')).includes(q));
   });
-  function sortNumber(r){return CT_SORT==='dsl'?r.dsl:r.kind==='TTM'?r.mobileTTM:r.mobileUpsell;}
-  filtered.sort(function(a,b){
-    if(CT_SORT==='name')return a.name.localeCompare(b.name,'tr')||a.code.localeCompare(b.code,'tr');
-    if(CT_SORT==='city')return a.city.localeCompare(b.city,'tr')||a.name.localeCompare(b.name,'tr');
-    if(CT_SORT==='code')return a.code.localeCompare(b.code,'tr');
+  return ctSortRows(filtered);
+}
+function ctSortRows(rows){
+  function sortNumber(r){return CT_SORT==='dsl'||CT_SORT==='dslAsc'?r.dsl:r.kind==='TTM'?r.mobileTTM:r.mobileUpsell;}
+  return rows.slice().sort(function(a,b){
+    if(CT_SORT==='name')return ctShortName(a.name).localeCompare(ctShortName(b.name),'tr')||a.code.localeCompare(b.code,'tr');
+    if(CT_SORT==='city')return a.city.localeCompare(b.city,'tr')||ctShortName(a.name).localeCompare(ctShortName(b.name),'tr')||a.code.localeCompare(b.code,'tr');
+    if(CT_SORT==='code')return a.code.localeCompare(b.code,'tr',{numeric:true});
     var av=sortNumber(a),bv=sortNumber(b);
-    return (av==null)-(bv==null)||(bv||0)-(av||0)||a.name.localeCompare(b.name,'tr')||a.code.localeCompare(b.code,'tr');
+    var ascending=CT_SORT==='mobileAsc'||CT_SORT==='dslAsc';
+    return (av==null)-(bv==null)||(ascending?(av||0)-(bv||0):(bv||0)-(av||0))||a.name.localeCompare(b.name,'tr')||a.code.localeCompare(b.code,'tr');
   });
-  return filtered;
 }
 function ctTotal(rows,key){
   if(!rows.length)return {value:null,covered:0,size:0};
@@ -72,7 +80,7 @@ function ctSummary(rows){
 function ctTable(rows){
   if(!rows.length)return '<div class="ct-empty">Bu filtreye uygun şube bulunamadı. Kanal/şehir seçimini veya aramayı kontrol edin.</div>';
   return '<div class="ct-table-scroll"><table class="ct-table"><thead><tr><th>#</th><th>Bayi / şube</th><th>İl ve kanal</th><th>DSL Taahhüt</th><th>Mobil Taahhüt · TTM</th><th>Mobil Upsell · EDM</th></tr></thead><tbody>'+
-    rows.map(function(r,i){return '<tr><td>'+(i+1)+'</td><td class="ct-name"><strong>'+ctEsc(r.name)+'</strong><small>'+ctEsc(r.code)+(r.manager?' · '+ctEsc(r.manager):'')+'</small></td><td>'+ctEsc(r.city)+'<small>'+ctEsc(r.kind==='TTM'?'TTM':r.kind==='OTHER'?'EDM · Diğer':'EDM · '+r.kind)+'</small></td><td class="ct-amount">'+ctN(r.dsl)+'</td><td class="ct-amount">'+ctN(r.mobileTTM)+'</td><td class="ct-amount">'+ctN(r.mobileUpsell)+'</td></tr>';}).join('')+
+    rows.map(function(r,i){return '<tr><td>'+(i+1)+'</td><td class="ct-name"><strong title="'+ctEsc(r.name)+'">'+ctEsc(ctShortName(r.name))+'</strong><small>'+ctEsc(r.code)+(r.manager?' · '+ctEsc(r.manager):'')+'</small></td><td>'+ctEsc(r.city)+'<small>'+ctEsc(r.kind==='TTM'?'TTM':r.kind==='OTHER'?'EDM · Diğer':'EDM · '+r.kind)+'</small></td><td class="ct-amount">'+ctN(r.dsl)+'</td><td class="ct-amount">'+ctN(r.mobileTTM)+'</td><td class="ct-amount">'+ctN(r.mobileUpsell)+'</td></tr>';}).join('')+
     '</tbody></table></div>';
 }
 function ctPngPageCount(rows){return Math.max(1,Math.ceil((rows||[]).length/CT_PNG_PAGE_SIZE));}
@@ -83,7 +91,8 @@ function ctPngSlice(rows,page){
 function ctSetPngPage(v){CT_PNG_PAGE=Math.max(1,Math.floor(Number(v)||1));ctUpdateResults();}
 function ctPngControls(){
   var rows=ctPngRows(ctRows(ctSource().value));
-  return '<span>PNG paylaşımı: Yalnızca TTM · Tüm '+rows.length+' bayi tek görselde</span>';
+  var sort=(CT_SORT_OPTIONS.find(function(option){return option[0]===CT_SORT;})||CT_SORT_OPTIONS[0])[1];
+  return '<span>PNG paylaşımı: Yalnızca TTM · Tüm '+rows.length+' bayi · '+ctEsc(sort)+'</span>';
 }
 function ctUpdateResults(){
   var source=ctSource().value,all=ctRows(source),rows=ctViewRows(all);
@@ -101,7 +110,7 @@ function ctUpdateResults(){
 function ctSetChannel(v){CT_CHANNEL=v;CT_CITY='all';CT_PNG_PAGE=1;renderCommitmentTracker();}
 function ctSetSearch(v){CT_QUERY=v;CT_PNG_PAGE=1;ctUpdateResults();}
 function ctSetCity(v){CT_CITY=v;CT_PNG_PAGE=1;ctUpdateResults();}
-function ctSetSort(v){CT_SORT=v;CT_PNG_PAGE=1;ctUpdateResults();}
+function ctSetSort(v){CT_SORT=CT_SORT_OPTIONS.some(function(option){return option[0]===v;})?v:'mobile';CT_PNG_PAGE=1;ctUpdateResults();}
 function ctCsv(){
   var rows=ctViewRows();
   if(!rows.length)return;
@@ -122,10 +131,7 @@ function ctCsv(){
 /* Approved clean share report: all TTM branches, two totals, one table.
  * Screen filters do not hide TTM branches from the shared image. */
 function ctPngRows(rows){
-  return rows.filter(function(r){return r.kind==='TTM';}).sort(function(a,b){
-    return (a.mobileTTM==null)-(b.mobileTTM==null)||(b.mobileTTM||0)-(a.mobileTTM||0)||
-      a.name.localeCompare(b.name,'tr')||a.code.localeCompare(b.code,'tr');
-  });
+  return ctSortRows(rows.filter(function(r){return r.kind==='TTM';}));
 }
 function ctPngDate(source){
   var date=source&&source.ttm&&source.ttm.reportDate;
@@ -151,7 +157,7 @@ function ctPngDisplayDate(source){
 function ctPngPanel(rows){
   var ttm=ctPngRows(rows);
   var list=ttm.map(function(row){
-    return '<tr><td class="ct-png-code">'+ctEsc(row.code)+'</td><td class="ct-png-branch">'+ctEsc(row.name)+'</td>'+
+    return '<tr><td class="ct-png-code">'+ctEsc(row.code)+'</td><td class="ct-png-branch">'+ctEsc(ctShortName(row.name))+'</td>'+
       '<td class="ct-png-quantity">'+ctN(row.mobileTTM)+'</td><td class="ct-png-quantity">'+ctN(row.dsl)+'</td></tr>';
   }).join('');
   return '<div class="ct-png-table-wrap"><table class="ct-png-table"><colgroup><col style="width:18%"><col style="width:50%"><col style="width:17%"><col style="width:15%"></colgroup>'+
@@ -219,7 +225,7 @@ function renderCommitmentTracker(){
     '<nav class="ct-channels" aria-label="Kanal seçimi">'+channels.map(function(a){var n=a[0]==='ALL'?all.length:count(a[0]);return '<button class="ct-tab'+(CT_CHANNEL===a[0]?' active':'')+'" data-ct-channel="'+a[0]+'" aria-pressed="'+String(CT_CHANNEL===a[0])+'" onclick="ctSetChannel(\''+a[0]+'\')">'+a[1]+' <span>'+n+'</span></button>';}).join('')+'</nav>'+
     '<div class="ct-filters"><label>Şube ara<input type="search" placeholder="Bayi, kod, il veya yönetici" value="'+ctEsc(CT_QUERY)+'" oninput="ctSetSearch(this.value)"></label>'+
     '<label>İl<select onchange="ctSetCity(this.value)"><option value="all">Tüm iller</option>'+options.map(function(c){return '<option value="'+ctEsc(c)+'"'+(CT_CITY===c?' selected':'')+'>'+ctEsc(c)+'</option>';}).join('')+'</select></label>'+
-    '<label>Sırala<select onchange="ctSetSort(this.value)">'+[['mobile','Mobil taahhüt: çoktan aza'],['dsl','DSL taahhüt: çoktan aza'],['name','Şube adına göre'],['city','İle göre'],['code','Bayi koduna göre']].map(function(x){return '<option value="'+x[0]+'"'+(CT_SORT===x[0]?' selected':'')+'>'+x[1]+'</option>';}).join('')+'</select></label></div>'+
+    '<label>Sırala · Liste ve PNG<select id="ct-sort" onchange="ctSetSort(this.value)">'+CT_SORT_OPTIONS.map(function(x){return '<option value="'+x[0]+'"'+(CT_SORT===x[0]?' selected':'')+'>'+x[1]+'</option>';}).join('')+'</select></label></div>'+
     '<div class="ct-summary" id="ct-summary"></div><div class="ct-png-controls" id="ct-png-controls"></div><div class="ct-count" id="ct-count"></div><div id="ct-results"></div>'+
     '<footer class="ct-foot">TTM Mobil Taahhüt ile EDM Mobil Taahhüt Upsell farklı göstergelerdir; birbirine eklenmez. “—” veri olmadığını veya KPI’ın bu kanala uygulanmadığını gösterir. Toplamlar mevcut arama ve filtreye göre güncellenir.</footer>'+
     '</section>';

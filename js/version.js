@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-10-19 · Sade TTM Taahhüt Paylaşımı';
+const APP_BUILD = '2026-10-19 · TTM Kısa Bayi Adları ve PNG Sıralama';

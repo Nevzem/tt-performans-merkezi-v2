@@ -42,6 +42,7 @@ const ctx=vm.createContext({
     assert.match(target.markup,/<strong>828<\/strong>/);
     assert.match(target.markup,/<strong>276<\/strong>/);
     assert.match(target.markup,/<tfoot>.*>828<\/td>.*>276<\/td><\/tr><\/tfoot>/);
+    assert.equal(target.markup.match(/class="ct-png-code">(\d+)<\/td>/)[1],ctx.CT_SORT==='dslAsc'?'1':'23','PNG honors the selected sort');
     assert.equal(opts.scale,2);assert.equal(opts.width,1120);
     assert.equal(opts.height,2100);assert.equal(opts.backgroundColor,'#ffffff');
     if(failCapture)throw new Error('capture failed');
@@ -75,6 +76,25 @@ assert.match(missing,/>—<\/td>/);
 assert.match(missing,/Son yüklenen rapor/);
 assert.match(missing,/Raporda veri yok/);
 assert.equal(run("ctPngDate({period:'2026-10',ttm:{}})"),'2026-10');
+assert.equal(run("ctShortName('PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ')"),'PRİMETECH BİLİŞİM');
+assert.equal(run("ctShortName('  ASİS   TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON LTD.ŞTİ.  ')"),'ASİS TELEKOMÜNİKASYON');
+assert.equal(run("ctShortName('Tekisim')"),'Tekisim');
+const shortMarkup=run("ctPngMarkup([{kind:'TTM',code:'1',name:'PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ',mobileTTM:10,dsl:3}],null,ctSource().value,false)");
+assert.match(shortMarkup,/>PRİMETECH BİLİŞİM<\/td>/);
+assert.doesNotMatch(shortMarkup,/SANAYİ|LİMİTED ŞİRKETİ/);
+ctx.sortFixture=[
+ {code:'10',kind:'TTM',name:'Zeynep İletişim AŞ',city:'Samsun',mobileTTM:10,dsl:30},
+ {code:'2',kind:'TTM',name:'Ahmet Telekom LTD',city:'Tokat',mobileTTM:30,dsl:10},
+ {code:'3',kind:'TTM',name:'Çınar Bilişim TİC',city:'Amasya',mobileTTM:0,dsl:20},
+ {code:'4',kind:'TTM',name:'Nil Telekom AŞ',city:'Sinop',mobileTTM:null,dsl:null},
+ {code:'99',kind:'TTBN',name:'EDM',city:'Samsun',mobileUpsell:999,dsl:999}
+];
+for(const [sort,expected] of Object.entries({mobile:'2,10,3,4',mobileAsc:'3,10,2,4',dsl:'10,3,2,4',dslAsc:'2,3,10,4',name:'2,3,4,10',city:'3,10,4,2',code:'2,3,4,10'})){
+ run("ctSetSort('"+sort+"')");
+ assert.equal(run("ctPngRows(sortFixture).map(r=>r.code).join(',')"),expected,sort);
+ assert.equal(run("ctViewRows(sortFixture).map(r=>r.code).join(',')"),expected,'Screen and PNG agree for '+sort);
+}
+run("ctSetSort('mobile')");
 (async()=>{
   // Sharing must include all TTM even while screen filters select EDM or no rows.
   run("CT_CHANNEL='TTBN';CT_QUERY='does not match any branch';CT_CITY='TOKAT';CT_PNG_PAGE=2");
@@ -85,16 +105,20 @@ assert.equal(run("ctPngDate({period:'2026-10',ttm:{}})"),'2026-10');
   assert.equal(controls['ct-png-button'].disabled,false);
   assert.equal(controls['ct-png-button'].textContent,'↗ PNG Paylaş');
   assert.equal(alerts.length,0);
+  run("ctSetSort('dslAsc')");
+  assert.match(run('ctPngControls()'),/DSL taahhüt: azdan çoğa/);
+  await run('ctSharePNG()');
+  assert.equal(exportCount,2);assert.equal(shareCount,2);assert.equal(cleanupCount,2);
   failCapture=true;
   await run('ctSharePNG()');
-  assert.equal(cleanupCount,2);assert.equal(shareCount,1);
+  assert.equal(cleanupCount,3);assert.equal(shareCount,2);
   assert.equal(controls['ct-png-button'].disabled,false);
   assert.match(alerts.pop(),/PNG oluşturulamadı: capture failed/);
   ctx.MER_LIVE.ttm.bayiler={};
   run('ctUpdateResults()');
   assert.equal(controls['ct-png-button'].disabled,true,'EDM-only source cannot enable TTM sharing');
   await run('ctSharePNG()');
-  assert.equal(exportCount,2,'Do not export EDM when TTM is absent');
+  assert.equal(exportCount,3,'Do not export EDM when TTM is absent');
   assert.match(alerts.pop(),/TTM bayisi bulunamadı/);
   assert.equal(parent.last,null);
   console.log('PASS: TTM-only PNG, exact totals, complete list despite screen filters, missing/zero values, escaped names, sharing and failure cleanup.');
