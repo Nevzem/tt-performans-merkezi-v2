@@ -141,6 +141,18 @@ function workbookReportDate(wb,period,fileName,days) {
     return {date:reportDateISO(year,month,days.calisilanGun),source:'SY ÖZET · Çalışılan Gün'};
   return {date:null,source:null};
 }
+/* Exact TTM national activation totals, kept separately from HGO benchmarks.
+ * Repeated national summaries are deduplicated; conflicting values stay unknown. */
+function comparisonNationalActuals(rows){
+  var cols={postpaid:50,prepaid:54,dsl:58,iptv:70,uydu:74,akilliCihaz:78,digerCihaz:82};
+  var candidates=rows.filter(function(r){return r && /^(TÜRKİYE|TURKIYE)$/.test(String(r[1]||'').trim().toLocaleUpperCase('tr-TR'));});
+  var out={};Object.keys(cols).forEach(function(key){
+    var values=candidates.map(function(r){return num(r[cols[key]]);}).filter(function(v){return v!=null&&Number.isSafeInteger(v)&&v>=0;});
+    out[key]=values.length&&new Set(values).size===1?values[0]:null;
+  });
+  out.mobil=out.postpaid==null||out.prepaid==null?null:out.postpaid+out.prepaid;
+  return {channel:'TTM',tr:out};
+}
 function parseWB(wb, options) {
   const out = { pers: { "Toplam Mobil": [], "Faturalı": [], "Faturasız": [], "DSL": [], "Toplam TV": [], "IPTV": [], "Uydu": [], "Cihaz": [] },
                 bayi: { "Postpaid": [], "Prepaid": [], "Toplam Mobil": [], "DSL": [], "Toplam TV": [], "Akıllı Cihaz": [], "Diğer Cihaz": [] } };
@@ -323,6 +335,7 @@ function parseWB(wb, options) {
   // Eylül'26 eşitlik kuralı: toplam puan, Akıllı Cihaz HGO, DSL HGO.
   kupaRows.sort((a,b) => (b.toplam - a.toplam) || (b.cihaz - a.cihaz) || (b.dsl - a.dsl) || String(a.kod).localeCompare(String(b.kod), 'tr'));
   const matrix = { rows: mxRows, kuzey: totHgo(kuzeyTot), anadolu: totHgo(anadoluTot), turkiye: hasTurkiyeTot ? totHgo(turkiyeTot) : null };
+  matrix.activationTotals=comparisonNationalActuals(rowsB.slice(hib+1));
 
   // ── SY ÖZET ──
   const syOut = {};

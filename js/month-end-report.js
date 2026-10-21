@@ -37,6 +37,7 @@ function merCaptureUpload(parsed,edm,groupEdm){
   var group=merRollupGroup({ttm:groupTtm,edm:groupEdm});
   MER_LIVE={period:period,ttm:parsed.detay,edm:edm,group:group,matrix:parsed.matrix,sy:parsed.syData,uploadedAt:new Date().toISOString(),sample:false,closed:!!(days.calismaGun>0 && days.calisilanGun>=days.calismaGun)};
   MER_ARCHIVES[period]=MER_LIVE;
+  if(typeof bcCaptureSource==='function')bcCaptureSource(MER_LIVE);
   try{localStorage.setItem(MER_STORE,JSON.stringify(MER_ARCHIVES));merStorageNote='';}catch(e){merStorageNote='Bu ayın raporu cihazda saklanamadı. Ayrıntılı PDF’yi indirin.';}
   merPeriodSelection='current';
 }
