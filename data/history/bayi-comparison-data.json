@@ -1,0 +1,8128 @@
+{
+ "version": 1,
+ "channel": "TTM",
+ "source": "Original monthly closing workbooks: TTM national activation summary rows",
+ "periods": {
+  "2025-01": {
+   "reportDate": "2025-01-31",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 112297,
+    "prepaid": 123146,
+    "dsl": 33624,
+    "iptv": 12136,
+    "uydu": 8378,
+    "akilliCihaz": 34832,
+    "digerCihaz": 35098,
+    "mobil": 235443
+   },
+   "sourceFile": "Ocak 2025.xlsx",
+   "sourceSheet": "Kokpitt Data TTM"
+  },
+  "2025-02": {
+   "reportDate": "2025-02-28",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 96624,
+    "prepaid": 86626,
+    "dsl": 29466,
+    "iptv": 10115,
+    "uydu": 9612,
+    "akilliCihaz": 33148,
+    "digerCihaz": 29361,
+    "mobil": 183250
+   },
+   "sourceFile": "Şubat 2025.xlsx",
+   "sourceSheet": "Kokpitt Data TTM"
+  },
+  "2025-03": {
+   "reportDate": "2025-03-31",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 136181,
+    "prepaid": 73065,
+    "dsl": 27564,
+    "iptv": 9240,
+    "uydu": 9043,
+    "akilliCihaz": 36783,
+    "digerCihaz": 32929,
+    "mobil": 209246
+   },
+   "sourceFile": "Mart 2025.xlsx",
+   "sourceSheet": "Kokpitt Data TTM"
+  },
+  "2025-04": {
+   "reportDate": "2025-04-30",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 222230,
+    "prepaid": 49419,
+    "dsl": 25478,
+    "iptv": 8636,
+    "uydu": 8244,
+    "akilliCihaz": 40716,
+    "digerCihaz": 42279,
+    "mobil": 271649
+   },
+   "sourceFile": "Nisan 2025.xlsx",
+   "sourceSheet": "Kokpitt Data TTM"
+  },
+  "2025-05": {
+   "reportDate": "2025-05-31",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 217409,
+    "prepaid": 45712,
+    "dsl": 29735,
+    "iptv": 10073,
+    "uydu": 6988,
+    "akilliCihaz": 41104,
+    "digerCihaz": 29830,
+    "mobil": 263121
+   },
+   "sourceFile": "Mayıs 2025.xlsx",
+   "sourceSheet": "Kokpitt Data TTM"
+  },
+  "2025-06": {
+   "reportDate": "2025-06-30",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 181798,
+    "prepaid": 53490,
+    "dsl": 28789,
+    "iptv": 9661,
+    "uydu": 5439,
+    "akilliCihaz": 41773,
+    "digerCihaz": 24753,
+    "mobil": 235288
+   },
+   "sourceFile": "Haziran 2025.xlsx",
+   "sourceSheet": "Kokpitt Data TTM"
+  },
+  "2025-07": {
+   "reportDate": "2025-07-31",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 197117,
+    "prepaid": 80013,
+    "dsl": 33090,
+    "iptv": 10909,
+    "uydu": 7011,
+    "akilliCihaz": 42893,
+    "digerCihaz": 27585,
+    "mobil": 277130
+   },
+   "sourceFile": "Temmuz 2025.xlsx",
+   "sourceSheet": "TTM BUAY"
+  },
+  "2025-08": {
+   "reportDate": "2025-08-31",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 170057,
+    "prepaid": 84028,
+    "dsl": 32040,
+    "iptv": 11599,
+    "uydu": 6659,
+    "akilliCihaz": 42635,
+    "digerCihaz": 36759,
+    "mobil": 254085
+   },
+   "sourceFile": "Ağustos 2025.xlsx",
+   "sourceSheet": "TTM BUAY"
+  },
+  "2025-09": {
+   "reportDate": "2025-09-30",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 164136,
+    "prepaid": 93355,
+    "dsl": 39730,
+    "iptv": 14528,
+    "uydu": 7320,
+    "akilliCihaz": 38819,
+    "digerCihaz": 30724,
+    "mobil": 257491
+   },
+   "sourceFile": "Eylül 2025.xlsx",
+   "sourceSheet": "TTM BUAY"
+  },
+  "2025-10": {
+   "reportDate": "2025-10-31",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 221689,
+    "prepaid": 54932,
+    "dsl": 40180,
+    "iptv": 14357,
+    "uydu": 6910,
+    "akilliCihaz": 37293,
+    "digerCihaz": 35153,
+    "mobil": 276621
+   },
+   "sourceFile": "Ekim 2025.xlsx",
+   "sourceSheet": "TTM BUAY"
+  },
+  "2025-11": {
+   "reportDate": "2025-11-30",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 205990,
+    "prepaid": 51611,
+    "dsl": 37785,
+    "iptv": 13371,
+    "uydu": 5336,
+    "akilliCihaz": 38480,
+    "digerCihaz": 45852,
+    "mobil": 257601
+   },
+   "sourceFile": "Kasım 2025.xlsx",
+   "sourceSheet": "TTM BUAY"
+  },
+  "2025-12": {
+   "reportDate": "2025-12-31",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 137284,
+    "prepaid": 101460,
+    "dsl": 38920,
+    "iptv": 15802,
+    "uydu": 5868,
+    "akilliCihaz": 44002,
+    "digerCihaz": 36967,
+    "mobil": 238744
+   },
+   "sourceFile": "Aralık 2025.xlsx",
+   "sourceSheet": "TTM BUAY"
+  },
+  "2026-01": {
+   "reportDate": "2026-01-31",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 122250,
+    "prepaid": 67008,
+    "dsl": 28810,
+    "iptv": 13605,
+    "uydu": 5638,
+    "akilliCihaz": 41604,
+    "digerCihaz": 33442,
+    "mobil": 189258
+   },
+   "sourceFile": "Ocak 2026.xlsx",
+   "sourceSheet": "TTM BUAY"
+  },
+  "2026-02": {
+   "reportDate": "2026-02-28",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 105026,
+    "prepaid": 71711,
+    "dsl": 23493,
+    "iptv": 10724,
+    "uydu": 5046,
+    "akilliCihaz": 33651,
+    "digerCihaz": 30454,
+    "mobil": 176737
+   },
+   "sourceFile": "Şubat 2026.xlsx",
+   "sourceSheet": "TTM BUAY"
+  },
+  "2026-03": {
+   "reportDate": "2026-03-31",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 115304,
+    "prepaid": 72265,
+    "dsl": 23989,
+    "iptv": 11303,
+    "uydu": 5971,
+    "akilliCihaz": 35683,
+    "digerCihaz": 35045,
+    "mobil": 187569
+   },
+   "sourceFile": "Mart 2026.xlsx",
+   "sourceSheet": "TTM BUAY"
+  },
+  "2026-04": {
+   "reportDate": "2026-04-30",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 122016,
+    "prepaid": 63279,
+    "dsl": 25082,
+    "iptv": 12382,
+    "uydu": 6301,
+    "akilliCihaz": 36857,
+    "digerCihaz": 36513,
+    "mobil": 185295
+   },
+   "sourceFile": "Nisan 2026.xlsx",
+   "sourceSheet": "TTM BUAY"
+  },
+  "2026-05": {
+   "reportDate": "2026-05-31",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 88260,
+    "prepaid": 84117,
+    "dsl": 21870,
+    "iptv": 10809,
+    "uydu": 5469,
+    "akilliCihaz": 32947,
+    "digerCihaz": 36177,
+    "mobil": 172377
+   },
+   "sourceFile": "Mayıs 2026.xlsx",
+   "sourceSheet": "TTM BUAY"
+  },
+  "2026-06": {
+   "reportDate": "2026-06-30",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 97275,
+    "prepaid": 85959,
+    "dsl": 23226,
+    "iptv": 11613,
+    "uydu": 6774,
+    "akilliCihaz": 39258,
+    "digerCihaz": 41373,
+    "mobil": 183234
+   },
+   "sourceFile": "Haziran 2026.xlsx",
+   "sourceSheet": "TTM BUAY"
+  },
+  "2026-07": {
+   "reportDate": "2026-07-31",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 88250,
+    "prepaid": 91674,
+    "dsl": 21872,
+    "iptv": 10497,
+    "uydu": 5099,
+    "akilliCihaz": 38667,
+    "digerCihaz": 36788,
+    "mobil": 179924
+   },
+   "sourceFile": "Temmuz 2026.xlsx",
+   "sourceSheet": "TTM BUAY"
+  },
+  "2026-08": {
+   "reportDate": "2026-08-31",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 68973,
+    "prepaid": 96594,
+    "dsl": 22001,
+    "iptv": 11170,
+    "uydu": 6008,
+    "akilliCihaz": 38997,
+    "digerCihaz": 37278,
+    "mobil": 165567
+   },
+   "sourceFile": "Ağustos 2026.xlsx",
+   "sourceSheet": "TTM BUAY"
+  },
+  "2026-09": {
+   "reportDate": "2026-09-30",
+   "channel": "TTM",
+   "values": {
+    "postpaid": 88941,
+    "prepaid": 86803,
+    "dsl": 26349,
+    "iptv": 13012,
+    "uydu": 6267,
+    "akilliCihaz": 41568,
+    "digerCihaz": 35584,
+    "mobil": 175744
+   },
+   "sourceFile": "Eylül 2026.xlsx",
+   "sourceSheet": "TTM BUAY"
+  }
+ },
+ "snapshots": [
+  {
+   "period": "2025-12",
+   "date": "2025-12-31",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 558,
+      "prepaid": 85,
+      "dsl": 82,
+      "iptv": 36,
+      "uydu": 9,
+      "akilliCihaz": 81,
+      "digerCihaz": 60,
+      "mobil": 643
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 167,
+      "prepaid": 193,
+      "dsl": 46,
+      "iptv": 20,
+      "uydu": 7,
+      "akilliCihaz": 45,
+      "digerCihaz": 27,
+      "mobil": 360
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 390,
+      "prepaid": 55,
+      "dsl": 73,
+      "iptv": 30,
+      "uydu": 3,
+      "akilliCihaz": 48,
+      "digerCihaz": 30,
+      "mobil": 445
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 355,
+      "prepaid": 138,
+      "dsl": 85,
+      "iptv": 28,
+      "uydu": 13,
+      "akilliCihaz": 97,
+      "digerCihaz": 74,
+      "mobil": 493
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 711,
+      "prepaid": 184,
+      "dsl": 69,
+      "iptv": 37,
+      "uydu": 9,
+      "akilliCihaz": 86,
+      "digerCihaz": 120,
+      "mobil": 895
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 209,
+      "prepaid": 177,
+      "dsl": 76,
+      "iptv": 33,
+      "uydu": 20,
+      "akilliCihaz": 161,
+      "digerCihaz": 198,
+      "mobil": 386
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 213,
+      "prepaid": 223,
+      "dsl": 123,
+      "iptv": 50,
+      "uydu": 9,
+      "akilliCihaz": 60,
+      "digerCihaz": 73,
+      "mobil": 436
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 175,
+      "prepaid": 224,
+      "dsl": 55,
+      "iptv": 28,
+      "uydu": 18,
+      "akilliCihaz": 181,
+      "digerCihaz": 65,
+      "mobil": 399
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 492,
+      "prepaid": 485,
+      "dsl": 91,
+      "iptv": 39,
+      "uydu": 19,
+      "akilliCihaz": 237,
+      "digerCihaz": 136,
+      "mobil": 977
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 354,
+      "prepaid": 67,
+      "dsl": 64,
+      "iptv": 35,
+      "uydu": 13,
+      "akilliCihaz": 75,
+      "digerCihaz": 73,
+      "mobil": 421
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 252,
+      "prepaid": 73,
+      "dsl": 45,
+      "iptv": 18,
+      "uydu": 6,
+      "akilliCihaz": 77,
+      "digerCihaz": 50,
+      "mobil": 325
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 78,
+      "prepaid": 326,
+      "dsl": 67,
+      "iptv": 28,
+      "uydu": 9,
+      "akilliCihaz": 98,
+      "digerCihaz": 87,
+      "mobil": 404
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 441,
+      "prepaid": 70,
+      "dsl": 46,
+      "iptv": 30,
+      "uydu": 11,
+      "akilliCihaz": 114,
+      "digerCihaz": 51,
+      "mobil": 511
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 325,
+      "prepaid": 75,
+      "dsl": 59,
+      "iptv": 26,
+      "uydu": 5,
+      "akilliCihaz": 121,
+      "digerCihaz": 62,
+      "mobil": 400
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 259,
+      "prepaid": 268,
+      "dsl": 69,
+      "iptv": 29,
+      "uydu": 9,
+      "akilliCihaz": 56,
+      "digerCihaz": 62,
+      "mobil": 527
+     }
+    },
+    {
+     "code": "4100776",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 249,
+      "prepaid": 87,
+      "dsl": 40,
+      "iptv": 30,
+      "uydu": 15,
+      "akilliCihaz": 71,
+      "digerCihaz": 84,
+      "mobil": 336
+     }
+    },
+    {
+     "code": "4100778",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 321,
+      "prepaid": 93,
+      "dsl": 85,
+      "iptv": 49,
+      "uydu": 7,
+      "akilliCihaz": 91,
+      "digerCihaz": 74,
+      "mobil": 414
+     }
+    },
+    {
+     "code": "4100781",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 335,
+      "prepaid": 307,
+      "dsl": 141,
+      "iptv": 31,
+      "uydu": 18,
+      "akilliCihaz": 93,
+      "digerCihaz": 117,
+      "mobil": 642
+     }
+    },
+    {
+     "code": "4100784",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 144,
+      "prepaid": 230,
+      "dsl": 64,
+      "iptv": 28,
+      "uydu": 13,
+      "akilliCihaz": 67,
+      "digerCihaz": 82,
+      "mobil": 374
+     }
+    },
+    {
+     "code": "4100785",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 153,
+      "prepaid": 242,
+      "dsl": 64,
+      "iptv": 20,
+      "uydu": 12,
+      "akilliCihaz": 65,
+      "digerCihaz": 67,
+      "mobil": 395
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 239,
+      "prepaid": 85,
+      "dsl": 187,
+      "iptv": 63,
+      "uydu": 5,
+      "akilliCihaz": 30,
+      "digerCihaz": 17,
+      "mobil": 324
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 361,
+      "prepaid": 134,
+      "dsl": 59,
+      "iptv": 28,
+      "uydu": 10,
+      "akilliCihaz": 121,
+      "digerCihaz": 35,
+      "mobil": 495
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 137284,
+    "prepaid": 101460,
+    "dsl": 38920,
+    "iptv": 15802,
+    "uydu": 5868,
+    "akilliCihaz": 44002,
+    "digerCihaz": 36967,
+    "mobil": 238744
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Aralık 2025.xlsx"
+  },
+  {
+   "period": "2025-08",
+   "date": "2025-08-31",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 233,
+      "prepaid": 218,
+      "dsl": 43,
+      "iptv": 17,
+      "uydu": 6,
+      "akilliCihaz": 67,
+      "digerCihaz": 23,
+      "mobil": 451
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 318,
+      "prepaid": 90,
+      "dsl": 43,
+      "iptv": 14,
+      "uydu": 6,
+      "akilliCihaz": 39,
+      "digerCihaz": 22,
+      "mobil": 408
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 199,
+      "prepaid": 249,
+      "dsl": 82,
+      "iptv": 15,
+      "uydu": 3,
+      "akilliCihaz": 44,
+      "digerCihaz": 27,
+      "mobil": 448
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 305,
+      "prepaid": 296,
+      "dsl": 82,
+      "iptv": 37,
+      "uydu": 5,
+      "akilliCihaz": 112,
+      "digerCihaz": 96,
+      "mobil": 601
+     }
+    },
+    {
+     "code": "4040801",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 229,
+      "prepaid": 64,
+      "dsl": 37,
+      "iptv": 8,
+      "uydu": 16,
+      "akilliCihaz": 55,
+      "digerCihaz": 26,
+      "mobil": 293
+     }
+    },
+    {
+     "code": "4040802",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 295,
+      "prepaid": 96,
+      "dsl": 47,
+      "iptv": 22,
+      "uydu": 5,
+      "akilliCihaz": 66,
+      "digerCihaz": 21,
+      "mobil": 391
+     }
+    },
+    {
+     "code": "4040895",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 315,
+      "prepaid": 71,
+      "dsl": 67,
+      "iptv": 27,
+      "uydu": 8,
+      "akilliCihaz": 68,
+      "digerCihaz": 47,
+      "mobil": 386
+     }
+    },
+    {
+     "code": "4050907",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 673,
+      "prepaid": 139,
+      "dsl": 108,
+      "iptv": 31,
+      "uydu": 6,
+      "akilliCihaz": 103,
+      "digerCihaz": 28,
+      "mobil": 812
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 432,
+      "prepaid": 365,
+      "dsl": 66,
+      "iptv": 22,
+      "uydu": 14,
+      "akilliCihaz": 93,
+      "digerCihaz": 189,
+      "mobil": 797
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 603,
+      "prepaid": 54,
+      "dsl": 72,
+      "iptv": 26,
+      "uydu": 20,
+      "akilliCihaz": 140,
+      "digerCihaz": 155,
+      "mobil": 657
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 267,
+      "prepaid": 171,
+      "dsl": 98,
+      "iptv": 47,
+      "uydu": 11,
+      "akilliCihaz": 74,
+      "digerCihaz": 75,
+      "mobil": 438
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 236,
+      "prepaid": 168,
+      "dsl": 52,
+      "iptv": 14,
+      "uydu": 20,
+      "akilliCihaz": 142,
+      "digerCihaz": 57,
+      "mobil": 404
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 590,
+      "prepaid": 202,
+      "dsl": 85,
+      "iptv": 28,
+      "uydu": 19,
+      "akilliCihaz": 177,
+      "digerCihaz": 165,
+      "mobil": 792
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 228,
+      "prepaid": 179,
+      "dsl": 42,
+      "iptv": 15,
+      "uydu": 10,
+      "akilliCihaz": 79,
+      "digerCihaz": 69,
+      "mobil": 407
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 237,
+      "prepaid": 123,
+      "dsl": 55,
+      "iptv": 20,
+      "uydu": 7,
+      "akilliCihaz": 52,
+      "digerCihaz": 54,
+      "mobil": 360
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 296,
+      "prepaid": 114,
+      "dsl": 51,
+      "iptv": 14,
+      "uydu": 12,
+      "akilliCihaz": 109,
+      "digerCihaz": 52,
+      "mobil": 410
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 376,
+      "prepaid": 245,
+      "dsl": 45,
+      "iptv": 22,
+      "uydu": 13,
+      "akilliCihaz": 155,
+      "digerCihaz": 78,
+      "mobil": 621
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 264,
+      "prepaid": 255,
+      "dsl": 57,
+      "iptv": 26,
+      "uydu": 5,
+      "akilliCihaz": 123,
+      "digerCihaz": 81,
+      "mobil": 519
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 293,
+      "prepaid": 240,
+      "dsl": 59,
+      "iptv": 22,
+      "uydu": 7,
+      "akilliCihaz": 49,
+      "digerCihaz": 72,
+      "mobil": 533
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 301,
+      "prepaid": 84,
+      "dsl": 132,
+      "iptv": 33,
+      "uydu": 9,
+      "akilliCihaz": 37,
+      "digerCihaz": 19,
+      "mobil": 385
+     }
+    },
+    {
+     "code": "7000447",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 285,
+      "prepaid": 56,
+      "dsl": 55,
+      "iptv": 16,
+      "uydu": 7,
+      "akilliCihaz": 33,
+      "digerCihaz": 42,
+      "mobil": 341
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 253,
+      "prepaid": 320,
+      "dsl": 55,
+      "iptv": 24,
+      "uydu": 2,
+      "akilliCihaz": 147,
+      "digerCihaz": 65,
+      "mobil": 573
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 170057,
+    "prepaid": 84028,
+    "dsl": 32040,
+    "iptv": 11599,
+    "uydu": 6659,
+    "akilliCihaz": 42635,
+    "digerCihaz": 36759,
+    "mobil": 254085
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Ağustos 2025.xlsx"
+  },
+  {
+   "period": "2026-08",
+   "date": "2026-08-31",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 138,
+      "prepaid": 115,
+      "dsl": 17,
+      "iptv": 16,
+      "uydu": 6,
+      "akilliCihaz": 68,
+      "digerCihaz": 88,
+      "mobil": 253
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 83,
+      "prepaid": 226,
+      "dsl": 27,
+      "iptv": 16,
+      "uydu": 1,
+      "akilliCihaz": 41,
+      "digerCihaz": 18,
+      "mobil": 309
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 147,
+      "prepaid": 100,
+      "dsl": 16,
+      "iptv": 9,
+      "uydu": 9,
+      "akilliCihaz": 43,
+      "digerCihaz": 29,
+      "mobil": 247
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 72,
+      "prepaid": 326,
+      "dsl": 63,
+      "iptv": 36,
+      "uydu": 12,
+      "akilliCihaz": 70,
+      "digerCihaz": 102,
+      "mobil": 398
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 229,
+      "prepaid": 286,
+      "dsl": 56,
+      "iptv": 34,
+      "uydu": 8,
+      "akilliCihaz": 84,
+      "digerCihaz": 121,
+      "mobil": 515
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 60,
+      "prepaid": 301,
+      "dsl": 43,
+      "iptv": 28,
+      "uydu": 17,
+      "akilliCihaz": 100,
+      "digerCihaz": 173,
+      "mobil": 361
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 62,
+      "prepaid": 391,
+      "dsl": 39,
+      "iptv": 19,
+      "uydu": 11,
+      "akilliCihaz": 65,
+      "digerCihaz": 48,
+      "mobil": 453
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 66,
+      "prepaid": 112,
+      "dsl": 33,
+      "iptv": 8,
+      "uydu": 11,
+      "akilliCihaz": 92,
+      "digerCihaz": 73,
+      "mobil": 178
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 168,
+      "prepaid": 432,
+      "dsl": 68,
+      "iptv": 50,
+      "uydu": 15,
+      "akilliCihaz": 124,
+      "digerCihaz": 150,
+      "mobil": 600
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 40,
+      "prepaid": 38,
+      "dsl": 5,
+      "iptv": 4,
+      "uydu": 1,
+      "akilliCihaz": 20,
+      "digerCihaz": 24,
+      "mobil": 78
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 113,
+      "prepaid": 163,
+      "dsl": 31,
+      "iptv": 11,
+      "uydu": 9,
+      "akilliCihaz": 74,
+      "digerCihaz": 46,
+      "mobil": 276
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 132,
+      "prepaid": 149,
+      "dsl": 40,
+      "iptv": 23,
+      "uydu": 6,
+      "akilliCihaz": 81,
+      "digerCihaz": 58,
+      "mobil": 281
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 212,
+      "prepaid": 225,
+      "dsl": 55,
+      "iptv": 37,
+      "uydu": 14,
+      "akilliCihaz": 195,
+      "digerCihaz": 137,
+      "mobil": 437
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 148,
+      "prepaid": 171,
+      "dsl": 42,
+      "iptv": 27,
+      "uydu": 14,
+      "akilliCihaz": 170,
+      "digerCihaz": 131,
+      "mobil": 319
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 82,
+      "prepaid": 412,
+      "dsl": 31,
+      "iptv": 21,
+      "uydu": 7,
+      "akilliCihaz": 57,
+      "digerCihaz": 39,
+      "mobil": 494
+     }
+    },
+    {
+     "code": "4100776",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 130,
+      "prepaid": 170,
+      "dsl": 36,
+      "iptv": 12,
+      "uydu": 9,
+      "akilliCihaz": 70,
+      "digerCihaz": 47,
+      "mobil": 300
+     }
+    },
+    {
+     "code": "4100778",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 161,
+      "prepaid": 149,
+      "dsl": 55,
+      "iptv": 34,
+      "uydu": 10,
+      "akilliCihaz": 163,
+      "digerCihaz": 156,
+      "mobil": 310
+     }
+    },
+    {
+     "code": "4100781",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 69,
+      "prepaid": 359,
+      "dsl": 62,
+      "iptv": 30,
+      "uydu": 7,
+      "akilliCihaz": 90,
+      "digerCihaz": 55,
+      "mobil": 428
+     }
+    },
+    {
+     "code": "4100784",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 105,
+      "prepaid": 156,
+      "dsl": 38,
+      "iptv": 23,
+      "uydu": 8,
+      "akilliCihaz": 53,
+      "digerCihaz": 97,
+      "mobil": 261
+     }
+    },
+    {
+     "code": "4100785",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 107,
+      "prepaid": 150,
+      "dsl": 53,
+      "iptv": 30,
+      "uydu": 10,
+      "akilliCihaz": 62,
+      "digerCihaz": 110,
+      "mobil": 257
+     }
+    },
+    {
+     "code": "4100990",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 44,
+      "prepaid": 92,
+      "dsl": 5,
+      "iptv": 3,
+      "uydu": 3,
+      "akilliCihaz": 80,
+      "digerCihaz": 54,
+      "mobil": 136
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 72,
+      "prepaid": 158,
+      "dsl": 142,
+      "iptv": 57,
+      "uydu": 6,
+      "akilliCihaz": 38,
+      "digerCihaz": 16,
+      "mobil": 230
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 144,
+      "prepaid": 119,
+      "dsl": 32,
+      "iptv": 29,
+      "uydu": 10,
+      "akilliCihaz": 158,
+      "digerCihaz": 87,
+      "mobil": 263
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 68973,
+    "prepaid": 96594,
+    "dsl": 22001,
+    "iptv": 11170,
+    "uydu": 6008,
+    "akilliCihaz": 38997,
+    "digerCihaz": 37278,
+    "mobil": 165567
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Ağustos 2026.xlsx"
+  },
+  {
+   "period": "2025-10",
+   "date": "2025-10-31",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 525,
+      "prepaid": 53,
+      "dsl": 65,
+      "iptv": 23,
+      "uydu": 8,
+      "akilliCihaz": 50,
+      "digerCihaz": 51,
+      "mobil": 578
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 334,
+      "prepaid": 51,
+      "dsl": 56,
+      "iptv": 23,
+      "uydu": 5,
+      "akilliCihaz": 39,
+      "digerCihaz": 24,
+      "mobil": 385
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 436,
+      "prepaid": 42,
+      "dsl": 86,
+      "iptv": 24,
+      "uydu": 7,
+      "akilliCihaz": 42,
+      "digerCihaz": 19,
+      "mobil": 478
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 599,
+      "prepaid": 53,
+      "dsl": 99,
+      "iptv": 30,
+      "uydu": 16,
+      "akilliCihaz": 86,
+      "digerCihaz": 101,
+      "mobil": 652
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 803,
+      "prepaid": 113,
+      "dsl": 80,
+      "iptv": 27,
+      "uydu": 17,
+      "akilliCihaz": 71,
+      "digerCihaz": 171,
+      "mobil": 916
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 423,
+      "prepaid": 82,
+      "dsl": 72,
+      "iptv": 24,
+      "uydu": 21,
+      "akilliCihaz": 118,
+      "digerCihaz": 180,
+      "mobil": 505
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 405,
+      "prepaid": 55,
+      "dsl": 120,
+      "iptv": 51,
+      "uydu": 8,
+      "akilliCihaz": 72,
+      "digerCihaz": 27,
+      "mobil": 460
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 372,
+      "prepaid": 22,
+      "dsl": 56,
+      "iptv": 24,
+      "uydu": 14,
+      "akilliCihaz": 90,
+      "digerCihaz": 71,
+      "mobil": 394
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 893,
+      "prepaid": 67,
+      "dsl": 97,
+      "iptv": 39,
+      "uydu": 16,
+      "akilliCihaz": 136,
+      "digerCihaz": 135,
+      "mobil": 960
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 372,
+      "prepaid": 44,
+      "dsl": 68,
+      "iptv": 23,
+      "uydu": 11,
+      "akilliCihaz": 60,
+      "digerCihaz": 113,
+      "mobil": 416
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 362,
+      "prepaid": 52,
+      "dsl": 46,
+      "iptv": 21,
+      "uydu": 7,
+      "akilliCihaz": 41,
+      "digerCihaz": 52,
+      "mobil": 414
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 370,
+      "prepaid": 36,
+      "dsl": 68,
+      "iptv": 25,
+      "uydu": 14,
+      "akilliCihaz": 73,
+      "digerCihaz": 140,
+      "mobil": 406
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 595,
+      "prepaid": 65,
+      "dsl": 53,
+      "iptv": 26,
+      "uydu": 7,
+      "akilliCihaz": 98,
+      "digerCihaz": 110,
+      "mobil": 660
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 451,
+      "prepaid": 70,
+      "dsl": 67,
+      "iptv": 28,
+      "uydu": 4,
+      "akilliCihaz": 104,
+      "digerCihaz": 72,
+      "mobil": 521
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 547,
+      "prepaid": 69,
+      "dsl": 76,
+      "iptv": 38,
+      "uydu": 6,
+      "akilliCihaz": 57,
+      "digerCihaz": 25,
+      "mobil": 616
+     }
+    },
+    {
+     "code": "4100776",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 378,
+      "prepaid": 46,
+      "dsl": 54,
+      "iptv": 25,
+      "uydu": 10,
+      "akilliCihaz": 40,
+      "digerCihaz": 87,
+      "mobil": 424
+     }
+    },
+    {
+     "code": "4100778",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 424,
+      "prepaid": 41,
+      "dsl": 102,
+      "iptv": 44,
+      "uydu": 7,
+      "akilliCihaz": 76,
+      "digerCihaz": 117,
+      "mobil": 465
+     }
+    },
+    {
+     "code": "4100781",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 557,
+      "prepaid": 92,
+      "dsl": 151,
+      "iptv": 34,
+      "uydu": 9,
+      "akilliCihaz": 89,
+      "digerCihaz": 106,
+      "mobil": 649
+     }
+    },
+    {
+     "code": "4100784",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 347,
+      "prepaid": 38,
+      "dsl": 69,
+      "iptv": 32,
+      "uydu": 8,
+      "akilliCihaz": 69,
+      "digerCihaz": 110,
+      "mobil": 385
+     }
+    },
+    {
+     "code": "4100785",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 372,
+      "prepaid": 20,
+      "dsl": 69,
+      "iptv": 28,
+      "uydu": 7,
+      "akilliCihaz": 62,
+      "digerCihaz": 162,
+      "mobil": 392
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 295,
+      "prepaid": 76,
+      "dsl": 185,
+      "iptv": 41,
+      "uydu": 8,
+      "akilliCihaz": 21,
+      "digerCihaz": 6,
+      "mobil": 371
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 451,
+      "prepaid": 106,
+      "dsl": 76,
+      "iptv": 34,
+      "uydu": 7,
+      "akilliCihaz": 89,
+      "digerCihaz": 73,
+      "mobil": 557
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 221689,
+    "prepaid": 54932,
+    "dsl": 40180,
+    "iptv": 14357,
+    "uydu": 6910,
+    "akilliCihaz": 37293,
+    "digerCihaz": 35153,
+    "mobil": 276621
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Ekim 2025.xlsx"
+  },
+  {
+   "period": "2025-09",
+   "date": "2025-09-30",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 235,
+      "prepaid": 247,
+      "dsl": 46,
+      "iptv": 19,
+      "uydu": 8,
+      "akilliCihaz": 52,
+      "digerCihaz": 38,
+      "mobil": 482
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 279,
+      "prepaid": 136,
+      "dsl": 62,
+      "iptv": 23,
+      "uydu": 6,
+      "akilliCihaz": 35,
+      "digerCihaz": 26,
+      "mobil": 415
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 166,
+      "prepaid": 312,
+      "dsl": 87,
+      "iptv": 24,
+      "uydu": 3,
+      "akilliCihaz": 26,
+      "digerCihaz": 9,
+      "mobil": 478
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 342,
+      "prepaid": 161,
+      "dsl": 103,
+      "iptv": 45,
+      "uydu": 7,
+      "akilliCihaz": 117,
+      "digerCihaz": 90,
+      "mobil": 503
+     }
+    },
+    {
+     "code": "4040801",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 7,
+      "prepaid": 0,
+      "dsl": 0,
+      "iptv": 1,
+      "uydu": 0,
+      "akilliCihaz": 0,
+      "digerCihaz": 0,
+      "mobil": 7
+     }
+    },
+    {
+     "code": "4040802",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 29,
+      "prepaid": 0,
+      "dsl": 1,
+      "iptv": 2,
+      "uydu": 0,
+      "akilliCihaz": 0,
+      "digerCihaz": 0,
+      "mobil": 29
+     }
+    },
+    {
+     "code": "4040895",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 4,
+      "prepaid": 0,
+      "dsl": 1,
+      "iptv": 0,
+      "uydu": 0,
+      "akilliCihaz": 0,
+      "digerCihaz": 0,
+      "mobil": 4
+     }
+    },
+    {
+     "code": "4050907",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 3,
+      "prepaid": 0,
+      "dsl": 1,
+      "iptv": 0,
+      "uydu": 0,
+      "akilliCihaz": 0,
+      "digerCihaz": 0,
+      "mobil": 3
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 304,
+      "prepaid": 563,
+      "dsl": 89,
+      "iptv": 30,
+      "uydu": 13,
+      "akilliCihaz": 93,
+      "digerCihaz": 99,
+      "mobil": 867
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 542,
+      "prepaid": 41,
+      "dsl": 81,
+      "iptv": 31,
+      "uydu": 16,
+      "akilliCihaz": 125,
+      "digerCihaz": 151,
+      "mobil": 583
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 200,
+      "prepaid": 169,
+      "dsl": 89,
+      "iptv": 38,
+      "uydu": 10,
+      "akilliCihaz": 57,
+      "digerCihaz": 70,
+      "mobil": 369
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 152,
+      "prepaid": 264,
+      "dsl": 61,
+      "iptv": 21,
+      "uydu": 16,
+      "akilliCihaz": 140,
+      "digerCihaz": 71,
+      "mobil": 416
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 440,
+      "prepaid": 435,
+      "dsl": 93,
+      "iptv": 35,
+      "uydu": 16,
+      "akilliCihaz": 176,
+      "digerCihaz": 189,
+      "mobil": 875
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 169,
+      "prepaid": 257,
+      "dsl": 83,
+      "iptv": 25,
+      "uydu": 16,
+      "akilliCihaz": 76,
+      "digerCihaz": 66,
+      "mobil": 426
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 266,
+      "prepaid": 90,
+      "dsl": 63,
+      "iptv": 25,
+      "uydu": 8,
+      "akilliCihaz": 42,
+      "digerCihaz": 44,
+      "mobil": 356
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 182,
+      "prepaid": 182,
+      "dsl": 79,
+      "iptv": 25,
+      "uydu": 14,
+      "akilliCihaz": 88,
+      "digerCihaz": 62,
+      "mobil": 364
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 361,
+      "prepaid": 211,
+      "dsl": 55,
+      "iptv": 22,
+      "uydu": 4,
+      "akilliCihaz": 115,
+      "digerCihaz": 77,
+      "mobil": 572
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 226,
+      "prepaid": 243,
+      "dsl": 63,
+      "iptv": 28,
+      "uydu": 7,
+      "akilliCihaz": 118,
+      "digerCihaz": 85,
+      "mobil": 469
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 344,
+      "prepaid": 120,
+      "dsl": 75,
+      "iptv": 33,
+      "uydu": 9,
+      "akilliCihaz": 59,
+      "digerCihaz": 60,
+      "mobil": 464
+     }
+    },
+    {
+     "code": "4100776",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 187,
+      "prepaid": 119,
+      "dsl": 46,
+      "iptv": 19,
+      "uydu": 9,
+      "akilliCihaz": 39,
+      "digerCihaz": 50,
+      "mobil": 306
+     }
+    },
+    {
+     "code": "4100778",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 180,
+      "prepaid": 251,
+      "dsl": 96,
+      "iptv": 43,
+      "uydu": 6,
+      "akilliCihaz": 108,
+      "digerCihaz": 98,
+      "mobil": 431
+     }
+    },
+    {
+     "code": "4100781",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 552,
+      "prepaid": 143,
+      "dsl": 134,
+      "iptv": 30,
+      "uydu": 13,
+      "akilliCihaz": 95,
+      "digerCihaz": 62,
+      "mobil": 695
+     }
+    },
+    {
+     "code": "4100784",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 250,
+      "prepaid": 61,
+      "dsl": 72,
+      "iptv": 21,
+      "uydu": 2,
+      "akilliCihaz": 87,
+      "digerCihaz": 46,
+      "mobil": 311
+     }
+    },
+    {
+     "code": "4100785",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 256,
+      "prepaid": 69,
+      "dsl": 66,
+      "iptv": 22,
+      "uydu": 8,
+      "akilliCihaz": 61,
+      "digerCihaz": 28,
+      "mobil": 325
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 340,
+      "prepaid": 77,
+      "dsl": 230,
+      "iptv": 66,
+      "uydu": 9,
+      "akilliCihaz": 24,
+      "digerCihaz": 16,
+      "mobil": 417
+     }
+    },
+    {
+     "code": "7000447",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 16,
+      "prepaid": 0,
+      "dsl": 0,
+      "iptv": 0,
+      "uydu": 0,
+      "akilliCihaz": 0,
+      "digerCihaz": 0,
+      "mobil": 16
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 217,
+      "prepaid": 296,
+      "dsl": 60,
+      "iptv": 28,
+      "uydu": 8,
+      "akilliCihaz": 111,
+      "digerCihaz": 79,
+      "mobil": 513
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 164136,
+    "prepaid": 93355,
+    "dsl": 39730,
+    "iptv": 14528,
+    "uydu": 7320,
+    "akilliCihaz": 38819,
+    "digerCihaz": 30724,
+    "mobil": 257491
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Eylül 2025.xlsx"
+  },
+  {
+   "period": "2026-09",
+   "date": "2026-09-30",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 174,
+      "prepaid": 107,
+      "dsl": 31,
+      "iptv": 28,
+      "uydu": 6,
+      "akilliCihaz": 70,
+      "digerCihaz": 63,
+      "mobil": 281
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 78,
+      "prepaid": 198,
+      "dsl": 43,
+      "iptv": 25,
+      "uydu": 1,
+      "akilliCihaz": 59,
+      "digerCihaz": 26,
+      "mobil": 276
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 179,
+      "prepaid": 94,
+      "dsl": 27,
+      "iptv": 17,
+      "uydu": 9,
+      "akilliCihaz": 49,
+      "digerCihaz": 27,
+      "mobil": 273
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 81,
+      "prepaid": 341,
+      "dsl": 56,
+      "iptv": 27,
+      "uydu": 7,
+      "akilliCihaz": 69,
+      "digerCihaz": 83,
+      "mobil": 422
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 240,
+      "prepaid": 200,
+      "dsl": 72,
+      "iptv": 35,
+      "uydu": 5,
+      "akilliCihaz": 104,
+      "digerCihaz": 107,
+      "mobil": 440
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 110,
+      "prepaid": 228,
+      "dsl": 61,
+      "iptv": 45,
+      "uydu": 18,
+      "akilliCihaz": 149,
+      "digerCihaz": 80,
+      "mobil": 338
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 70,
+      "prepaid": 226,
+      "dsl": 55,
+      "iptv": 41,
+      "uydu": 12,
+      "akilliCihaz": 73,
+      "digerCihaz": 85,
+      "mobil": 296
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 102,
+      "prepaid": 106,
+      "dsl": 35,
+      "iptv": 22,
+      "uydu": 14,
+      "akilliCihaz": 84,
+      "digerCihaz": 63,
+      "mobil": 208
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 205,
+      "prepaid": 401,
+      "dsl": 79,
+      "iptv": 64,
+      "uydu": 15,
+      "akilliCihaz": 180,
+      "digerCihaz": 139,
+      "mobil": 606
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 149,
+      "prepaid": 163,
+      "dsl": 17,
+      "iptv": 7,
+      "uydu": 5,
+      "akilliCihaz": 45,
+      "digerCihaz": 34,
+      "mobil": 312
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 120,
+      "prepaid": 88,
+      "dsl": 44,
+      "iptv": 18,
+      "uydu": 7,
+      "akilliCihaz": 81,
+      "digerCihaz": 80,
+      "mobil": 208
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 121,
+      "prepaid": 197,
+      "dsl": 51,
+      "iptv": 34,
+      "uydu": 5,
+      "akilliCihaz": 91,
+      "digerCihaz": 57,
+      "mobil": 318
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 232,
+      "prepaid": 132,
+      "dsl": 49,
+      "iptv": 37,
+      "uydu": 13,
+      "akilliCihaz": 164,
+      "digerCihaz": 107,
+      "mobil": 364
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 185,
+      "prepaid": 172,
+      "dsl": 49,
+      "iptv": 33,
+      "uydu": 13,
+      "akilliCihaz": 99,
+      "digerCihaz": 75,
+      "mobil": 357
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 94,
+      "prepaid": 274,
+      "dsl": 39,
+      "iptv": 19,
+      "uydu": 8,
+      "akilliCihaz": 67,
+      "digerCihaz": 56,
+      "mobil": 368
+     }
+    },
+    {
+     "code": "4100776",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 164,
+      "prepaid": 121,
+      "dsl": 31,
+      "iptv": 15,
+      "uydu": 7,
+      "akilliCihaz": 81,
+      "digerCihaz": 76,
+      "mobil": 285
+     }
+    },
+    {
+     "code": "4100778",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 278,
+      "prepaid": 125,
+      "dsl": 86,
+      "iptv": 43,
+      "uydu": 6,
+      "akilliCihaz": 172,
+      "digerCihaz": 133,
+      "mobil": 403
+     }
+    },
+    {
+     "code": "4100781",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 100,
+      "prepaid": 280,
+      "dsl": 62,
+      "iptv": 22,
+      "uydu": 6,
+      "akilliCihaz": 102,
+      "digerCihaz": 64,
+      "mobil": 380
+     }
+    },
+    {
+     "code": "4100784",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 145,
+      "prepaid": 155,
+      "dsl": 43,
+      "iptv": 28,
+      "uydu": 8,
+      "akilliCihaz": 55,
+      "digerCihaz": 74,
+      "mobil": 300
+     }
+    },
+    {
+     "code": "4100785",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 175,
+      "prepaid": 103,
+      "dsl": 64,
+      "iptv": 39,
+      "uydu": 8,
+      "akilliCihaz": 51,
+      "digerCihaz": 99,
+      "mobil": 278
+     }
+    },
+    {
+     "code": "4100990",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 105,
+      "prepaid": 100,
+      "dsl": 22,
+      "iptv": 12,
+      "uydu": 4,
+      "akilliCihaz": 44,
+      "digerCihaz": 29,
+      "mobil": 205
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 112,
+      "prepaid": 139,
+      "dsl": 141,
+      "iptv": 49,
+      "uydu": 8,
+      "akilliCihaz": 37,
+      "digerCihaz": 15,
+      "mobil": 251
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 178,
+      "prepaid": 149,
+      "dsl": 48,
+      "iptv": 41,
+      "uydu": 14,
+      "akilliCihaz": 159,
+      "digerCihaz": 93,
+      "mobil": 327
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 88941,
+    "prepaid": 86803,
+    "dsl": 26349,
+    "iptv": 13012,
+    "uydu": 6267,
+    "akilliCihaz": 41568,
+    "digerCihaz": 35584,
+    "mobil": 175744
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Eylül 2026.xlsx"
+  },
+  {
+   "period": "2025-06",
+   "date": "2025-06-30",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK 0 BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 388,
+      "prepaid": 40,
+      "dsl": 38,
+      "iptv": 14,
+      "uydu": 0,
+      "akilliCihaz": 39,
+      "digerCihaz": 23,
+      "mobil": 428
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ0KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 358,
+      "prepaid": 83,
+      "dsl": 46,
+      "iptv": 16,
+      "uydu": 6,
+      "akilliCihaz": 52,
+      "digerCihaz": 28,
+      "mobil": 441
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 441,
+      "prepaid": 90,
+      "dsl": 86,
+      "iptv": 28,
+      "uydu": 0,
+      "akilliCihaz": 46,
+      "digerCihaz": 23,
+      "mobil": 531
+     }
+    },
+    {
+     "code": "1500005",
+     "name": "TİTİZ İLET.BİLG.MÜH.GÜV.SİS.TEM.GID.SAN.VE TİC. LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 445,
+      "prepaid": 124,
+      "dsl": 41,
+      "iptv": 19,
+      "uydu": 2,
+      "akilliCihaz": 2,
+      "digerCihaz": 6,
+      "mobil": 569
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN0BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 442,
+      "prepaid": 78,
+      "dsl": 77,
+      "iptv": 31,
+      "uydu": 4,
+      "akilliCihaz": 98,
+      "digerCihaz": 132,
+      "mobil": 520
+     }
+    },
+    {
+     "code": "4040801",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 271,
+      "prepaid": 41,
+      "dsl": 41,
+      "iptv": 20,
+      "uydu": 8,
+      "akilliCihaz": 66,
+      "digerCihaz": 66,
+      "mobil": 312
+     }
+    },
+    {
+     "code": "4040802",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 364,
+      "prepaid": 62,
+      "dsl": 67,
+      "iptv": 23,
+      "uydu": 9,
+      "akilliCihaz": 92,
+      "digerCihaz": 63,
+      "mobil": 426
+     }
+    },
+    {
+     "code": "4040895",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 262,
+      "prepaid": 48,
+      "dsl": 60,
+      "iptv": 23,
+      "uydu": 10,
+      "akilliCihaz": 87,
+      "digerCihaz": 86,
+      "mobil": 310
+     }
+    },
+    {
+     "code": "4050907",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 462,
+      "prepaid": 131,
+      "dsl": 104,
+      "iptv": 27,
+      "uydu": 6,
+      "akilliCihaz": 113,
+      "digerCihaz": 84,
+      "mobil": 593
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 583,
+      "prepaid": 119,
+      "dsl": 57,
+      "iptv": 20,
+      "uydu": 11,
+      "akilliCihaz": 95,
+      "digerCihaz": 85,
+      "mobil": 702
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 350,
+      "prepaid": 42,
+      "dsl": 54,
+      "iptv": 16,
+      "uydu": 12,
+      "akilliCihaz": 152,
+      "digerCihaz": 67,
+      "mobil": 392
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 300,
+      "prepaid": 85,
+      "dsl": 67,
+      "iptv": 27,
+      "uydu": 9,
+      "akilliCihaz": 76,
+      "digerCihaz": 61,
+      "mobil": 385
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 272,
+      "prepaid": 24,
+      "dsl": 53,
+      "iptv": 12,
+      "uydu": 17,
+      "akilliCihaz": 147,
+      "digerCihaz": 66,
+      "mobil": 296
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 765,
+      "prepaid": 47,
+      "dsl": 74,
+      "iptv": 15,
+      "uydu": 18,
+      "akilliCihaz": 170,
+      "digerCihaz": 91,
+      "mobil": 812
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 302,
+      "prepaid": 86,
+      "dsl": 57,
+      "iptv": 14,
+      "uydu": 9,
+      "akilliCihaz": 84,
+      "digerCihaz": 47,
+      "mobil": 388
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 240,
+      "prepaid": 47,
+      "dsl": 40,
+      "iptv": 17,
+      "uydu": 6,
+      "akilliCihaz": 32,
+      "digerCihaz": 40,
+      "mobil": 287
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 294,
+      "prepaid": 31,
+      "dsl": 54,
+      "iptv": 17,
+      "uydu": 8,
+      "akilliCihaz": 96,
+      "digerCihaz": 62,
+      "mobil": 325
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 467,
+      "prepaid": 59,
+      "dsl": 40,
+      "iptv": 11,
+      "uydu": 3,
+      "akilliCihaz": 122,
+      "digerCihaz": 84,
+      "mobil": 526
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 324,
+      "prepaid": 90,
+      "dsl": 55,
+      "iptv": 23,
+      "uydu": 0,
+      "akilliCihaz": 115,
+      "digerCihaz": 79,
+      "mobil": 414
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 203,
+      "prepaid": 123,
+      "dsl": 127,
+      "iptv": 31,
+      "uydu": 7,
+      "akilliCihaz": 28,
+      "digerCihaz": 26,
+      "mobil": 326
+     }
+    },
+    {
+     "code": "7000447",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 339,
+      "prepaid": 36,
+      "dsl": 58,
+      "iptv": 23,
+      "uydu": 6,
+      "akilliCihaz": 68,
+      "digerCihaz": 62,
+      "mobil": 375
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 305,
+      "prepaid": 125,
+      "dsl": 52,
+      "iptv": 24,
+      "uydu": 1,
+      "akilliCihaz": 115,
+      "digerCihaz": 61,
+      "mobil": 430
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 181798,
+    "prepaid": 53490,
+    "dsl": 28789,
+    "iptv": 9661,
+    "uydu": 5439,
+    "akilliCihaz": 41773,
+    "digerCihaz": 24753,
+    "mobil": 235288
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Haziran 2025.xlsx"
+  },
+  {
+   "period": "2026-06",
+   "date": "2026-06-30",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 202,
+      "prepaid": 129,
+      "dsl": 39,
+      "iptv": 23,
+      "uydu": 8,
+      "akilliCihaz": 60,
+      "digerCihaz": 77,
+      "mobil": 331
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 99,
+      "prepaid": 229,
+      "dsl": 36,
+      "iptv": 18,
+      "uydu": 6,
+      "akilliCihaz": 55,
+      "digerCihaz": 16,
+      "mobil": 328
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 182,
+      "prepaid": 86,
+      "dsl": 46,
+      "iptv": 27,
+      "uydu": 4,
+      "akilliCihaz": 45,
+      "digerCihaz": 48,
+      "mobil": 268
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 186,
+      "prepaid": 243,
+      "dsl": 63,
+      "iptv": 34,
+      "uydu": 12,
+      "akilliCihaz": 87,
+      "digerCihaz": 125,
+      "mobil": 429
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 368,
+      "prepaid": 232,
+      "dsl": 55,
+      "iptv": 29,
+      "uydu": 12,
+      "akilliCihaz": 94,
+      "digerCihaz": 138,
+      "mobil": 600
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 102,
+      "prepaid": 254,
+      "dsl": 61,
+      "iptv": 41,
+      "uydu": 20,
+      "akilliCihaz": 106,
+      "digerCihaz": 190,
+      "mobil": 356
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 80,
+      "prepaid": 287,
+      "dsl": 100,
+      "iptv": 41,
+      "uydu": 12,
+      "akilliCihaz": 76,
+      "digerCihaz": 110,
+      "mobil": 367
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 164,
+      "prepaid": 89,
+      "dsl": 40,
+      "iptv": 24,
+      "uydu": 11,
+      "akilliCihaz": 109,
+      "digerCihaz": 42,
+      "mobil": 253
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 187,
+      "prepaid": 516,
+      "dsl": 74,
+      "iptv": 41,
+      "uydu": 18,
+      "akilliCihaz": 148,
+      "digerCihaz": 140,
+      "mobil": 703
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 199,
+      "prepaid": 93,
+      "dsl": 47,
+      "iptv": 20,
+      "uydu": 9,
+      "akilliCihaz": 67,
+      "digerCihaz": 93,
+      "mobil": 292
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 122,
+      "prepaid": 158,
+      "dsl": 57,
+      "iptv": 25,
+      "uydu": 17,
+      "akilliCihaz": 74,
+      "digerCihaz": 81,
+      "mobil": 280
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 284,
+      "prepaid": 89,
+      "dsl": 41,
+      "iptv": 27,
+      "uydu": 11,
+      "akilliCihaz": 125,
+      "digerCihaz": 95,
+      "mobil": 373
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 220,
+      "prepaid": 190,
+      "dsl": 45,
+      "iptv": 26,
+      "uydu": 7,
+      "akilliCihaz": 217,
+      "digerCihaz": 91,
+      "mobil": 410
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 107,
+      "prepaid": 354,
+      "dsl": 53,
+      "iptv": 22,
+      "uydu": 12,
+      "akilliCihaz": 85,
+      "digerCihaz": 30,
+      "mobil": 461
+     }
+    },
+    {
+     "code": "4100776",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 185,
+      "prepaid": 109,
+      "dsl": 40,
+      "iptv": 26,
+      "uydu": 10,
+      "akilliCihaz": 64,
+      "digerCihaz": 125,
+      "mobil": 294
+     }
+    },
+    {
+     "code": "4100778",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 252,
+      "prepaid": 112,
+      "dsl": 68,
+      "iptv": 25,
+      "uydu": 7,
+      "akilliCihaz": 112,
+      "digerCihaz": 217,
+      "mobil": 364
+     }
+    },
+    {
+     "code": "4100781",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 119,
+      "prepaid": 374,
+      "dsl": 86,
+      "iptv": 23,
+      "uydu": 16,
+      "akilliCihaz": 77,
+      "digerCihaz": 83,
+      "mobil": 493
+     }
+    },
+    {
+     "code": "4100784",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 131,
+      "prepaid": 124,
+      "dsl": 51,
+      "iptv": 22,
+      "uydu": 9,
+      "akilliCihaz": 62,
+      "digerCihaz": 117,
+      "mobil": 255
+     }
+    },
+    {
+     "code": "4100785",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 188,
+      "prepaid": 139,
+      "dsl": 62,
+      "iptv": 30,
+      "uydu": 19,
+      "akilliCihaz": 65,
+      "digerCihaz": 118,
+      "mobil": 327
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 132,
+      "prepaid": 117,
+      "dsl": 138,
+      "iptv": 43,
+      "uydu": 6,
+      "akilliCihaz": 25,
+      "digerCihaz": 17,
+      "mobil": 249
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 237,
+      "prepaid": 137,
+      "dsl": 33,
+      "iptv": 16,
+      "uydu": 11,
+      "akilliCihaz": 114,
+      "digerCihaz": 61,
+      "mobil": 374
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 97275,
+    "prepaid": 85959,
+    "dsl": 23226,
+    "iptv": 11613,
+    "uydu": 6774,
+    "akilliCihaz": 39258,
+    "digerCihaz": 41373,
+    "mobil": 183234
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Haziran 2026.xlsx"
+  },
+  {
+   "period": "2025-11",
+   "date": "2025-11-30",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 590,
+      "prepaid": 74,
+      "dsl": 65,
+      "iptv": 32,
+      "uydu": 7,
+      "akilliCihaz": 68,
+      "digerCihaz": 74,
+      "mobil": 664
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 335,
+      "prepaid": 62,
+      "dsl": 46,
+      "iptv": 15,
+      "uydu": 5,
+      "akilliCihaz": 40,
+      "digerCihaz": 20,
+      "mobil": 397
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 463,
+      "prepaid": 25,
+      "dsl": 73,
+      "iptv": 26,
+      "uydu": 1,
+      "akilliCihaz": 39,
+      "digerCihaz": 13,
+      "mobil": 488
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 548,
+      "prepaid": 37,
+      "dsl": 87,
+      "iptv": 22,
+      "uydu": 10,
+      "akilliCihaz": 99,
+      "digerCihaz": 189,
+      "mobil": 585
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 787,
+      "prepaid": 65,
+      "dsl": 69,
+      "iptv": 26,
+      "uydu": 10,
+      "akilliCihaz": 94,
+      "digerCihaz": 220,
+      "mobil": 852
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 387,
+      "prepaid": 43,
+      "dsl": 104,
+      "iptv": 38,
+      "uydu": 16,
+      "akilliCihaz": 139,
+      "digerCihaz": 529,
+      "mobil": 430
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 377,
+      "prepaid": 75,
+      "dsl": 113,
+      "iptv": 30,
+      "uydu": 7,
+      "akilliCihaz": 70,
+      "digerCihaz": 63,
+      "mobil": 452
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 359,
+      "prepaid": 92,
+      "dsl": 52,
+      "iptv": 19,
+      "uydu": 12,
+      "akilliCihaz": 99,
+      "digerCihaz": 101,
+      "mobil": 451
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 818,
+      "prepaid": 211,
+      "dsl": 94,
+      "iptv": 39,
+      "uydu": 15,
+      "akilliCihaz": 151,
+      "digerCihaz": 179,
+      "mobil": 1029
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 344,
+      "prepaid": 23,
+      "dsl": 63,
+      "iptv": 22,
+      "uydu": 9,
+      "akilliCihaz": 73,
+      "digerCihaz": 254,
+      "mobil": 367
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 354,
+      "prepaid": 42,
+      "dsl": 53,
+      "iptv": 16,
+      "uydu": 6,
+      "akilliCihaz": 56,
+      "digerCihaz": 270,
+      "mobil": 396
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 313,
+      "prepaid": 108,
+      "dsl": 67,
+      "iptv": 28,
+      "uydu": 8,
+      "akilliCihaz": 90,
+      "digerCihaz": 209,
+      "mobil": 421
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 542,
+      "prepaid": 65,
+      "dsl": 43,
+      "iptv": 22,
+      "uydu": 6,
+      "akilliCihaz": 96,
+      "digerCihaz": 199,
+      "mobil": 607
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 425,
+      "prepaid": 40,
+      "dsl": 71,
+      "iptv": 18,
+      "uydu": 5,
+      "akilliCihaz": 104,
+      "digerCihaz": 110,
+      "mobil": 465
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 450,
+      "prepaid": 82,
+      "dsl": 55,
+      "iptv": 31,
+      "uydu": 6,
+      "akilliCihaz": 61,
+      "digerCihaz": 55,
+      "mobil": 532
+     }
+    },
+    {
+     "code": "4100776",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 359,
+      "prepaid": 39,
+      "dsl": 49,
+      "iptv": 24,
+      "uydu": 8,
+      "akilliCihaz": 50,
+      "digerCihaz": 122,
+      "mobil": 398
+     }
+    },
+    {
+     "code": "4100778",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 442,
+      "prepaid": 46,
+      "dsl": 108,
+      "iptv": 36,
+      "uydu": 6,
+      "akilliCihaz": 76,
+      "digerCihaz": 246,
+      "mobil": 488
+     }
+    },
+    {
+     "code": "4100781",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 593,
+      "prepaid": 92,
+      "dsl": 202,
+      "iptv": 38,
+      "uydu": 15,
+      "akilliCihaz": 83,
+      "digerCihaz": 210,
+      "mobil": 685
+     }
+    },
+    {
+     "code": "4100784",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 377,
+      "prepaid": 29,
+      "dsl": 77,
+      "iptv": 32,
+      "uydu": 8,
+      "akilliCihaz": 69,
+      "digerCihaz": 150,
+      "mobil": 406
+     }
+    },
+    {
+     "code": "4100785",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 314,
+      "prepaid": 21,
+      "dsl": 64,
+      "iptv": 22,
+      "uydu": 10,
+      "akilliCihaz": 57,
+      "digerCihaz": 194,
+      "mobil": 335
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 292,
+      "prepaid": 59,
+      "dsl": 208,
+      "iptv": 37,
+      "uydu": 8,
+      "akilliCihaz": 27,
+      "digerCihaz": 4,
+      "mobil": 351
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 429,
+      "prepaid": 75,
+      "dsl": 72,
+      "iptv": 33,
+      "uydu": 6,
+      "akilliCihaz": 89,
+      "digerCihaz": 99,
+      "mobil": 504
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 205990,
+    "prepaid": 51611,
+    "dsl": 37785,
+    "iptv": 13371,
+    "uydu": 5336,
+    "akilliCihaz": 38480,
+    "digerCihaz": 45852,
+    "mobil": 257601
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Kasım 2025.xlsx"
+  },
+  {
+   "period": "2026-03",
+   "date": "2026-03-31",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 235,
+      "prepaid": 128,
+      "dsl": 46,
+      "iptv": 15,
+      "uydu": 5,
+      "akilliCihaz": 47,
+      "digerCihaz": 50,
+      "mobil": 363
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 114,
+      "prepaid": 255,
+      "dsl": 46,
+      "iptv": 21,
+      "uydu": 5,
+      "akilliCihaz": 35,
+      "digerCihaz": 31,
+      "mobil": 369
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 263,
+      "prepaid": 93,
+      "dsl": 51,
+      "iptv": 25,
+      "uydu": 3,
+      "akilliCihaz": 46,
+      "digerCihaz": 58,
+      "mobil": 356
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 160,
+      "prepaid": 288,
+      "dsl": 60,
+      "iptv": 22,
+      "uydu": 12,
+      "akilliCihaz": 91,
+      "digerCihaz": 99,
+      "mobil": 448
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 354,
+      "prepaid": 205,
+      "dsl": 38,
+      "iptv": 22,
+      "uydu": 7,
+      "akilliCihaz": 84,
+      "digerCihaz": 112,
+      "mobil": 559
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 129,
+      "prepaid": 275,
+      "dsl": 58,
+      "iptv": 29,
+      "uydu": 18,
+      "akilliCihaz": 112,
+      "digerCihaz": 130,
+      "mobil": 404
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 139,
+      "prepaid": 217,
+      "dsl": 107,
+      "iptv": 35,
+      "uydu": 7,
+      "akilliCihaz": 74,
+      "digerCihaz": 62,
+      "mobil": 356
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 200,
+      "prepaid": 95,
+      "dsl": 47,
+      "iptv": 22,
+      "uydu": 11,
+      "akilliCihaz": 116,
+      "digerCihaz": 74,
+      "mobil": 295
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 446,
+      "prepaid": 244,
+      "dsl": 80,
+      "iptv": 45,
+      "uydu": 18,
+      "akilliCihaz": 162,
+      "digerCihaz": 152,
+      "mobil": 690
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 154,
+      "prepaid": 126,
+      "dsl": 46,
+      "iptv": 15,
+      "uydu": 9,
+      "akilliCihaz": 53,
+      "digerCihaz": 64,
+      "mobil": 280
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 211,
+      "prepaid": 38,
+      "dsl": 24,
+      "iptv": 23,
+      "uydu": 8,
+      "akilliCihaz": 49,
+      "digerCihaz": 65,
+      "mobil": 249
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 127,
+      "prepaid": 182,
+      "dsl": 61,
+      "iptv": 23,
+      "uydu": 8,
+      "akilliCihaz": 62,
+      "digerCihaz": 57,
+      "mobil": 309
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 378,
+      "prepaid": 69,
+      "dsl": 33,
+      "iptv": 18,
+      "uydu": 6,
+      "akilliCihaz": 57,
+      "digerCihaz": 49,
+      "mobil": 447
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 280,
+      "prepaid": 163,
+      "dsl": 56,
+      "iptv": 28,
+      "uydu": 7,
+      "akilliCihaz": 78,
+      "digerCihaz": 111,
+      "mobil": 443
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 181,
+      "prepaid": 219,
+      "dsl": 69,
+      "iptv": 21,
+      "uydu": 7,
+      "akilliCihaz": 78,
+      "digerCihaz": 39,
+      "mobil": 400
+     }
+    },
+    {
+     "code": "4100776",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 212,
+      "prepaid": 31,
+      "dsl": 24,
+      "iptv": 14,
+      "uydu": 9,
+      "akilliCihaz": 37,
+      "digerCihaz": 58,
+      "mobil": 243
+     }
+    },
+    {
+     "code": "4100778",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 292,
+      "prepaid": 56,
+      "dsl": 63,
+      "iptv": 27,
+      "uydu": 5,
+      "akilliCihaz": 93,
+      "digerCihaz": 88,
+      "mobil": 348
+     }
+    },
+    {
+     "code": "4100781",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 94,
+      "prepaid": 402,
+      "dsl": 103,
+      "iptv": 28,
+      "uydu": 10,
+      "akilliCihaz": 95,
+      "digerCihaz": 85,
+      "mobil": 496
+     }
+    },
+    {
+     "code": "4100784",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 215,
+      "prepaid": 59,
+      "dsl": 38,
+      "iptv": 17,
+      "uydu": 8,
+      "akilliCihaz": 63,
+      "digerCihaz": 71,
+      "mobil": 274
+     }
+    },
+    {
+     "code": "4100785",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 207,
+      "prepaid": 88,
+      "dsl": 49,
+      "iptv": 22,
+      "uydu": 9,
+      "akilliCihaz": 55,
+      "digerCihaz": 87,
+      "mobil": 295
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 140,
+      "prepaid": 108,
+      "dsl": 161,
+      "iptv": 54,
+      "uydu": 5,
+      "akilliCihaz": 28,
+      "digerCihaz": 12,
+      "mobil": 248
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 203,
+      "prepaid": 118,
+      "dsl": 46,
+      "iptv": 34,
+      "uydu": 10,
+      "akilliCihaz": 96,
+      "digerCihaz": 115,
+      "mobil": 321
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 115304,
+    "prepaid": 72265,
+    "dsl": 23989,
+    "iptv": 11303,
+    "uydu": 5971,
+    "akilliCihaz": 35683,
+    "digerCihaz": 35045,
+    "mobil": 187569
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Mart 2026.xlsx"
+  },
+  {
+   "period": "2025-05",
+   "date": "2025-05-31",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK 0 BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 500,
+      "prepaid": 51,
+      "dsl": 47,
+      "iptv": 17,
+      "uydu": 11,
+      "akilliCihaz": 56,
+      "digerCihaz": 33,
+      "mobil": 551
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ0KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 487,
+      "prepaid": 46,
+      "dsl": 58,
+      "iptv": 21,
+      "uydu": 5,
+      "akilliCihaz": 46,
+      "digerCihaz": 26,
+      "mobil": 533
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 494,
+      "prepaid": 31,
+      "dsl": 73,
+      "iptv": 25,
+      "uydu": 6,
+      "akilliCihaz": 46,
+      "digerCihaz": 29,
+      "mobil": 525
+     }
+    },
+    {
+     "code": "1500005",
+     "name": "TİTİZ İLET.BİLG.MÜH.GÜV.SİS.TEM.GID.SAN.VE TİC. LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 592,
+      "prepaid": 96,
+      "dsl": 46,
+      "iptv": 17,
+      "uydu": 3,
+      "akilliCihaz": 31,
+      "digerCihaz": 21,
+      "mobil": 688
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN0BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 564,
+      "prepaid": 21,
+      "dsl": 78,
+      "iptv": 29,
+      "uydu": 11,
+      "akilliCihaz": 98,
+      "digerCihaz": 127,
+      "mobil": 585
+     }
+    },
+    {
+     "code": "4040801",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 329,
+      "prepaid": 22,
+      "dsl": 40,
+      "iptv": 18,
+      "uydu": 10,
+      "akilliCihaz": 100,
+      "digerCihaz": 50,
+      "mobil": 351
+     }
+    },
+    {
+     "code": "4040802",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 438,
+      "prepaid": 25,
+      "dsl": 74,
+      "iptv": 32,
+      "uydu": 6,
+      "akilliCihaz": 117,
+      "digerCihaz": 104,
+      "mobil": 463
+     }
+    },
+    {
+     "code": "4040895",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 342,
+      "prepaid": 27,
+      "dsl": 65,
+      "iptv": 25,
+      "uydu": 15,
+      "akilliCihaz": 113,
+      "digerCihaz": 96,
+      "mobil": 369
+     }
+    },
+    {
+     "code": "4050907",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 570,
+      "prepaid": 62,
+      "dsl": 112,
+      "iptv": 18,
+      "uydu": 22,
+      "akilliCihaz": 132,
+      "digerCihaz": 78,
+      "mobil": 632
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 803,
+      "prepaid": 63,
+      "dsl": 66,
+      "iptv": 16,
+      "uydu": 20,
+      "akilliCihaz": 93,
+      "digerCihaz": 73,
+      "mobil": 866
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 380,
+      "prepaid": 84,
+      "dsl": 45,
+      "iptv": 11,
+      "uydu": 17,
+      "akilliCihaz": 142,
+      "digerCihaz": 144,
+      "mobil": 464
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 458,
+      "prepaid": 50,
+      "dsl": 64,
+      "iptv": 37,
+      "uydu": 10,
+      "akilliCihaz": 58,
+      "digerCihaz": 53,
+      "mobil": 508
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 365,
+      "prepaid": 14,
+      "dsl": 63,
+      "iptv": 15,
+      "uydu": 26,
+      "akilliCihaz": 120,
+      "digerCihaz": 56,
+      "mobil": 379
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 828,
+      "prepaid": 40,
+      "dsl": 98,
+      "iptv": 20,
+      "uydu": 26,
+      "akilliCihaz": 157,
+      "digerCihaz": 200,
+      "mobil": 868
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 376,
+      "prepaid": 40,
+      "dsl": 51,
+      "iptv": 7,
+      "uydu": 17,
+      "akilliCihaz": 79,
+      "digerCihaz": 63,
+      "mobil": 416
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 282,
+      "prepaid": 36,
+      "dsl": 35,
+      "iptv": 16,
+      "uydu": 8,
+      "akilliCihaz": 37,
+      "digerCihaz": 44,
+      "mobil": 318
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 362,
+      "prepaid": 15,
+      "dsl": 40,
+      "iptv": 20,
+      "uydu": 10,
+      "akilliCihaz": 90,
+      "digerCihaz": 78,
+      "mobil": 377
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 527,
+      "prepaid": 43,
+      "dsl": 37,
+      "iptv": 17,
+      "uydu": 4,
+      "akilliCihaz": 128,
+      "digerCihaz": 88,
+      "mobil": 570
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 416,
+      "prepaid": 46,
+      "dsl": 60,
+      "iptv": 22,
+      "uydu": 7,
+      "akilliCihaz": 117,
+      "digerCihaz": 95,
+      "mobil": 462
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 300,
+      "prepaid": 114,
+      "dsl": 140,
+      "iptv": 36,
+      "uydu": 4,
+      "akilliCihaz": 29,
+      "digerCihaz": 22,
+      "mobil": 414
+     }
+    },
+    {
+     "code": "7000447",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 359,
+      "prepaid": 26,
+      "dsl": 65,
+      "iptv": 22,
+      "uydu": 14,
+      "akilliCihaz": 111,
+      "digerCihaz": 76,
+      "mobil": 385
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 412,
+      "prepaid": 66,
+      "dsl": 56,
+      "iptv": 20,
+      "uydu": 12,
+      "akilliCihaz": 134,
+      "digerCihaz": 96,
+      "mobil": 478
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 217409,
+    "prepaid": 45712,
+    "dsl": 29735,
+    "iptv": 10073,
+    "uydu": 6988,
+    "akilliCihaz": 41104,
+    "digerCihaz": 29830,
+    "mobil": 263121
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Mayıs 2025.xlsx"
+  },
+  {
+   "period": "2026-05",
+   "date": "2026-05-31",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 205,
+      "prepaid": 129,
+      "dsl": 30,
+      "iptv": 17,
+      "uydu": 6,
+      "akilliCihaz": 59,
+      "digerCihaz": 80,
+      "mobil": 334
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 74,
+      "prepaid": 183,
+      "dsl": 42,
+      "iptv": 19,
+      "uydu": 4,
+      "akilliCihaz": 39,
+      "digerCihaz": 29,
+      "mobil": 257
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 199,
+      "prepaid": 43,
+      "dsl": 36,
+      "iptv": 13,
+      "uydu": 10,
+      "akilliCihaz": 41,
+      "digerCihaz": 25,
+      "mobil": 242
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 188,
+      "prepaid": 193,
+      "dsl": 50,
+      "iptv": 18,
+      "uydu": 11,
+      "akilliCihaz": 70,
+      "digerCihaz": 81,
+      "mobil": 381
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 252,
+      "prepaid": 244,
+      "dsl": 54,
+      "iptv": 24,
+      "uydu": 8,
+      "akilliCihaz": 52,
+      "digerCihaz": 92,
+      "mobil": 496
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 92,
+      "prepaid": 296,
+      "dsl": 61,
+      "iptv": 29,
+      "uydu": 15,
+      "akilliCihaz": 80,
+      "digerCihaz": 131,
+      "mobil": 388
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 63,
+      "prepaid": 282,
+      "dsl": 99,
+      "iptv": 29,
+      "uydu": 9,
+      "akilliCihaz": 41,
+      "digerCihaz": 149,
+      "mobil": 345
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 119,
+      "prepaid": 121,
+      "dsl": 40,
+      "iptv": 19,
+      "uydu": 11,
+      "akilliCihaz": 74,
+      "digerCihaz": 56,
+      "mobil": 240
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 265,
+      "prepaid": 338,
+      "dsl": 63,
+      "iptv": 38,
+      "uydu": 11,
+      "akilliCihaz": 118,
+      "digerCihaz": 108,
+      "mobil": 603
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 40,
+      "prepaid": 10,
+      "dsl": 6,
+      "iptv": 3,
+      "uydu": 1,
+      "akilliCihaz": 7,
+      "digerCihaz": 5,
+      "mobil": 50
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 140,
+      "prepaid": 59,
+      "dsl": 26,
+      "iptv": 15,
+      "uydu": 5,
+      "akilliCihaz": 65,
+      "digerCihaz": 87,
+      "mobil": 199
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 122,
+      "prepaid": 203,
+      "dsl": 70,
+      "iptv": 36,
+      "uydu": 6,
+      "akilliCihaz": 57,
+      "digerCihaz": 61,
+      "mobil": 325
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 313,
+      "prepaid": 91,
+      "dsl": 28,
+      "iptv": 15,
+      "uydu": 8,
+      "akilliCihaz": 96,
+      "digerCihaz": 65,
+      "mobil": 404
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 235,
+      "prepaid": 223,
+      "dsl": 49,
+      "iptv": 24,
+      "uydu": 4,
+      "akilliCihaz": 94,
+      "digerCihaz": 87,
+      "mobil": 458
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 77,
+      "prepaid": 381,
+      "dsl": 53,
+      "iptv": 27,
+      "uydu": 9,
+      "akilliCihaz": 77,
+      "digerCihaz": 21,
+      "mobil": 458
+     }
+    },
+    {
+     "code": "4100776",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 162,
+      "prepaid": 77,
+      "dsl": 33,
+      "iptv": 25,
+      "uydu": 9,
+      "akilliCihaz": 63,
+      "digerCihaz": 83,
+      "mobil": 239
+     }
+    },
+    {
+     "code": "4100778",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 143,
+      "prepaid": 68,
+      "dsl": 42,
+      "iptv": 9,
+      "uydu": 11,
+      "akilliCihaz": 94,
+      "digerCihaz": 137,
+      "mobil": 211
+     }
+    },
+    {
+     "code": "4100781",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 119,
+      "prepaid": 484,
+      "dsl": 109,
+      "iptv": 38,
+      "uydu": 11,
+      "akilliCihaz": 91,
+      "digerCihaz": 55,
+      "mobil": 603
+     }
+    },
+    {
+     "code": "4100784",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 131,
+      "prepaid": 105,
+      "dsl": 31,
+      "iptv": 18,
+      "uydu": 7,
+      "akilliCihaz": 50,
+      "digerCihaz": 74,
+      "mobil": 236
+     }
+    },
+    {
+     "code": "4100785",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 118,
+      "prepaid": 137,
+      "dsl": 49,
+      "iptv": 26,
+      "uydu": 19,
+      "akilliCihaz": 57,
+      "digerCihaz": 96,
+      "mobil": 255
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 98,
+      "prepaid": 129,
+      "dsl": 128,
+      "iptv": 39,
+      "uydu": 5,
+      "akilliCihaz": 29,
+      "digerCihaz": 26,
+      "mobil": 227
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 171,
+      "prepaid": 101,
+      "dsl": 33,
+      "iptv": 24,
+      "uydu": 6,
+      "akilliCihaz": 96,
+      "digerCihaz": 72,
+      "mobil": 272
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 88260,
+    "prepaid": 84117,
+    "dsl": 21870,
+    "iptv": 10809,
+    "uydu": 5469,
+    "akilliCihaz": 32947,
+    "digerCihaz": 36177,
+    "mobil": 172377
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Mayıs 2026.xlsx"
+  },
+  {
+   "period": "2025-04",
+   "date": "2025-04-30",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK 0 BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 485,
+      "prepaid": 67,
+      "dsl": 41,
+      "iptv": 8,
+      "uydu": 11,
+      "akilliCihaz": 31,
+      "digerCihaz": 35,
+      "mobil": 552
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ0KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 571,
+      "prepaid": 46,
+      "dsl": 39,
+      "iptv": 19,
+      "uydu": 1,
+      "akilliCihaz": 58,
+      "digerCihaz": 22,
+      "mobil": 617
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 496,
+      "prepaid": 43,
+      "dsl": 49,
+      "iptv": 20,
+      "uydu": 10,
+      "akilliCihaz": 49,
+      "digerCihaz": 19,
+      "mobil": 539
+     }
+    },
+    {
+     "code": "1500005",
+     "name": "TİTİZ İLET.BİLG.MÜH.GÜV.SİS.TEM.GID.SAN.VE TİC. LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 696,
+      "prepaid": 70,
+      "dsl": 48,
+      "iptv": 23,
+      "uydu": 2,
+      "akilliCihaz": 53,
+      "digerCihaz": 13,
+      "mobil": 766
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN0BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 604,
+      "prepaid": 32,
+      "dsl": 69,
+      "iptv": 28,
+      "uydu": 5,
+      "akilliCihaz": 94,
+      "digerCihaz": 138,
+      "mobil": 636
+     }
+    },
+    {
+     "code": "4040801",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 355,
+      "prepaid": 36,
+      "dsl": 25,
+      "iptv": 22,
+      "uydu": 7,
+      "akilliCihaz": 97,
+      "digerCihaz": 76,
+      "mobil": 391
+     }
+    },
+    {
+     "code": "4040802",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 480,
+      "prepaid": 39,
+      "dsl": 67,
+      "iptv": 30,
+      "uydu": 4,
+      "akilliCihaz": 102,
+      "digerCihaz": 125,
+      "mobil": 519
+     }
+    },
+    {
+     "code": "4040895",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 349,
+      "prepaid": 31,
+      "dsl": 33,
+      "iptv": 21,
+      "uydu": 20,
+      "akilliCihaz": 113,
+      "digerCihaz": 107,
+      "mobil": 380
+     }
+    },
+    {
+     "code": "4050907",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 583,
+      "prepaid": 74,
+      "dsl": 95,
+      "iptv": 28,
+      "uydu": 10,
+      "akilliCihaz": 125,
+      "digerCihaz": 96,
+      "mobil": 657
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 810,
+      "prepaid": 64,
+      "dsl": 60,
+      "iptv": 18,
+      "uydu": 14,
+      "akilliCihaz": 73,
+      "digerCihaz": 118,
+      "mobil": 874
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 455,
+      "prepaid": 61,
+      "dsl": 33,
+      "iptv": 5,
+      "uydu": 27,
+      "akilliCihaz": 138,
+      "digerCihaz": 550,
+      "mobil": 516
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIRTASIYE INTER.HIZ.ILET.VE TİC.LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 438,
+      "prepaid": 73,
+      "dsl": 58,
+      "iptv": 45,
+      "uydu": 1,
+      "akilliCihaz": 59,
+      "digerCihaz": 30,
+      "mobil": 511
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 452,
+      "prepaid": 25,
+      "dsl": 54,
+      "iptv": 10,
+      "uydu": 29,
+      "akilliCihaz": 158,
+      "digerCihaz": 89,
+      "mobil": 477
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 753,
+      "prepaid": 66,
+      "dsl": 85,
+      "iptv": 19,
+      "uydu": 31,
+      "akilliCihaz": 179,
+      "digerCihaz": 302,
+      "mobil": 819
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 415,
+      "prepaid": 47,
+      "dsl": 45,
+      "iptv": 17,
+      "uydu": 7,
+      "akilliCihaz": 93,
+      "digerCihaz": 67,
+      "mobil": 462
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 334,
+      "prepaid": 50,
+      "dsl": 35,
+      "iptv": 16,
+      "uydu": 8,
+      "akilliCihaz": 41,
+      "digerCihaz": 41,
+      "mobil": 384
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 354,
+      "prepaid": 24,
+      "dsl": 41,
+      "iptv": 20,
+      "uydu": 5,
+      "akilliCihaz": 75,
+      "digerCihaz": 75,
+      "mobil": 378
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 599,
+      "prepaid": 31,
+      "dsl": 31,
+      "iptv": 14,
+      "uydu": 7,
+      "akilliCihaz": 131,
+      "digerCihaz": 31,
+      "mobil": 630
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 487,
+      "prepaid": 42,
+      "dsl": 50,
+      "iptv": 16,
+      "uydu": 7,
+      "akilliCihaz": 132,
+      "digerCihaz": 18,
+      "mobil": 529
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 306,
+      "prepaid": 107,
+      "dsl": 107,
+      "iptv": 26,
+      "uydu": 11,
+      "akilliCihaz": 33,
+      "digerCihaz": 24,
+      "mobil": 413
+     }
+    },
+    {
+     "code": "7000447",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 377,
+      "prepaid": 30,
+      "dsl": 40,
+      "iptv": 21,
+      "uydu": 12,
+      "akilliCihaz": 101,
+      "digerCihaz": 237,
+      "mobil": 407
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 401,
+      "prepaid": 95,
+      "dsl": 49,
+      "iptv": 22,
+      "uydu": 9,
+      "akilliCihaz": 139,
+      "digerCihaz": 37,
+      "mobil": 496
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 222230,
+    "prepaid": 49419,
+    "dsl": 25478,
+    "iptv": 8636,
+    "uydu": 8244,
+    "akilliCihaz": 40716,
+    "digerCihaz": 42279,
+    "mobil": 271649
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Nisan 2025.xlsx"
+  },
+  {
+   "period": "2026-04",
+   "date": "2026-04-30",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 270,
+      "prepaid": 72,
+      "dsl": 46,
+      "iptv": 21,
+      "uydu": 7,
+      "akilliCihaz": 54,
+      "digerCihaz": 65,
+      "mobil": 342
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 180,
+      "prepaid": 119,
+      "dsl": 33,
+      "iptv": 21,
+      "uydu": 5,
+      "akilliCihaz": 49,
+      "digerCihaz": 18,
+      "mobil": 299
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 302,
+      "prepaid": 97,
+      "dsl": 44,
+      "iptv": 26,
+      "uydu": 0,
+      "akilliCihaz": 43,
+      "digerCihaz": 51,
+      "mobil": 399
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 266,
+      "prepaid": 134,
+      "dsl": 62,
+      "iptv": 24,
+      "uydu": 9,
+      "akilliCihaz": 93,
+      "digerCihaz": 93,
+      "mobil": 400
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 378,
+      "prepaid": 229,
+      "dsl": 40,
+      "iptv": 21,
+      "uydu": 8,
+      "akilliCihaz": 85,
+      "digerCihaz": 93,
+      "mobil": 607
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 173,
+      "prepaid": 211,
+      "dsl": 64,
+      "iptv": 34,
+      "uydu": 22,
+      "akilliCihaz": 103,
+      "digerCihaz": 140,
+      "mobil": 384
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 140,
+      "prepaid": 186,
+      "dsl": 96,
+      "iptv": 38,
+      "uydu": 8,
+      "akilliCihaz": 84,
+      "digerCihaz": 140,
+      "mobil": 326
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 191,
+      "prepaid": 54,
+      "dsl": 37,
+      "iptv": 19,
+      "uydu": 11,
+      "akilliCihaz": 72,
+      "digerCihaz": 63,
+      "mobil": 245
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 522,
+      "prepaid": 144,
+      "dsl": 71,
+      "iptv": 39,
+      "uydu": 17,
+      "akilliCihaz": 134,
+      "digerCihaz": 103,
+      "mobil": 666
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 252,
+      "prepaid": 46,
+      "dsl": 39,
+      "iptv": 19,
+      "uydu": 8,
+      "akilliCihaz": 67,
+      "digerCihaz": 67,
+      "mobil": 298
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 224,
+      "prepaid": 41,
+      "dsl": 38,
+      "iptv": 23,
+      "uydu": 7,
+      "akilliCihaz": 62,
+      "digerCihaz": 78,
+      "mobil": 265
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 176,
+      "prepaid": 79,
+      "dsl": 53,
+      "iptv": 21,
+      "uydu": 8,
+      "akilliCihaz": 83,
+      "digerCihaz": 64,
+      "mobil": 255
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 319,
+      "prepaid": 58,
+      "dsl": 42,
+      "iptv": 29,
+      "uydu": 3,
+      "akilliCihaz": 81,
+      "digerCihaz": 53,
+      "mobil": 377
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 301,
+      "prepaid": 145,
+      "dsl": 55,
+      "iptv": 26,
+      "uydu": 8,
+      "akilliCihaz": 111,
+      "digerCihaz": 106,
+      "mobil": 446
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 159,
+      "prepaid": 231,
+      "dsl": 68,
+      "iptv": 21,
+      "uydu": 9,
+      "akilliCihaz": 76,
+      "digerCihaz": 56,
+      "mobil": 390
+     }
+    },
+    {
+     "code": "4100776",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 225,
+      "prepaid": 40,
+      "dsl": 43,
+      "iptv": 25,
+      "uydu": 13,
+      "akilliCihaz": 58,
+      "digerCihaz": 79,
+      "mobil": 265
+     }
+    },
+    {
+     "code": "4100778",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 302,
+      "prepaid": 50,
+      "dsl": 56,
+      "iptv": 32,
+      "uydu": 7,
+      "akilliCihaz": 90,
+      "digerCihaz": 131,
+      "mobil": 352
+     }
+    },
+    {
+     "code": "4100781",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 101,
+      "prepaid": 374,
+      "dsl": 89,
+      "iptv": 14,
+      "uydu": 18,
+      "akilliCihaz": 91,
+      "digerCihaz": 71,
+      "mobil": 475
+     }
+    },
+    {
+     "code": "4100784",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 225,
+      "prepaid": 28,
+      "dsl": 45,
+      "iptv": 19,
+      "uydu": 8,
+      "akilliCihaz": 55,
+      "digerCihaz": 75,
+      "mobil": 253
+     }
+    },
+    {
+     "code": "4100785",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 220,
+      "prepaid": 66,
+      "dsl": 58,
+      "iptv": 34,
+      "uydu": 12,
+      "akilliCihaz": 60,
+      "digerCihaz": 91,
+      "mobil": 286
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 129,
+      "prepaid": 94,
+      "dsl": 146,
+      "iptv": 48,
+      "uydu": 6,
+      "akilliCihaz": 33,
+      "digerCihaz": 11,
+      "mobil": 223
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 211,
+      "prepaid": 129,
+      "dsl": 58,
+      "iptv": 36,
+      "uydu": 7,
+      "akilliCihaz": 102,
+      "digerCihaz": 81,
+      "mobil": 340
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 122016,
+    "prepaid": 63279,
+    "dsl": 25082,
+    "iptv": 12382,
+    "uydu": 6301,
+    "akilliCihaz": 36857,
+    "digerCihaz": 36513,
+    "mobil": 185295
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Nisan 2026.xlsx"
+  },
+  {
+   "period": "2025-01",
+   "date": "2025-01-31",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK 0 BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 385,
+      "prepaid": 295,
+      "dsl": 77,
+      "iptv": 36,
+      "uydu": 5,
+      "akilliCihaz": 41,
+      "digerCihaz": 53,
+      "mobil": 680
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ0KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 448,
+      "prepaid": 79,
+      "dsl": 76,
+      "iptv": 41,
+      "uydu": 0,
+      "akilliCihaz": 42,
+      "digerCihaz": 34,
+      "mobil": 527
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 295,
+      "prepaid": 693,
+      "dsl": 104,
+      "iptv": 39,
+      "uydu": 3,
+      "akilliCihaz": 48,
+      "digerCihaz": 41,
+      "mobil": 988
+     }
+    },
+    {
+     "code": "1500005",
+     "name": "TİTİZ İLET.BİLG.MÜH.GÜV.SİS.TEM.GID.SAN.VE TİC. LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 382,
+      "prepaid": 88,
+      "dsl": 56,
+      "iptv": 23,
+      "uydu": 1,
+      "akilliCihaz": 59,
+      "digerCihaz": 33,
+      "mobil": 470
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN0BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 323,
+      "prepaid": 399,
+      "dsl": 108,
+      "iptv": 34,
+      "uydu": 5,
+      "akilliCihaz": 62,
+      "digerCihaz": 57,
+      "mobil": 722
+     }
+    },
+    {
+     "code": "4040801",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 229,
+      "prepaid": 74,
+      "dsl": 54,
+      "iptv": 36,
+      "uydu": 2,
+      "akilliCihaz": 113,
+      "digerCihaz": 66,
+      "mobil": 303
+     }
+    },
+    {
+     "code": "4040802",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 282,
+      "prepaid": 149,
+      "dsl": 75,
+      "iptv": 39,
+      "uydu": 9,
+      "akilliCihaz": 135,
+      "digerCihaz": 78,
+      "mobil": 431
+     }
+    },
+    {
+     "code": "4040895",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 231,
+      "prepaid": 111,
+      "dsl": 48,
+      "iptv": 23,
+      "uydu": 22,
+      "akilliCihaz": 119,
+      "digerCihaz": 104,
+      "mobil": 342
+     }
+    },
+    {
+     "code": "4050907",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 366,
+      "prepaid": 187,
+      "dsl": 145,
+      "iptv": 33,
+      "uydu": 23,
+      "akilliCihaz": 128,
+      "digerCihaz": 85,
+      "mobil": 553
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 430,
+      "prepaid": 199,
+      "dsl": 66,
+      "iptv": 24,
+      "uydu": 11,
+      "akilliCihaz": 99,
+      "digerCihaz": 90,
+      "mobil": 629
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 233,
+      "prepaid": 292,
+      "dsl": 51,
+      "iptv": 9,
+      "uydu": 31,
+      "akilliCihaz": 177,
+      "digerCihaz": 262,
+      "mobil": 525
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIRTASIYE INTER.HIZ.ILET.VE TİC.LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 96,
+      "prepaid": 277,
+      "dsl": 80,
+      "iptv": 41,
+      "uydu": 0,
+      "akilliCihaz": 42,
+      "digerCihaz": 39,
+      "mobil": 373
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 212,
+      "prepaid": 145,
+      "dsl": 40,
+      "iptv": 15,
+      "uydu": 27,
+      "akilliCihaz": 113,
+      "digerCihaz": 179,
+      "mobil": 357
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 578,
+      "prepaid": 100,
+      "dsl": 83,
+      "iptv": 18,
+      "uydu": 30,
+      "akilliCihaz": 206,
+      "digerCihaz": 319,
+      "mobil": 678
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 192,
+      "prepaid": 120,
+      "dsl": 51,
+      "iptv": 26,
+      "uydu": 2,
+      "akilliCihaz": 72,
+      "digerCihaz": 42,
+      "mobil": 312
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 110,
+      "prepaid": 159,
+      "dsl": 54,
+      "iptv": 26,
+      "uydu": 3,
+      "akilliCihaz": 38,
+      "digerCihaz": 54,
+      "mobil": 269
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 148,
+      "prepaid": 134,
+      "dsl": 41,
+      "iptv": 11,
+      "uydu": 10,
+      "akilliCihaz": 91,
+      "digerCihaz": 56,
+      "mobil": 282
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 437,
+      "prepaid": 200,
+      "dsl": 73,
+      "iptv": 31,
+      "uydu": 1,
+      "akilliCihaz": 100,
+      "digerCihaz": 200,
+      "mobil": 637
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 97,
+      "prepaid": 85,
+      "dsl": 23,
+      "iptv": 16,
+      "uydu": 0,
+      "akilliCihaz": 47,
+      "digerCihaz": 178,
+      "mobil": 182
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 139,
+      "prepaid": 1032,
+      "dsl": 178,
+      "iptv": 66,
+      "uydu": 3,
+      "akilliCihaz": 29,
+      "digerCihaz": 23,
+      "mobil": 1171
+     }
+    },
+    {
+     "code": "7000447",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 259,
+      "prepaid": 92,
+      "dsl": 68,
+      "iptv": 25,
+      "uydu": 9,
+      "akilliCihaz": 117,
+      "digerCihaz": 52,
+      "mobil": 351
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 417,
+      "prepaid": 194,
+      "dsl": 71,
+      "iptv": 46,
+      "uydu": 2,
+      "akilliCihaz": 71,
+      "digerCihaz": 240,
+      "mobil": 611
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 112297,
+    "prepaid": 123146,
+    "dsl": 33624,
+    "iptv": 12136,
+    "uydu": 8378,
+    "akilliCihaz": 34832,
+    "digerCihaz": 35098,
+    "mobil": 235443
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Ocak 2025.xlsx"
+  },
+  {
+   "period": "2026-01",
+   "date": "2026-01-31",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 291,
+      "prepaid": 141,
+      "dsl": 50,
+      "iptv": 25,
+      "uydu": 8,
+      "akilliCihaz": 55,
+      "digerCihaz": 87,
+      "mobil": 432
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 164,
+      "prepaid": 56,
+      "dsl": 31,
+      "iptv": 12,
+      "uydu": 5,
+      "akilliCihaz": 31,
+      "digerCihaz": 27,
+      "mobil": 220
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 282,
+      "prepaid": 40,
+      "dsl": 53,
+      "iptv": 28,
+      "uydu": 3,
+      "akilliCihaz": 37,
+      "digerCihaz": 25,
+      "mobil": 322
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 227,
+      "prepaid": 204,
+      "dsl": 66,
+      "iptv": 22,
+      "uydu": 15,
+      "akilliCihaz": 80,
+      "digerCihaz": 107,
+      "mobil": 431
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 395,
+      "prepaid": 291,
+      "dsl": 57,
+      "iptv": 34,
+      "uydu": 8,
+      "akilliCihaz": 125,
+      "digerCihaz": 104,
+      "mobil": 686
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 210,
+      "prepaid": 160,
+      "dsl": 50,
+      "iptv": 26,
+      "uydu": 23,
+      "akilliCihaz": 155,
+      "digerCihaz": 195,
+      "mobil": 370
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 184,
+      "prepaid": 122,
+      "dsl": 65,
+      "iptv": 44,
+      "uydu": 8,
+      "akilliCihaz": 61,
+      "digerCihaz": 75,
+      "mobil": 306
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 211,
+      "prepaid": 100,
+      "dsl": 49,
+      "iptv": 22,
+      "uydu": 12,
+      "akilliCihaz": 169,
+      "digerCihaz": 84,
+      "mobil": 311
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 567,
+      "prepaid": 132,
+      "dsl": 85,
+      "iptv": 47,
+      "uydu": 16,
+      "akilliCihaz": 196,
+      "digerCihaz": 145,
+      "mobil": 699
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 159,
+      "prepaid": 174,
+      "dsl": 54,
+      "iptv": 28,
+      "uydu": 9,
+      "akilliCihaz": 106,
+      "digerCihaz": 80,
+      "mobil": 333
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 170,
+      "prepaid": 109,
+      "dsl": 26,
+      "iptv": 18,
+      "uydu": 9,
+      "akilliCihaz": 62,
+      "digerCihaz": 59,
+      "mobil": 279
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 205,
+      "prepaid": 122,
+      "dsl": 71,
+      "iptv": 43,
+      "uydu": 7,
+      "akilliCihaz": 121,
+      "digerCihaz": 78,
+      "mobil": 327
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 320,
+      "prepaid": 83,
+      "dsl": 33,
+      "iptv": 21,
+      "uydu": 3,
+      "akilliCihaz": 100,
+      "digerCihaz": 35,
+      "mobil": 403
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 277,
+      "prepaid": 174,
+      "dsl": 71,
+      "iptv": 42,
+      "uydu": 6,
+      "akilliCihaz": 127,
+      "digerCihaz": 85,
+      "mobil": 451
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 269,
+      "prepaid": 81,
+      "dsl": 51,
+      "iptv": 14,
+      "uydu": 8,
+      "akilliCihaz": 56,
+      "digerCihaz": 56,
+      "mobil": 350
+     }
+    },
+    {
+     "code": "4100776",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 181,
+      "prepaid": 101,
+      "dsl": 28,
+      "iptv": 24,
+      "uydu": 13,
+      "akilliCihaz": 59,
+      "digerCihaz": 93,
+      "mobil": 282
+     }
+    },
+    {
+     "code": "4100778",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 253,
+      "prepaid": 113,
+      "dsl": 78,
+      "iptv": 45,
+      "uydu": 6,
+      "akilliCihaz": 109,
+      "digerCihaz": 64,
+      "mobil": 366
+     }
+    },
+    {
+     "code": "4100781",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 202,
+      "prepaid": 328,
+      "dsl": 104,
+      "iptv": 35,
+      "uydu": 10,
+      "akilliCihaz": 123,
+      "digerCihaz": 54,
+      "mobil": 530
+     }
+    },
+    {
+     "code": "4100784",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 188,
+      "prepaid": 74,
+      "dsl": 43,
+      "iptv": 26,
+      "uydu": 12,
+      "akilliCihaz": 71,
+      "digerCihaz": 120,
+      "mobil": 262
+     }
+    },
+    {
+     "code": "4100785",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 157,
+      "prepaid": 73,
+      "dsl": 45,
+      "iptv": 20,
+      "uydu": 14,
+      "akilliCihaz": 62,
+      "digerCihaz": 101,
+      "mobil": 230
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 136,
+      "prepaid": 173,
+      "dsl": 239,
+      "iptv": 93,
+      "uydu": 5,
+      "akilliCihaz": 44,
+      "digerCihaz": 11,
+      "mobil": 309
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 253,
+      "prepaid": 163,
+      "dsl": 60,
+      "iptv": 36,
+      "uydu": 7,
+      "akilliCihaz": 79,
+      "digerCihaz": 44,
+      "mobil": 416
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 122250,
+    "prepaid": 67008,
+    "dsl": 28810,
+    "iptv": 13605,
+    "uydu": 5638,
+    "akilliCihaz": 41604,
+    "digerCihaz": 33442,
+    "mobil": 189258
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Ocak 2026.xlsx"
+  },
+  {
+   "period": "2025-07",
+   "date": "2025-07-31",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 422,
+      "prepaid": 75,
+      "dsl": 44,
+      "iptv": 14,
+      "uydu": 7,
+      "akilliCihaz": 41,
+      "digerCihaz": 20,
+      "mobil": 497
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 447,
+      "prepaid": 100,
+      "dsl": 60,
+      "iptv": 18,
+      "uydu": 7,
+      "akilliCihaz": 51,
+      "digerCihaz": 30,
+      "mobil": 547
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 382,
+      "prepaid": 181,
+      "dsl": 88,
+      "iptv": 31,
+      "uydu": 4,
+      "akilliCihaz": 54,
+      "digerCihaz": 31,
+      "mobil": 563
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 380,
+      "prepaid": 262,
+      "dsl": 92,
+      "iptv": 39,
+      "uydu": 0,
+      "akilliCihaz": 95,
+      "digerCihaz": 122,
+      "mobil": 642
+     }
+    },
+    {
+     "code": "4040801",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 330,
+      "prepaid": 63,
+      "dsl": 49,
+      "iptv": 16,
+      "uydu": 12,
+      "akilliCihaz": 94,
+      "digerCihaz": 48,
+      "mobil": 393
+     }
+    },
+    {
+     "code": "4040802",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 384,
+      "prepaid": 69,
+      "dsl": 78,
+      "iptv": 29,
+      "uydu": 6,
+      "akilliCihaz": 103,
+      "digerCihaz": 46,
+      "mobil": 453
+     }
+    },
+    {
+     "code": "4040895",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 331,
+      "prepaid": 72,
+      "dsl": 64,
+      "iptv": 28,
+      "uydu": 11,
+      "akilliCihaz": 96,
+      "digerCihaz": 76,
+      "mobil": 403
+     }
+    },
+    {
+     "code": "4050907",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 597,
+      "prepaid": 186,
+      "dsl": 117,
+      "iptv": 38,
+      "uydu": 6,
+      "akilliCihaz": 97,
+      "digerCihaz": 53,
+      "mobil": 783
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 625,
+      "prepaid": 239,
+      "dsl": 54,
+      "iptv": 25,
+      "uydu": 14,
+      "akilliCihaz": 68,
+      "digerCihaz": 74,
+      "mobil": 864
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 520,
+      "prepaid": 96,
+      "dsl": 56,
+      "iptv": 14,
+      "uydu": 14,
+      "akilliCihaz": 159,
+      "digerCihaz": 35,
+      "mobil": 616
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 344,
+      "prepaid": 249,
+      "dsl": 83,
+      "iptv": 39,
+      "uydu": 10,
+      "akilliCihaz": 66,
+      "digerCihaz": 37,
+      "mobil": 593
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 322,
+      "prepaid": 34,
+      "dsl": 64,
+      "iptv": 15,
+      "uydu": 18,
+      "akilliCihaz": 128,
+      "digerCihaz": 44,
+      "mobil": 356
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 816,
+      "prepaid": 49,
+      "dsl": 89,
+      "iptv": 25,
+      "uydu": 22,
+      "akilliCihaz": 184,
+      "digerCihaz": 108,
+      "mobil": 865
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 327,
+      "prepaid": 131,
+      "dsl": 58,
+      "iptv": 23,
+      "uydu": 9,
+      "akilliCihaz": 54,
+      "digerCihaz": 51,
+      "mobil": 458
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 235,
+      "prepaid": 89,
+      "dsl": 48,
+      "iptv": 18,
+      "uydu": 8,
+      "akilliCihaz": 53,
+      "digerCihaz": 45,
+      "mobil": 324
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 394,
+      "prepaid": 44,
+      "dsl": 61,
+      "iptv": 14,
+      "uydu": 14,
+      "akilliCihaz": 90,
+      "digerCihaz": 58,
+      "mobil": 438
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 488,
+      "prepaid": 114,
+      "dsl": 37,
+      "iptv": 15,
+      "uydu": 7,
+      "akilliCihaz": 113,
+      "digerCihaz": 122,
+      "mobil": 602
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 358,
+      "prepaid": 142,
+      "dsl": 66,
+      "iptv": 21,
+      "uydu": 6,
+      "akilliCihaz": 104,
+      "digerCihaz": 64,
+      "mobil": 500
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 393,
+      "prepaid": 322,
+      "dsl": 57,
+      "iptv": 27,
+      "uydu": 4,
+      "akilliCihaz": 37,
+      "digerCihaz": 12,
+      "mobil": 715
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 260,
+      "prepaid": 157,
+      "dsl": 161,
+      "iptv": 31,
+      "uydu": 7,
+      "akilliCihaz": 29,
+      "digerCihaz": 16,
+      "mobil": 417
+     }
+    },
+    {
+     "code": "7000447",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 356,
+      "prepaid": 39,
+      "dsl": 66,
+      "iptv": 29,
+      "uydu": 6,
+      "akilliCihaz": 90,
+      "digerCihaz": 46,
+      "mobil": 395
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 338,
+      "prepaid": 144,
+      "dsl": 44,
+      "iptv": 20,
+      "uydu": 5,
+      "akilliCihaz": 116,
+      "digerCihaz": 56,
+      "mobil": 482
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 197117,
+    "prepaid": 80013,
+    "dsl": 33090,
+    "iptv": 10909,
+    "uydu": 7011,
+    "akilliCihaz": 42893,
+    "digerCihaz": 27585,
+    "mobil": 277130
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Temmuz 2025.xlsx"
+  },
+  {
+   "period": "2026-07",
+   "date": "2026-07-31",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 194,
+      "prepaid": 144,
+      "dsl": 27,
+      "iptv": 20,
+      "uydu": 6,
+      "akilliCihaz": 49,
+      "digerCihaz": 53,
+      "mobil": 338
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 94,
+      "prepaid": 211,
+      "dsl": 28,
+      "iptv": 14,
+      "uydu": 5,
+      "akilliCihaz": 44,
+      "digerCihaz": 24,
+      "mobil": 305
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 185,
+      "prepaid": 103,
+      "dsl": 45,
+      "iptv": 26,
+      "uydu": 7,
+      "akilliCihaz": 44,
+      "digerCihaz": 41,
+      "mobil": 288
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 147,
+      "prepaid": 273,
+      "dsl": 59,
+      "iptv": 30,
+      "uydu": 9,
+      "akilliCihaz": 98,
+      "digerCihaz": 99,
+      "mobil": 420
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 279,
+      "prepaid": 192,
+      "dsl": 63,
+      "iptv": 30,
+      "uydu": 7,
+      "akilliCihaz": 78,
+      "digerCihaz": 101,
+      "mobil": 471
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 81,
+      "prepaid": 314,
+      "dsl": 60,
+      "iptv": 36,
+      "uydu": 16,
+      "akilliCihaz": 132,
+      "digerCihaz": 98,
+      "mobil": 395
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 88,
+      "prepaid": 320,
+      "dsl": 41,
+      "iptv": 17,
+      "uydu": 10,
+      "akilliCihaz": 61,
+      "digerCihaz": 62,
+      "mobil": 408
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 74,
+      "prepaid": 200,
+      "dsl": 37,
+      "iptv": 20,
+      "uydu": 10,
+      "akilliCihaz": 56,
+      "digerCihaz": 64,
+      "mobil": 274
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 194,
+      "prepaid": 469,
+      "dsl": 69,
+      "iptv": 34,
+      "uydu": 12,
+      "akilliCihaz": 107,
+      "digerCihaz": 157,
+      "mobil": 663
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 168,
+      "prepaid": 69,
+      "dsl": 42,
+      "iptv": 18,
+      "uydu": 4,
+      "akilliCihaz": 47,
+      "digerCihaz": 43,
+      "mobil": 237
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 139,
+      "prepaid": 147,
+      "dsl": 37,
+      "iptv": 29,
+      "uydu": 6,
+      "akilliCihaz": 73,
+      "digerCihaz": 58,
+      "mobil": 286
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 218,
+      "prepaid": 114,
+      "dsl": 53,
+      "iptv": 37,
+      "uydu": 15,
+      "akilliCihaz": 165,
+      "digerCihaz": 130,
+      "mobil": 332
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 175,
+      "prepaid": 140,
+      "dsl": 34,
+      "iptv": 24,
+      "uydu": 7,
+      "akilliCihaz": 193,
+      "digerCihaz": 101,
+      "mobil": 315
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 114,
+      "prepaid": 421,
+      "dsl": 49,
+      "iptv": 25,
+      "uydu": 10,
+      "akilliCihaz": 73,
+      "digerCihaz": 35,
+      "mobil": 535
+     }
+    },
+    {
+     "code": "4100776",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 179,
+      "prepaid": 92,
+      "dsl": 47,
+      "iptv": 18,
+      "uydu": 6,
+      "akilliCihaz": 41,
+      "digerCihaz": 68,
+      "mobil": 271
+     }
+    },
+    {
+     "code": "4100778",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 237,
+      "prepaid": 130,
+      "dsl": 92,
+      "iptv": 28,
+      "uydu": 7,
+      "akilliCihaz": 215,
+      "digerCihaz": 132,
+      "mobil": 367
+     }
+    },
+    {
+     "code": "4100781",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 82,
+      "prepaid": 419,
+      "dsl": 98,
+      "iptv": 28,
+      "uydu": 7,
+      "akilliCihaz": 98,
+      "digerCihaz": 46,
+      "mobil": 501
+     }
+    },
+    {
+     "code": "4100784",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 155,
+      "prepaid": 128,
+      "dsl": 41,
+      "iptv": 20,
+      "uydu": 8,
+      "akilliCihaz": 75,
+      "digerCihaz": 92,
+      "mobil": 283
+     }
+    },
+    {
+     "code": "4100785",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 189,
+      "prepaid": 90,
+      "dsl": 56,
+      "iptv": 37,
+      "uydu": 9,
+      "akilliCihaz": 70,
+      "digerCihaz": 124,
+      "mobil": 279
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 108,
+      "prepaid": 160,
+      "dsl": 134,
+      "iptv": 35,
+      "uydu": 5,
+      "akilliCihaz": 28,
+      "digerCihaz": 10,
+      "mobil": 268
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 155,
+      "prepaid": 146,
+      "dsl": 43,
+      "iptv": 26,
+      "uydu": 4,
+      "akilliCihaz": 202,
+      "digerCihaz": 114,
+      "mobil": 301
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 88250,
+    "prepaid": 91674,
+    "dsl": 21872,
+    "iptv": 10497,
+    "uydu": 5099,
+    "akilliCihaz": 38667,
+    "digerCihaz": 36788,
+    "mobil": 179924
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Temmuz 2026.xlsx"
+  },
+  {
+   "period": "2025-02",
+   "date": "2025-02-28",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK 0 BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 181,
+      "prepaid": 211,
+      "dsl": 56,
+      "iptv": 23,
+      "uydu": 9,
+      "akilliCihaz": 45,
+      "digerCihaz": 39,
+      "mobil": 392
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ0KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 338,
+      "prepaid": 60,
+      "dsl": 55,
+      "iptv": 30,
+      "uydu": 0,
+      "akilliCihaz": 40,
+      "digerCihaz": 24,
+      "mobil": 398
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 243,
+      "prepaid": 169,
+      "dsl": 63,
+      "iptv": 26,
+      "uydu": 5,
+      "akilliCihaz": 43,
+      "digerCihaz": 27,
+      "mobil": 412
+     }
+    },
+    {
+     "code": "1500005",
+     "name": "TİTİZ İLET.BİLG.MÜH.GÜV.SİS.TEM.GID.SAN.VE TİC. LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 224,
+      "prepaid": 143,
+      "dsl": 49,
+      "iptv": 31,
+      "uydu": 3,
+      "akilliCihaz": 55,
+      "digerCihaz": 16,
+      "mobil": 367
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN0BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 180,
+      "prepaid": 312,
+      "dsl": 89,
+      "iptv": 38,
+      "uydu": 0,
+      "akilliCihaz": 75,
+      "digerCihaz": 63,
+      "mobil": 492
+     }
+    },
+    {
+     "code": "4040801",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 193,
+      "prepaid": 56,
+      "dsl": 44,
+      "iptv": 20,
+      "uydu": 18,
+      "akilliCihaz": 51,
+      "digerCihaz": 84,
+      "mobil": 249
+     }
+    },
+    {
+     "code": "4040802",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 257,
+      "prepaid": 87,
+      "dsl": 75,
+      "iptv": 35,
+      "uydu": 6,
+      "akilliCihaz": 68,
+      "digerCihaz": 74,
+      "mobil": 344
+     }
+    },
+    {
+     "code": "4040895",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 222,
+      "prepaid": 44,
+      "dsl": 63,
+      "iptv": 30,
+      "uydu": 12,
+      "akilliCihaz": 68,
+      "digerCihaz": 87,
+      "mobil": 266
+     }
+    },
+    {
+     "code": "4050907",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 283,
+      "prepaid": 164,
+      "dsl": 117,
+      "iptv": 30,
+      "uydu": 20,
+      "akilliCihaz": 83,
+      "digerCihaz": 98,
+      "mobil": 447
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 277,
+      "prepaid": 183,
+      "dsl": 49,
+      "iptv": 21,
+      "uydu": 13,
+      "akilliCihaz": 62,
+      "digerCihaz": 80,
+      "mobil": 460
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 237,
+      "prepaid": 146,
+      "dsl": 42,
+      "iptv": 17,
+      "uydu": 26,
+      "akilliCihaz": 80,
+      "digerCihaz": 290,
+      "mobil": 383
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIRTASIYE INTER.HIZ.ILET.VE TİC.LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 69,
+      "prepaid": 267,
+      "dsl": 71,
+      "iptv": 34,
+      "uydu": 0,
+      "akilliCihaz": 49,
+      "digerCihaz": 54,
+      "mobil": 336
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 127,
+      "prepaid": 177,
+      "dsl": 43,
+      "iptv": 6,
+      "uydu": 44,
+      "akilliCihaz": 135,
+      "digerCihaz": 81,
+      "mobil": 304
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 239,
+      "prepaid": 243,
+      "dsl": 80,
+      "iptv": 13,
+      "uydu": 33,
+      "akilliCihaz": 159,
+      "digerCihaz": 301,
+      "mobil": 482
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 160,
+      "prepaid": 114,
+      "dsl": 36,
+      "iptv": 19,
+      "uydu": 3,
+      "akilliCihaz": 66,
+      "digerCihaz": 96,
+      "mobil": 274
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 179,
+      "prepaid": 61,
+      "dsl": 51,
+      "iptv": 24,
+      "uydu": 0,
+      "akilliCihaz": 42,
+      "digerCihaz": 53,
+      "mobil": 240
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 145,
+      "prepaid": 104,
+      "dsl": 47,
+      "iptv": 17,
+      "uydu": 6,
+      "akilliCihaz": 68,
+      "digerCihaz": 78,
+      "mobil": 249
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 291,
+      "prepaid": 86,
+      "dsl": 35,
+      "iptv": 14,
+      "uydu": 8,
+      "akilliCihaz": 85,
+      "digerCihaz": 101,
+      "mobil": 377
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 216,
+      "prepaid": 95,
+      "dsl": 41,
+      "iptv": 11,
+      "uydu": 4,
+      "akilliCihaz": 90,
+      "digerCihaz": 105,
+      "mobil": 311
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 84,
+      "prepaid": 281,
+      "dsl": 140,
+      "iptv": 37,
+      "uydu": 8,
+      "akilliCihaz": 30,
+      "digerCihaz": 18,
+      "mobil": 365
+     }
+    },
+    {
+     "code": "7000447",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 193,
+      "prepaid": 88,
+      "dsl": 57,
+      "iptv": 25,
+      "uydu": 12,
+      "akilliCihaz": 48,
+      "digerCihaz": 66,
+      "mobil": 281
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 240,
+      "prepaid": 76,
+      "dsl": 53,
+      "iptv": 23,
+      "uydu": 10,
+      "akilliCihaz": 75,
+      "digerCihaz": 98,
+      "mobil": 316
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 96624,
+    "prepaid": 86626,
+    "dsl": 29466,
+    "iptv": 10115,
+    "uydu": 9612,
+    "akilliCihaz": 33148,
+    "digerCihaz": 29361,
+    "mobil": 183250
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Şubat 2025.xlsx"
+  },
+  {
+   "period": "2026-02",
+   "date": "2026-02-28",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 172,
+      "prepaid": 173,
+      "dsl": 41,
+      "iptv": 17,
+      "uydu": 7,
+      "akilliCihaz": 54,
+      "digerCihaz": 45,
+      "mobil": 345
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 136,
+      "prepaid": 117,
+      "dsl": 26,
+      "iptv": 14,
+      "uydu": 5,
+      "akilliCihaz": 29,
+      "digerCihaz": 29,
+      "mobil": 253
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 283,
+      "prepaid": 67,
+      "dsl": 45,
+      "iptv": 25,
+      "uydu": 1,
+      "akilliCihaz": 42,
+      "digerCihaz": 48,
+      "mobil": 350
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 192,
+      "prepaid": 201,
+      "dsl": 49,
+      "iptv": 22,
+      "uydu": 12,
+      "akilliCihaz": 84,
+      "digerCihaz": 105,
+      "mobil": 393
+     }
+    },
+    {
+     "code": "4040895",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 0,
+      "prepaid": 0,
+      "dsl": 1,
+      "iptv": 1,
+      "uydu": 0,
+      "akilliCihaz": 0,
+      "digerCihaz": 0,
+      "mobil": 0
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 263,
+      "prepaid": 377,
+      "dsl": 50,
+      "iptv": 27,
+      "uydu": 5,
+      "akilliCihaz": 73,
+      "digerCihaz": 96,
+      "mobil": 640
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 120,
+      "prepaid": 343,
+      "dsl": 71,
+      "iptv": 35,
+      "uydu": 19,
+      "akilliCihaz": 224,
+      "digerCihaz": 99,
+      "mobil": 463
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 105,
+      "prepaid": 260,
+      "dsl": 95,
+      "iptv": 31,
+      "uydu": 6,
+      "akilliCihaz": 60,
+      "digerCihaz": 77,
+      "mobil": 365
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 140,
+      "prepaid": 116,
+      "dsl": 27,
+      "iptv": 10,
+      "uydu": 10,
+      "akilliCihaz": 91,
+      "digerCihaz": 68,
+      "mobil": 256
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 489,
+      "prepaid": 132,
+      "dsl": 79,
+      "iptv": 48,
+      "uydu": 14,
+      "akilliCihaz": 129,
+      "digerCihaz": 145,
+      "mobil": 621
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 137,
+      "prepaid": 171,
+      "dsl": 43,
+      "iptv": 20,
+      "uydu": 6,
+      "akilliCihaz": 59,
+      "digerCihaz": 77,
+      "mobil": 308
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 191,
+      "prepaid": 37,
+      "dsl": 25,
+      "iptv": 20,
+      "uydu": 6,
+      "akilliCihaz": 59,
+      "digerCihaz": 84,
+      "mobil": 228
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 83,
+      "prepaid": 225,
+      "dsl": 48,
+      "iptv": 18,
+      "uydu": 10,
+      "akilliCihaz": 72,
+      "digerCihaz": 80,
+      "mobil": 308
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 237,
+      "prepaid": 55,
+      "dsl": 23,
+      "iptv": 14,
+      "uydu": 6,
+      "akilliCihaz": 108,
+      "digerCihaz": 51,
+      "mobil": 292
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 229,
+      "prepaid": 132,
+      "dsl": 42,
+      "iptv": 27,
+      "uydu": 4,
+      "akilliCihaz": 131,
+      "digerCihaz": 64,
+      "mobil": 361
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 149,
+      "prepaid": 232,
+      "dsl": 53,
+      "iptv": 17,
+      "uydu": 7,
+      "akilliCihaz": 52,
+      "digerCihaz": 40,
+      "mobil": 381
+     }
+    },
+    {
+     "code": "4100776",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 201,
+      "prepaid": 51,
+      "dsl": 24,
+      "iptv": 19,
+      "uydu": 12,
+      "akilliCihaz": 51,
+      "digerCihaz": 75,
+      "mobil": 252
+     }
+    },
+    {
+     "code": "4100778",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 281,
+      "prepaid": 95,
+      "dsl": 54,
+      "iptv": 29,
+      "uydu": 10,
+      "akilliCihaz": 115,
+      "digerCihaz": 106,
+      "mobil": 376
+     }
+    },
+    {
+     "code": "4100781",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 70,
+      "prepaid": 497,
+      "dsl": 112,
+      "iptv": 27,
+      "uydu": 12,
+      "akilliCihaz": 74,
+      "digerCihaz": 67,
+      "mobil": 567
+     }
+    },
+    {
+     "code": "4100784",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 96,
+      "prepaid": 176,
+      "dsl": 36,
+      "iptv": 20,
+      "uydu": 7,
+      "akilliCihaz": 65,
+      "digerCihaz": 91,
+      "mobil": 272
+     }
+    },
+    {
+     "code": "4100785",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 112,
+      "prepaid": 166,
+      "dsl": 41,
+      "iptv": 20,
+      "uydu": 8,
+      "akilliCihaz": 58,
+      "digerCihaz": 105,
+      "mobil": 278
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 117,
+      "prepaid": 134,
+      "dsl": 167,
+      "iptv": 53,
+      "uydu": 5,
+      "akilliCihaz": 27,
+      "digerCihaz": 11,
+      "mobil": 251
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 174,
+      "prepaid": 123,
+      "dsl": 55,
+      "iptv": 25,
+      "uydu": 9,
+      "akilliCihaz": 127,
+      "digerCihaz": 84,
+      "mobil": 297
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 105026,
+    "prepaid": 71711,
+    "dsl": 23493,
+    "iptv": 10724,
+    "uydu": 5046,
+    "akilliCihaz": 33651,
+    "digerCihaz": 30454,
+    "mobil": 176737
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Şubat 2026.xlsx"
+  },
+  {
+   "period": "2026-10",
+   "date": "2026-10-12",
+   "closed": false,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK - BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 55,
+      "prepaid": 37,
+      "dsl": 12,
+      "iptv": 9,
+      "uydu": 2,
+      "akilliCihaz": 19,
+      "digerCihaz": 10,
+      "mobil": 92
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ-KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 36,
+      "prepaid": 86,
+      "dsl": 15,
+      "iptv": 11,
+      "uydu": 0,
+      "akilliCihaz": 17,
+      "digerCihaz": 7,
+      "mobil": 122
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 69,
+      "prepaid": 27,
+      "dsl": 18,
+      "iptv": 11,
+      "uydu": 0,
+      "akilliCihaz": 19,
+      "digerCihaz": 10,
+      "mobil": 96
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 43,
+      "prepaid": 82,
+      "dsl": 21,
+      "iptv": 5,
+      "uydu": 3,
+      "akilliCihaz": 22,
+      "digerCihaz": 17,
+      "mobil": 125
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 85,
+      "prepaid": 93,
+      "dsl": 13,
+      "iptv": 6,
+      "uydu": 0,
+      "akilliCihaz": 27,
+      "digerCihaz": 22,
+      "mobil": 178
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 80,
+      "prepaid": 68,
+      "dsl": 18,
+      "iptv": 15,
+      "uydu": 14,
+      "akilliCihaz": 38,
+      "digerCihaz": 5,
+      "mobil": 148
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 29,
+      "prepaid": 81,
+      "dsl": 18,
+      "iptv": 12,
+      "uydu": 4,
+      "akilliCihaz": 15,
+      "digerCihaz": 18,
+      "mobil": 110
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 39,
+      "prepaid": 41,
+      "dsl": 9,
+      "iptv": 4,
+      "uydu": 8,
+      "akilliCihaz": 26,
+      "digerCihaz": 35,
+      "mobil": 80
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 93,
+      "prepaid": 165,
+      "dsl": 26,
+      "iptv": 25,
+      "uydu": 13,
+      "akilliCihaz": 37,
+      "digerCihaz": 63,
+      "mobil": 258
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 73,
+      "prepaid": 48,
+      "dsl": 6,
+      "iptv": 4,
+      "uydu": 2,
+      "akilliCihaz": 12,
+      "digerCihaz": 12,
+      "mobil": 121
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 65,
+      "prepaid": 36,
+      "dsl": 13,
+      "iptv": 4,
+      "uydu": 1,
+      "akilliCihaz": 16,
+      "digerCihaz": 8,
+      "mobil": 101
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 44,
+      "prepaid": 81,
+      "dsl": 15,
+      "iptv": 10,
+      "uydu": 2,
+      "akilliCihaz": 33,
+      "digerCihaz": 20,
+      "mobil": 125
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 94,
+      "prepaid": 46,
+      "dsl": 9,
+      "iptv": 8,
+      "uydu": 0,
+      "akilliCihaz": 72,
+      "digerCihaz": 37,
+      "mobil": 140
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 75,
+      "prepaid": 78,
+      "dsl": 25,
+      "iptv": 9,
+      "uydu": 0,
+      "akilliCihaz": 49,
+      "digerCihaz": 24,
+      "mobil": 153
+     }
+    },
+    {
+     "code": "4100760",
+     "name": "ÖZTÜRK GIDA KIR. İNTER. HİZ. İLET. İNŞ. MOT. ARAÇ. SAN.TİC.LTD.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 44,
+      "prepaid": 109,
+      "dsl": 12,
+      "iptv": 5,
+      "uydu": 4,
+      "akilliCihaz": 15,
+      "digerCihaz": 8,
+      "mobil": 153
+     }
+    },
+    {
+     "code": "4100776",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 67,
+      "prepaid": 48,
+      "dsl": 15,
+      "iptv": 11,
+      "uydu": 3,
+      "akilliCihaz": 16,
+      "digerCihaz": 19,
+      "mobil": 115
+     }
+    },
+    {
+     "code": "4100778",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 80,
+      "prepaid": 47,
+      "dsl": 38,
+      "iptv": 27,
+      "uydu": 1,
+      "akilliCihaz": 69,
+      "digerCihaz": 14,
+      "mobil": 127
+     }
+    },
+    {
+     "code": "4100781",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 50,
+      "prepaid": 154,
+      "dsl": 32,
+      "iptv": 15,
+      "uydu": 6,
+      "akilliCihaz": 26,
+      "digerCihaz": 14,
+      "mobil": 204
+     }
+    },
+    {
+     "code": "4100784",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 66,
+      "prepaid": 40,
+      "dsl": 15,
+      "iptv": 8,
+      "uydu": 5,
+      "akilliCihaz": 21,
+      "digerCihaz": 36,
+      "mobil": 106
+     }
+    },
+    {
+     "code": "4100785",
+     "name": "İBRAHİM BAKAN-BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 75,
+      "prepaid": 34,
+      "dsl": 18,
+      "iptv": 10,
+      "uydu": 2,
+      "akilliCihaz": 15,
+      "digerCihaz": 46,
+      "mobil": 109
+     }
+    },
+    {
+     "code": "4100990",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 67,
+      "prepaid": 53,
+      "dsl": 14,
+      "iptv": 7,
+      "uydu": 2,
+      "akilliCihaz": 28,
+      "digerCihaz": 10,
+      "mobil": 120
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 46,
+      "prepaid": 34,
+      "dsl": 40,
+      "iptv": 19,
+      "uydu": 5,
+      "akilliCihaz": 14,
+      "digerCihaz": 6,
+      "mobil": 80
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 88,
+      "prepaid": 27,
+      "dsl": 18,
+      "iptv": 14,
+      "uydu": 3,
+      "akilliCihaz": 75,
+      "digerCihaz": 14,
+      "mobil": 115
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 36310,
+    "prepaid": 31425,
+    "dsl": 9275,
+    "iptv": 4644,
+    "uydu": 2943,
+    "akilliCihaz": 11915,
+    "digerCihaz": 10690,
+    "mobil": 67735
+   },
+   "forecastFactor": 2.5833333333333335,
+   "sourceFile": "13EkimAnadolu GM Satış Raporu Saha.xlsx"
+  },
+  {
+   "period": "2025-03",
+   "date": "2025-03-31",
+   "closed": true,
+   "dealers": [
+    {
+     "code": "500733",
+     "name": "İBRAHİM BIYIK 0 BIYIKOĞLU İLETİŞİM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 273,
+      "prepaid": 161,
+      "dsl": 52,
+      "iptv": 22,
+      "uydu": 11,
+      "akilliCihaz": 44,
+      "digerCihaz": 21,
+      "mobil": 434
+     }
+    },
+    {
+     "code": "501699",
+     "name": "TAŞ0KA İLT. TLK.DAY. TÜK. GIDA VE İHT. MAD. TİC. VE SAN. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 380,
+      "prepaid": 47,
+      "dsl": 44,
+      "iptv": 20,
+      "uydu": 1,
+      "akilliCihaz": 37,
+      "digerCihaz": 21,
+      "mobil": 427
+     }
+    },
+    {
+     "code": "502046",
+     "name": "İLK İLETİŞİM HİZMETLERİ TİC. LTD. ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 344,
+      "prepaid": 84,
+      "dsl": 55,
+      "iptv": 21,
+      "uydu": 3,
+      "akilliCihaz": 47,
+      "digerCihaz": 29,
+      "mobil": 428
+     }
+    },
+    {
+     "code": "1500005",
+     "name": "TİTİZ İLET.BİLG.MÜH.GÜV.SİS.TEM.GID.SAN.VE TİC. LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 471,
+      "prepaid": 119,
+      "dsl": 48,
+      "iptv": 21,
+      "uydu": 2,
+      "akilliCihaz": 57,
+      "digerCihaz": 17,
+      "mobil": 590
+     }
+    },
+    {
+     "code": "4036313",
+     "name": "İBRAHİM BAKAN0BAKAN TELEKOMÜNİKASYON",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 352,
+      "prepaid": 187,
+      "dsl": 72,
+      "iptv": 34,
+      "uydu": 7,
+      "akilliCihaz": 79,
+      "digerCihaz": 115,
+      "mobil": 539
+     }
+    },
+    {
+     "code": "4040801",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 259,
+      "prepaid": 63,
+      "dsl": 32,
+      "iptv": 25,
+      "uydu": 8,
+      "akilliCihaz": 105,
+      "digerCihaz": 71,
+      "mobil": 322
+     }
+    },
+    {
+     "code": "4040802",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 336,
+      "prepaid": 53,
+      "dsl": 53,
+      "iptv": 34,
+      "uydu": 10,
+      "akilliCihaz": 137,
+      "digerCihaz": 76,
+      "mobil": 389
+     }
+    },
+    {
+     "code": "4040895",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 244,
+      "prepaid": 78,
+      "dsl": 48,
+      "iptv": 24,
+      "uydu": 15,
+      "akilliCihaz": 122,
+      "digerCihaz": 77,
+      "mobil": 322
+     }
+    },
+    {
+     "code": "4050907",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 416,
+      "prepaid": 165,
+      "dsl": 110,
+      "iptv": 32,
+      "uydu": 15,
+      "akilliCihaz": 144,
+      "digerCihaz": 77,
+      "mobil": 581
+     }
+    },
+    {
+     "code": "4052718",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 498,
+      "prepaid": 74,
+      "dsl": 62,
+      "iptv": 32,
+      "uydu": 1,
+      "akilliCihaz": 56,
+      "digerCihaz": 102,
+      "mobil": 572
+     }
+    },
+    {
+     "code": "4054927",
+     "name": "EYMEN İLETİŞİM HİZMETLERİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 343,
+      "prepaid": 115,
+      "dsl": 29,
+      "iptv": 9,
+      "uydu": 23,
+      "akilliCihaz": 113,
+      "digerCihaz": 186,
+      "mobil": 458
+     }
+    },
+    {
+     "code": "4057503",
+     "name": "ÖZTÜRK GIDA KIRTASIYE INTER.HIZ.ILET.VE TİC.LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 138,
+      "prepaid": 203,
+      "dsl": 62,
+      "iptv": 27,
+      "uydu": 3,
+      "akilliCihaz": 55,
+      "digerCihaz": 56,
+      "mobil": 341
+     }
+    },
+    {
+     "code": "4100087",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 185,
+      "prepaid": 147,
+      "dsl": 47,
+      "iptv": 10,
+      "uydu": 32,
+      "akilliCihaz": 140,
+      "digerCihaz": 24,
+      "mobil": 332
+     }
+    },
+    {
+     "code": "4100089",
+     "name": "KILAVUZLAR İLT. MOBILYA İNŞ. SAN. VE TIC. LTD. ŞTI",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 452,
+      "prepaid": 204,
+      "dsl": 81,
+      "iptv": 21,
+      "uydu": 30,
+      "akilliCihaz": 186,
+      "digerCihaz": 370,
+      "mobil": 656
+     }
+    },
+    {
+     "code": "4100170",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 258,
+      "prepaid": 52,
+      "dsl": 47,
+      "iptv": 12,
+      "uydu": 12,
+      "akilliCihaz": 68,
+      "digerCihaz": 142,
+      "mobil": 310
+     }
+    },
+    {
+     "code": "4100343",
+     "name": "YAĞMUROĞLU BİLİŞİM SANAYİ VE TİCARET LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 208,
+      "prepaid": 101,
+      "dsl": 43,
+      "iptv": 21,
+      "uydu": 6,
+      "akilliCihaz": 33,
+      "digerCihaz": 28,
+      "mobil": 309
+     }
+    },
+    {
+     "code": "4100641",
+     "name": "ASİS TELEKOMÜNİKASYON İLETİŞİM ORGANİZASYON DANIŞMANLIK LTD.ŞTİ.",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 238,
+      "prepaid": 23,
+      "dsl": 51,
+      "iptv": 20,
+      "uydu": 5,
+      "akilliCihaz": 68,
+      "digerCihaz": 95,
+      "mobil": 261
+     }
+    },
+    {
+     "code": "4100676",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 328,
+      "prepaid": 59,
+      "dsl": 47,
+      "iptv": 17,
+      "uydu": 4,
+      "akilliCihaz": 103,
+      "digerCihaz": 43,
+      "mobil": 387
+     }
+    },
+    {
+     "code": "4100729",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 276,
+      "prepaid": 28,
+      "dsl": 42,
+      "iptv": 16,
+      "uydu": 1,
+      "akilliCihaz": 94,
+      "digerCihaz": 9,
+      "mobil": 304
+     }
+    },
+    {
+     "code": "7000045",
+     "name": "İSA CUMHUR ÇIRAK/GÜL TELEKOM",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 156,
+      "prepaid": 232,
+      "dsl": 98,
+      "iptv": 23,
+      "uydu": 17,
+      "akilliCihaz": 28,
+      "digerCihaz": 30,
+      "mobil": 388
+     }
+    },
+    {
+     "code": "7000447",
+     "name": "2M İLETİŞİM HİZMETLERİ SAN.TİC.LTD.ŞTİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 254,
+      "prepaid": 71,
+      "dsl": 65,
+      "iptv": 25,
+      "uydu": 13,
+      "akilliCihaz": 88,
+      "digerCihaz": 72,
+      "mobil": 325
+     }
+    },
+    {
+     "code": "7100063",
+     "name": "PRİMETECH BİLİŞİM SANAYİ TİCARET LİMİTED ŞİRKETİ",
+     "region": "KUZEY ANADOLU",
+     "values": {
+      "postpaid": 329,
+      "prepaid": 42,
+      "dsl": 61,
+      "iptv": 17,
+      "uydu": 5,
+      "akilliCihaz": 94,
+      "digerCihaz": 36,
+      "mobil": 371
+     }
+    }
+   ],
+   "tr": {
+    "postpaid": 136181,
+    "prepaid": 73065,
+    "dsl": 27564,
+    "iptv": 9240,
+    "uydu": 9043,
+    "akilliCihaz": 36783,
+    "digerCihaz": 32929,
+    "mobil": 209246
+   },
+   "forecastFactor": 1,
+   "sourceFile": "Mart 2025.xlsx"
+  }
+ ]
+}

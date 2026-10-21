@@ -60,5 +60,28 @@ ctx.fetch=async url=>{try{const content=fs.readFileSync(path.join(root,String(ur
  const original=model.dealer.name;ctx.model=model;
  const rows=run('bcExcelRows(model)');assert.equal(rows.length,14);assert.equal(rows[0][2],original);assert.equal(rows[8][3],null,'Unknown national growth exports blank');
  equal("bcEsc('<x>')",'&lt;x&gt;');
+ // The shared pack is sufficient on a fresh device, without local uploads or
+ // the much larger legacy history download. National values come from actuals.
+ await run('bcLoadData()');
+ equal('Object.keys(BC_DATA.periods).length',21);
+ equal("BC_DATA.periods['2025-01'].values.mobil",235443);
+ equal("BC_DATA.periods['2026-09'].values.mobil",175744);
+ run("HIST2_DATA={};MER_ARCHIVES={};MER_LIVE=null;BC_SNAPSHOTS={};BC_PERIOD='';BC_BASIS='actual';BC_DEALER='4057503'");
+ equal('bcModel().current.period','2026-09','Default to the most recent closed month, not an unaligned daily report');
+ const full=run('bcModel()');
+ assert.equal(full.dealers.length,23);
+ for(const row of full.rows)for(const metric of ['YTD','YoY','MoM'])for(const scope of ['dealer','region','tr'])assert.notEqual(row.metrics[metric][scope].value,null,`${row.product.key} ${metric} ${scope} populated from shared actuals`);
+ const trMobile=full.rows.find(r=>r.product.key==='mobil').metrics.YoY.tr.value;
+ assert.equal(trMobile,(175744/257491-1)*100,'Real national activation growth, not HGO');
+ run("BC_PERIOD='2026-10';BC_BASIS='actual'");
+ equal('bcModel().current.closed',false);
+ equal('bcModel().rows[2].metrics.YoY.tr.value',null,'Keep exact-day actuals distinct from estimates');
+ run("BC_BASIS='forecast'");
+ const projected=run('bcModel()');assert.ok(projected.estimated);
+ for(const row of projected.rows)for(const metric of ['YTD','YoY','MoM'])for(const scope of ['dealer','region','tr'])assert.notEqual(row.metrics[metric][scope].value,null,`${row.product.key} ${metric} ${scope} forecast has a real closing baseline`);
+ assert.ok(projected.rows[2].metrics.YoY.tr.estimated);
+ ctx.projected=projected;assert.match(run('bcExcelRows(projected)[3][1]'),/AY SONU TAHMİNİ/);
+ equal("bcMergeSnapshot({date:'2026-10-19',tr:{}},{date:'2026-10-12',tr:{mobil:67735}}).tr.mobil",undefined,'Never fill a daily national count from another day');
+ equal("bcMergeSnapshot({date:'2026-10-12',tr:{},dealers:[]},{date:'2026-10-12',tr:{mobil:67735}}).tr.mobil",67735);
  console.log('PASS: growth formulas, weighted region totals, exact daily alignment, full YTD coverage, missing/zero safety, national extraction, snapshots and real historical data.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

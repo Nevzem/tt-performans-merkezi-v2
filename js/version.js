@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-10-21 · Bayi Bölge Türkiye Karşılaştırması';
+const APP_BUILD = '2026-10-21 · Bayi Karşılaştırma · Kapanış Verileri';
