@@ -17,6 +17,7 @@ var MER_SY_KEYS = {'Postpaid':'Faturalı','Prepaid':'Faturasız','Toplam Mobil':
 var MER_STORE = 'tt_month_end_archives_v1', MER_MAPPING_STORE = 'tt_month_end_parents_v1';
 function merReadStore(key){try{return JSON.parse(localStorage.getItem(key)||'{}')||{};}catch(e){return {};}}
 var MER_ARCHIVES = merReadStore(MER_STORE), MER_PARENTS = merReadStore(MER_MAPPING_STORE);
+var MER_DAILY_STORE='tt_month_end_daily_v1', MER_DAILY=merReadStore(MER_DAILY_STORE);
 var MER_LIVE = null, merScope = 'branch', merSelection = '', merPeriodSelection = 'current', merDealerCode = null, merHistoryPromise = null, merExporting = false, merStorageNote = '';
 function merEsc(v){return String(v == null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function merN(v){return v == null || !isFinite(v)?'—':Math.round(v).toLocaleString('tr-TR');}
@@ -39,6 +40,7 @@ function merCaptureUpload(parsed,edm,groupEdm){
   MER_ARCHIVES[period]=MER_LIVE;
   if(typeof bcCaptureSource==='function')bcCaptureSource(MER_LIVE);
   try{localStorage.setItem(MER_STORE,JSON.stringify(MER_ARCHIVES));merStorageNote='';}catch(e){merStorageNote='Bu ayın raporu cihazda saklanamadı. Ayrıntılı PDF’yi indirin.';}
+  merCaptureDaily(MER_LIVE);
   merPeriodSelection='current';
 }
 function merCurrent(){return MER_LIVE||{period:merPeriodKey(typeof DONEM!=='undefined'?DONEM:null),ttm:typeof DETAY!=='undefined'?DETAY:null,edm:null,matrix:typeof MATRIX!=='undefined'?MATRIX:null,sy:typeof SYDATA!=='undefined'?SYDATA:null,sample:true,closed:false};}
@@ -55,6 +57,67 @@ function merSource(period){
   return local||merFromHistory(doc);
 }
 function merSourceAt(period){return MER_LIVE && MER_LIVE.period===period?MER_LIVE:merSource(period);}
+/* Calendar-week sales use exact dated cumulative cuts. Never estimate daily
+ * activity from monthly totals or working-day forecasts. */
+function merDateShift(date,days){return new Date(new Date(date+'T12:00:00Z').getTime()+days*86400000).toISOString().slice(0,10);}
+function merReportDate(source){
+  if(!source||source.sample||!source.period)return null;
+  var date=source.closed?source.period+'-'+String(new Date(Date.UTC(+source.period.slice(0,4),+source.period.slice(5),0)).getUTCDate()).padStart(2,'0'):source.ttm&&source.ttm.reportDate||source.reportDate;
+  return /^\d{4}-\d{2}-\d{2}$/.test(date||'')&&date.slice(0,7)===source.period&&!isNaN(new Date(date+'T12:00:00Z'))&&merDateShift(date,0)===date?date:null;
+}
+function merDailySnapshot(source){
+  var date=merReportDate(source);if(!date)return null;
+  var rows={};
+  function add(bucket,prefix){Object.values(bucket||{}).forEach(function(d){var values={};MER_PRODUCTS.forEach(function(p){var v=d.prods&&d.prods[p.key]&&d.prods[p.key].a;values[p.hist]=typeof v==='number'&&isFinite(v)&&v>=0?v:null;});rows[prefix+String(d.kod)]=values;});}
+  ['ttm','edm'].forEach(function(ch){var detail=source[ch]||{},prefix=ch.toUpperCase()+':';add(detail.cariBayiler,prefix);add(detail.bayiler,prefix);add(source.group&&source.group[ch]&&source.group[ch].bayiler,'GROUP:'+prefix);});
+  return Object.keys(rows).length?{date:date,rows:rows}:null;
+}
+function merCaptureDaily(source){
+  var snap=merDailySnapshot(source);if(!snap)return;
+  MER_DAILY[snap.date]={date:snap.date,rows:Object.assign({},MER_DAILY[snap.date]&&MER_DAILY[snap.date].rows,snap.rows)};
+  Object.keys(MER_DAILY).sort().slice(0,-90).forEach(function(date){delete MER_DAILY[date];});
+  try{localStorage.setItem(MER_DAILY_STORE,JSON.stringify(MER_DAILY));}catch(e){merStorageNote='Haftalık kıyas için günlük raporlar cihazda saklanamadı.';}
+}
+function merCaptureComparisonUpload(parsed,edm,groupEdm){
+  var period=merPeriodKey(parsed.donem);if(!period)return;
+  var sy=parsed.syData||{},source={period:period,ttm:parsed.detay,edm:edm,sy:sy,matrix:parsed.matrix,sample:false,closed:!!(sy.calismaGun>0&&sy.calisilanGun>=sy.calismaGun)};
+  source.group=merRollupGroup({ttm:parsed.detay&&{bayiler:parsed.detay.grupBayiler},edm:groupEdm});
+  merCaptureDaily(source);if(typeof bcCaptureSource==='function')bcCaptureSource(source);
+}
+function merWeeklySources(ctx){
+  var cuts={};
+  function add(snap){if(!snap)return;cuts[snap.date]=Object.assign({},cuts[snap.date],snap.rows);}
+  // Reuse the published TTM archive and earlier uploads where coverage matches.
+  if(typeof bcSources==='function')bcSources().forEach(function(s){var rows={};s.dealers.forEach(function(d){rows['TTM:'+d.code]=d.values;});add({date:s.date,rows:rows});});
+  if(typeof HIST2_DATA!=='undefined')Object.values(HIST2_DATA).forEach(function(doc){add(merDailySnapshot(merFromHistory(doc)));});
+  Object.values(MER_DAILY).forEach(add);
+  Object.values(MER_ARCHIVES).forEach(function(source){add(merDailySnapshot(source));});
+  add(merDailySnapshot(ctx.source));return cuts;
+}
+function merWeekly(ctx,p,cuts){
+  var end=merReportDate(ctx.source),missing=[];
+  if(!end)return {current:null,previous:null,reason:'Haftalık kıyas için doğrulanmış rapor tarihi gerekli.'};
+  var middle=merDateShift(end,-7),start=merDateShift(end,-14),rows=ctx.rows||[];
+  function total(date){
+    if(!rows.length)return null;
+    var sum=0;
+    for(var i=0;i<rows.length;i++){
+      var row=rows[i],id=(ctx.scope==='group'?'GROUP:':'')+(row.channel||'TTM')+':'+row.kod;
+      var v=cuts[date]&&cuts[date][id]&&cuts[date][id][p.hist];
+      if(typeof v!=='number'||!isFinite(v)||v<0){missing.push(date);return null;}sum+=v;
+    }return sum;
+  }
+  function interval(a,b){
+    // Month-to-date counters reset: bridge using each intervening month end.
+    var value=total(b),base=total(a);if(value==null||base==null)return null;
+    var period=a.slice(0,7),last=b.slice(0,7);
+    while(period<last){var close=period+'-'+String(new Date(Date.UTC(+period.slice(0,4),+period.slice(5),0)).getUTCDate()).padStart(2,'0');var closing=total(close);if(closing==null)return null;value+=closing;period=merShift(period,1);}
+    var result=value-base;return result>=0?result:null;
+  }
+  var current=interval(middle,end),previous=interval(start,middle);
+  var label=merDateShift(middle,1)+'–'+end+' / '+merDateShift(start,1)+'–'+middle;
+  return {current:current,previous:previous,label:label,reason:missing.length?'Haftalık kıyas: '+Array.from(new Set(missing)).join(', ')+' tarihli rapor veya seçili kapsamın ürün verisi eksik.':current==null||previous==null?'Haftalık kıyas: dönem düzeltmesi veya kapsam verisi kontrol edilmeli.':''};
+}
 function merRows(source,channel){return Object.values((source && source[channel.toLowerCase()] && source[channel.toLowerCase()].bayiler)||{}).map(function(d){return Object.assign({},d,{channel:channel,id:channel+':'+d.kod});});}
 function merGroupRows(source,channel){
   var bucket=source&&source.group&&source.group[channel.toLowerCase()];
@@ -307,7 +370,7 @@ function merIcon(name){
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+(paths[name]||paths.trend)+'</svg>';
 }
 function merProductDesign(hist){
-  var styles={mobil:['Mobil','Faturalı + Faturasız','#087cfa','mobile'],dsl:['DSL','İnternet','#00b6a6','wifi'],iptv:['IPTV','TV Platformu','#ef007e','screen'],uydu:['Uydu TV','Uydu Platformu','#9332f5','satellite'],akilliCihaz:['Cihaz','Terminal ve Aksesuar','#00acc4','mobile'],digerCihaz:['Diğer Cihaz','Diğer Ürünler','#efa000','box']};
+  var styles={postpaid:['Faturalı','Mobil','#df237c','mobile'],prepaid:['Faturasız','Mobil','#079fc6','mobile'],mobil:['Mobil','Faturalı + Faturasız','#087cfa','mobile'],dsl:['DSL','İnternet','#00b6a6','wifi'],iptv:['IPTV','TV Platformu','#ef007e','screen'],uydu:['Uydu TV','Uydu Platformu','#9332f5','satellite'],akilliCihaz:['Cihaz','Terminal ve Aksesuar','#00acc4','mobile'],digerCihaz:['Diğer Cihaz','Diğer Ürünler','#efa000','box']};
   return styles[hist]||styles.mobil;
 }
 function merHgoRing(value,color,id){
@@ -527,7 +590,7 @@ function merCompareCell(current,previous,label){
   return '<div class="mer-compare-cell '+tone+'" title="'+merEsc(label+' · '+detail+' · '+rateText+' · '+deltaText)+'"><b>'+rateText+'</b><small>'+deltaText+'</small></div>';
 }
 function merYtdChart(ctx){
-  var list=ctx.products.filter(function(p){return MER_TRENDS.some(function(t){return t.key===p.key;});});
+  var list=ctx.products, cuts=merWeeklySources(ctx), missingWeek=false, end=merReportDate(ctx.source);
   var year=+ctx.source.period.slice(0,4),monthLabel=merMonthShort(ctx.source.period);
   var prevPeriod=merShift(ctx.source.period,-1),prevMonthLabel=merMonthShort(prevPeriod);
   var matched=list.length?Math.min.apply(null,list.map(function(p){return p.s.pairMonths||0;})):0;
@@ -535,17 +598,19 @@ function merYtdChart(ctx){
     var label=p.hist==='mobil'?'Mobil':p.hist==='uydu'?'Uydu':p.label;
     var color=merProductDesign(p.hist)[2];
     var ytdCurrent=p.s.pairB!=null?p.s.pairA:p.s.ytdA;
+    var week=merWeekly(ctx,p,cuts);if(week.current==null||week.previous==null)missingWeek=true;
     return '<div class="mer-compare-row" style="--mer-product:'+color+'" data-product="'+p.hist+'">'+
       '<div class="mer-compare-product"><i></i><b>'+merEsc(label)+'</b></div>'+
       merCompareCell(ytdCurrent,p.s.pairB,'YTD')+
       merCompareCell(p.s.a,p.s.prevYearA,'YoY')+
       merCompareCell(p.s.a,p.s.prevA,'MoM')+
+      merCompareCell(week.current,week.previous,'WoW · '+(week.reason||week.label))+
     '</div>';
   }).join('');
   return '<div class="mer-compare-matrix">'+
-    '<div class="mer-compare-head"><span>Ürün</span><b>YTD<small>Ocak–'+merEsc(monthLabel)+' · '+matched+' ay</small></b><b>YoY<small>'+merEsc(monthLabel)+' '+(year-1)+' → '+year+'</small></b><b>MoM<small>'+merEsc(prevMonthLabel)+' → '+merEsc(monthLabel)+'</small></b></div>'+
+    '<div class="mer-compare-head"><span>Ürün</span><b>YTD<small>Ocak–'+merEsc(monthLabel)+' · '+matched+' ay</small></b><b>YoY<small>'+merEsc(monthLabel)+' '+(year-1)+' → '+year+'</small></b><b>MoM<small>'+merEsc(prevMonthLabel)+' → '+merEsc(monthLabel)+'</small></b><b>Haftalık<small>Son 7 / önceki 7 gün</small></b></div>'+
     rows+
-  '</div><p class="mer-ytd-note">Yüzde değişim · alt satır net adet farkı · — veri yok</p>';
+  '</div><p class="mer-ytd-note">Yüzde / net adet farkı · '+(end?'Hafta bitişi: '+end.split('-').reverse().join('.'):'Rapor tarihi yok')+(missingWeek?' · Haftalık: günlük kesit eksik':'')+' · — veri yok</p>';
 }
 function merYtdPerformance(ctx){
   var coverage=[];
@@ -584,7 +649,7 @@ if(typeof window!=='undefined')window.addEventListener('resize',merFit);
 function merEnsureHistory(){
   if(!merHistoryPromise && typeof loadAllHistory==='function')merHistoryPromise=(async function(){
     if(typeof HIST2_LOADING!=='undefined' && HIST2_LOADING){while(HIST2_LOADING)await new Promise(function(r){setTimeout(r,50);});}
-    if(!HIST2_LOADED)await loadAllHistory();
+    await Promise.all([!HIST2_LOADED?loadAllHistory():Promise.resolve(),typeof bcLoadData==='function'?bcLoadData():Promise.resolve()]);
     if(merPeriodSelection==='current' && !MER_LIVE && merCurrent().sample){var saved=Object.keys(HIST2_DATA).filter(function(p){return HIST2_DATA[p] && HIST2_DATA[p].monthEnd;}).sort().reverse()[0];if(saved)merPeriodSelection=saved;}
   })();
   return merHistoryPromise||Promise.resolve();

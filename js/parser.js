@@ -723,6 +723,14 @@ function wire(boxId, inputId, isPrev) {
           if (el) el.textContent = "✅ " + name;
         };
         if (isPrev) {
+          if (typeof merCaptureComparisonUpload === 'function') {
+            var comparisonWb=XLSX.read(new Uint8Array(e.target.result), {type:'array'}),comparisonLog=EDM_COL_LOG;
+            try {
+              var comparisonRegional=parseEDMSheet(comparisonWb,{region:true}),comparisonGroup=parseEDMSheet(comparisonWb,{group:true});
+              merCaptureComparisonUpload(parsed,comparisonRegional.error?null:comparisonRegional.detay,comparisonGroup.error?null:comparisonGroup.detay);
+            } catch(comparisonError) { merCaptureComparisonUpload(parsed,null,null); }
+            finally { EDM_COL_LOG=comparisonLog; }
+          }
           PREV = parsed.data;
           KUPA_PREV = parsed.kupa && parsed.kupa.length ? parsed.kupa : null;
           if (typeof PREV_DETAY !== "undefined") PREV_DETAY = parsed.detay || null;
