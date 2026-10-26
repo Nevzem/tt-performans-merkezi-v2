@@ -2,7 +2,7 @@
  * node tools/import-weekly-snapshots.js <workbook.xlsx> [more workbooks...] */
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.join(__dirname,'..'),XLSX=require(path.join(root,'js/vendor/xlsx.full.min.js'));
-const {extractWorkbook}=require('./import-comparison-data.js');
+const {extractWorkbook,columns,quantity}=require('./import-comparison-data.js');
 function extract(file){
  const c=vm.createContext({console:{log(){},warn(){}},XLSX,Date,Set,document:{},localStorage:{getItem:()=>null,setItem(){}}});
  for(const name of ['data','parser','month-end-report'])vm.runInContext(fs.readFileSync(path.join(root,'js',name+'.js'),'utf8').replace(/^wire\("drop.*$/gm,''),c);
@@ -13,6 +13,14 @@ function extract(file){
  const independent=extractWorkbook(file);
  if(snap.date!==independent.date)throw Error('Date cross-check failed: '+file);
  for(const dealer of independent.dealers)for(const [key,value] of Object.entries(dealer.values))if(snap.rows['TTM:'+dealer.code]?.[key]!==value)throw Error('Actual cross-check failed: '+dealer.code+' '+key);
+ if(snap.days.total!==independent.total||snap.days.elapsed!==independent.elapsed)throw Error('Forecast-day cross-check failed');
+ const rows=XLSX.utils.sheet_to_json(c.wb.Sheets['TTM BUAY'],{header:1,defval:null}),hi=rows.findIndex(r=>r[0]==='Ana Bölge'),cols=columns(rows,hi);
+ for(const dealer of independent.dealers){
+  const row=rows.slice(hi+1).find(r=>String(r[2])===dealer.code),expected={};
+  for(const [key,col] of Object.entries(cols)){if(String(rows[hi][col-1]).trim().toUpperCase()!=='HEDEF')throw Error('Target header mismatch');expected[key]=quantity(row[col-1]);}
+  expected.mobil=expected.postpaid==null||expected.prepaid==null?null:expected.postpaid+expected.prepaid;
+  for(const [key,h] of Object.entries(expected))if(snap.targets['TTM:'+dealer.code][key]!==h)throw Error('Target cross-check failed: '+dealer.code+' '+key);
+ }
  return {...JSON.parse(JSON.stringify(snap)),sourceFile:path.basename(file)};
 }
 if(require.main===module){

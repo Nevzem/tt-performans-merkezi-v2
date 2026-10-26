@@ -9,7 +9,7 @@ vm.runInContext(fs.readFileSync(path.join(__dirname,'../js/month-end-report.js')
 const run=s=>vm.runInContext(s,c);
 const products=run('MER_PRODUCTS');
 const dealer=(code,a)=>({kod:code,b:'Şube '+code,fullName:'Şirket',anaBayiKod:'900',prods:Object.fromEntries(products.map(p=>[p.key,{a,h:300}]))});
-function source(date,a,closed=false){return {period:date.slice(0,7),ttm:{reportDate:date,bayiler:{'1':dealer('1',a)},cariBayiler:{'1':dealer('1',a)}},closed,sample:false};}
+function source(date,a,closed=false){return {period:date.slice(0,7),sy:{calismaGun:31,calisilanGun:+date.slice(8)},ttm:{reportDate:date,bayiler:{'1':dealer('1',a)},cariBayiler:{'1':dealer('1',a)}},closed,sample:false};}
 function setup(end,dates,scope='branch'){
  c.source=source(end,dates[end]);c.MER_DAILY={};c.MER_ARCHIVES={};c.HIST2_DATA={};
  for(const [date,a] of Object.entries(dates)){c.cut=source(date,a);run('merCaptureDaily(cut)');}
@@ -65,7 +65,7 @@ const html=run('merYtdChart(ctx)');
 assert.equal((html.match(/class="mer-compare-row"/g)||[]).length,8);
 assert.equal((html.match(/class="mer-compare-cell /g)||[]).length,32);
 assert.ok(html.includes('>Faturalı<')&&html.includes('>Faturasız<'));
-assert.ok(html.includes('>Haftalık<')&&html.includes('+50,0%'));
+assert.ok(html.includes('>Forecast HGO<')&&html.includes(' puan'));
 assert.ok(html.includes('21.10.2026'));
 c.source.sample=true;assert.equal(run('merReportDate(source)'),null);
 c.source.sample=false;c.source.ttm.reportDate='2026-10-99';assert.equal(run('merReportDate(source)'),null);

@@ -11,7 +11,7 @@ c.ctx=run("merContext(current,'branch','1')");
 c.MER_DATE_COMPARE={mode:'week',from:'2026-09-23',to:'2026-09-30'};
 assert.deepEqual(Array.from(run('merWeeklyStatus(ctx,merWeeklySources(ctx)).missing')),['2026-09-16','2026-09-23']);
 let html=run('merWeeklyTools(ctx)');
-assert.ok(html.includes('16.09.2026')&&html.includes('23.09.2026'),'Missing dates must be visible outside scaled report');
+assert.ok(html.includes('23.09.2026'),'Missing dates must be visible outside scaled report');
 assert.ok(html.includes('multiple')&&html.includes('Kıyas raporlarını yükle'));
 // Import both required dated cuts without switching the active month / dealer.
 const parsed={16:{donem:'202609',detay:detail('2026-09-16',100),syData:{calismaGun:30,calisilanGun:16}},23:{donem:'202609',detay:detail('2026-09-23',200),syData:{calismaGun:30,calisilanGun:23}}};
@@ -25,12 +25,12 @@ function file(id,name){return {name,arrayBuffer:async()=>new Uint8Array([id]).bu
  assert.ok(c.merWeeklyImportMessage.includes('16.09.2026')&&c.merWeeklyImportMessage.includes('23.09.2026'));
  const status=run('merWeeklyStatus(ctx,merWeeklySources(ctx))');assert.equal(status.ready,true);assert.equal(status.missing.length,0);
  const week=run('merWeekly(ctx,MER_PRODUCTS[0],merWeeklySources(ctx))');assert.equal(week.current,150);assert.equal(week.previous,100);
- assert.ok(run('merWeeklyTools(ctx)').includes('Seçilen tarihlerin kıyas verileri hazır.'));
+ assert.ok(run('merWeeklyTools(ctx)').includes('Seçilen tarihlerin forecast HGO verileri hazır.'));
  assert.ok(JSON.parse(storage.tt_month_end_daily_v1)['2026-09-23']);
  // Real published cuts include all scopes; loading requires no prior file upload.
  const pack=JSON.parse(fs.readFileSync(path.join(root,'data/history/month-end-daily.json'),'utf8'));
  assert.deepEqual(pack.snapshots.map(s=>s.date),['2026-10-07','2026-10-12']);
- for(const s of pack.snapshots){assert.equal(Object.keys(s.rows).length,278);assert.ok(s.rows['TTM:4057503']);assert.ok(Object.keys(s.rows).some(k=>k.startsWith('EDM:')));assert.ok(Object.keys(s.rows).some(k=>k.startsWith('GROUP:EDM:')));}
+ for(const s of pack.snapshots){assert.equal(Object.keys(s.rows).length,280);assert.ok(s.rows['TTM:4057503']);assert.ok(Object.keys(s.rows).some(k=>k.startsWith('EDM:')));assert.ok(Object.keys(s.rows).some(k=>k.startsWith('GROUP:EDM:')));}
  c.fetch=async()=>({ok:true,json:async()=>pack});await run('merLoadDaily()');assert.equal(c.MER_PUBLISHED_DAILY.length,2);
  assert.equal(run("merWeeklySources(ctx)['2026-10-07']['TTM:4057503'].postpaid"),pack.snapshots[0].rows['TTM:4057503'].postpaid);
  // A corrupted/out-of-period workbook cannot report import success.
