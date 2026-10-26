@@ -59,6 +59,7 @@ for(const scope of ['region','group']){
 }
 // New product rows and weekly column are shared by screen / PNG / PDF markup.
 c.ctx=run("merContext(source,'branch','1')");
+c.MER_DATE_COMPARE={mode:'week',from:'2026-10-14',to:'2026-10-21'};
 c.ctx.products=products.map(p=>({...p,s:{pairA:400,pairB:300,ytdA:400,a:200,prevYearA:180,prevA:190,pairMonths:10}}));
 const html=run('merYtdChart(ctx)');
 assert.equal((html.match(/class="mer-compare-row"/g)||[]).length,8);

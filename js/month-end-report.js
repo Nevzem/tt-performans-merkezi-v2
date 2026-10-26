@@ -19,6 +19,7 @@ function merReadStore(key){try{return JSON.parse(localStorage.getItem(key)||'{}'
 var MER_ARCHIVES = merReadStore(MER_STORE), MER_PARENTS = merReadStore(MER_MAPPING_STORE);
 var MER_DAILY_STORE='tt_month_end_daily_v1', MER_DAILY=merReadStore(MER_DAILY_STORE);
 var MER_PUBLISHED_DAILY=[], merDailyPromise=null, merWeeklyImportBusy=false, merWeeklyImportMessage='';
+var MER_DATE_COMPARE_STORE='tt_month_end_date_compare_v1', MER_DATE_COMPARE=merReadStore(MER_DATE_COMPARE_STORE);
 var MER_LIVE = null, merScope = 'branch', merSelection = '', merPeriodSelection = 'current', merDealerCode = null, merHistoryPromise = null, merExporting = false, merStorageNote = '';
 function merEsc(v){return String(v == null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function merN(v){return v == null || !isFinite(v)?'—':Math.round(v).toLocaleString('tr-TR');}
@@ -102,44 +103,72 @@ function merWeeklySources(ctx){
   Object.values(MER_ARCHIVES).forEach(function(source){add(merDailySnapshot(source));});
   add(merDailySnapshot(ctx.source));return cuts;
 }
-function merWeekly(ctx,p,cuts){
-  var end=merReportDate(ctx.source),missing=[];
-  if(!end)return {current:null,previous:null,missing:[],reason:'Haftalık kıyas için doğrulanmış rapor tarihi gerekli.'};
-  var middle=merDateShift(end,-7),start=merDateShift(end,-14),rows=ctx.rows||[];
-  function total(date){
-    if(!rows.length)return null;
-    var sum=0;
-    for(var i=0;i<rows.length;i++){
-      var row=rows[i],id=(ctx.scope==='group'?'GROUP:':'')+(row.channel||'TTM')+':'+row.kod;
-      var v=cuts[date]&&cuts[date][id]&&cuts[date][id][p.hist];
-      if(typeof v!=='number'||!isFinite(v)||v<0){missing.push(date);return null;}sum+=v;
-    }return sum;
+function merValidCompareDate(date){return /^(19|20)\d{2}-\d{2}-\d{2}$/.test(date||'')&&!isNaN(new Date(date+'T12:00:00Z'))&&merDateShift(date,0)===date;}
+function merComparePlan(ctx,cuts){
+  var saved=MER_DATE_COMPARE&&typeof MER_DATE_COMPARE==='object'?MER_DATE_COMPARE:{};
+  var dates=Object.keys(cuts).filter(merValidCompareDate).sort(),to=typeof saved.to==='string'?saved.to:merReportDate(ctx.source)||dates[dates.length-1]||'';
+  var earlier=dates.filter(function(d){return d<to;}),from=typeof saved.from==='string'?saved.from:earlier[earlier.length-1]||(merValidCompareDate(to)?merDateShift(to,-7):'');
+  var mode=saved.mode==='week'?'week':'report',valid=merValidCompareDate(from)&&merValidCompareDate(to)&&from<to;
+  return {from:from,to:to,mode:mode,valid:valid,dates:dates,reason:valid?'':!merValidCompareDate(from)||!merValidCompareDate(to)?'Kıyas için iki geçerli tarih seçin.':'Önceki tarih, güncel tarihten önce olmalı.'};
+}
+function merCompareCut(ctx,p,cuts,date){
+  var rows=ctx.rows||[],sum=0;if(!rows.length)return null;
+  for(var i=0;i<rows.length;i++){
+    var row=rows[i],id=(ctx.scope==='group'?'GROUP:':'')+(row.channel||'TTM')+':'+row.kod;
+    var v=cuts[date]&&cuts[date][id]&&cuts[date][id][p.hist];
+    if(typeof v!=='number'||!isFinite(v)||v<0)return null;sum+=v;
+  }return sum;
+}
+function merCompareInterval(ctx,p,cuts,start,end){
+  var dates=[start,end],period=start.slice(0,7),last=end.slice(0,7),closing=[];
+  while(period<last){var date=period+'-'+String(new Date(Date.UTC(+period.slice(0,4),+period.slice(5),0)).getUTCDate()).padStart(2,'0');dates.push(date);closing.push(date);period=merShift(period,1);}
+  var values={},missing=[];Array.from(new Set(dates)).forEach(function(date){values[date]=merCompareCut(ctx,p,cuts,date);if(values[date]==null)missing.push(date);});
+  if(missing.length)return {value:null,missing:missing};
+  // Cumulative counters reset each month: add actual month-end totals.
+  var value=values[end]-values[start]+closing.reduce(function(n,date){return n+values[date];},0);
+  return {value:value>=0?value:null,missing:[]};
+}
+function merDateMetric(ctx,p,cuts,plan){
+  if(!plan.valid)return {current:null,previous:null,missing:[],reason:plan.reason,label:''};
+  var missing=[],current,previous,label=plan.from+' → '+plan.to;
+  if(plan.mode==='week'){
+    var a=merCompareInterval(ctx,p,cuts,merDateShift(plan.to,-7),plan.to),b=merCompareInterval(ctx,p,cuts,merDateShift(plan.from,-7),plan.from);
+    current=a.value;previous=b.value;missing=a.missing.concat(b.missing);
+    label=merDateShift(plan.to,-6)+'–'+plan.to+' / '+merDateShift(plan.from,-6)+'–'+plan.from;
+  }else{
+    current=merCompareCut(ctx,p,cuts,plan.to);previous=merCompareCut(ctx,p,cuts,plan.from);
+    if(current==null)missing.push(plan.to);if(previous==null)missing.push(plan.from);
   }
-  function interval(a,b){
-    // Month-to-date counters reset: bridge using each intervening month end.
-    var value=total(b),base=total(a);if(value==null||base==null)return null;
-    var period=a.slice(0,7),last=b.slice(0,7);
-    while(period<last){var close=period+'-'+String(new Date(Date.UTC(+period.slice(0,4),+period.slice(5),0)).getUTCDate()).padStart(2,'0');var closing=total(close);if(closing==null)return null;value+=closing;period=merShift(period,1);}
-    var result=value-base;return result>=0?result:null;
-  }
-  // Collect every required date before computing, so the user can supply all
-  // missing files at once, including the bridge at a month boundary.
-  [end,middle,start].forEach(total);
-  if(start.slice(0,7)!==end.slice(0,7)){var bridge=start.slice(0,7);while(bridge<end.slice(0,7)){total(bridge+'-'+String(new Date(Date.UTC(+bridge.slice(0,4),+bridge.slice(5),0)).getUTCDate()).padStart(2,'0'));bridge=merShift(bridge,1);}}
-  var current=interval(middle,end),previous=interval(start,middle);
-  var label=merDateShift(middle,1)+'–'+end+' / '+merDateShift(start,1)+'–'+middle;
   missing=Array.from(new Set(missing)).sort();
-  return {current:current,previous:previous,label:label,missing:missing,reason:missing.length?'Haftalık kıyas: '+missing.join(', ')+' tarihli rapor veya seçili kapsamın ürün verisi eksik.':current==null||previous==null?'Haftalık kıyas: dönem düzeltmesi veya kapsam verisi kontrol edilmeli.':''};
+  return {current:current,previous:previous,missing:missing,label:label,reason:missing.length?'Gerekli rapor veya seçili kapsamın ürün verisi eksik: '+missing.join(', '):current==null||previous==null?'Dönem düzeltmesi veya kapsam verisi kontrol edilmeli.':''};
+}
+function merWeekly(ctx,p,cuts){
+  var end=merReportDate(ctx.source);
+  return end?merDateMetric(ctx,p,cuts,{valid:true,mode:'week',from:merDateShift(end,-7),to:end}):{current:null,previous:null,missing:[],reason:'Haftalık kıyas için doğrulanmış rapor tarihi gerekli.'};
 }
 function merWeeklyStatus(ctx,cuts){
   var weeks=MER_PRODUCTS.map(function(p){return merWeekly(ctx,p,cuts);}),missing=Array.from(new Set([].concat.apply([],weeks.map(function(w){return w.missing;})))).sort();
   return {missing:missing,ready:weeks.every(function(w){return w.current!=null&&w.previous!=null;}),label:weeks[0].label||'',reason:weeks[0].reason};
 }
 function merShortDate(date){return date.split('-').reverse().join('.');}
+function merDateCompareStatus(ctx,cuts,plan){
+  var metrics=MER_PRODUCTS.map(function(p){return merDateMetric(ctx,p,cuts,plan);});
+  return {ready:metrics.every(function(m){return m.current!=null&&m.previous!=null;}),missing:Array.from(new Set([].concat.apply([],metrics.map(function(m){return m.missing;})))).sort(),reason:plan.valid?metrics[0].reason:plan.reason};
+}
+function merSetCompare(key,value){
+  if(!['from','to','mode'].includes(key))return;
+  var ctx=merModel(),plan=merComparePlan(ctx,merWeeklySources(ctx));
+  MER_DATE_COMPARE={from:plan.from,to:plan.to,mode:plan.mode};MER_DATE_COMPARE[key]=value;
+  try{localStorage.setItem(MER_DATE_COMPARE_STORE,JSON.stringify(MER_DATE_COMPARE));}catch(e){}
+  renderMonthEndReport();
+}
+function merResetCompare(){MER_DATE_COMPARE={};try{localStorage.removeItem(MER_DATE_COMPARE_STORE);}catch(e){}renderMonthEndReport();}
 function merWeeklyTools(ctx){
-  var status=merWeeklyStatus(ctx,merWeeklySources(ctx)),end=merReportDate(ctx.source),periods=end?merShortDate(merDateShift(end,-6))+'–'+merShortDate(end)+' / '+merShortDate(merDateShift(end,-13))+'–'+merShortDate(merDateShift(end,-7)):'';
-  var message=status.ready?'İki haftanın satış verileri hazır.':status.missing.length?'Gerekli rapor/veri tarihleri: '+status.missing.map(merShortDate).join(', ')+'. İlgili günlük satış Excel’lerini birlikte yükleyebilirsiniz.':status.reason||'Bu kapsam için tarihli günlük satış raporları gerekli.';
-  return '<div class="mer-weekly-tools '+(status.ready?'ready':'missing')+'"><div><strong>Haftalık kıyas'+(periods?' · '+periods:'')+'</strong><p>'+merEsc(message)+'</p>'+(merWeeklyImportMessage?'<p role="status">'+merEsc(merWeeklyImportMessage)+'</p>':'')+'</div><label class="mer-weekly-upload">'+(merWeeklyImportBusy?'Raporlar işleniyor…':'Haftalık raporları yükle')+'<input type="file" accept=".xlsx,.xls" multiple aria-label="Haftalık karşılaştırma raporları" onchange="merImportWeeklyFiles(this.files)" '+(merWeeklyImportBusy?'disabled':'')+'></label></div>';
+  var cuts=merWeeklySources(ctx),plan=merComparePlan(ctx,cuts),status=merDateCompareStatus(ctx,cuts,plan);
+  var message=status.ready?'Seçilen tarihlerin kıyas verileri hazır.':status.missing.length?'Gerekli rapor/veri tarihleri: '+status.missing.map(merShortDate).join(', ')+'. İlgili Excel’leri birlikte yükleyebilirsiniz.':status.reason||'Bu kapsam için tarihli satış raporları gerekli.';
+  var basis=plan.mode==='week'?'Seçilen tarihlerde biten 7 günlük satışlar karşılaştırılır.':'Her raporun ay başından seçilen güne kadar olan satış toplamı karşılaştırılır.';
+  var ranges=plan.valid&&plan.mode==='week'?' · Güncel: '+merShortDate(merDateShift(plan.to,-6))+'–'+merShortDate(plan.to)+' · Önceki: '+merShortDate(merDateShift(plan.from,-6))+'–'+merShortDate(plan.from):'';
+  return '<div class="mer-weekly-tools '+(status.ready?'ready':'missing')+'"><div class="mer-date-compare-main"><strong>Tarih kıyası</strong><div class="mer-date-compare-fields"><label>Kıyas biçimi<select id="mer-compare-mode" onchange="merSetCompare(\'mode\',this.value)"><option value="report" '+(plan.mode==='report'?'selected':'')+'>Rapor toplamları</option><option value="week" '+(plan.mode==='week'?'selected':'')+'>7 günlük satış</option></select></label><label>Önceki tarih<input id="mer-compare-from" type="date" min="1900-01-01" max="2099-12-31" list="mer-compare-dates" value="'+merEsc(plan.from)+'" onchange="merSetCompare(\'from\',this.value)"></label><label>Güncel tarih<input id="mer-compare-to" type="date" min="1900-01-01" max="2099-12-31" list="mer-compare-dates" value="'+merEsc(plan.to)+'" onchange="merSetCompare(\'to\',this.value)"></label><button type="button" onclick="merResetCompare()">Rapora göre sıfırla</button></div><datalist id="mer-compare-dates">'+plan.dates.map(function(d){return '<option value="'+d+'"></option>';}).join('')+'</datalist><p>'+merEsc(basis+ranges)+'</p><p role="status">'+merEsc(message)+'</p><p class="mer-available-dates">Son kayıtlı raporlar: '+(plan.dates.slice(-4).map(merShortDate).join(', ')||'Yok')+'</p>'+(merWeeklyImportMessage?'<p role="status">'+merEsc(merWeeklyImportMessage)+'</p>':'')+'</div><label class="mer-weekly-upload">'+(merWeeklyImportBusy?'Raporlar işleniyor…':'Kıyas raporlarını yükle')+'<input type="file" accept=".xlsx,.xls" multiple aria-label="Tarih karşılaştırma raporları" onchange="merImportWeeklyFiles(this.files)" '+(merWeeklyImportBusy?'disabled':'')+'></label></div>';
 }
 async function merImportWeeklyFiles(files){
   if(merWeeklyImportBusy||!files||!files.length)return;
@@ -634,8 +663,9 @@ function merCompareCell(current,previous,label){
   return '<div class="mer-compare-cell '+tone+'" title="'+merEsc(label+' · '+detail+' · '+rateText+' · '+deltaText)+'"><b>'+rateText+'</b><small>'+deltaText+'</small></div>';
 }
 function merYtdChart(ctx){
-  var list=ctx.products, cuts=merWeeklySources(ctx), missingWeek=false, end=merReportDate(ctx.source);
-  var weeklyStatus=merWeeklyStatus(ctx,cuts);
+  var list=ctx.products, cuts=merWeeklySources(ctx), missingWeek=false,plan=merComparePlan(ctx,cuts);
+  var weeklyStatus=merDateCompareStatus(ctx,cuts,plan),compareTitle=plan.mode==='week'?'Haftalık':'Tarih kıyası';
+  var selectedDates=plan.valid?merShortDate(plan.from)+' → '+merShortDate(plan.to):'İki tarih seçin';
   var year=+ctx.source.period.slice(0,4),monthLabel=merMonthShort(ctx.source.period);
   var prevPeriod=merShift(ctx.source.period,-1),prevMonthLabel=merMonthShort(prevPeriod);
   var matched=list.length?Math.min.apply(null,list.map(function(p){return p.s.pairMonths||0;})):0;
@@ -643,19 +673,19 @@ function merYtdChart(ctx){
     var label=p.hist==='mobil'?'Mobil':p.hist==='uydu'?'Uydu':p.label;
     var color=merProductDesign(p.hist)[2];
     var ytdCurrent=p.s.pairB!=null?p.s.pairA:p.s.ytdA;
-    var week=merWeekly(ctx,p,cuts);if(week.current==null||week.previous==null)missingWeek=true;
+    var week=merDateMetric(ctx,p,cuts,plan);if(week.current==null||week.previous==null)missingWeek=true;
     return '<div class="mer-compare-row" style="--mer-product:'+color+'" data-product="'+p.hist+'">'+
       '<div class="mer-compare-product"><i></i><b>'+merEsc(label)+'</b></div>'+
       merCompareCell(ytdCurrent,p.s.pairB,'YTD')+
       merCompareCell(p.s.a,p.s.prevYearA,'YoY')+
       merCompareCell(p.s.a,p.s.prevA,'MoM')+
-      (week.current==null||week.previous==null?'<div class="mer-compare-cell neutral mer-weekly-missing" title="'+merEsc(week.reason)+'"><small>Rapor eksik</small></div>':merCompareCell(week.current,week.previous,'WoW · '+week.label))+
+      (week.current==null||week.previous==null?'<div class="mer-compare-cell neutral mer-weekly-missing" title="'+merEsc(week.reason)+'"><small>'+(!plan.valid?'Tarih seçin':week.missing.length?'Rapor eksik':'Veri kontrolü')+'</small></div>':merCompareCell(week.current,week.previous,compareTitle+' · '+week.label))+
     '</div>';
   }).join('');
   return '<div class="mer-compare-matrix">'+
-    '<div class="mer-compare-head"><span>Ürün</span><b>YTD<small>Ocak–'+merEsc(monthLabel)+' · '+matched+' ay</small></b><b>YoY<small>'+merEsc(monthLabel)+' '+(year-1)+' → '+year+'</small></b><b>MoM<small>'+merEsc(prevMonthLabel)+' → '+merEsc(monthLabel)+'</small></b><b>Haftalık<small>Son 7 / önceki 7 gün</small></b></div>'+
+    '<div class="mer-compare-head"><span>Ürün</span><b>YTD<small>Ocak–'+merEsc(monthLabel)+' · '+matched+' ay</small></b><b>YoY<small>'+merEsc(monthLabel)+' '+(year-1)+' → '+year+'</small></b><b>MoM<small>'+merEsc(prevMonthLabel)+' → '+merEsc(monthLabel)+'</small></b><b title="'+merEsc(selectedDates)+'">'+compareTitle+'<small>'+(plan.valid?merEsc(plan.from.slice(8)+'.'+plan.from.slice(5,7)+' → '+plan.to.slice(8)+'.'+plan.to.slice(5,7)):'Tarih seçin')+'</small></b></div>'+
     rows+
-  '</div><p class="mer-ytd-note">Yüzde / net adet farkı · '+(missingWeek?(weeklyStatus.missing.length?'Haftalık için '+weeklyStatus.missing.map(merShortDate).join(', ')+' rapor/verisi gerekli':'Haftalık: tarihli kapsam verisi gerekli'):(end?'Hafta bitişi: '+merShortDate(end):'Rapor tarihi yok'))+'</p>';
+  '</div><p class="mer-ytd-note">Yüzde / net adet farkı · '+(missingWeek?(weeklyStatus.missing.length?'Gerekli rapor/veri: '+weeklyStatus.missing.map(merShortDate).join(', '):merEsc(weeklyStatus.reason)):(plan.mode==='week'?'7 günlük satış · Hafta bitişleri: ':'Rapor toplamları: ')+merEsc(selectedDates))+'</p>';
 }
 function merYtdPerformance(ctx){
   var coverage=[];

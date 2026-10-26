@@ -8,10 +8,11 @@ function detail(date,a){return {reportDate:date,bayiler:{'1':{kod:'1',b:'Bayi',p
 c.current={period:'2026-09',closed:true,sample:false,ttm:detail('2026-09-30',350)};
 c.MER_LIVE=c.current;c.MER_ARCHIVES={'2026-09':c.current};c.merPeriodSelection='2026-09';c.merScope='branch';c.merSelection='1';
 c.ctx=run("merContext(current,'branch','1')");
+c.MER_DATE_COMPARE={mode:'week',from:'2026-09-23',to:'2026-09-30'};
 assert.deepEqual(Array.from(run('merWeeklyStatus(ctx,merWeeklySources(ctx)).missing')),['2026-09-16','2026-09-23']);
 let html=run('merWeeklyTools(ctx)');
 assert.ok(html.includes('16.09.2026')&&html.includes('23.09.2026'),'Missing dates must be visible outside scaled report');
-assert.ok(html.includes('multiple')&&html.includes('Haftalık raporları yükle'));
+assert.ok(html.includes('multiple')&&html.includes('Kıyas raporlarını yükle'));
 // Import both required dated cuts without switching the active month / dealer.
 const parsed={16:{donem:'202609',detay:detail('2026-09-16',100),syData:{calismaGun:30,calisilanGun:16}},23:{donem:'202609',detay:detail('2026-09-23',200),syData:{calismaGun:30,calisilanGun:23}}};
 c.ensureXLSX=async()=>{};c.renderMonthEndReport=()=>{};c.XLSX={read:data=>({id:data[0]})};c.parseWB=wb=>{if(!parsed[wb.id])throw Error('Geçersiz dosya');return parsed[wb.id];};c.parseEDMSheet=()=>({error:'EDM sheet absent'});
@@ -24,7 +25,7 @@ function file(id,name){return {name,arrayBuffer:async()=>new Uint8Array([id]).bu
  assert.ok(c.merWeeklyImportMessage.includes('16.09.2026')&&c.merWeeklyImportMessage.includes('23.09.2026'));
  const status=run('merWeeklyStatus(ctx,merWeeklySources(ctx))');assert.equal(status.ready,true);assert.equal(status.missing.length,0);
  const week=run('merWeekly(ctx,MER_PRODUCTS[0],merWeeklySources(ctx))');assert.equal(week.current,150);assert.equal(week.previous,100);
- assert.ok(run('merWeeklyTools(ctx)').includes('İki haftanın satış verileri hazır.'));
+ assert.ok(run('merWeeklyTools(ctx)').includes('Seçilen tarihlerin kıyas verileri hazır.'));
  assert.ok(JSON.parse(storage.tt_month_end_daily_v1)['2026-09-23']);
  // Real published cuts include all scopes; loading requires no prior file upload.
  const pack=JSON.parse(fs.readFileSync(path.join(root,'data/history/month-end-daily.json'),'utf8'));
