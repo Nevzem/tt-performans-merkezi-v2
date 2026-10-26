@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-10-26 · Aysonu Kıyas · Faturalı / Faturasız ve Haftalık';
+const APP_BUILD = '2026-10-26 · Haftalık Kıyas · Günlük Rapor Verileri';

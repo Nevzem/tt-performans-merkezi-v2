@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-investor-20261026-week1';
+const CACHE = 'ttpm-investor-20261026-week2';
 
 const ASSETS = [
   '.',
@@ -52,6 +52,7 @@ const ASSETS = [
   'js/commitment-tracker.js',
   'js/bayi-comparison.js',
   'data/history/bayi-comparison-data.json',
+  'data/history/month-end-daily.json',
   'css/bayi-comparison.css',
   'js/filters.js',
   'js/app.js',
