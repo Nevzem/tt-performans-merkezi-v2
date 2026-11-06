@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-investor-20261026-forecast1';
+const CACHE = 'ttpm-kasim-20261106-v1';
 
 const ASSETS = [
   '.',
@@ -14,13 +14,11 @@ const ASSETS = [
   'js/version.js',
   'css/style.css',
   'css/development.css',
-  'css/investor-campaign.css',
+  'css/november-campaign.css',
   'css/month-end-report.css',
   'css/commitment-tracker.css',
   'css/commitment-share.css',
   'assets/commitment-design-reference.png',
-  'css/october-campaign.css',
-  'assets/october-campaign-reference.png',
   'css/matrix-v2.css',
   'js/data.js',
   'js/parser.js',
@@ -46,8 +44,7 @@ const ASSETS = [
   'data/history/channel-activation-summary.json',
   'data/history/region-benchmarks.json',
   'js/development.js',
-  'js/investor-campaign.js',
-  'js/october-campaign.js',
+  'js/november-campaign.js',
   'js/month-end-report.js',
   'js/commitment-tracker.js',
   'js/bayi-comparison.js',
