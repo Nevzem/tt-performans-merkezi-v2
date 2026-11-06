@@ -1,0 +1,43 @@
+/* Kasım 2026 TTM kampanya takip alanı – mobil öncelikli */
+.nv-page{width:100%;box-sizing:border-box}
+.nv-shell{background:#fff;border:1px solid #dce4f1;border-radius:18px;overflow:hidden;box-shadow:0 8px 26px rgba(16,39,84,.07)}
+.nv-hero{background:linear-gradient(118deg,#081d54,#0758aa);padding:24px 24px 26px;color:white}
+.nv-eyebrow{font-size:10px;font-weight:800;letter-spacing:2px;opacity:.75}
+.nv-hero h2{font-size:24px;line-height:1.3;letter-spacing:.3px;margin:8px 0 6px;font-weight:900}
+.nv-hero h2 span{color:#63dbff}
+.nv-hero p{font-size:12px;opacity:.83;margin:0}
+.nv-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:16px 18px;background:#eff5fc}
+.nv-stat{background:#fff;border:1px solid #e0e9f5;border-radius:12px;padding:13px 12px}
+.nv-stat small{display:block;font-size:10px;font-weight:800;color:#58708e;margin-bottom:7px}
+.nv-stat strong{font-size:19px;color:#123b75;white-space:nowrap}
+.nv-tabs{display:flex;gap:9px;padding:16px 18px 4px}
+.nv-tabs button{background:#f2f5fa;border:1px solid #d7e2ed;border-radius:11px;color:#204770;font-size:12px;font-weight:800;padding:11px 15px;cursor:pointer}
+.nv-tabs button.nv-selected{background:#0e4c96;border-color:#0e4c96;color:white}
+.nv-description{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:15px 18px}
+.nv-description h3{font-size:17px;color:#132f55;margin:0 0 5px}
+.nv-description p{font-size:12px;line-height:1.5;color:#536783;margin:0}
+.nv-export{border:1px solid #c5d7e9;border-radius:9px;background:#fff;color:#0e4c96;padding:10px 12px;font-size:11px;font-weight:800;white-space:nowrap;cursor:pointer}
+.nv-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 16px 16px;box-sizing:border-box}
+.nv-table{border-collapse:separate;border-spacing:0;width:100%;min-width:620px;color:#173a63;font-size:12px}
+.nv-table th{background:#eaf1fa;padding:12px 9px;font-size:10px;line-height:1.5;text-align:center;border-bottom:1px solid #d8e4f2;color:#4e6684;white-space:nowrap}
+.nv-table th:first-child{text-align:left}
+.nv-table td{border-bottom:1px solid #e9edf5;padding:11px 9px;text-align:center;font-variant-numeric:tabular-nums}
+.nv-table tr:nth-child(even){background:#f9fbfe}
+.nv-table td:first-child{text-align:left}
+.nv-branch b{display:block;font-size:12px;color:#1c3d67;max-width:220px}
+.nv-branch small{display:block;color:#7187a3;font-size:10px;margin-top:3px}
+.nv-packet-table{min-width:720px}
+.nv-input{box-sizing:border-box;width:80px;max-width:100%;border:1px solid #cbd9eb;border-radius:8px;padding:9px 5px;text-align:center;font-size:12px;background:#fff;color:#173a63}
+.nv-input:focus{outline:2px solid #64aeea;outline-offset:1px}
+.nv-positive{color:#11784e;font-weight:800}.nv-negative{color:#ba3142;font-weight:800}
+.nv-foot{background:#f6f9fd;border-top:1px solid #e1e8f2;padding:15px 18px;font-size:11px;line-height:1.65;color:#516883}
+.nv-foot b{color:#183c67}.nv-foot div{margin-top:6px}
+@media(max-width:680px){
+ .nv-hero{padding:22px 16px}.nv-hero h2{font-size:19px}
+ .nv-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:12px}
+ .nv-stat{padding:10px}.nv-stat strong{font-size:15px}
+ .nv-tabs{padding:12px 12px 0}.nv-tabs button{flex:1;padding:10px 4px;font-size:11px}
+ .nv-description{padding:15px 12px;align-items:flex-start}
+ .nv-description h3{font-size:15px}.nv-description p{font-size:11px}
+ .nv-export{padding:9px 7px}.nv-table-wrap{padding:0 8px 12px}
+}
