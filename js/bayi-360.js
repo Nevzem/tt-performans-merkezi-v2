@@ -34,7 +34,7 @@ function b360Agg(periods,code,key,strict){
   return {hedef:h,adet:a,hgo:h>0?a/h*100:null,months:found,complete:found===periods.length};
 }
 function b360Rank(entries,code,mode){
-  var scored=entries.filter(function(x){return x.data&&isFinite(x.data[mode]);});
+  var scored=entries.filter(function(x){return x.data&&x.data[mode]!=null&&isFinite(x.data[mode]);});
   var mine=scored.find(function(x){return String(x.code)===String(code);});
   if(!mine)return null;
   return {rank:1+scored.filter(function(x){return x.data[mode]>mine.data[mode]+1e-9;}).length,count:scored.length};
@@ -55,8 +55,8 @@ function b360Model(){
   var dealer=b360Find(period,B360_DEALER);if(!dealer)return null;
   var products=B360_PRODUCTS.map(function(p){
     var current=b360Agg(periods,B360_DEALER,p.key,false);
-    var prev=b360Agg(prior,B360_DEALER,p.key,false);
-    var yoy=current&&prev&&prev.adet>0?(current.adet-prev.adet)/prev.adet*100:null;
+    var prev=b360Agg(prior,B360_DEALER,p.key,true);
+    var yoy=current&&current.complete&&prev&&prev.adet>0?(current.adet-prev.adet)/prev.adet*100:null;
     return {p:p,now:current,old:prev,gap:current?current.adet-current.hedef:null,yoy:yoy,
       rankH:b360YtdRank(periods,B360_DEALER,p.key,'hgo'),
       rankA:b360YtdRank(periods,B360_DEALER,p.key,'adet')};
