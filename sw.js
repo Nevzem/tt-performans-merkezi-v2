@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-kasim-20261106-v1';
+const CACHE = 'ttpm-bayi360-20261113-v1';
 
 const ASSETS = [
   '.',
@@ -48,9 +48,11 @@ const ASSETS = [
   'js/month-end-report.js',
   'js/commitment-tracker.js',
   'js/bayi-comparison.js',
+  'js/bayi-360.js',
   'data/history/bayi-comparison-data.json',
   'data/history/month-end-daily.json',
   'css/bayi-comparison.css',
+  'css/bayi-360.css',
   'js/filters.js',
   'js/app.js',
   'js/matrix-v2.js',
