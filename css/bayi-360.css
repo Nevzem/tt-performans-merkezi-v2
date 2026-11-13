@@ -74,7 +74,8 @@
 .b360-matrix-yoy .b360-table td,.b360-matrix-yoy .b360-table tbody th{height:16.8px;font-size:9.7px}
 .b360-matrix-yoy .b360-table thead th{height:27px}
 .b360-rank-matrix{height:247px;margin:0 24px;padding:9px 11px}
-.b360-rank-matrix .b360-table td,.b360-rank-matrix .b360-table tbody th{height:23px;font-size:10px;text-align:center;padding:3px 2px}
+.b360-rank-matrix .b360-table thead th{height:29px}
+.b360-rank-matrix .b360-table td,.b360-rank-matrix .b360-table tbody th{height:19px;font-size:10px;text-align:center;padding:3px 2px}
 .b360-rank-matrix .b360-table tbody th{text-align:left}
 .b360-rank-top{color:#0b9c80;background:#e7faf4;font-weight:850!important}
 .b360-last-insight{margin:10px 24px 0;display:flex;align-items:center;gap:12px}
