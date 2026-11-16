@@ -110,6 +110,87 @@ function lgRoster(saved,i){
  var sm={};semiRows.forEach(function(r){sm[r.code]=r;});
  return lgPairs(2,semis).map(function(p){return lgCompare(sm[p[0]],sm[p[1]])<=0?p[0]:p[1];});
 }
+
+/* İkinci ödül: 16–30 Kasım boyunca, elense de tüm 11 bayinin 15 Kasım bazına
+ * göre yeni aktivasyonlarından hesaplanan tek dönem HGO. Günlük kümülatif
+ * puanlar TOPLANMAZ; aynı aktivasyonu iki defa saymamak için son rapor kullanılır. */
+function lgOverallRank(saved,through){
+ var base=saved[lgDate(15)];
+ if(!base)return {rows:[],date:null,missing:'15 Kasım başlangıç kapanışı eksik.'};
+ var dates=Object.keys(saved).filter(function(d){
+  return /^2026-11-(1[6-9]|2[0-9]|30)$/.test(d)&&(!through||d<=through);
+ }).sort();
+ var date=dates.pop();
+ if(!date)return {rows:[],date:null,missing:'16–30 Kasım güncel kapanış raporu bekleniyor.'};
+ var current=saved[date],days=Number(date.slice(-2))-15,rows=[];
+ for(var i=0;i<LEAGUE_CODES.length;i++){
+  var code=LEAGUE_CODES[i],b=base.dealers&&base.dealers[code],n=current.dealers&&current.dealers[code];
+  if(!b||!n)return {rows:[],date:date,missing:code+' kodlu bayi için eksik rapor verisi.'};
+  var ratios={},counts={};
+  for(var j=0;j<3;j++){
+   var p=['mobil','dsl','tv'][j],start=b[p],now=n[p];
+   if(!start||!now||!Number.isFinite(start.h)||start.h<=0||!Number.isFinite(start.a)||!Number.isFinite(now.a))
+    return {rows:[],date:date,missing:code+' · '+p+' verisi geçersiz.'};
+   var diff=now.a-start.a,target=start.h*days/30;
+   counts[p]=diff;ratios[p]=Math.max(0,diff/target*100);
+  }
+  var score=Math.round((Math.min(200,ratios.mobil)*.30+
+   Math.min(200,ratios.dsl)*.50+Math.min(200,ratios.tv)*.20)*10)/10;
+  rows.push({code:code,name:n.name,city:n.city,mobil:ratios.mobil,dsl:ratios.dsl,
+   tv:ratios.tv,score:score,counts:counts});
+ }
+ rows.sort(lgCompare);
+ rows.forEach(function(r,i){r.rank=i+1;});
+ return {rows:rows,date:date,days:days,missing:null};
+}
+function lgChampionCode(saved){
+ var roster=lgRoster(saved,3);
+ if(!roster)return null;
+ var finalRows=lgEndRows(saved,3,roster);
+ return finalRows&&finalRows.length===2?finalRows[0].code:null;
+}
+function lgAwardState(saved,through){
+ var overall=lgOverallRank(saved,through);
+ var champion=lgChampionCode(saved);
+ var done=!!(champion&&overall.date===lgDate(30)&&!overall.missing&&overall.rows.length===11);
+ // İki AYRI kazanan: Lig Şampiyonu aynı zamanda genel puan birincisiyse
+ // Performans Ödülü genel sıralamadaki sonraki bayiye gider.
+ var performance=done?overall.rows.find(function(r){return r.code!==champion;}):null;
+ return {overall:overall,champion:done?champion:null,performance:performance,
+  leader:overall.rows[0]||null,final:done};
+}
+function lgAwardCards(awards,saved){
+ var name=function(code){
+  if(!code)return '30 Kasım finali bekleniyor';
+  var item=saved[lgDate(30)]&&saved[lgDate(30)].dealers&&saved[lgDate(30)].dealers[code];
+  return item?lgEsc(item.name)+' · '+lgEsc(code):lgEsc(code);
+ };
+ var leader=awards.leader;
+ return '<div class="lg-awards"><div class="lg-award lg-award-gold"><small>🏆 1. ÖDÜL</small>'+
+  '<h3>LİG ŞAMPİYONU</h3><strong>'+name(awards.champion)+'</strong>'+
+  '<p>Eleme turları · Büyük final 28–30 Kasım</p></div>'+
+  '<div class="lg-award lg-award-turquoise"><small>🥇 2. ÖDÜL</small>'+
+  '<h3>PERFORMANS ŞAMPİYONU</h3><strong>'+
+  (awards.final?name(awards.performance.code):'16–30 Kasım genel puan sıralaması')+'</strong>'+
+  '<p>'+(awards.final?'Kazanan puanı: '+lgFmt(awards.performance.score,1):
+   leader?'Geçici lider: '+lgEsc(leader.name)+' · '+lgFmt(leader.score,1)+' puan':'Veriler bekleniyor')+
+   '</p></div></div>';
+}
+function lgOverallTable(awards){
+ var pack=awards.overall;
+ if(pack.missing)return '<div class="lg-empty"><b>Genel puan tablosu bekleniyor</b><p>'+lgEsc(pack.missing)+'</p></div>';
+ return '<div class="lg-table-scroll"><table class="lg-table"><thead><tr><th>Sıra</th><th>Bayi / Kod</th>'+
+  '<th>Mobil<br>HGO</th><th>DSL<br>HGO</th><th>TV<br>HGO</th><th>Genel Puan</th><th>Durum</th></tr></thead><tbody>'+
+  pack.rows.map(function(r,i){
+   var champion=awards.final&&awards.champion===r.code,performance=awards.final&&awards.performance.code===r.code;
+   var status=champion?'🏆 Lig Şampiyonu':performance?'🥇 Performans Şampiyonu':!awards.final&&i===0?'Genel Puan Lideri':'—';
+   return '<tr class="'+(i===0?'lg-first':'')+'"><td>'+(i+1)+'</td>'+
+    '<td class="lg-dealer"><b>'+lgEsc(r.name)+'</b><small>'+lgEsc(r.code)+' · '+lgEsc(r.city)+'</small></td>'+
+    '<td>'+lgPct(r.mobil)+'</td><td>'+lgPct(r.dsl)+'</td><td>'+lgPct(r.tv)+'</td>'+
+    '<td class="lg-score">'+lgFmt(r.score,1)+'</td><td>'+status+'</td></tr>';
+  }).join('')+'</tbody></table></div>';
+}
+
 function lgSnapshotRank(saved,i,roster,through){
  var pack=lgRows(saved,i,roster,through);
  if(pack.missing)return pack;
@@ -140,7 +221,7 @@ function lgMatches(saved,i,roster,pack){
   return '<div class="lg-match"><span class="lg-match-label">MAÇ '+(j+1)+(closed?' · TAMAMLANDI':' · DEVAM EDİYOR')+'</span>'+item(a)+item(b)+'</div>';
  }).join('')+'</div>';
 }
-function lgPoster(rows,stage,pack,closed){
+function lgPoster(rows,stage,pack,closed,awards){
  var leader=rows[0],first=stage===LEAGUE_STAGES[0],cut=first?8:null,n=rows.length;
  return '<div class="lg-poster" id="lg-poster"><div class="lg-p-top">TÜRK TELEKOM <span>🏆 ŞAMPİYONLAR LİGİ</span></div>'+
   '<div class="lg-p-title">GÜNLÜK PERFORMANS TAKİBİ</div><div class="lg-p-sub">'+lgEsc(stage.title)+' · '+stage.start+'–'+stage.end+' Kasım 2026 <span>Güncelleme: '+pack.date.slice(-2)+' Kasım</span></div>'+
@@ -151,8 +232,10 @@ function lgPoster(rows,stage,pack,closed){
    return '<tr class="'+status+'"><td>'+(i+1)+'</td><td><strong>'+lgEsc(r.name)+'</strong><small>'+lgEsc(r.code)+'</small></td><td>'+lgPct(r.mobil)+'</td><td>'+lgPct(r.dsl)+'</td><td>'+lgPct(r.tv)+'</td><td><b>'+lgFmt(r.score,1)+'</b></td><td>'+((r.change||0)>0?'↑'+r.change:(r.change||0)<0?'↓'+Math.abs(r.change):'–')+'</td></tr>'+
    (first&&i===7?'<tr class="lg-p-cut"><td colspan="7">ELEME ÇİZGİSİ – İLK 8 DEVAM EDER</td></tr>':'');
   }).join('')+'</tbody></table>'+
-  '<div class="lg-p-bottom"><div>🏆 '+(closed&&stage.advance===1?'ŞAMPİYON':'GÜNÜN LİDERİ')+'<strong>'+lgEsc(leader.name)+'</strong><small>LİG PUANI: '+lgFmt(leader.score,1)+'</small></div>'+
-  '<div>SON TUR TARİHİ <strong>'+stage.end+' KASIM</strong><small>16–30 Kasım 2026</small></div></div>'+
+  '<div class="lg-p-bottom"><div>🏆 '+(closed&&stage.advance===1?'LİG ŞAMPİYONU':'TUR LİDERİ')+'<strong>'+lgEsc(leader.name)+'</strong><small>LİG PUANI: '+lgFmt(leader.score,1)+'</small></div>'+
+  '<div>🥇 '+(awards.final?'PERFORMANS ŞAMPİYONU':'GENEL PUAN LİDERİ')+
+  '<strong>'+lgEsc(awards.final?awards.performance.name:awards.leader?awards.leader.name:'Henüz veri yok')+'</strong>'+
+  '<small>16–30 KASIM · '+(awards.final?'ÖDÜL PUANI: '+lgFmt(awards.performance.score,1):awards.leader?lgFmt(awards.leader.score,1)+' PUAN (GEÇİCİ)':'—')+'</small></div></div>'+
   '<footer>HGO: Turun hedef gerçekleşme oranı · Puan: %30 Mobil + %50 DSL + %20 TV (ürün başına %200 tavan).<br>15 Kasım öncesindeki aktivasyonlar puana dahil değildir. Her tur sıfırlanır.</footer></div>';
 }
 function leagueBackup(){
@@ -186,23 +269,27 @@ function renderLeague(){
  cards.className='cards single lg-page';cards.style.maxWidth='1180px';
  var dates=Object.keys(saved).sort(),pack=roster?lgSnapshotRank(saved,leagueStage,roster):{rows:[],date:null,missing:'Önceki turun kesin kapanış raporu gerekli.'};
  var ready=roster&&pack.rows.length===roster.length&&!pack.missing,closed=ready&&pack.date===lgDate(s.end),rows=ready?pack.rows:[];
+ var awards=lgAwardState(saved);
  var content='<section class="lg-shell"><header class="lg-hero"><span class="lg-eyebrow">KUZEY ANADOLU · TTM</span><h2>🏆 ŞAMPİYONLAR LİGİ</h2><p>11 bayi · 16–30 Kasım 2026 · Her tur yeni mücadele</p></header>'+
+  '<div class="lg-prize-sub">🏆 İKİ ÖDÜL · İKİ AYRI KAZANAN <span>Lig Şampiyonu + Performans Şampiyonu</span></div>'+
   '<div class="lg-rounds">'+LEAGUE_STAGES.map(function(x,i){return '<button class="'+(i===leagueStage?'active':'')+'" onclick="leagueSetStage('+i+')">'+(i+1)+'. '+lgEsc(x.title)+'<small>'+x.start+'–'+x.end+' Kasım</small></button>';}).join('')+'</div>'+
   '<div class="lg-stats"><div><small>TURDAKİ BAYİ</small><b>'+s.n+'</b></div><div><small>DEVAM EDECEK</small><b>'+s.advance+'</b></div><div><small>ELEME</small><b>'+(s.n-s.advance)+'</b></div><div><small>PUANLAMA</small><b>%30 / %50 / %20</b></div></div>'+
-  '<div class="lg-weight"><span>📱 Mobil <b>%30</b></span><span>🌐 DSL <b>%50</b></span><span>📺 TV <b>%20</b></span></div>'+
+  '<div class="lg-weight"><span>📱 Mobil <b>%30</b></span><span>🌐 DSL <b>%50</b></span><span>📺 TV <b>%20</b></span></div>'+lgAwardCards(awards,saved)+
   '<div class="lg-main-header"><div><h3>'+lgEsc(s.title)+' · '+s.start+'–'+s.end+' Kasım</h3><p>'+(pack.date?'Son kayıt: '+lgEsc(pack.date)+' · '+(closed?'Tur kapanışı alındı':'Geçici sıralama'):'Bekleyen raporlar')+'</p></div>'+
   '<button class="lg-png" '+(!ready?'disabled ':'')+'onclick="leagueDownloadPNG()">⬇ Günlük görsel (PNG)</button></div>';
  if(ready){content+=lgMatches(saved,leagueStage,roster,pack)+lgTable(rows,leagueStage===0,closed);
   content+='<div class="lg-leader">🏆 '+(closed&&leagueStage===3?'ŞAMPİYON':'GÜNÜN LİDERİ')+': <b>'+lgEsc(rows[0].name)+'</b><span>'+lgFmt(rows[0].score,1)+' puan</span></div>';
  }else content+='<div class="lg-empty"><b>Henüz puan hesaplanamıyor</b><p>'+lgEsc(pack.missing||'Gerekli kapanış verisi bulunamadı.')+'</p><small>İlk tur için 15 Kasım başlangıç raporu ve 16–19 Kasım güncel raporları gerekir. Sonraki turlarda 19, 23 ve 27 Kasım kesin kapanışları zorunludur.</small></div>';
+ content+='<div class="lg-overall"><div class="lg-overall-head"><h3>🥇 16–30 Kasım Genel Puan Yarışı</h3><p>Tüm 11 bayi yarışır; ligden elenen bayiler de bu sıralamada kalır. 15 Kasım bazından itibaren tek dönem HGO hesaplanır, günlük puanlar toplanmaz. '+(awards.overall.date?'Son güncelleme: '+awards.overall.date+' · '+(awards.final?'Kesin sonuç':'Geçici puanlar'):'Rapor bekleniyor')+'</p></div>'+lgOverallTable(awards)+
+  '<p class="lg-award-note">İki ayrı kazanan kuralı: Lig Şampiyonu genel puan sıralamasında da birinciyse Performans Şampiyonluğu ödülü diğer bayiler arasındaki en yüksek puanlı bayiye verilir. Sonuç 30 Kasım kapanış raporuyla kesinleşir.</p></div>';
  content+='<div class="lg-upload"><h3>📂 Rapor ve günlük veri kaydı</h3><p>15 Kasım raporunu bir kez kaydet. Sonraki günlerin Anadolu GM raporlarını ekleyince lig kendiliğinden güncellenir. Kapanış günü Excel içinden doğrulanamıyorsa tarih seçimi zorunludur.</p>'+
   '<div class="lg-input-row"><label>Rapor kapanış tarihi <input id="lg-report-date" type="date" min="2026-11-15" max="2026-11-30"></label><label class="lg-file-label">Excel raporu ekle<input type="file" accept=".xlsx,.xls" onchange="leagueUpload(this)"></label></div>'+
   '<div class="lg-saved"><b>Kaydedilen günler:</b> '+(dates.length?dates.map(function(x){return '<span>'+x.slice(-2)+' Kas</span>';}).join(''):'Henüz kayıt bulunmuyor')+'</div>'+
   '<div class="lg-backup"><button onclick="leagueBackup()">↓ Günlük veri yedeği (.json)</button><label>↑ Yedek içe aktar<input type="file" accept=".json" onchange="leagueRestore(this)"></label></div>'+
   '<small class="lg-privacy">⚠ Yedek dosyası gerçek aktivasyon adetlerini içerir; yalnız yetkili kişilerle paylaşın. Paylaşım PNG görselinde adetler yer almaz. Veriler bu cihazda saklanır, GitHub’a gönderilmez.</small></div>'+
-  '<footer class="lg-foot">Lig HGO = (Tur içinde yeni net aktivasyon / aylık hedef × 30 / turda geçen gün) × 100. Her ürün puanı %200 tavanlıdır. Tur sonunda puanlar sıfırlanır. Eşitlikte sırasıyla DSL HGO, Mobil HGO, TV HGO, DSL/Mobil/TV net adetleri ve bayi kodu kullanılır. Kesin tur sonucu için kapanış raporu zorunludur.</footer>'+
+  '<footer class="lg-foot">Lig HGO = (Tur içinde yeni net aktivasyon / aylık hedef × 30 / turda geçen gün) × 100. Genel Puan aynı hesapla 16 Kasım’dan itibaren birikimli olarak 15 Kasım bazıyla hesaplanır, her günlük puan ayrı ayrı toplanmaz. Her ürün puanı %200 tavanlıdır. Eşitlikte sırasıyla DSL HGO, Mobil HGO, TV HGO, DSL/Mobil/TV net adetleri ve bayi kodu kullanılır. Kesin ödüller için 30 Kasım kapanış raporu zorunludur.</footer>'+
   (leagueNotice?'<div class="lg-notice">'+lgEsc(leagueNotice)+'</div>':'')+'</section>';
- if(ready)content+='<div id="lg-poster-host" class="lg-poster-host">'+lgPoster(rows,s,pack,closed)+'</div>';
+ if(ready)content+='<div id="lg-poster-host" class="lg-poster-host">'+lgPoster(rows,s,pack,closed,lgAwardState(saved,pack.date))+'</div>';
  cards.innerHTML=content;
  var poster=document.getElementById('lg-poster');if(poster&&pack.date)poster.setAttribute('data-day',pack.date);
 }
