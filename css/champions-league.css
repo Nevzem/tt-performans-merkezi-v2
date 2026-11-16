@@ -120,3 +120,30 @@
  .lg-input-row input[type=date]{width:100%}
  .lg-file-label{align-items:center}
 }
+
+
+/* İki ödül: Lig Şampiyonu + 16–30 Kasım Performans Şampiyonu */
+.lg-prize-sub{margin:14px 0 4px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 17px;border-radius:12px;background:#0a3155;color:#ffdd88;border:1px solid #caa85c;font-size:15px;font-weight:900;letter-spacing:.4px}
+.lg-prize-sub span{color:#c7f5fd;font-size:11px;font-weight:600;letter-spacing:0}
+.lg-awards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0 20px}
+.lg-award{padding:16px 19px;min-height:132px;border-radius:14px;color:white;display:flex;flex-direction:column;gap:8px}
+.lg-award small{font-size:11px;letter-spacing:1.5px;font-weight:800}
+.lg-award h3{font-size:18px;margin:0;color:#fff}
+.lg-award strong{font-size:17px;color:#fff;line-height:1.4}
+.lg-award p{font-size:11px;line-height:1.5;margin:auto 0 0}
+.lg-award-gold{background:linear-gradient(132deg,#183457,#3c2e17);border:1px solid #dbbb68;box-shadow:inset 0 0 24px #f4be4928}
+.lg-award-gold small,.lg-award-gold p{color:#f5d789}
+.lg-award-turquoise{background:linear-gradient(132deg,#092c52,#09636d);border:1px solid #39d9da;box-shadow:inset 0 0 24px #00e2e329}
+.lg-award-turquoise small,.lg-award-turquoise p{color:#84f5f4}
+.lg-overall{margin:20px 0 16px}
+.lg-overall-head{padding:16px 18px;background:linear-gradient(110deg,#082947,#136f85);border-radius:13px 13px 0 0;color:white}
+.lg-overall-head h3{margin:0 0 7px;color:#fff;font-size:19px}
+.lg-overall-head p{margin:0;color:#d4ebf3;font-size:12px;line-height:1.6}
+.lg-overall .lg-table-scroll{border-radius:0 0 13px 13px}
+.lg-award-note{font-size:12px;line-height:1.65;color:#58708d;background:#eef8fd;padding:13px 15px;border-radius:10px;margin:12px 0}
+@media(max-width:650px){
+ .lg-prize-sub{flex-direction:column;align-items:flex-start;font-size:13px}
+ .lg-awards{grid-template-columns:1fr}
+ .lg-award{min-height:118px;padding:15px}
+ .lg-overall-head h3{font-size:17px}
+}
