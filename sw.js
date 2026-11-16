@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-champions-two-awards-20261116-v2';
+const CACHE = 'ttpm-zirve-koray-20261116-v1';
 
 const ASSETS = [
   '.',
@@ -50,11 +50,13 @@ const ASSETS = [
   'js/bayi-comparison.js',
   'js/bayi-360.js',
   'js/champions-league.js',
+  'js/koray-zirve.js',
   'data/history/bayi-comparison-data.json',
   'data/history/month-end-daily.json',
   'css/bayi-comparison.css',
   'css/bayi-360.css',
   'css/champions-league.css',
+  'css/koray-zirve.css',
   'js/filters.js',
   'js/app.js',
   'js/matrix-v2.js',

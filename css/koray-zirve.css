@@ -1,0 +1,111 @@
+/* Koray TTM Zirve Yarışı — bağımsız 12 bayi ve elemesiz yarışma */
+.kz-page{padding:0!important;width:100%}
+.kz-shell{max-width:1200px;margin:0 auto;padding:15px 14px 28px;color:#173455;font-family:inherit}
+.kz-hero{position:relative;overflow:hidden;padding:31px 25px 27px;border-radius:20px;color:#fff;background:radial-gradient(circle at 98% 20%,#0b8590,#0d3758 52%,#072646 90%);border:1px solid #35d5da;box-shadow:0 9px 30px #0d3b5550}
+.kz-hero:after{content:"";position:absolute;border:35px solid #33ecee1f;width:180px;height:180px;border-radius:50%;right:-75px;top:-95px}
+.kz-hero>span{font-weight:800;letter-spacing:2px;font-size:11px;color:#b3ffff}
+.kz-hero h2{font-size:clamp(29px,4.5vw,41px);margin:7px 0 6px;color:white;letter-spacing:-.4px}
+.kz-hero p{color:#c3edf4;font-size:13px;margin:0}
+.kz-hero-tag{font-size:11px;letter-spacing:1.3px;font-weight:800;color:#ffdb8b;margin-top:20px}
+.kz-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:15px 0}
+.kz-stats>div{background:white;border:1px solid #d3e4eb;border-radius:13px;padding:15px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.kz-stats small{font-size:10px;color:#6b889e;font-weight:800;letter-spacing:.5px}
+.kz-stats strong{color:#073b56;font-size:23px;white-space:normal;overflow-wrap:anywhere}
+.kz-stats>div:nth-child(2) strong,.kz-stats>div:nth-child(3) strong{font-size:15px}
+.kz-weights{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:22px}
+.kz-weights div{display:flex;justify-content:space-between;align-items:center;gap:4px;background:#e6f4f7;border:1px solid #b9dfe4;border-radius:12px;padding:12px 13px;color:#075a68;font-size:12px;font-weight:700}
+.kz-weights div:nth-child(-n+2){background:#dafaf5;border-color:#65d7c5}
+.kz-weights b{font-size:22px;color:#086577}
+.kz-title{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:12px}
+.kz-title h3{font-size:21px;color:#0b3557;margin:0 0 6px}
+.kz-title p{font-size:12px;color:#648093;margin:0}
+.kz-title button{border:0;border-radius:11px;background:linear-gradient(110deg,#13a1a8,#046477);color:white;padding:12px 17px;font-size:12px;font-weight:900;white-space:nowrap;cursor:pointer}
+.kz-title button:disabled{opacity:.42;cursor:not-allowed}
+.kz-medals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:15px}
+.kz-medals>div{border:1px solid #b8d5dd;border-radius:12px;padding:12px 14px;background:#f4fcfd;display:flex;flex-direction:column;gap:6px}
+.kz-medals>div:first-child{border-color:#d4ad55;background:#fff9e6}
+.kz-medals small{font-size:10px;font-weight:800;color:#557887;letter-spacing:.6px}
+.kz-medals strong{font-size:15px;color:#15394e}
+.kz-medals span{color:#0c8d8e;font-weight:800;font-size:12px}
+.kz-table-scroll{overflow-x:auto;border-radius:14px;border:1px solid #bcd9e4;box-shadow:0 4px 18px #092b4720}
+.kz-table{width:100%;min-width:785px;border-collapse:collapse;background:white;font-size:12px;font-variant-numeric:tabular-nums;text-align:center}
+.kz-table th{padding:12px 6px;background:#0b3958;color:white;font-size:11px}
+.kz-table td{padding:10px 7px;color:#29485e;border-bottom:1px solid #e1ebed}
+.kz-table tbody tr:last-child td{border-bottom:0}
+.kz-table .kz-name{text-align:left;min-width:170px}
+.kz-name b{display:block;color:#0a3b53}
+.kz-name small{display:block;font-size:10px;color:#7894a3;margin-top:3px}
+.kz-table .kz-top td{background:#f0fbfb}
+.kz-table .kz-top-1 td{background:#fff8e5}
+.kz-table .kz-pts{font-size:16px;font-weight:900;color:#007f82}
+.kz-table .kz-rise{color:#009a6e;font-weight:900}
+.kz-table .kz-fall{color:#d64852;font-weight:900}
+.kz-result{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:15px 0 19px;border:1px solid #ddb96e;border-radius:12px;padding:14px 17px;background:linear-gradient(120deg,#0b344d,#244d52);color:#ffe3a2;font-weight:800;font-size:12px}
+.kz-result b{font-size:17px;color:white}
+.kz-result span{margin-left:auto;color:#c9f8ef}
+.kz-empty{background:#edf8fb;padding:29px 18px;text-align:center;border-radius:12px;border:1px dashed #93c7d7;margin-bottom:17px}
+.kz-empty strong{color:#115065;font-size:17px}
+.kz-empty p{font-size:13px;color:#456d83}
+.kz-empty small{font-size:11px;color:#6e94a5;line-height:1.6}
+.kz-import{border-radius:14px;background:white;border:1px solid #d2e2e8;padding:20px;margin:20px 0}
+.kz-import h3{margin:0 0 8px;font-size:18px;color:#093b58}
+.kz-import p{color:#648095;line-height:1.65;font-size:12px;margin:0 0 16px}
+.kz-inputs{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.kz-inputs>label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:700;color:#2c546f}
+.kz-inputs input[type=date]{padding:9px;border:1px solid #c6d9e2;border-radius:8px;min-height:43px;font:inherit}
+.kz-inputs .kz-upload{background:#047a87;border-radius:9px;color:white;padding:14px 17px;cursor:pointer}
+.kz-upload input,.kz-tools input{display:none}
+.kz-dates{font-size:12px;color:#607d93;margin:15px 0;line-height:2}
+.kz-dates span{background:#edf7fb;border:1px solid #d2e6ea;border-radius:6px;padding:2px 7px;margin:2px;font-size:11px}
+.kz-tools{display:flex;flex-wrap:wrap;gap:9px}
+.kz-tools button,.kz-tools label{background:#f4fbfc;border:1px solid #c2d9e5;border-radius:8px;padding:10px 12px;color:#2a5a70;font-family:inherit;font-size:12px;cursor:pointer}
+.kz-privacy{display:block;color:#8d6632;font-size:11px;margin-top:12px;line-height:1.6}
+.kz-rules{font-size:12px;line-height:1.7;color:#557789;background:#f0f8fa;padding:18px;border-radius:13px}
+.kz-rules b{font-size:13px;color:#166479}
+.kz-rules p{margin:6px 0 0}
+.kz-notice{padding:11px 13px;margin:13px 0;border:1px solid #a3d9df;background:#e6f9fc;color:#087e84;font-size:12px;border-radius:8px;font-weight:700}
+.kz-poster-holder{position:absolute;left:-9999px;top:0;width:1020px;pointer-events:none}
+.kz-poster{width:1020px;box-sizing:border-box;background:radial-gradient(circle at 100% 0%,#137087 0,#061d3b 48%,#071b2c 100%);padding:34px 25px;color:white;border-radius:25px;border:3px solid #24f5e1;font-family:Arial,'Helvetica Neue',sans-serif}
+.kz-p-meta{display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:800;letter-spacing:1px;color:#c6ffff}
+.kz-p-meta b{color:#ffe08f}
+.kz-p-heading{text-align:center;padding:34px 0 24px}
+.kz-p-heading small{font-size:18px;letter-spacing:3px;color:#ffe29d;font-weight:800}
+.kz-p-heading h1{font-size:67px;letter-spacing:3px;margin:12px 0;color:#fff;text-shadow:0 0 16px #00e6e784}
+.kz-p-heading p{font-size:20px;letter-spacing:1px;color:#7bfff7;font-weight:800}
+.kz-p-prizes{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-bottom:17px}
+.kz-p-prizes>div{border:2px solid #d2b76f;border-radius:14px;text-align:center;padding:17px;background:#11384d;color:#ffdf88;font-size:20px;font-weight:900}
+.kz-p-prizes>div:nth-child(2){border-color:#27c5cd;color:#73ebfa}
+.kz-p-prizes strong{display:block;color:#fff;font-size:27px;margin:10px 0 7px}
+.kz-p-prizes small{display:block;font-size:14px;color:#c5eeee}
+.kz-p-weight{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:18px}
+.kz-p-weight span{border:1px solid #27d4d1;background:#0b5364;border-radius:11px;padding:13px 6px;text-align:center;font-size:17px;font-weight:800}
+.kz-p-weight b{display:block;font-size:26px;margin-top:4px;color:#fff0a2}
+.kz-poster table{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums;text-align:center}
+.kz-poster th{background:#125273;color:#e2fafa;padding:11px 4px;border:1px solid #33819c;font-size:13px}
+.kz-poster td{background:#0a344e;border:1px solid #31647d;padding:9px 4px}
+.kz-poster td:nth-child(2){text-align:left;min-width:200px;padding-left:8px}
+.kz-poster td b{display:block;font-size:14px}
+.kz-poster td small{display:block;font-size:10px;margin-top:3px;color:#abcbdc}
+.kz-poster td strong{color:#79fff0;font-size:20px}
+.kz-poster .kz-p-podium td{background:#185666}
+.kz-poster .kz-p-podium:first-child td{background:#5a482a}
+.kz-poster .kz-p-podium:first-child td strong{color:#ffe083}
+.kz-p-footer{text-align:center;border-top:1px solid #2a7186;margin-top:24px;padding-top:17px;font-size:15px;line-height:1.7;color:#c3eaf2}
+@media(max-width:680px){
+ .kz-shell{padding:10px 9px 20px}
+ .kz-hero{padding:22px 18px}
+ .kz-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .kz-stats strong{font-size:21px}
+ .kz-weights{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .kz-title{align-items:flex-start;flex-direction:column}
+ .kz-title h3{font-size:19px}
+ .kz-title button{width:100%}
+ .kz-medals{grid-template-columns:1fr}
+ .kz-medals>div{min-height:60px}
+ .kz-result span{margin-left:0}
+ .kz-inputs{display:grid;grid-template-columns:1fr}
+ .kz-inputs label{width:100%}
+ .kz-inputs input[type=date]{width:100%}
+ .kz-inputs .kz-upload{text-align:center}
+ .kz-import{padding:14px}
+}
