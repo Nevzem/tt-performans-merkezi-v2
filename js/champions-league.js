@@ -180,7 +180,9 @@ async function leagueDownloadPNG(){
 }
 function renderLeague(){
  var cards=document.getElementById('cards');if(!cards)return;
- var saved=lgRead(),s=LEAGUE_STAGES[leagueStage],roster=lgRoster(saved,leagueStage);
+ var saved=lgRead();
+ if(!leagueStageTouched){var last=Object.keys(saved).filter(function(k){return /^2026-11-\d\d$/.test(k);}).sort().pop();if(last){var d=Number(last.slice(-2)),idx=LEAGUE_STAGES.findIndex(function(s){return d<=s.end;});leagueStage=Math.max(0,idx);}}
+ var s=LEAGUE_STAGES[leagueStage],roster=lgRoster(saved,leagueStage);
  cards.className='cards single lg-page';cards.style.maxWidth='1180px';
  var dates=Object.keys(saved).sort(),pack=roster?lgSnapshotRank(saved,leagueStage,roster):{rows:[],date:null,missing:'Önceki turun kesin kapanış raporu gerekli.'};
  var ready=roster&&pack.rows.length===roster.length&&!pack.missing,closed=ready&&pack.date===lgDate(s.end),rows=ready?pack.rows:[];
