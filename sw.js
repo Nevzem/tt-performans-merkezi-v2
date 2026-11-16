@@ -99,7 +99,7 @@ self.addEventListener('fetch', function (e) {
         return res;
       })
       .catch(function () {
-        return caches.match(e.request).then(function (m) {
+        return caches.match(e.request, {ignoreSearch: true}).then(function (m) {
           return m || caches.match('index.html');
         });
       })
