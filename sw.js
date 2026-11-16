@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-bayi360-20261113-v1';
+const CACHE = 'ttpm-champions-20261116-v1';
 
 const ASSETS = [
   '.',
@@ -49,10 +49,12 @@ const ASSETS = [
   'js/commitment-tracker.js',
   'js/bayi-comparison.js',
   'js/bayi-360.js',
+  'js/champions-league.js',
   'data/history/bayi-comparison-data.json',
   'data/history/month-end-daily.json',
   'css/bayi-comparison.css',
   'css/bayi-360.css',
+  'css/champions-league.css',
   'js/filters.js',
   'js/app.js',
   'js/matrix-v2.js',
