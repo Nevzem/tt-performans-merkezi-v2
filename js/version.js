@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-11-16 · TTM Şampiyonlar Ligi · İki Ödül';
+const APP_BUILD = '2026-11-16 · TTM Şampiyonlar Ligi + Koray Zirve Yarışı';
