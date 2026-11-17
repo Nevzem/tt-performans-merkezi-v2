@@ -36,6 +36,13 @@ function merTone(v){return v == null?'neutral':v>=100?'good':v>=80?'watch':'low'
 function merDeltaTone(v){return v == null?'neutral':v>=0?'good':'low';}
 function merCaptureUpload(parsed,edm,groupEdm){
   var period=merPeriodKey(parsed.donem); if(!period)return;
+  // Eksik EDM/SY kolonları önceki AYNI DÖNEM kaydını silmesin.
+  var previous=MER_LIVE&&MER_LIVE.period===period?MER_LIVE:MER_ARCHIVES[period]||null;
+  if(!edm&&previous&&previous.edm)edm=previous.edm;
+  if(!groupEdm&&previous&&previous.group&&previous.group.edm)groupEdm=previous.group.edm;
+  if(parsed.partial&&!parsed.partial.hasSySheet&&previous&&previous.sy){
+    if(!parsed.syData||!Object.keys(parsed.syData.sy||{}).length)parsed.syData=previous.sy;
+  }
   var days=parsed.syData||{},groupTtm=parsed.detay&&parsed.detay.grupBayiler?{bayiler:parsed.detay.grupBayiler,pers:{}}:null;
   var group=merRollupGroup({ttm:groupTtm,edm:groupEdm});
   MER_LIVE={period:period,ttm:parsed.detay,edm:edm,group:group,matrix:parsed.matrix,sy:parsed.syData,uploadedAt:new Date().toISOString(),sample:false,closed:!!(days.calismaGun>0 && days.calisilanGun>=days.calismaGun)};

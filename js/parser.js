@@ -153,6 +153,26 @@ function comparisonNationalActuals(rows){
   out.mobil=out.postpaid==null||out.prepaid==null?null:out.postpaid+out.prepaid;
   return {channel:'TTM',tr:out};
 }
+/* Tek sayfalık veya yalnız TTM BUAY içeren bayi raporlarını da tanı.
+ * Üç satırlı başlık ürünleri doğrulanmadıkça anonim sayfayı TTM sayma. */
+function findTTMReportSheet(wb) {
+  var direct=wb.SheetNames.find(function(name){return name.trim().toLocaleUpperCase('tr-TR')==='TTM BUAY';});
+  if(direct)return direct;
+  var upper=function(v){return String(v==null?'':v).trim().toLocaleUpperCase('tr-TR');};
+  return wb.SheetNames.find(function(name){
+    var sheet=wb.Sheets[name];if(!sheet)return false;
+    var rows=XLSX.utils.sheet_to_json(sheet,{header:1,defval:null}).slice(0,10);
+    return rows.some(function(head,i){
+      if(i<1||!head)return false;
+      var prod=rows[i-1]||[];
+      return upper(head[0])==='ANA BÖLGE'&&upper(head[2])==='BAYİ KODU'&&
+        upper(head[3])==='BAYİ ADI'&&upper(head[8])==='DÖNEM'&&
+        upper(prod[49])==='POSTPAID'&&upper(prod[53])==='PREPAID'&&
+        upper(prod[57])==='DSL'&&upper(prod[69])==='IPTV'&&
+        upper(prod[77])==='AKILLI CİHAZ';
+    });
+  });
+}
 function parseWB(wb, options) {
   const out = { pers: { "Toplam Mobil": [], "Faturalı": [], "Faturasız": [], "DSL": [], "Toplam TV": [], "IPTV": [], "Uydu": [], "Cihaz": [] },
                 bayi: { "Postpaid": [], "Prepaid": [], "Toplam Mobil": [], "DSL": [], "Toplam TV": [], "Akıllı Cihaz": [], "Diğer Cihaz": [] } };
@@ -164,11 +184,13 @@ function parseWB(wb, options) {
   let donem = null, persCount = 0, bayiCount = 0;
   const warnings = [];
 
-  const wsName = wb.SheetNames.find(s => s.trim().toUpperCase() === "ÇALIŞAN");
-  if (!wsName) throw new Error("'ÇALIŞAN' sheet'i bulunamadı.");
-  const rows = XLSX.utils.sheet_to_json(wb.Sheets[wsName], { header: 1, defval: null });
+  const wsName = wb.SheetNames.find(s => s.trim().toLocaleUpperCase('tr-TR') === "ÇALIŞAN");
+  const wsB = findTTMReportSheet(wb);
+  if (!wsB) throw new Error("'TTM BUAY' sayfası veya uyumlu tek sayfalık TTM bayi raporu bulunamadı.");
+  // Yalnız bayi raporunda ÇALIŞAN sayfasının olmaması yüklemeyi engellemez.
+  const rows = wsName ? XLSX.utils.sheet_to_json(wb.Sheets[wsName], { header: 1, defval: null }) : [];
   let hi = rows.findIndex(r => r && String(r[0]).trim() === "Ana Bölge");
-  if (hi === -1) throw new Error("ÇALIŞAN: 'Ana Bölge' başlığı bulunamadı.");
+  if (wsName && hi === -1) throw new Error("ÇALIŞAN: 'Ana Bölge' başlığı bulunamadı.");
   for (const r of rows.slice(hi + 1)) {
     if (!r || !r[1] || String(r[1]).trim().toUpperCase() !== "KUZEY ANADOLU") continue;
     if (!r[6] || ["-", ""].includes(String(r[6]).trim())) continue;
@@ -192,8 +214,6 @@ function parseWB(wb, options) {
     pushP("Cihaz", ch + gh, ca + ga);
   }
 
-  const wsB = wb.SheetNames.find(s => s.trim().toUpperCase() === "TTM BUAY");
-  if (!wsB) throw new Error("'TTM BUAY' sheet'i bulunamadı.");
   const rowsB = XLSX.utils.sheet_to_json(wb.Sheets[wsB], { header: 1, defval: null });
   let hib = rowsB.findIndex(r => r && String(r[0]).trim() === "Ana Bölge");
   if (hib === -1) throw new Error("TTM BUAY: 'Ana Bölge' başlığı bulunamadı.");
@@ -214,6 +234,7 @@ function parseWB(wb, options) {
   }
   for (const r of rowsB.slice(hib + 1)) {
     if (!r || !r[3]) continue;
+    if (!donem && /^20\d{4}$/.test(String(r[8]||'').trim())) donem = String(r[8]).trim();
     const bolge_ = r[1] ? String(r[1]).trim().toUpperCase() : "";
     // ── Matris: tüm Anadolu + Kuzey toplamları ve Kuzey satırları ──
     {
@@ -388,9 +409,32 @@ function parseWB(wb, options) {
       syOut[nm] = rec;
     }
   }
+  // SY ÖZET yoksa yalnız dosyada bulunan TTM bayi verisinden SY toplamlarını hesapla.
+  // Forecast günü bilinmediğinden tahmini HGO üretme; bu alan null kalır.
+  if (!wsSY) {
+    const syMap={"Mobil Toplam":"Toplam Mobil","Faturalı":"Postpaid",
+      "Faturasız":"Prepaid","Evde İnternet":"DSL","IPTV":"IPTV",
+      "Uydu":"Uydu","Tivibu Toplam":"Toplam TV","Cihaz":"Akıllı Cihaz",
+      "Cihaz Diğer":"Diğer Cihaz"};
+    Object.values(detayBayiler).forEach(function(dealer){
+      if(!dealer.sy)return;
+      const rec=syOut[dealer.sy]||(syOut[dealer.sy]={});
+      Object.keys(syMap).forEach(function(name){
+        const src=dealer.prods&&dealer.prods[syMap[name]];
+        if(!src||typeof src.h!=='number'||typeof src.a!=='number')return;
+        const val=rec[name]||(rec[name]={h:0,a:0,f:null});
+        val.h+=src.h;val.a+=src.a;
+      });
+    });
+    Object.values(syOut).forEach(function(rec){
+      Object.values(rec).forEach(function(p){p.h=Math.round(p.h);p.a=Math.round(p.a);});
+    });
+  }
   const dfmt = donem && donem.length === 6 ? donem.slice(0,4) + "/" + donem.slice(4) : (donem || "—");
   const fileName=options && options.fileName || '',reportDate=workbookReportDate(wb,dfmt,fileName,{calismaGun:syToplamGun,calisilanGun:syGun});
-  return { data: out, donem: dfmt, persCount, bayiCount, warnings, matrix, kupa: kupaRows, detay: { period: dfmt, reportDate: reportDate.date, reportDateSource: reportDate.source, sourceFileName:fileName, forecastDays: {d:syGun,t:syToplamGun}, bayiler: detayBayiler, cariBayiler: detayCariBayiler, grupBayiler: detayGrupBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
+  return { partial: {ttmOnly:!wsName,hasEmployeeSheet:!!wsName,hasSySheet:!!wsSY,
+    hasEDMSheet:wb.SheetNames.some(function(n){return n.trim().toLocaleUpperCase('tr-TR')==='EDM BUAY';})},
+    data: out, donem: dfmt, persCount, bayiCount, warnings, matrix, kupa: kupaRows, detay: { period: dfmt, reportDate: reportDate.date, reportDateSource: reportDate.source, sourceFileName:fileName, forecastDays: {d:syGun,t:syToplamGun}, bayiler: detayBayiler, cariBayiler: detayCariBayiler, grupBayiler: detayGrupBayiler, pers: detayPers }, syData: { calismaGun: syToplamGun, calisilanGun: syGun, sy: syOut, products: Object.keys(syOut).length ? Object.keys(syOut[Object.keys(syOut)[0]]) : [] } };
 }
 
 /* ───── EDM PARSER — Dinamik kolon tespiti ───── */
@@ -738,13 +782,38 @@ function wire(boxId, inputId, isPrev) {
           _setBoxLabel(box, f.name);
           msg.className = "pmsg ok show"; msg.textContent = "✅ Karşılaştırma yüklendi (" + parsed.donem + ") · Kupa Son 24 Saat aktif";
         } else {
+          // Eksik personel datasını aynı ay içinde önceki tam rapordan koru.
+          // Farklı ayın (ör. gömülü demo) personel verisini yeni ay gibi gösterme.
+          var samePeriod=parsed.donem===DONEM;
+          if(parsed.partial&&parsed.partial.ttmOnly&&samePeriod&&DATA&&DATA.pers){
+            parsed.data.pers=DATA.pers;
+            if(DETAY&&DETAY.pers)parsed.detay.pers=DETAY.pers;
+          }
+          if(parsed.partial&&!parsed.partial.hasSySheet&&samePeriod&&SYDATA&&SYDATA.sy){
+            var derived=parsed.syData.sy;
+            parsed.syData.sy=Object.assign({},SYDATA.sy,derived);
+            parsed.syData.calismaGun=SYDATA.calismaGun;
+            parsed.syData.calisilanGun=SYDATA.calisilanGun;
+            if(SYDATA.calismaGun>0&&SYDATA.calisilanGun>0){
+              Object.keys(derived).forEach(function(name){
+                Object.values(derived[name]).forEach(function(p){
+                  p.f=p.h>0?Math.round(p.a/p.h*SYDATA.calismaGun/SYDATA.calisilanGun*1000)/10:null;
+                });
+              });
+            }
+          }
           if (typeof leagueCaptureCurrentUpload === 'function') leagueCaptureCurrentUpload(parsed);
           if (typeof korayCaptureCurrentUpload === 'function') korayCaptureCurrentUpload(parsed);
           DATA = parsed.data; DONEM = parsed.donem; MATRIX = parsed.matrix; if (parsed.kupa && parsed.kupa.length) KUPA = parsed.kupa; if (parsed.detay && Object.keys(parsed.detay.bayiler).length) { DETAY = parsed.detay; detayKod = null; }
           try { trendCapture(); } catch(e) {} try { if (typeof kupaSnapCapture === 'function') kupaSnapCapture(); } catch(e) {} if (parsed.syData && Object.keys(parsed.syData.sy).length) SYDATA = parsed.syData; box.classList.add("loaded");
           _setBoxLabel(box, f.name);
-          document.getElementById("status").textContent = "📊 " + parsed.persCount + " personel · " + parsed.bayiCount + " bayi · " + parsed.donem;
-          msg.className = "pmsg ok show"; msg.textContent = "✅ " + parsed.persCount + " personel + " + parsed.bayiCount + " bayi işlendi";
+          document.getElementById("status").textContent = parsed.partial&&parsed.partial.ttmOnly
+            ? "📊 " + parsed.bayiCount + " TTM bayi · " + parsed.donem
+            : "📊 " + parsed.persCount + " personel · " + parsed.bayiCount + " bayi · " + parsed.donem;
+          msg.className = "pmsg ok show";
+          msg.textContent = parsed.partial&&parsed.partial.ttmOnly
+            ? "✅ " + parsed.bayiCount + " TTM bayi güncellendi · Personel/EDM dosyada yok (mevcut veriler korunur)"
+            : "✅ " + parsed.persCount + " personel + " + parsed.bayiCount + " bayi işlendi";
           sy = "Tümü";
           /* Sprint 3: TTM son yükleme zaman damgası */
           try { localStorage.setItem(LOAD_KEY_TTM, new Date().toISOString()); } catch(_e) {}
@@ -756,9 +825,8 @@ function wire(boxId, inputId, isPrev) {
           }
           /* Sprint 19: input değerlerini state'e senkronla */
           if (typeof syncDayInputs === 'function') syncDayInputs();
-          /* EDM BUAY parse (mevcut Excel'den) */
-          if (typeof merCaptureUpload === 'function') merCaptureUpload(parsed, null);
-          try {
+          /* EDM BUAY yoksa eski EDM'yi sıfırlama veya yanlış sheet'i EDM sayma. */
+          if(parsed.partial&&parsed.partial.hasEDMSheet)try {
             const wb2 = XLSX.read(new Uint8Array(e.target.result), { type: "array" });
             const edm = parseEDMSheet(wb2);
             EDM_DATA  = edm.data;
@@ -772,9 +840,13 @@ function wire(boxId, inputId, isPrev) {
               merCaptureUpload(parsed, regional.error ? null : regional.detay, group.error ? null : group.detay);
             }
             if (typeof updateKanalBadge === 'function') updateKanalBadge();
-          } catch(edmErr) { EDM_ERROR = "EDM parse hatası: " + edmErr.message; }
+          } catch(edmErr) {
+            EDM_ERROR = "EDM parse hatası: " + edmErr.message;
+            if(typeof merCaptureUpload==='function')merCaptureUpload(parsed,null,null);
+          }
+          else if(typeof merCaptureUpload==='function')merCaptureUpload(parsed,null,null);
           /* Sprint 3: EDM son yükleme + DATA_HEALTH */
-          try { if (!EDM_ERROR) localStorage.setItem(LOAD_KEY_EDM, new Date().toISOString()); } catch(_e) {}
+          try { if (parsed.partial && parsed.partial.hasEDMSheet && !EDM_ERROR) localStorage.setItem(LOAD_KEY_EDM, new Date().toISOString()); } catch(_e) {}
           DATA_HEALTH = { bayiCount: parsed.bayiCount, persCount: parsed.persCount, syCount: parsed.syData ? Object.keys(parsed.syData.sy).length : 0, warnings: parsed.warnings || [], ok: (parsed.warnings || []).length === 0 };
         }
         buildTabs(); render();
