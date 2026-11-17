@@ -223,14 +223,12 @@ function lgMatches(saved,i,roster,pack){
 }
 /* Tek kaynaklı premium poster: uygulamada canlı görünür, PNG'de aynı DOM çizilir. */
 function lgPoster(rows,stage,pack,closed,awards,saved,roster){
- if(typeof leaguePremiumSvg!=='function'){
-  return '<div class="lg-empty">Premium görsel şablonu yüklenemedi. Sayfayı güncelleyin.</div>';
- }
- var svg=leaguePremiumSvg(rows,stage,pack,closed,awards,saved);
- var uri='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
- return '<div id="lg-poster" class="lg-svg-frame"'+(pack&&pack.date?' data-day="'+lgEsc(pack.date)+'"':'')+'>'+
-  '<img id="lg-poster-image" class="lg-svg-image" alt="Şampiyonlar Ligi günlük performans takip görseli" src="'+uri+'">'+
-  '</div>';
+ // The ORIGINAL uploaded reference image is the fixed background, not a redraw.
+ return '<div id="lg-poster" class="lg-original-photo-wrap"'+
+   (pack&&pack.date?' data-day="'+lgEsc(pack.date)+'"':'')+'>'+
+   '<canvas id="lg-poster-canvas" class="lg-original-photo" width="1024" height="1536"'+
+   ' role="img" aria-label="Şampiyonlar Ligi – Orijinal premium görsel üzerinde canlı HGO tablosu"></canvas>'+
+   '</div>';
 }
 function leagueBackup(){
  var data=lgRead(),blob=new Blob([JSON.stringify({version:1,snapshots:data},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
@@ -252,31 +250,32 @@ async function leagueRestore(input){
 /* Paylaş ve PNG aynı canlı poster DOM'unu kullanır; ayrı bir görsel şablonu yoktur. */
 /* 1024×1536 aynı SVG, paylaşım için 2× çözünürlükte PNG yapılır. */
 async function leagueDownloadPNG(){
- var img=document.getElementById('lg-poster-image'),poster=document.getElementById('lg-poster');
- if(!img||!poster||!poster.getAttribute('data-day')){
-  alert('Önce 15 Kasım başlangıç ve güncel performans raporlarını yükleyin.');return;
+ var canvas=document.getElementById('lg-poster-canvas'),wrapper=document.getElementById('lg-poster');
+ if(!canvas||!wrapper||!wrapper.getAttribute('data-day')){
+  alert('Önce 15 Kasım başlangıç ve güncel raporları yükleyin.');return;
  }
  var btn=document.getElementById('lg-share-btn');
  if(btn){btn.disabled=true;btn.textContent='Görsel hazırlanıyor…';}
  try{
-  if(img.decode)await img.decode();
-  else if(!img.complete)await new Promise(function(resolve,reject){img.onload=resolve;img.onerror=reject;});
-  var canvas=document.createElement('canvas');
-  canvas.width=2048;canvas.height=3072;
-  var ctx=canvas.getContext('2d');
-  if(!ctx)throw Error('Görsel çizim alanı oluşturulamadı.');
+  // Share precisely the SAME canvas pixels visible in the live application.
+  if(window.lgPosterPaintPromise)await window.lgPosterPaintPromise;
+  if(canvas.getAttribute('data-ready')!=='1')throw Error('Referans görseli yüklenemedi.');
+  var exported=document.createElement('canvas');
+  exported.width=2048;exported.height=3072;
+  var ctx=exported.getContext('2d');
+  if(!ctx)throw Error('PNG çizim alanı oluşturulamadı.');
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
-  ctx.drawImage(img,0,0,canvas.width,canvas.height);
-  var blob=await new Promise(function(resolve){canvas.toBlob(resolve,'image/png');});
-  if(!blob)throw Error('PNG dosyası oluşturulamadı.');
-  var name='TTM_Sampiyonlar_Ligi_'+poster.getAttribute('data-day')+'.png';
-  var shareFile=typeof File!=='undefined'?new File([blob],name,{type:'image/png'}):null;
-  if(shareFile&&navigator.share&&navigator.canShare&&navigator.canShare({files:[shareFile]})){
-   try{await navigator.share({files:[shareFile],title:'TTM Şampiyonlar Ligi Günlük Performans'});return;}
-   catch(err){if(err.name==='AbortError')return;}
+  ctx.drawImage(canvas,0,0,exported.width,exported.height);
+  var blob=await new Promise(function(resolve){exported.toBlob(resolve,'image/png');});
+  if(!blob)throw Error('PNG oluşturulamadı.');
+  var name='TTM_Sampiyonlar_Ligi_'+wrapper.getAttribute('data-day')+'.png';
+  var file=typeof File!=='undefined'?new File([blob],name,{type:'image/png'}):null;
+  if(file&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+   try{await navigator.share({files:[file],title:'TTM Şampiyonlar Ligi Günlük Performans'});return;}
+   catch(e){if(e.name==='AbortError')return;}
   }
-  var url=URL.createObjectURL(blob),link=document.createElement('a');
-  link.href=url;link.download=name;document.body.appendChild(link);link.click();link.remove();
+  var url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
   setTimeout(function(){URL.revokeObjectURL(url);},1500);
  }catch(e){alert('Görsel paylaşılamadı: '+e.message);}
  finally{if(btn){btn.disabled=false;btn.textContent='↗ Paylaş / PNG';}}
@@ -321,5 +320,8 @@ function renderLeague(){
   (leagueNotice?'<div class="lg-notice">'+lgEsc(leagueNotice)+'</div>':'')+'</section>';
 
  cards.innerHTML=content;
+ if(typeof leagueDrawApprovedPhoto==='function'){
+  leagueDrawApprovedPhoto(rows,s,pack,closed,lgAwardState(saved,pack.date||null),saved);
+ }
 
 }
