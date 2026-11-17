@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-league-exact-vector-20261117-v1';
+const CACHE = 'ttpm-exact-photo-league-20261117-v1';
 
 const ASSETS = [
   '.',
@@ -50,7 +50,8 @@ const ASSETS = [
   'js/commitment-tracker.js',
   'js/bayi-comparison.js',
   'js/bayi-360.js',
-  'js/champions-league-poster-svg.js',
+  'js/champions-league-reference.js',
+  'assets/champions-league-approved-reference.jpg',
   'js/champions-league.js',
   'js/koray-zirve.js',
   'data/history/bayi-comparison-data.json',
