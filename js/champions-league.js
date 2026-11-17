@@ -223,62 +223,14 @@ function lgMatches(saved,i,roster,pack){
 }
 /* Tek kaynaklı premium poster: uygulamada canlı görünür, PNG'de aynı DOM çizilir. */
 function lgPoster(rows,stage,pack,closed,awards,saved,roster){
- var first=stage===LEAGUE_STAGES[0],n=stage.n;
- var shown=rows&&rows.length?rows:(
-  first?LEAGUE_CODES.map(function(code){
-   var b=saved&&saved[lgDate(15)]&&saved[lgDate(15)].dealers&&saved[lgDate(15)].dealers[code];
-   return {code:code,name:b?b.name:'Bayi verisi bekleniyor',mobil:null,dsl:null,tv:null,score:null,change:null,placeholder:true};
-  }):Array.from({length:n},function(_,i){
-   return {code:'',name:'Tur verisi bekleniyor',mobil:null,dsl:null,tv:null,score:null,change:null,placeholder:true};
-  })
- );
- var leader=rows&&rows.length?rows[0]:null;
- var overall=awards&&awards.leader?awards.leader:null;
- var overallWinner=awards&&awards.final&&awards.performance?awards.performance:null;
- var regular=awards&&awards.final&&awards.champion;
- var scoreTitle=regular?'PERFORMANS ŞAMPİYONU':'GENEL PUAN LİDERİ';
- var scoreRow=overallWinner||overall;
- var date=pack&&pack.date?pack.date:null;
- var prettyDate=date?String(Number(date.slice(-2)))+' Kasım':'Rapor bekleniyor';
- var out='<div class="lg-poster" id="lg-poster"'+(date?' data-day="'+lgEsc(date)+'"':'')+'>'+
-  '<div class="lg-p-top"><div class="lg-p-brand">TÜRK TELEKOM</div><div class="lg-p-brand-right">🏆 ŞAMPİYONLAR LİGİ</div></div>'+
-  '<div class="lg-p-title"><span class="lg-p-laurel">❧</span>GÜNLÜK PERFORMANS TAKİBİ<span class="lg-p-laurel lg-p-laurel-right">❧</span></div>'+
-  '<div class="lg-p-sub"><b>'+lgEsc(stage.title)+' · '+stage.start+'–'+stage.end+' Kasım 2026</b>'+
-    '<b>Güncelleme: '+prettyDate+'</b></div>'+
-  '<div class="lg-p-stats">'+
-    '<div class="lg-p-stat lg-p-blue"><span class="lg-p-stat-icon">♙</span><strong>'+n+'</strong><small>BAYİ YARIŞIYOR</small></div>'+
-    '<div class="lg-p-stat lg-p-teal"><span class="lg-p-stat-icon">»</span><strong>'+stage.advance+'</strong><small>TUR ATLAYACAK</small></div>'+
-    '<div class="lg-p-stat lg-p-red"><span class="lg-p-stat-icon">⊗</span><strong>'+(stage.n-stage.advance)+'</strong><small>ELENECEK</small></div>'+
-    '<div class="lg-p-stat lg-p-gold"><span class="lg-p-stat-icon">🏆</span><strong>30</strong><small>KASIM FİNAL</small></div>'+
-  '</div>'+
-  '<div class="lg-p-weight"><span>♧ &nbsp; %30 MOBİL</span><span>⌁ &nbsp; %50 DSL</span><span>▣ &nbsp; %20 TV</span></div>'+
-  '<table class="lg-p-board"><colgroup><col style="width:7%"><col style="width:30%"><col style="width:14%"><col style="width:14%"><col style="width:14%"><col style="width:16%"><col style="width:5%"></colgroup>'+
-  '<thead><tr><th>#</th><th>BAYİ / KOD</th><th>MOBİL<br>HGO</th><th>DSL<br>HGO</th><th>TV<br>HGO</th><th>LİG<br>PUANI</th><th>↕</th></tr></thead><tbody>'+
-  shown.map(function(r,i){
-   var klass=r.placeholder?'lg-p-pending':first&&i>=8?'lg-p-risk':i===0?'lg-p-gold':'';
-   var trend=r.change==null?'–':r.change>0?'↑'+r.change:r.change<0?'↓'+Math.abs(r.change):'→';
-   var score=r.placeholder?'—':lgFmt(r.score,1);
-   var title=lgEsc(r.name||'Bayi verisi bekleniyor');
-   return '<tr class="'+klass+'"><td class="lg-p-rank">'+(i+1)+'</td>'+
-    '<td class="lg-p-dealer"><strong>'+title+'</strong><small>'+lgEsc(r.code||'—')+'</small></td>'+
-    '<td>'+lgPct(r.mobil)+'</td><td>'+lgPct(r.dsl)+'</td><td>'+lgPct(r.tv)+'</td>'+
-    '<td class="lg-p-score"><b>'+score+'</b></td><td class="lg-p-trend">'+trend+'</td></tr>'+
-    (first&&i===7?'<tr class="lg-p-cut"><td colspan="7">ELEME ÇİZGİSİ – İLK 8 DEVAM EDER</td></tr>':'');
-  }).join('')+'</tbody></table>'+
-  '<div class="lg-p-bottom">'+
-   '<div class="lg-p-award lg-p-award-gold"><span class="lg-p-award-icon">🏆</span><div>'+
-     '<h3>'+(closed&&stage.advance===1?'LİG ŞAMPİYONU':'TUR LİDERİ')+'</h3>'+
-     '<strong>'+lgEsc(leader?leader.name:'Rapor bekleniyor')+'</strong>'+
-     '<small>LİG PUANI: '+(leader?lgFmt(leader.score,1):'—')+'</small></div></div>'+
-   '<div class="lg-p-award lg-p-award-blue"><span class="lg-p-award-icon">🥇</span><div>'+
-     '<h3>'+scoreTitle+'</h3>'+
-     '<strong>'+lgEsc(scoreRow?scoreRow.name:'Rapor bekleniyor')+'</strong>'+
-     '<small>16–30 KASIM · '+(scoreRow?lgFmt(scoreRow.score,1)+' PUAN'+(awards.final?'':' (GEÇİCİ)'):'VERİ BEKLENİYOR')+'</small>'+
-    '</div></div></div>'+
-  '<footer class="lg-p-legend"><span class="lg-p-legend-i">ⓘ</span><div>HGO: Turun hedef gerçekleşme oranı · Puan: %30 Mobil + %50 DSL + %20 TV (ürün başına %200 tavan).'+
-    '<br>15 Kasım öncesindeki aktivasyonlar puana dahil değildir. Her tur sıfırlanır.</div></footer>'+
+ if(typeof leaguePremiumSvg!=='function'){
+  return '<div class="lg-empty">Premium görsel şablonu yüklenemedi. Sayfayı güncelleyin.</div>';
+ }
+ var svg=leaguePremiumSvg(rows,stage,pack,closed,awards,saved);
+ var uri='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+ return '<div id="lg-poster" class="lg-svg-frame"'+(pack&&pack.date?' data-day="'+lgEsc(pack.date)+'"':'')+'>'+
+  '<img id="lg-poster-image" class="lg-svg-image" alt="Şampiyonlar Ligi günlük performans takip görseli" src="'+uri+'">'+
   '</div>';
- return out;
 }
 function leagueBackup(){
  var data=lgRead(),blob=new Blob([JSON.stringify({version:1,snapshots:data},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
@@ -298,34 +250,33 @@ async function leagueRestore(input){
  }catch(e){leagueMsg('⚠ '+e.message);}finally{input.value='';}
 }
 /* Paylaş ve PNG aynı canlı poster DOM'unu kullanır; ayrı bir görsel şablonu yoktur. */
+/* 1024×1536 aynı SVG, paylaşım için 2× çözünürlükte PNG yapılır. */
 async function leagueDownloadPNG(){
- var node=document.getElementById('lg-poster');
- if(!node||!node.getAttribute('data-day')){
-  alert('Önce başlangıç ve güncel performans raporlarını yükleyin.');return;
+ var img=document.getElementById('lg-poster-image'),poster=document.getElementById('lg-poster');
+ if(!img||!poster||!poster.getAttribute('data-day')){
+  alert('Önce 15 Kasım başlangıç ve güncel performans raporlarını yükleyin.');return;
  }
  var btn=document.getElementById('lg-share-btn');
  if(btn){btn.disabled=true;btn.textContent='Görsel hazırlanıyor…';}
  try{
-  await ensureH2C();
-  var canvas=await html2canvas(node,{
-   backgroundColor:'#041a30',scale:2,useCORS:true,windowWidth:1200,scrollX:0,scrollY:0,
-   onclone:function(doc){
-    var el=doc.getElementById('lg-poster');
-    if(el){el.classList.add('lg-for-export');el.style.width='980px';el.style.maxWidth='none';}
-    var host=doc.getElementById('lg-visual-host');
-    if(host){host.style.width='980px';host.style.maxWidth='none';host.style.overflow='visible';}
-   }
-  });
+  if(img.decode)await img.decode();
+  else if(!img.complete)await new Promise(function(resolve,reject){img.onload=resolve;img.onerror=reject;});
+  var canvas=document.createElement('canvas');
+  canvas.width=2048;canvas.height=3072;
+  var ctx=canvas.getContext('2d');
+  if(!ctx)throw Error('Görsel çizim alanı oluşturulamadı.');
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+  ctx.drawImage(img,0,0,canvas.width,canvas.height);
   var blob=await new Promise(function(resolve){canvas.toBlob(resolve,'image/png');});
-  if(!blob)throw Error('PNG üretilemedi.');
-  var fileName='TTM_Sampiyonlar_Ligi_'+node.getAttribute('data-day')+'.png';
-  var file=typeof File!=='undefined'?new File([blob],fileName,{type:'image/png'}):null;
-  if(file&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-   try{await navigator.share({files:[file],title:'TTM Şampiyonlar Ligi Günlük Performans'});return;}
-   catch(e){if(e.name==='AbortError')return;/* desteklenmeyen paylaşımda PNG indir */}
+  if(!blob)throw Error('PNG dosyası oluşturulamadı.');
+  var name='TTM_Sampiyonlar_Ligi_'+poster.getAttribute('data-day')+'.png';
+  var shareFile=typeof File!=='undefined'?new File([blob],name,{type:'image/png'}):null;
+  if(shareFile&&navigator.share&&navigator.canShare&&navigator.canShare({files:[shareFile]})){
+   try{await navigator.share({files:[shareFile],title:'TTM Şampiyonlar Ligi Günlük Performans'});return;}
+   catch(err){if(err.name==='AbortError')return;}
   }
   var url=URL.createObjectURL(blob),link=document.createElement('a');
-  link.href=url;link.download=fileName;document.body.appendChild(link);link.click();link.remove();
+  link.href=url;link.download=name;document.body.appendChild(link);link.click();link.remove();
   setTimeout(function(){URL.revokeObjectURL(url);},1500);
  }catch(e){alert('Görsel paylaşılamadı: '+e.message);}
  finally{if(btn){btn.disabled=false;btn.textContent='↗ Paylaş / PNG';}}
