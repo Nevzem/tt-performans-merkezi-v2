@@ -846,7 +846,7 @@ function wire(boxId, inputId, isPrev) {
           }
           else if(typeof merCaptureUpload==='function')merCaptureUpload(parsed,null,null);
           /* Sprint 3: EDM son yükleme + DATA_HEALTH */
-          try { if (!EDM_ERROR) localStorage.setItem(LOAD_KEY_EDM, new Date().toISOString()); } catch(_e) {}
+          try { if (parsed.partial && parsed.partial.hasEDMSheet && !EDM_ERROR) localStorage.setItem(LOAD_KEY_EDM, new Date().toISOString()); } catch(_e) {}
           DATA_HEALTH = { bayiCount: parsed.bayiCount, persCount: parsed.persCount, syCount: parsed.syData ? Object.keys(parsed.syData.sy).length : 0, warnings: parsed.warnings || [], ok: (parsed.warnings || []).length === 0 };
         }
         buildTabs(); render();
