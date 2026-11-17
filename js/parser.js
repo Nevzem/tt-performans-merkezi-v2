@@ -905,13 +905,17 @@ function wire(boxId, inputId, isPrev) {
           DATA = parsed.data; DONEM = parsed.donem; MATRIX = parsed.matrix; if (parsed.kupa && parsed.kupa.length) KUPA = parsed.kupa; if (parsed.detay && Object.keys(parsed.detay.bayiler).length) { DETAY = parsed.detay; detayKod = null; }
           try { trendCapture(); } catch(e) {} try { if (typeof kupaSnapCapture === 'function') kupaSnapCapture(); } catch(e) {} if (parsed.syData && Object.keys(parsed.syData.sy).length) SYDATA = parsed.syData; box.classList.add("loaded");
           _setBoxLabel(box, f.name);
-          document.getElementById("status").textContent = parsed.partial&&parsed.partial.ttmOnly
+          var dateCaption=parsed.detay&&parsed.detay.manualDateEntry
+            ? " · "+uploadDateLabel(parsed.detay.reportDate)+" → "+uploadDateLabel(parsed.detay.closingDate) : "";
+          document.getElementById("status").textContent = (parsed.partial&&parsed.partial.ttmOnly
             ? "📊 " + parsed.bayiCount + " TTM bayi · " + parsed.donem
-            : "📊 " + parsed.persCount + " personel · " + parsed.bayiCount + " bayi · " + parsed.donem;
+            : "📊 " + parsed.persCount + " personel · " + parsed.bayiCount + " bayi · " + parsed.donem) + dateCaption;
           msg.className = "pmsg ok show";
-          msg.textContent = parsed.partial&&parsed.partial.ttmOnly
+          msg.textContent = (parsed.partial&&parsed.partial.ttmOnly
             ? "✅ " + parsed.bayiCount + " TTM bayi güncellendi · Personel/EDM dosyada yok (mevcut veriler korunur)"
-            : "✅ " + parsed.persCount + " personel + " + parsed.bayiCount + " bayi işlendi";
+            : "✅ " + parsed.persCount + " personel + " + parsed.bayiCount + " bayi işlendi") +
+            (parsed.detay&&parsed.detay.manualDateEntry
+              ? " · Forecast: "+parsed.detay.forecastDays.d+"/"+parsed.detay.forecastDays.t+" gün" : "");
           sy = "Tümü";
           /* Sprint 3: TTM son yükleme zaman damgası */
           try { localStorage.setItem(LOAD_KEY_TTM, new Date().toISOString()); } catch(_e) {}
