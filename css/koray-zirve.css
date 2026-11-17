@@ -109,3 +109,31 @@
  .kz-inputs .kz-upload{text-align:center}
  .kz-import{padding:14px}
 }
+
+
+/* Premium Zirve Yarışı — one visible, source-bound poster for both screen and PNG. */
+.kz-shell-premium{max-width:1100px}
+.kz-live-toolbar{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:1px 0 12px}
+.kz-live-toolbar h2{font-size:22px;color:#0b3557;margin:0 0 5px;line-height:1.25;font-weight:900}
+.kz-live-toolbar p{color:#617d94;font-size:12px;line-height:1.5;margin:0}
+.kz-share-premium{background:linear-gradient(110deg,#093d60,#027e8c);border:1px solid #1ae0ed;border-radius:11px;color:#fff;font-weight:900;font-size:13px;padding:12px 18px;white-space:nowrap;cursor:pointer;box-shadow:0 4px 14px #007f9638}
+.kz-share-premium:hover:not(:disabled){filter:brightness(1.1)}
+.kz-share-premium:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.kz-live-visual{max-width:1024px;width:100%;margin:0 auto 18px;overflow:visible}
+.kz-premium-poster{width:100%;aspect-ratio:2/3;background:#05253b;position:relative;overflow:hidden;box-shadow:0 9px 32px #032b4542}
+.kz-premium-image{width:100%;height:auto;aspect-ratio:2/3;object-fit:contain;display:block;border:0;margin:0;user-select:none;-webkit-user-drag:none}
+.kz-ranking-details{background:#f8fdff;border:1px solid #cce1ea;border-radius:13px;margin:13px 0 20px;overflow:hidden}
+.kz-ranking-details summary{cursor:pointer;padding:15px 17px;color:#113e59;font-size:14px;font-weight:900;line-height:1.5}
+.kz-ranking-details summary span{color:#5d8798;font-size:11px;font-weight:500;margin-left:8px}
+.kz-ranking-details[open] summary{background:#e5f5f8}
+.kz-ranking-details .kz-table-scroll{border:0;border-radius:0;box-shadow:none}
+@media(max-width:650px){
+ .kz-shell-premium{padding:8px 6px 16px}
+ .kz-live-toolbar{display:flex;flex-direction:column;align-items:stretch;gap:11px;padding:3px 3px 0}
+ .kz-live-toolbar h2{font-size:18px}
+ .kz-live-toolbar p{font-size:11px}
+ .kz-share-premium{width:100%;text-align:center}
+ .kz-premium-poster{box-shadow:0 5px 19px #031a302c}
+ .kz-ranking-details summary{font-size:12px;padding:12px}
+ .kz-ranking-details summary span{display:block;margin-left:0;margin-top:5px}
+}
