@@ -147,3 +147,132 @@
  .lg-award{min-height:118px;padding:15px}
  .lg-overall-head h3{font-size:17px}
 }
+
+
+/* ══ PREMIUM LIVE LEAGUE POSTER — reference-matched ══
+   On-screen poster is the same DOM used by html2canvas PNG export.
+   Colors / card ordering / gold winner / elimination lane mirror reference. */
+.lg-shell-live{max-width:1100px}
+.lg-live-toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:4px 2px 13px}
+.lg-live-toolbar h2{font-size:21px;line-height:1.3;color:#092e53;margin:0 0 5px}
+.lg-live-toolbar p{font-size:12px;color:#678198;margin:0}
+.lg-visual-host{width:100%;max-width:1000px;margin:11px auto 25px;overflow:visible}
+.lg-visual-host .lg-poster{box-sizing:border-box;width:100%;max-width:none;border:2px solid #06d4eb;border-radius:22px;overflow:hidden;padding:23px 20px 24px;
+ font-family:Arial,'Helvetica Neue',sans-serif;color:#f8fcff;
+ background:linear-gradient(133deg,transparent 0 14%,#00e4ff12 14% 17%,transparent 17% 83%,#10c5fb14 83% 87%,transparent 87%),
+ radial-gradient(ellipse at 80% 0%,#0b3f61 0%,transparent 48%),
+ linear-gradient(167deg,#03192e 0%,#05243f 46%,#001527 100%);
+ box-shadow:0 10px 28px #0628472c,0 0 21px #08b5ed26,inset 0 0 24px #0079aa22;position:relative;isolation:isolate;
+}
+.lg-visual-host .lg-poster:before{content:"";position:absolute;inset:0;pointer-events:none;z-index:-1;
+ background:repeating-linear-gradient(150deg,transparent 0,transparent 130px,#19b5df07 130px,#19b5df07 132px)}
+.lg-visual-host .lg-p-top{display:flex;justify-content:space-between;align-items:center;gap:14px;font-weight:900;font-size:19px;letter-spacing:.4px;margin:2px 5px 18px;color:#fff}
+.lg-visual-host .lg-p-brand{border-left:5px solid #04e3f1;padding-left:14px;white-space:nowrap}
+.lg-visual-host .lg-p-brand-right{color:#ffd57a;white-space:nowrap;text-align:right;font-size:22px}
+.lg-visual-host .lg-p-title{font-size:clamp(24px,4.5vw,41px);font-weight:900;letter-spacing:1px;line-height:1.3;
+ margin:0 1px 19px;padding:16px 16px;border:2px solid #03dff1;border-radius:20px;color:#faffff;
+ background:linear-gradient(115deg,#001b2e,#073f55 50%,#041b31);
+ box-shadow:0 0 13px #00dfff94,inset 0 0 18px #00dfff29,0 8px 16px #020c185c;
+ text-shadow:0 0 14px #00dff9a3;display:flex;align-items:center;justify-content:space-around;gap:10px;text-align:center}
+.lg-visual-host .lg-p-laurel{color:#ffe78b;text-shadow:0 0 10px #ffe78b;transform:rotate(-25deg);font-size:35px}
+.lg-visual-host .lg-p-laurel-right{transform:scaleX(-1) rotate(-25deg)}
+.lg-visual-host .lg-p-sub{margin:0 2px 17px;display:flex;justify-content:space-between;align-items:center;gap:9px;font-size:18px;color:#fff;font-weight:800}
+.lg-visual-host .lg-p-sub b{font-weight:900}
+.lg-visual-host .lg-p-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin:0 1px 15px}
+.lg-visual-host .lg-p-stat{position:relative;min-width:0;min-height:100px;border:1.6px solid #0addff;border-radius:15px;
+ padding:12px 7px 10px 45px;display:flex;align-items:center;justify-content:center;flex-direction:column;
+ text-align:center;background:linear-gradient(139deg,#043958,#084269aa 55%,#00213c);
+ box-shadow:inset 0 0 14px #00d4eb30,0 0 11px #02e8f62f}
+.lg-visual-host .lg-p-stat-icon{position:absolute;left:12px;top:29px;color:#40f3ff;font-size:29px;font-weight:800;border-right:1px solid #00dfff7d;padding-right:10px;line-height:1.2}
+.lg-visual-host .lg-p-stat strong{display:block;color:#fff;font-size:39px;line-height:1.1;font-weight:900}
+.lg-visual-host .lg-p-stat small{font-size:11px;color:#effdff;line-height:1.2;margin-top:5px;letter-spacing:.3px}
+.lg-visual-host .lg-p-teal{border-color:#03ecdd;background:linear-gradient(140deg,#084d54,#00605d70)}
+.lg-visual-host .lg-p-teal .lg-p-stat-icon{color:#48fff6;border-color:#00ebda}
+.lg-visual-host .lg-p-red{border-color:#fc4e78;background:linear-gradient(140deg,#371f38,#19172a)}
+.lg-visual-host .lg-p-red .lg-p-stat-icon{color:#ff819d;border-color:#fd597d}
+.lg-visual-host .lg-p-gold{border-color:#ffdc76;background:linear-gradient(140deg,#594b28,#112b30)}
+.lg-visual-host .lg-p-gold .lg-p-stat-icon{color:#ffe49c;border-color:#e7c469}
+.lg-visual-host .lg-p-weight{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 1px 20px}
+.lg-visual-host .lg-p-weight span{border:1.6px solid #12d9f8;background:linear-gradient(150deg,#0a3658,#063c61,#001e31);
+ border-radius:13px;padding:14px 8px;text-align:center;color:#fff;font-size:22px;font-weight:900;
+ box-shadow:inset 0 0 11px #00d7f434,0 0 8px #00d0ff30}
+.lg-visual-host .lg-p-weight span:nth-child(2){border-color:#04ffe7;background:linear-gradient(130deg,#058c87,#00a9a3,#06505d);
+ box-shadow:0 0 12px #01e7d18c,inset 0 0 10px #c9ffff32}
+.lg-visual-host .lg-p-board{table-layout:fixed;width:100%;font-size:15px;border-collapse:collapse;border:1px solid #2997b5;color:#fff;font-variant-numeric:tabular-nums}
+.lg-visual-host .lg-p-board th{padding:12px 5px;background:linear-gradient(#084870,#03304d);border:1px solid #218bae;color:#f4fcff;font-size:14px;line-height:1.14;text-align:center}
+.lg-visual-host .lg-p-board td{padding:8px 5px;height:35px;line-height:1.15;text-align:center;
+ border:1px solid #226383;background:#05253bdc;color:#f8fbff}
+.lg-visual-host .lg-p-board .lg-p-dealer{text-align:left;padding-left:11px}
+.lg-visual-host .lg-p-dealer strong{display:block;font-size:14px;color:#fff;line-height:1.22;white-space:normal;overflow-wrap:anywhere;text-align:left}
+.lg-visual-host .lg-p-dealer small{display:block;font-size:11px;color:#b4cbd7;margin-top:3px}
+.lg-visual-host .lg-p-score b{display:block;font-size:23px;color:#58fff6;line-height:1.1}
+.lg-visual-host .lg-p-rank{font-weight:900;font-size:17px}
+.lg-visual-host .lg-p-trend{font-size:18px;color:#c4e4ed}
+.lg-visual-host .lg-p-board tr.lg-p-gold td{background:linear-gradient(120deg,#70501a,#302913);border-color:#ffd05f;
+ box-shadow:inset 0 1px #ffe495,inset 0 -1px #ffc95f}
+.lg-visual-host .lg-p-board tr.lg-p-gold .lg-p-score b{color:#ffe28d}
+.lg-visual-host .lg-p-board tr.lg-p-risk td{background:linear-gradient(110deg,#58102c,#360e24);border-color:#b64f66}
+.lg-visual-host .lg-p-board tr.lg-p-risk .lg-p-score b{color:#ff93a2}
+.lg-visual-host .lg-p-board tr.lg-p-pending td{background:#05273e}
+.lg-visual-host .lg-p-board tr.lg-p-pending td:not(.lg-p-dealer){color:#9cb9c9}
+.lg-visual-host .lg-p-board tr.lg-p-cut td{background:linear-gradient(90deg,#067f93,#075874,#067f93);color:#fff;
+ text-align:center;padding:10px 3px;height:auto;font-size:15px;font-weight:900;letter-spacing:.45px;
+ border-color:#06cdeb;box-shadow:inset 0 2px 9px #00f1ff5a}
+.lg-visual-host .lg-p-bottom{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:27px 0 23px}
+.lg-visual-host .lg-p-award{position:relative;display:flex;align-items:center;justify-content:center;gap:17px;
+ min-width:0;border:2px solid #02d7f9;border-radius:17px;min-height:130px;padding:16px;
+ box-shadow:inset 0 0 28px #00dffd20,0 0 15px #00dffd45;
+ background:linear-gradient(120deg,#05263f,#034a5d);text-align:center}
+.lg-visual-host .lg-p-award-gold{border-color:#ffd46a;background:linear-gradient(125deg,#69501c,#231e1b 59%,#493414);
+ box-shadow:inset 0 0 20px #ffd56470,0 0 17px #ffd5648a}
+.lg-visual-host .lg-p-award-icon{font-size:49px;border-right:1px solid #e5bd57;padding-right:16px;line-height:1.1}
+.lg-visual-host .lg-p-award-blue .lg-p-award-icon{border-color:#02d7ed}
+.lg-visual-host .lg-p-award h3{font-size:20px;line-height:1.2;font-weight:900;color:#ffe088;margin:0 0 10px}
+.lg-visual-host .lg-p-award-blue h3{color:#53fff5}
+.lg-visual-host .lg-p-award strong{display:block;font-weight:900;color:#fff;font-size:25px;line-height:1.2;overflow-wrap:anywhere}
+.lg-visual-host .lg-p-award small{display:block;color:#ffdc87;font-size:17px;font-weight:900;margin-top:7px;line-height:1.3}
+.lg-visual-host .lg-p-award-blue small{color:#46ffef}
+.lg-visual-host .lg-p-legend{display:flex;align-items:center;gap:17px;background:linear-gradient(145deg,#042842,#023551);
+ border:1px solid #3bd3f6;border-radius:15px;padding:18px 20px;color:#d7f1f7;
+ font-size:14px;line-height:1.8;text-align:left;margin:30px 0 3px}
+.lg-visual-host .lg-p-legend-i{color:#7df9ff;border-right:1px solid #14d8e5;padding-right:14px;font-size:33px}
+.lg-match-panel{margin:15px 0 20px}
+.lg-match-panel h3{color:#123d56;font-size:18px;margin:15px 0}
+@media(max-width:750px){
+ .lg-live-toolbar{align-items:flex-start;flex-direction:column;gap:10px}
+ .lg-live-toolbar .lg-png{width:100%}
+ .lg-visual-host .lg-poster{border-radius:14px;padding:11px 7px 15px}
+ .lg-visual-host .lg-p-top{margin:1px 3px 12px;gap:5px;font-size:clamp(9px,2.45vw,15px)}
+ .lg-visual-host .lg-p-brand{border-left-width:3px;padding-left:7px}
+ .lg-visual-host .lg-p-brand-right{font-size:clamp(9px,2.4vw,15px)}
+ .lg-visual-host .lg-p-title{font-size:clamp(15px,4.5vw,27px);padding:12px 4px;margin-bottom:13px;border-radius:11px;letter-spacing:.1px}
+ .lg-visual-host .lg-p-laurel{font-size:18px}
+ .lg-visual-host .lg-p-sub{font-size:clamp(9px,2.25vw,14px);margin-bottom:12px}
+ .lg-visual-host .lg-p-stats{gap:4px;margin-bottom:10px}
+ .lg-visual-host .lg-p-stat{padding:8px 3px;min-height:64px;border-radius:8px}
+ .lg-visual-host .lg-p-stat-icon{display:none}
+ .lg-visual-host .lg-p-stat strong{font-size:clamp(21px,5.2vw,32px)}
+ .lg-visual-host .lg-p-stat small{font-size:clamp(7px,1.8vw,10px);letter-spacing:0}
+ .lg-visual-host .lg-p-weight{gap:4px;margin-bottom:12px}
+ .lg-visual-host .lg-p-weight span{padding:10px 2px;border-radius:8px;font-size:clamp(9px,2.7vw,15px)}
+ .lg-visual-host .lg-p-board{font-size:clamp(8px,2.25vw,12px)}
+ .lg-visual-host .lg-p-board th{font-size:clamp(7px,1.9vw,10px);padding:8px 1px}
+ .lg-visual-host .lg-p-board td{height:31px;padding:6px 1px}
+ .lg-visual-host .lg-p-board .lg-p-dealer{padding-left:4px}
+ .lg-visual-host .lg-p-dealer strong{font-size:clamp(8px,2.14vw,11px)}
+ .lg-visual-host .lg-p-dealer small{font-size:clamp(7px,1.72vw,9px);margin-top:3px}
+ .lg-visual-host .lg-p-score b{font-size:clamp(11px,3.2vw,16px)}
+ .lg-visual-host .lg-p-rank{font-size:clamp(9px,2.4vw,13px)}
+ .lg-visual-host .lg-p-trend{font-size:clamp(10px,2.6vw,13px)}
+ .lg-visual-host .lg-p-board tr.lg-p-cut td{font-size:clamp(8px,2.4vw,12px);padding:9px 1px}
+ .lg-visual-host .lg-p-bottom{gap:7px;margin:15px 0 15px}
+ .lg-visual-host .lg-p-award{min-height:95px;padding:9px 5px;border-radius:9px;gap:4px}
+ .lg-visual-host .lg-p-award-icon{font-size:18px;padding-right:4px}
+ .lg-visual-host .lg-p-award h3{font-size:clamp(10px,2.5vw,14px);margin-bottom:5px}
+ .lg-visual-host .lg-p-award strong{font-size:clamp(11px,3vw,16px)}
+ .lg-visual-host .lg-p-award small{font-size:clamp(8px,2.12vw,12px)}
+ .lg-visual-host .lg-p-legend{margin:14px 0 2px;padding:9px 8px;font-size:clamp(8px,2.1vw,11px);line-height:1.45;border-radius:9px;gap:5px}
+ .lg-visual-host .lg-p-legend-i{font-size:19px;padding-right:5px}
+}
+/* Desktop-size export paints from the SAME source component. */
+.lg-visual-host .lg-poster.lg-for-export{box-sizing:border-box;width:980px!important;max-width:none!important}
