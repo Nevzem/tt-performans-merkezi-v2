@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-exact-photo-league-20261117-v1';
+const CACHE = 'ttpm-league-clean-premium-canvas-20261117-v2';
 
 const ASSETS = [
   '.',
