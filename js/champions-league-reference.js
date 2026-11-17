@@ -99,6 +99,11 @@ function lgLiveBoard(ctx,img,rows,stage,pack,closed,awards,saved){
   var h=i<8?51.5:54;
   var r=shown[i]||null;
   lgRowPlate(ctx,top,h,i,first);
+  if(!first){
+   // On later rounds remove the original photo's old 1–11 ranking numbers.
+   lgPlate(ctx,26,top+2,64,h-4,['#062b43','#05263e'],false);
+   if(r)lgLiveDrawText(ctx,i+1,59,top+33,'800 19px Arial','#fff','center');
+  }
   if(!r)continue;
   var firstLine=r.name||'Veri bekleniyor';
   var fontSize=firstLine.length>27?13:firstLine.length>21?14:firstLine.length>16?15:17;
@@ -111,6 +116,13 @@ function lgLiveBoard(ctx,img,rows,stage,pack,closed,awards,saved){
   lgLiveDrawText(ctx,lgLiveNum(r.score),884,top+35,'900 25px Arial',firstRank?'#ffe08a':red?'#fba0ae':'#65fff1','center',131);
   var delta=r.change==null?'–':r.change>0?'↑'+r.change:r.change<0?'↓'+Math.abs(r.change):'→';
   lgLiveDrawText(ctx,delta,978,top+34,'700 18px Arial','#f8fdff','center',36);
+ }
+ if(!first){
+  // The source image says "İLK 8" on the original elimination bar:
+  // update the entire label for quarters, semifinals and final.
+  lgPlate(ctx,27,926,969,44,['#04768e','#0896a4','#056a83'],false);
+  lgLiveDrawText(ctx,'BU TUR: '+stage.n+' BAYİ · '+stage.advance+' BAYİ DEVAM EDER',512,955,
+    '900 21px Arial','#ffffff','center',947);
  }
  // Bottom award panels: replace names & metrics; preserve gold/blue borders, medals, glow.
  var leader=rows&&rows.length?rows[0]:null;
