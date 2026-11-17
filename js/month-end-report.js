@@ -71,7 +71,8 @@ function merSourceAt(period){return MER_LIVE && MER_LIVE.period===period?MER_LIV
 function merDateShift(date,days){return new Date(new Date(date+'T12:00:00Z').getTime()+days*86400000).toISOString().slice(0,10);}
 function merReportDate(source){
   if(!source||source.sample||!source.period)return null;
-  var date=source.closed?source.period+'-'+String(new Date(Date.UTC(+source.period.slice(0,4),+source.period.slice(5),0)).getUTCDate()).padStart(2,'0'):source.ttm&&source.ttm.reportDate||source.reportDate;
+  var date=(source.ttm&&source.ttm.reportDate)||source.reportDate||(source.closed?
+    source.period+'-'+String(new Date(Date.UTC(+source.period.slice(0,4),+source.period.slice(5),0)).getUTCDate()).padStart(2,'0'):null);
   return /^\d{4}-\d{2}-\d{2}$/.test(date||'')&&date.slice(0,7)===source.period&&!isNaN(new Date(date+'T12:00:00Z'))&&merDateShift(date,0)===date?date:null;
 }
 function merDailySnapshot(source){
