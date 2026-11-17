@@ -1,6 +1,6 @@
 /* ORIGINAL APPROVED 1024x1536 IMAGE + live metrics.
- * Does NOT redraw the reference design. Paints the attached original JPEG pixel-for-pixel,
- * then replaces only text/content regions with the latest real dealer values.
+ * Keeps the approved original JPEG as the source artwork and repaints only dynamic
+ * text regions with clean gradients; no old lettering or stretch artifacts.
  * Screen/PNG: same HTMLCanvasElement. No second export template.
  */
 (function(){
@@ -23,15 +23,47 @@ function lgLiveDrawText(ctx,str,x,y,font,color,align,maxWidth){
 }
 function lgLivePercent(v){return v==null||!Number.isFinite(v)?'—':'%'+Number(v).toLocaleString('tr-TR',{minimumFractionDigits:1,maximumFractionDigits:1});}
 function lgLiveNum(v){return v==null||!Number.isFinite(v)?'—':Number(v).toLocaleString('tr-TR',{minimumFractionDigits:1,maximumFractionDigits:1});}
-/* Replace reference text while retaining each original cell's background gradient.
- * Uses a blank 8px strip from the SAME row in the source photo. Cell borders stay intact. */
-function lgPatchFromSource(ctx,img,x1,x2,top,h,sourceX){
- var y=top+3,height=h-6,w=x2-x1-3;
- if(w<=0||height<=0)return;
- ctx.drawImage(img,sourceX,y,7,height,x1+2,y,w,height);
+/* CLEAN TEXT PLATES: never stretch a slice of the reference photograph.
+ * A stretched slice causes the visible streaks and duplicated lettering.
+ * Keep all decorative outlines, glowing borders, icons, row borders from the original.
+ * Fill ONLY the bounded text areas with smooth gradients. */
+function lgPlate(ctx,x,y,w,h,colors,vertical){
+ var g=ctx.createLinearGradient(x,y,vertical?x:x+w,vertical?y+h:y);
+ if(colors.length===2){g.addColorStop(0,colors[0]);g.addColorStop(1,colors[1]);}
+ else{g.addColorStop(0,colors[0]);g.addColorStop(.5,colors[1]);g.addColorStop(1,colors[2]);}
+ ctx.fillStyle=g;ctx.fillRect(x,y,w,h);
 }
-function lgLiveMaskArea(ctx,img,x,y,w,h,srcX){
- ctx.drawImage(img,srcX,y,7,h,x,y,w,h);
+function lgRowPlate(ctx,top,height,index,first){
+ var gold=first&&index===0,red=first&&index>=8,odd=index%2;
+ var colors=gold?['#3a2915','#6d4c1f','#4c3419']:
+  red?['#4a1727','#4b1828','#3b1222']:
+  odd?['#06273d','#062a42','#05263d']:['#072b44','#082a40','#05283f'];
+ var y=top+2,h=height-4;
+ // Whole row is replaced in ONE paint pass. This removes original sample texts
+ // AND leaves no stretching artefacts or patch seams across cells.
+ lgPlate(ctx,93,y,905,h,colors,false);
+ var strokes=gold?'rgba(234,192,92,.72)':red?'rgba(158,65,95,.80)':'rgba(47,112,144,.82)';
+ ctx.beginPath();[382,526,668,812,957].forEach(function(x){ctx.moveTo(x,y);ctx.lineTo(x,y+h);});
+ ctx.strokeStyle=strokes;ctx.lineWidth=1;ctx.stroke();
+ if(gold){
+  ctx.save();ctx.shadowBlur=7;ctx.shadowColor='rgba(255,201,73,.85)';
+  ctx.strokeStyle='#ffdf79';ctx.lineWidth=1.6;
+  ctx.strokeRect(24,top+.8,976,height-1.5);ctx.restore();
+ }
+}
+function lgPanelTextPlate(ctx,gold){
+ // Gold or cyan CONTENT ONLY. Do not overpaint neon card outlines, medals or gold corner motif.
+ if(gold){lgPlate(ctx,174,1224,321,85,['#1c211f','#252926','#343122'],false);}
+ else{lgPlate(ctx,645,1224,349,85,['#062b43','#05263d','#073a52'],false);}
+}
+function lgTitleTextPlate(ctx,gold){
+ if(gold)lgPlate(ctx,173,1185,321,39,['#1a221f','#232924','#2e2a21'],false);
+ else lgPlate(ctx,646,1186,348,38,['#062c44','#062940','#07384e'],false);
+}
+function lgSmallStatPlate(ctx,x,y,w,h,colorA,colorB){lgPlate(ctx,x,y,w,h,[colorA,colorB],false);}
+function lgDatePlate(ctx,left){
+ if(left)lgPlate(ctx,29,191,333,34,['#021a2d','#02223a'],false);
+ else lgPlate(ctx,760,191,239,36,['#021f34','#02233c'],false);
 }
 function lgLiveBoard(ctx,img,rows,stage,pack,closed,awards,saved){
  var first=stage===LEAGUE_STAGES[0];
@@ -45,27 +77,33 @@ function lgLiveBoard(ctx,img,rows,stage,pack,closed,awards,saved){
  var phase=stage.title+' · '+stage.start+'–'+stage.end+' Kasım 2026';
  var date=pack&&pack.date?String(Number(pack.date.slice(-2)))+' Kasım':'Rapor bekleniyor';
  if(!first || phase!=='İlk Eleme · 16–19 Kasım 2026'){
-  lgLiveMaskArea(ctx,img,30,191,336,36,370);
+  lgDatePlate(ctx,true);
   lgLiveDrawText(ctx,phase,30,216,'700 22px Arial','#f5f9ff','left',340);
  }
  if(date!=='17 Kasım'){
-  lgLiveMaskArea(ctx,img,761,191,241,37,745);
+  lgDatePlate(ctx,false);
   lgLiveDrawText(ctx,'Güncelleme: '+date,993,216,'700 22px Arial','#f5f9ff','right',245);
  }
  if(!first){
   // Counts: preserve glass panels, borders and icons, update number only.
-  [[140,254,79,61,stage.n,187],[365,254,83,61,stage.advance,409],[602,254,78,61,stage.n-stage.advance,646]].forEach(function(a){
-   lgLiveMaskArea(ctx,img,a[0],a[1],a[2],a[3],a[0]-11);
-   lgLiveDrawText(ctx,a[4],a[5],298,'900 43px Arial','#fff','center');
+  [[142,253,77,62,stage.n,187,'#043752','#0a4058'],
+    [368,253,80,62,stage.advance,409,'#07575b','#073e4a'],
+    [606,253,75,62,stage.n-stage.advance,646,'#322739','#292538']].forEach(function(a){
+    lgSmallStatPlate(ctx,a[0],a[1],a[2],a[3],a[6],a[7]);
+    lgLiveDrawText(ctx,a[4],a[5],298,'900 43px Arial','#fff','center');
   });
  }
- // Actual source photograph's grid is aligned: x 91,382,526,668,812,957,1000.
- var cols=[[93,380,98],[384,524,392],[528,666,536],[670,810,679],[814,955,821],[959,999,962]];
+ // Grid x coordinates match the approved 1024×1536 photograph.
  for(var i=0;i<11;i++){
   var top=i<8?511+i*51.5:973+(i-8)*54;
   var h=i<8?51.5:54;
   var r=shown[i]||null;
-  cols.forEach(function(c){lgPatchFromSource(ctx,img,c[0],c[1],top,h,c[2]);});
+  lgRowPlate(ctx,top,h,i,first);
+  if(!first){
+   // On later rounds remove the original photo's old 1–11 ranking numbers.
+   lgPlate(ctx,26,top+2,64,h-4,['#062b43','#05263e'],false);
+   if(r)lgLiveDrawText(ctx,i+1,59,top+33,'800 19px Arial','#fff','center');
+  }
   if(!r)continue;
   var firstLine=r.name||'Veri bekleniyor';
   var fontSize=firstLine.length>27?13:firstLine.length>21?14:firstLine.length>16?15:17;
@@ -79,13 +117,20 @@ function lgLiveBoard(ctx,img,rows,stage,pack,closed,awards,saved){
   var delta=r.change==null?'–':r.change>0?'↑'+r.change:r.change<0?'↓'+Math.abs(r.change):'→';
   lgLiveDrawText(ctx,delta,978,top+34,'700 18px Arial','#f8fdff','center',36);
  }
+ if(!first){
+  // The source image says "İLK 8" on the original elimination bar:
+  // update the entire label for quarters, semifinals and final.
+  lgPlate(ctx,27,926,969,44,['#04768e','#0896a4','#056a83'],false);
+  lgLiveDrawText(ctx,'BU TUR: '+stage.n+' BAYİ · '+stage.advance+' BAYİ DEVAM EDER',512,955,
+    '900 21px Arial','#ffffff','center',947);
+ }
  // Bottom award panels: replace names & metrics; preserve gold/blue borders, medals, glow.
  var leader=rows&&rows.length?rows[0]:null;
  var award=awards&&awards.final&&awards.performance?awards.performance:awards&&awards.leader;
- // Centre left card x 180..470 and right card x 690..985.
- [[174,1228,321,45,153],[170,1272,321,48,151],[682,1228,311,45,667],[664,1272,328,48,665]].forEach(function(a){
-  lgLiveMaskArea(ctx,img,a[0],a[1],a[2],a[3],a[4]);
- });
+ // Clear each dynamic text zone ONCE, using clean gradient plates rather than
+ // stretching pixels containing the old letters; this fixes the screenshot ghosting.
+ lgPanelTextPlate(ctx,true);
+ lgPanelTextPlate(ctx,false);
  lgLiveDrawText(ctx,leader?leader.name:'Rapor bekleniyor',333,1262,'900 30px Arial','#fff','center',302);
  lgLiveDrawText(ctx,'LİG PUANI: '+(leader?lgLiveNum(leader.score):'—'),333,1301,'900 23px Arial','#ffe28b','center',303);
  lgLiveDrawText(ctx,award?award.name:'Rapor bekleniyor',827,1262,'900 29px Arial','#fff','center',309);
@@ -93,11 +138,11 @@ function lgLiveBoard(ctx,img,rows,stage,pack,closed,awards,saved){
  lgLiveDrawText(ctx,generalText,829,1301,'900 19px Arial','#48f5f2','center',321);
  // If a round is final, winner labels need to be accurate instead of the static example.
  if(closed&&stage.advance===1){
-  lgLiveMaskArea(ctx,img,182,1179,304,45,162);
+  lgTitleTextPlate(ctx,true);
   lgLiveDrawText(ctx,'LİG ŞAMPİYONU',333,1213,'900 22px Arial','#ffdb83','center',303);
  }
  if(awards&&awards.final){
-  lgLiveMaskArea(ctx,img,694,1180,294,43,667);
+  lgTitleTextPlate(ctx,false);
   lgLiveDrawText(ctx,'PERFORMANS ŞAMPİYONU',827,1214,'900 21px Arial','#59f5ef','center',305);
  }
  ctx.restore();

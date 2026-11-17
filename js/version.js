@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-11-17 · Onaylanan Orijinal Lig Tasarımı';
+const APP_BUILD = '2026-11-17 · Şampiyonlar Ligi Görsel Hata Düzeltmesi';
