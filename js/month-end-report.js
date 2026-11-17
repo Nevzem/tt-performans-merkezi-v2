@@ -45,7 +45,9 @@ function merCaptureUpload(parsed,edm,groupEdm){
   }
   var days=parsed.syData||{},groupTtm=parsed.detay&&parsed.detay.grupBayiler?{bayiler:parsed.detay.grupBayiler,pers:{}}:null;
   var group=merRollupGroup({ttm:groupTtm,edm:groupEdm});
-  MER_LIVE={period:period,ttm:parsed.detay,edm:edm,group:group,matrix:parsed.matrix,sy:parsed.syData,uploadedAt:new Date().toISOString(),sample:false,closed:!!(days.calismaGun>0 && days.calisilanGun>=days.calismaGun)};
+  MER_LIVE={period:period,ttm:parsed.detay,edm:edm,group:group,matrix:parsed.matrix,sy:parsed.syData,
+    edmFresh:!(parsed.partial&&parsed.partial.hasEDMSheet===false),
+    uploadedAt:new Date().toISOString(),sample:false,closed:!!(days.calismaGun>0 && days.calisilanGun>=days.calismaGun)};
   MER_ARCHIVES[period]=MER_LIVE;
   if(typeof bcCaptureSource==='function')bcCaptureSource(MER_LIVE);
   try{localStorage.setItem(MER_STORE,JSON.stringify(MER_ARCHIVES));merStorageNote='';}catch(e){merStorageNote='Bu ayın raporu cihazda saklanamadı. Ayrıntılı PDF’yi indirin.';}
@@ -80,6 +82,8 @@ function merDailySnapshot(source){
   var rows={},targets={};
   function add(bucket,prefix){Object.values(bucket||{}).forEach(function(d){var values={},goals={};MER_PRODUCTS.forEach(function(p){var v=d.prods&&d.prods[p.key];values[p.hist]=v&&typeof v.a==='number'&&isFinite(v.a)&&v.a>=0?v.a:null;goals[p.hist]=v&&typeof v.h==='number'&&isFinite(v.h)&&v.h>=0?v.h:null;});var id=prefix+String(d.kod);rows[id]=values;targets[id]=goals;});}
   ['ttm','edm'].forEach(function(ch){
+    // Preserve EDM monthly totals, but don't claim old EDM counts as a new day's snapshot.
+    if(ch==='edm'&&source.edmFresh===false)return;
     var detail=source[ch]||{},prefix=ch.toUpperCase()+':';add(detail.cariBayiler,prefix);add(detail.bayiler,prefix);add(source.group&&source.group[ch]&&source.group[ch].bayiler,'GROUP:'+prefix);
     // These are the report's regional rows; cariBayiler also contains sibling
     // stores outside Kuzey Anadolu and must never enter the regional total.
