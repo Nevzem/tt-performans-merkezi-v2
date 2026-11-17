@@ -221,22 +221,64 @@ function lgMatches(saved,i,roster,pack){
   return '<div class="lg-match"><span class="lg-match-label">MAÇ '+(j+1)+(closed?' · TAMAMLANDI':' · DEVAM EDİYOR')+'</span>'+item(a)+item(b)+'</div>';
  }).join('')+'</div>';
 }
-function lgPoster(rows,stage,pack,closed,awards){
- var leader=rows[0],first=stage===LEAGUE_STAGES[0],cut=first?8:null,n=rows.length;
- return '<div class="lg-poster" id="lg-poster"><div class="lg-p-top">TÜRK TELEKOM <span>🏆 ŞAMPİYONLAR LİGİ</span></div>'+
-  '<div class="lg-p-title">GÜNLÜK PERFORMANS TAKİBİ</div><div class="lg-p-sub">'+lgEsc(stage.title)+' · '+stage.start+'–'+stage.end+' Kasım 2026 <span>Güncelleme: '+pack.date.slice(-2)+' Kasım</span></div>'+
-  '<div class="lg-p-stats"><div><strong>'+n+'</strong><small>BAYİ YARIŞIYOR</small></div><div><strong>'+stage.advance+'</strong><small>TUR ATLAYACAK</small></div><div><strong>'+((stage.n)-(stage.advance))+'</strong><small>ELENECEK</small></div><div><strong>30</strong><small>KASIM FİNAL</small></div></div>'+
-  '<div class="lg-p-weight"><span>%30 MOBİL</span><span>%50 DSL</span><span>%20 TV</span></div>'+
-  '<table><thead><tr><th>#</th><th>BAYİ / KOD</th><th>MOBİL<br>HGO</th><th>DSL<br>HGO</th><th>TV<br>HGO</th><th>LİG<br>PUANI</th><th>↕</th></tr></thead><tbody>'+
-  rows.map(function(r,i){var status=first&&i>=8?'lg-p-risk':i===0?'lg-p-gold':'';
-   return '<tr class="'+status+'"><td>'+(i+1)+'</td><td><strong>'+lgEsc(r.name)+'</strong><small>'+lgEsc(r.code)+'</small></td><td>'+lgPct(r.mobil)+'</td><td>'+lgPct(r.dsl)+'</td><td>'+lgPct(r.tv)+'</td><td><b>'+lgFmt(r.score,1)+'</b></td><td>'+((r.change||0)>0?'↑'+r.change:(r.change||0)<0?'↓'+Math.abs(r.change):'–')+'</td></tr>'+
-   (first&&i===7?'<tr class="lg-p-cut"><td colspan="7">ELEME ÇİZGİSİ – İLK 8 DEVAM EDER</td></tr>':'');
+/* Tek kaynaklı premium poster: uygulamada canlı görünür, PNG'de aynı DOM çizilir. */
+function lgPoster(rows,stage,pack,closed,awards,saved,roster){
+ var first=stage===LEAGUE_STAGES[0],n=stage.n;
+ var shown=rows&&rows.length?rows:(
+  first?LEAGUE_CODES.map(function(code){
+   var b=saved&&saved[lgDate(15)]&&saved[lgDate(15)].dealers&&saved[lgDate(15)].dealers[code];
+   return {code:code,name:b?b.name:'Bayi verisi bekleniyor',mobil:null,dsl:null,tv:null,score:null,change:null,placeholder:true};
+  }):Array.from({length:n},function(_,i){
+   return {code:'',name:'Tur verisi bekleniyor',mobil:null,dsl:null,tv:null,score:null,change:null,placeholder:true};
+  })
+ );
+ var leader=rows&&rows.length?rows[0]:null;
+ var overall=awards&&awards.leader?awards.leader:null;
+ var overallWinner=awards&&awards.final&&awards.performance?awards.performance:null;
+ var regular=awards&&awards.final&&awards.champion;
+ var scoreTitle=regular?'PERFORMANS ŞAMPİYONU':'GENEL PUAN LİDERİ';
+ var scoreRow=overallWinner||overall;
+ var date=pack&&pack.date?pack.date:null;
+ var prettyDate=date?String(Number(date.slice(-2)))+' Kasım':'Rapor bekleniyor';
+ var out='<div class="lg-poster" id="lg-poster"'+(date?' data-day="'+lgEsc(date)+'"':'')+'>'+
+  '<div class="lg-p-top"><div class="lg-p-brand">TÜRK TELEKOM</div><div class="lg-p-brand-right">🏆 ŞAMPİYONLAR LİGİ</div></div>'+
+  '<div class="lg-p-title"><span class="lg-p-laurel">❧</span>GÜNLÜK PERFORMANS TAKİBİ<span class="lg-p-laurel lg-p-laurel-right">❧</span></div>'+
+  '<div class="lg-p-sub"><b>'+lgEsc(stage.title)+' · '+stage.start+'–'+stage.end+' Kasım 2026</b>'+
+    '<b>Güncelleme: '+prettyDate+'</b></div>'+
+  '<div class="lg-p-stats">'+
+    '<div class="lg-p-stat lg-p-blue"><span class="lg-p-stat-icon">♙</span><strong>'+n+'</strong><small>BAYİ YARIŞIYOR</small></div>'+
+    '<div class="lg-p-stat lg-p-teal"><span class="lg-p-stat-icon">»</span><strong>'+stage.advance+'</strong><small>TUR ATLAYACAK</small></div>'+
+    '<div class="lg-p-stat lg-p-red"><span class="lg-p-stat-icon">⊗</span><strong>'+(stage.n-stage.advance)+'</strong><small>ELENECEK</small></div>'+
+    '<div class="lg-p-stat lg-p-gold"><span class="lg-p-stat-icon">🏆</span><strong>30</strong><small>KASIM FİNAL</small></div>'+
+  '</div>'+
+  '<div class="lg-p-weight"><span>♧ &nbsp; %30 MOBİL</span><span>⌁ &nbsp; %50 DSL</span><span>▣ &nbsp; %20 TV</span></div>'+
+  '<table class="lg-p-board"><colgroup><col style="width:7%"><col style="width:30%"><col style="width:14%"><col style="width:14%"><col style="width:14%"><col style="width:16%"><col style="width:5%"></colgroup>'+
+  '<thead><tr><th>#</th><th>BAYİ / KOD</th><th>MOBİL<br>HGO</th><th>DSL<br>HGO</th><th>TV<br>HGO</th><th>LİG<br>PUANI</th><th>↕</th></tr></thead><tbody>'+
+  shown.map(function(r,i){
+   var klass=r.placeholder?'lg-p-pending':first&&i>=8?'lg-p-risk':i===0?'lg-p-gold':'';
+   var trend=r.change==null?'–':r.change>0?'↑'+r.change:r.change<0?'↓'+Math.abs(r.change):'→';
+   var score=r.placeholder?'—':lgFmt(r.score,1);
+   var title=lgEsc(r.name||'Bayi verisi bekleniyor');
+   return '<tr class="'+klass+'"><td class="lg-p-rank">'+(i+1)+'</td>'+
+    '<td class="lg-p-dealer"><strong>'+title+'</strong><small>'+lgEsc(r.code||'—')+'</small></td>'+
+    '<td>'+lgPct(r.mobil)+'</td><td>'+lgPct(r.dsl)+'</td><td>'+lgPct(r.tv)+'</td>'+
+    '<td class="lg-p-score"><b>'+score+'</b></td><td class="lg-p-trend">'+trend+'</td></tr>'+
+    (first&&i===7?'<tr class="lg-p-cut"><td colspan="7">ELEME ÇİZGİSİ – İLK 8 DEVAM EDER</td></tr>':'');
   }).join('')+'</tbody></table>'+
-  '<div class="lg-p-bottom"><div>🏆 '+(closed&&stage.advance===1?'LİG ŞAMPİYONU':'TUR LİDERİ')+'<strong>'+lgEsc(leader.name)+'</strong><small>LİG PUANI: '+lgFmt(leader.score,1)+'</small></div>'+
-  '<div>🥇 '+(awards.final?'PERFORMANS ŞAMPİYONU':'GENEL PUAN LİDERİ')+
-  '<strong>'+lgEsc(awards.final?awards.performance.name:awards.leader?awards.leader.name:'Henüz veri yok')+'</strong>'+
-  '<small>16–30 KASIM · '+(awards.final?'ÖDÜL PUANI: '+lgFmt(awards.performance.score,1):awards.leader?lgFmt(awards.leader.score,1)+' PUAN (GEÇİCİ)':'—')+'</small></div></div>'+
-  '<footer>HGO: Turun hedef gerçekleşme oranı · Puan: %30 Mobil + %50 DSL + %20 TV (ürün başına %200 tavan).<br>15 Kasım öncesindeki aktivasyonlar puana dahil değildir. Her tur sıfırlanır.</footer></div>';
+  '<div class="lg-p-bottom">'+
+   '<div class="lg-p-award lg-p-award-gold"><span class="lg-p-award-icon">🏆</span><div>'+
+     '<h3>'+(closed&&stage.advance===1?'LİG ŞAMPİYONU':'TUR LİDERİ')+'</h3>'+
+     '<strong>'+lgEsc(leader?leader.name:'Rapor bekleniyor')+'</strong>'+
+     '<small>LİG PUANI: '+(leader?lgFmt(leader.score,1):'—')+'</small></div></div>'+
+   '<div class="lg-p-award lg-p-award-blue"><span class="lg-p-award-icon">🥇</span><div>'+
+     '<h3>'+scoreTitle+'</h3>'+
+     '<strong>'+lgEsc(scoreRow?scoreRow.name:'Rapor bekleniyor')+'</strong>'+
+     '<small>16–30 KASIM · '+(scoreRow?lgFmt(scoreRow.score,1)+' PUAN'+(awards.final?'':' (GEÇİCİ)'):'VERİ BEKLENİYOR')+'</small>'+
+    '</div></div></div>'+
+  '<footer class="lg-p-legend"><span class="lg-p-legend-i">ⓘ</span><div>HGO: Turun hedef gerçekleşme oranı · Puan: %30 Mobil + %50 DSL + %20 TV (ürün başına %200 tavan).'+
+    '<br>15 Kasım öncesindeki aktivasyonlar puana dahil değildir. Her tur sıfırlanır.</div></footer>'+
+  '</div>';
+ return out;
 }
 function leagueBackup(){
  var data=lgRead(),blob=new Blob([JSON.stringify({version:1,snapshots:data},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
@@ -255,11 +297,38 @@ async function leagueRestore(input){
   Object.assign(current,incoming);lgWrite(current);leagueMsg('✓ Yedek içe aktarıldı.');
  }catch(e){leagueMsg('⚠ '+e.message);}finally{input.value='';}
 }
+/* Paylaş ve PNG aynı canlı poster DOM'unu kullanır; ayrı bir görsel şablonu yoktur. */
 async function leagueDownloadPNG(){
- var node=document.getElementById('lg-poster');if(!node){alert('Önce tur için geçerli performans raporlarını yükleyin.');return;}
- try{await ensureH2C();var canvas=await html2canvas(node,{backgroundColor:'#061932',scale:2,useCORS:true,windowWidth:1100,scrollX:0,scrollY:0,onclone:function(doc){var host=doc.getElementById('lg-poster-host');if(host){host.style.position='absolute';host.style.top='0';host.style.left='0';}}});
-  canvas.toBlob(function(blob){if(!blob){alert('Görsel üretilemedi.');return;}var url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='TTM_Sampiyonlar_Ligi_'+(node.getAttribute('data-day')||'Kasim')+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);},'image/png');
- }catch(e){alert('Görsel oluşturulamadı: '+e.message);}
+ var node=document.getElementById('lg-poster');
+ if(!node||!node.getAttribute('data-day')){
+  alert('Önce başlangıç ve güncel performans raporlarını yükleyin.');return;
+ }
+ var btn=document.getElementById('lg-share-btn');
+ if(btn){btn.disabled=true;btn.textContent='Görsel hazırlanıyor…';}
+ try{
+  await ensureH2C();
+  var canvas=await html2canvas(node,{
+   backgroundColor:'#041a30',scale:2,useCORS:true,windowWidth:1200,scrollX:0,scrollY:0,
+   onclone:function(doc){
+    var el=doc.getElementById('lg-poster');
+    if(el){el.classList.add('lg-for-export');el.style.width='980px';el.style.maxWidth='none';}
+    var host=doc.getElementById('lg-visual-host');
+    if(host){host.style.width='980px';host.style.maxWidth='none';host.style.overflow='visible';}
+   }
+  });
+  var blob=await new Promise(function(resolve){canvas.toBlob(resolve,'image/png');});
+  if(!blob)throw Error('PNG üretilemedi.');
+  var fileName='TTM_Sampiyonlar_Ligi_'+node.getAttribute('data-day')+'.png';
+  var file=typeof File!=='undefined'?new File([blob],fileName,{type:'image/png'}):null;
+  if(file&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+   try{await navigator.share({files:[file],title:'TTM Şampiyonlar Ligi Günlük Performans'});return;}
+   catch(e){if(e.name==='AbortError')return;/* desteklenmeyen paylaşımda PNG indir */}
+  }
+  var url=URL.createObjectURL(blob),link=document.createElement('a');
+  link.href=url;link.download=fileName;document.body.appendChild(link);link.click();link.remove();
+  setTimeout(function(){URL.revokeObjectURL(url);},1500);
+ }catch(e){alert('Görsel paylaşılamadı: '+e.message);}
+ finally{if(btn){btn.disabled=false;btn.textContent='↗ Paylaş / PNG';}}
 }
 function renderLeague(){
  var cards=document.getElementById('cards');if(!cards)return;
