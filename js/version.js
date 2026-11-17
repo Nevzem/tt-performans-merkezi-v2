@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-11-17 · Veri/Kapanış Tarihi + Otomatik Forecast';
+const APP_BUILD = '2026-11-17 · Premium Canlı Lig + Veri/Kapanış Tarihi';
