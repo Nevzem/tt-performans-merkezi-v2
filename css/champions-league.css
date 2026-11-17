@@ -281,3 +281,9 @@
 .lg-visual-host{max-width:1024px!important;margin:11px auto 26px;width:100%;overflow:visible}
 .lg-visual-host .lg-svg-frame{position:relative;width:100%;aspect-ratio:2/3;overflow:hidden;background:#001a31;border:0;border-radius:0;box-shadow:0 10px 24px #03152344}
 .lg-visual-host .lg-svg-image{display:block;width:100%;height:auto;aspect-ratio:2/3;object-fit:contain;border:0;border-radius:0;user-select:none;-webkit-user-drag:none}
+
+/* Reference image rendering (not CSS recreation): preserves every original pixel
+ * outside the updated text fields. Both UI and PNG derive from this canvas. */
+.lg-visual-host{max-width:1024px!important;width:100%;margin:11px auto 26px}
+.lg-visual-host .lg-original-photo-wrap{width:100%;aspect-ratio:2/3;overflow:hidden;position:relative;background:#07182d}
+.lg-visual-host .lg-original-photo{display:block;width:100%;height:auto;aspect-ratio:2/3;object-fit:contain;border:0;border-radius:0;box-shadow:none}
