@@ -339,16 +339,26 @@ function renderLeague(){
  var dates=Object.keys(saved).sort(),pack=roster?lgSnapshotRank(saved,leagueStage,roster):{rows:[],date:null,missing:'Önceki turun kesin kapanış raporu gerekli.'};
  var ready=roster&&pack.rows.length===roster.length&&!pack.missing,closed=ready&&pack.date===lgDate(s.end),rows=ready?pack.rows:[];
  var awards=lgAwardState(saved);
- var content='<section class="lg-shell"><header class="lg-hero"><span class="lg-eyebrow">KUZEY ANADOLU · TTM</span><h2>🏆 ŞAMPİYONLAR LİGİ</h2><p>11 bayi · 16–30 Kasım 2026 · Her tur yeni mücadele</p></header>'+
-  '<div class="lg-prize-sub">🏆 İKİ ÖDÜL · İKİ AYRI KAZANAN <span>Lig Şampiyonu + Performans Şampiyonu</span></div>'+
-  '<div class="lg-rounds">'+LEAGUE_STAGES.map(function(x,i){return '<button class="'+(i===leagueStage?'active':'')+'" onclick="leagueSetStage('+i+')">'+(i+1)+'. '+lgEsc(x.title)+'<small>'+x.start+'–'+x.end+' Kasım</small></button>';}).join('')+'</div>'+
-  '<div class="lg-stats"><div><small>TURDAKİ BAYİ</small><b>'+s.n+'</b></div><div><small>DEVAM EDECEK</small><b>'+s.advance+'</b></div><div><small>ELEME</small><b>'+(s.n-s.advance)+'</b></div><div><small>PUANLAMA</small><b>%30 / %50 / %20</b></div></div>'+
-  '<div class="lg-weight"><span>📱 Mobil <b>%30</b></span><span>🌐 DSL <b>%50</b></span><span>📺 TV <b>%20</b></span></div>'+lgAwardCards(awards,saved)+
-  '<div class="lg-main-header"><div><h3>'+lgEsc(s.title)+' · '+s.start+'–'+s.end+' Kasım</h3><p>'+(pack.date?'Son kayıt: '+lgEsc(pack.date)+' · '+(closed?'Tur kapanışı alındı':'Geçici sıralama'):'Bekleyen raporlar')+'</p></div>'+
-  '<button class="lg-png" '+(!ready?'disabled ':'')+'onclick="leagueDownloadPNG()">⬇ Günlük görsel (PNG)</button></div>';
- if(ready){content+=lgMatches(saved,leagueStage,roster,pack)+lgTable(rows,leagueStage===0,closed);
-  content+='<div class="lg-leader">🏆 '+(closed&&leagueStage===3?'ŞAMPİYON':'GÜNÜN LİDERİ')+': <b>'+lgEsc(rows[0].name)+'</b><span>'+lgFmt(rows[0].score,1)+' puan</span></div>';
- }else content+='<div class="lg-empty"><b>Henüz puan hesaplanamıyor</b><p>'+lgEsc(pack.missing||'Gerekli kapanış verisi bulunamadı.')+'</p><small>İlk tur için 15 Kasım başlangıç raporu ve 16–19 Kasım güncel raporları gerekir. Sonraki turlarda 19, 23 ve 27 Kasım kesin kapanışları zorunludur.</small></div>';
+ var content='<section class="lg-shell lg-shell-live">'+
+  '<div class="lg-live-toolbar"><div class="lg-live-toolbar-label"><h2>🏆 Şampiyonlar Ligi</h2>'+
+   '<p>Günlük HGO tablosu · Ekrandaki tasarım paylaşımda aynen korunur</p></div>'+
+   '<button id="lg-share-btn" class="lg-png" '+(!ready?'disabled ':'')+
+     'onclick="leagueDownloadPNG()">↗ Paylaş / PNG</button></div>'+
+  '<div class="lg-rounds">'+LEAGUE_STAGES.map(function(x,i){
+   return '<button class="'+(i===leagueStage?'active':'')+'" onclick="leagueSetStage('+i+')">'+
+    (i+1)+'. '+lgEsc(x.title)+'<small>'+x.start+'–'+x.end+' Kasım</small></button>';
+  }).join('')+'</div>'+
+  '<div id="lg-visual-host" class="lg-visual-host">'+
+   lgPoster(rows,s,pack,closed,lgAwardState(saved,pack.date||null),saved,roster)+
+  '</div>';
+ if(!ready){
+  content+='<div class="lg-empty"><b>Canlı görünüm hazır · Veri bekleniyor</b>'+
+   '<p>'+lgEsc(pack.missing||'Gerekli kapanış raporu bulunamadı.')+'</p>'+
+   '<small>15 Kasım başlangıç raporunu ve güncel kapanış raporunu yüklediğinde tablo dolacaktır. Eksik veri için sonuç veya şampiyon oluşturulmaz.</small></div>';
+ }
+ if(ready&&leagueStage>0){
+  content+='<div class="lg-match-panel"><h3>⚔️ Tur eşleşmeleri</h3>'+lgMatches(saved,leagueStage,roster,pack)+'</div>';
+ }
  content+='<div class="lg-overall"><div class="lg-overall-head"><h3>🥇 16–30 Kasım Genel Puan Yarışı</h3><p>Tüm 11 bayi yarışır; ligden elenen bayiler de bu sıralamada kalır. 15 Kasım bazından itibaren tek dönem HGO hesaplanır, günlük puanlar toplanmaz. '+(awards.overall.date?'Son güncelleme: '+awards.overall.date+' · '+(awards.final?'Kesin sonuç':'Geçici puanlar'):'Rapor bekleniyor')+'</p></div>'+lgOverallTable(awards)+
   '<p class="lg-award-note">İki ayrı kazanan kuralı: Lig Şampiyonu genel puan sıralamasında da birinciyse Performans Şampiyonluğu ödülü diğer bayiler arasındaki en yüksek puanlı bayiye verilir. Sonuç 30 Kasım kapanış raporuyla kesinleşir.</p></div>';
  content+='<div class="lg-upload"><h3>📂 Rapor ve günlük veri kaydı</h3><p>15 Kasım raporunu bir kez kaydet. Sonraki günlerin Anadolu GM raporlarını ekleyince lig kendiliğinden güncellenir. Kapanış günü Excel içinden doğrulanamıyorsa tarih seçimi zorunludur.</p>'+
@@ -358,7 +368,7 @@ function renderLeague(){
   '<small class="lg-privacy">⚠ Yedek dosyası gerçek aktivasyon adetlerini içerir; yalnız yetkili kişilerle paylaşın. Paylaşım PNG görselinde adetler yer almaz. Veriler bu cihazda saklanır, GitHub’a gönderilmez.</small></div>'+
   '<footer class="lg-foot">Lig HGO = (Tur içinde yeni net aktivasyon / aylık hedef × 30 / turda geçen gün) × 100. Genel Puan aynı hesapla 16 Kasım’dan itibaren birikimli olarak 15 Kasım bazıyla hesaplanır, her günlük puan ayrı ayrı toplanmaz. Her ürün puanı %200 tavanlıdır. Eşitlikte sırasıyla DSL HGO, Mobil HGO, TV HGO, DSL/Mobil/TV net adetleri ve bayi kodu kullanılır. Kesin ödüller için 30 Kasım kapanış raporu zorunludur.</footer>'+
   (leagueNotice?'<div class="lg-notice">'+lgEsc(leagueNotice)+'</div>':'')+'</section>';
- if(ready)content+='<div id="lg-poster-host" class="lg-poster-host">'+lgPoster(rows,s,pack,closed,lgAwardState(saved,pack.date))+'</div>';
+
  cards.innerHTML=content;
- var poster=document.getElementById('lg-poster');if(poster&&pack.date)poster.setAttribute('data-day',pack.date);
+
 }
