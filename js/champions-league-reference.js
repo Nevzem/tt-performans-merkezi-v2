@@ -108,7 +108,7 @@ function leagueDrawApprovedPhoto(rows,stage,pack,closed,awards,saved){
  canvas.width=1024;canvas.height=1536;
  var ctx=canvas.getContext('2d');
  if(!ctx)return;
- lgReferenceImage().then(function(img){
+ var paint=lgReferenceImage().then(function(img){
   if(document.getElementById('lg-poster-canvas')!==canvas)return;
   lgLiveBoard(ctx,img,rows,stage,pack,closed,awards,saved);
   canvas.setAttribute('data-ready','1');
@@ -119,6 +119,8 @@ function leagueDrawApprovedPhoto(rows,stage,pack,closed,awards,saved){
   ctx.font='700 28px Arial';ctx.fillStyle='#fff';ctx.fillText('Referans görseli yüklenemedi.',65,130);
   canvas.setAttribute('data-ready','0');
  });
+ window.lgPosterPaintPromise=paint;
+ return paint;
 }
 window.leagueDrawApprovedPhoto=leagueDrawApprovedPhoto;
 window.leagueApprovedImageLoaded=lgReferenceImage;
