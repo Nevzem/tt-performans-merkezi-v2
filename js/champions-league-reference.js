@@ -54,11 +54,11 @@ function lgRowPlate(ctx,top,height,index,first){
 function lgPanelTextPlate(ctx,gold){
  // Gold or cyan CONTENT ONLY. Do not overpaint neon card outlines, medals or gold corner motif.
  if(gold){lgPlate(ctx,174,1224,321,85,['#1c211f','#252926','#343122'],false);}
- else{lgPlate(ctx,681,1224,312,85,['#062b43','#05263d','#073a52'],false);}
+ else{lgPlate(ctx,645,1224,349,85,['#062b43','#05263d','#073a52'],false);}
 }
 function lgTitleTextPlate(ctx,gold){
  if(gold)lgPlate(ctx,173,1185,321,39,['#1a221f','#232924','#2e2a21'],false);
- else lgPlate(ctx,686,1186,307,38,['#062c44','#062940','#07384e'],false);
+ else lgPlate(ctx,646,1186,348,38,['#062c44','#062940','#07384e'],false);
 }
 function lgSmallStatPlate(ctx,x,y,w,h,colorA,colorB){lgPlate(ctx,x,y,w,h,[colorA,colorB],false);}
 function lgDatePlate(ctx,left){
