@@ -276,3 +276,8 @@
 }
 /* Desktop-size export paints from the SAME source component. */
 .lg-visual-host .lg-poster.lg-for-export{box-sizing:border-box;width:980px!important;max-width:none!important}
+
+/* 17 Kasım seçilen referans: tek SVG kaynağı, ekranda ve PNG'de aynı görünüm. */
+.lg-visual-host{max-width:1024px!important;margin:11px auto 26px;width:100%;overflow:visible}
+.lg-visual-host .lg-svg-frame{position:relative;width:100%;aspect-ratio:2/3;overflow:hidden;background:#001a31;border:0;border-radius:0;box-shadow:0 10px 24px #03152344}
+.lg-visual-host .lg-svg-image{display:block;width:100%;height:auto;aspect-ratio:2/3;object-fit:contain;border:0;border-radius:0;user-select:none;-webkit-user-drag:none}
