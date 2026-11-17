@@ -25,6 +25,7 @@
 <link rel="stylesheet" href="css/bayi-360.css?v=20261113a">
 <link rel="stylesheet" href="css/champions-league.css?v=20261116-iki-odul">
 <link rel="stylesheet" href="css/koray-zirve.css?v=20261116-zirve1">
+<link rel="stylesheet" href="css/upload-dates.css?v=20261117-dates1">
 </head>
 <body>
 <div class="app">
@@ -163,19 +164,20 @@
             </div>
           </div>
           <div class="pmsg" id="pmsg"></div>
-          <div class="vm-hint">Excel raporu yüklendikten sonra tüm sayfalar otomatik güncellenir. Önceki rapor yüklenirse ▲▼ karşılaştırma aktif olur.</div>
+          <div class="vm-hint">Tek sayfalık TTM raporu seçtiğinde veri tarihi ve kapanış tarihini girebileceğin bir pencere açılır. Bu tarihler forecast ve günlük kampanya kayıtlarında kullanılır. Eski çok sayfalı raporlar eskisi gibi yüklenir.</div>
         </div>
 
         <!-- Forecast -->
         <div class="settings-card">
-          <div class="settings-card-title">📅 Forecast (manuel)</div>
+          <div class="settings-card-title">📅 Forecast</div>
           <div class="day-row">
             <label>Geçen gün</label>
             <input type="number" class="day-inp" id="day-now" min="1" max="31" placeholder="—" oninput="syncDayInputs(); render()">
             <label>Ay toplam</label>
             <input type="number" class="day-inp" id="day-total" min="28" max="31" placeholder="—" oninput="syncDayInputs(); render()">
           </div>
-          <div class="day-hint">İkisi de girilirse bayi kartlarında ay sonu Forecast HGO görünür. %100+ olanlar yeşil.</div>
+          <div id="forecast-date-info" class="upload-date-forecast" aria-live="polite"></div>
+          <div class="day-hint">Tek sayfalık raporda seçtiğin veri ve kapanış tarihinden gün sayıları otomatik hesaplanır; istersen yukarıdaki alanlardan manuel değiştirebilirsin. Forecast HGO, gün bazında aylık tahmindir.</div>
         </div>
 
         <!-- EDM Durum -->
@@ -256,6 +258,26 @@
   <input type="file" id="f-today" accept=".xlsx,.xls">
   <input type="file" id="f-prev"  accept=".xlsx,.xls">
 
+  <!-- Tek sayfalık TTM raporu: gün bilgisi alınmadan veri kaydedilmez. -->
+  <div class="upload-date-overlay" id="upload-date-overlay" hidden>
+    <div class="upload-date-dialog" role="dialog" aria-modal="true" aria-labelledby="upload-date-title">
+      <div class="upload-date-heading">📅 <span id="upload-date-title">Rapor tarihlerini belirle</span></div>
+      <div class="upload-date-description" id="upload-date-period"></div>
+      <div class="upload-date-fields">
+        <label for="upload-data-date">Veri Tarihi <small>Raporun içindeki aktivasyonların ait olduğu gün</small></label>
+        <input id="upload-data-date" type="date" required>
+        <label for="upload-close-date">Kapanış Tarihi <small>Forecast'in hesaplanacağı son gün</small></label>
+        <input id="upload-close-date" type="date" required>
+      </div>
+      <div class="upload-date-summary" id="upload-date-summary" aria-live="polite"></div>
+      <div class="upload-date-error" id="upload-date-error" aria-live="assertive"></div>
+      <div class="upload-date-actions">
+        <button type="button" id="upload-date-cancel" class="upload-date-cancel">Vazgeç</button>
+        <button type="button" id="upload-date-confirm" class="upload-date-confirm">Raporu yükle</button>
+      </div>
+    </div>
+  </div>
+
   <!-- BOTTOM SHEET MODAL -->
   <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
   <div class="bottom-sheet" id="bottom-sheet">
@@ -272,9 +294,9 @@
 
 </div>
 
-<script src="js/version.js?v=20261117-ttm-only1"></script>
+<script src="js/version.js?v=20261117-dates1"></script>
 <script src="js/data.js?v=20261007g"></script>
-<script src="js/parser.js?v=20261117-ttm-only1"></script>
+<script src="js/parser.js?v=20261117-dates1"></script>
 <script src="js/render.js?v=20261021-bc2"></script>
 <script src="js/export.js?v=20260801c"></script>
 <script src="js/home.js?v=20260801c"></script>
@@ -283,7 +305,7 @@
 <script src="js/history-loader.js?v=20261003n"></script>
 <script src="js/history.js?v=20260801c"></script>
 <script src="js/development.js?v=20260902b"></script>
-<script src="js/month-end-report.js?v=20261117-ttm-only1"></script>
+<script src="js/month-end-report.js?v=20261117-dates1"></script>
 <script src="js/bayi-comparison.js?v=20261021-bc2"></script>
 <script src="js/bayi-360.js?v=20261113a"></script>
 <script src="js/commitment-tracker.js?v=20261019-ttm-sort2"></script>

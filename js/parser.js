@@ -752,6 +752,96 @@ function parseEDMSheet(wb, options) {
   return {data:out,detay:{bayiler:detayBayiler,pers:{}},error:null,bayiCount};
 }
 
+/* ───── TEK SAYFALIK TTM: TARİH SEÇİMİ VE FORECAST ───── */
+function uploadPeriodBounds(period) {
+  var match=/^(20\d{2})[\/\-](0[1-9]|1[0-2])$/.exec(String(period||''));
+  if(!match)return null;
+  var year=Number(match[1]),month=Number(match[2]);
+  var last=new Date(Date.UTC(year,month,0)).getUTCDate();
+  var start=match[1]+'-'+match[2]+'-01',end=match[1]+'-'+match[2]+'-'+String(last).padStart(2,'0');
+  return {start:start,end:end,year:year,month:month};
+}
+function validateUploadDates(period,dataDate,closeDate) {
+  var bounds=uploadPeriodBounds(period);
+  if(!bounds)throw Error('Dosyada geçerli bir dönem bulunamadı.');
+  if(!dataDate||!closeDate)throw Error('Veri tarihi ve kapanış tarihini seçmelisin.');
+  function valid(d){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(d))return false;
+    return reportDateISO(Number(d.slice(0,4)),Number(d.slice(5,7)),Number(d.slice(8,10)))===d;
+  }
+  if(!valid(dataDate)||!valid(closeDate))throw Error('Geçerli birer takvim tarihi seçmelisin.');
+  if(dataDate<bounds.start||dataDate>bounds.end||closeDate<bounds.start||closeDate>bounds.end)
+    throw Error('İki tarih de rapor dönemi ('+period+') içerisinde olmalı.');
+  if(dataDate>closeDate)throw Error('Veri tarihi kapanış tarihinden sonra olamaz.');
+  return {dataDate:dataDate,closeDate:closeDate,elapsed:Number(dataDate.slice(-2)),total:Number(closeDate.slice(-2))};
+}
+function applyUploadDates(parsed,selected) {
+  var dates=validateUploadDates(parsed.donem,selected.dataDate,selected.closeDate);
+  parsed.detay.reportDate=dates.dataDate;
+  parsed.detay.reportDateSource='Yükleme sırasında seçilen veri tarihi';
+  parsed.detay.closingDate=dates.closeDate;
+  parsed.detay.manualDateEntry=true;
+  parsed.detay.forecastDays={d:dates.elapsed,t:dates.total};
+  parsed.syData.calisilanGun=dates.elapsed;
+  parsed.syData.calismaGun=dates.total;
+  // Ürün ve bayi hedefleri Excel'den; yalnız öngörü seçilen takvim günleriyle hesaplanır.
+  Object.values(parsed.syData.sy||{}).forEach(function(record){
+    Object.values(record).forEach(function(p){
+      p.f=p.h>0?Math.round(p.a/p.h*dates.total/dates.elapsed*1000)/10:null;
+    });
+  });
+  return dates;
+}
+function uploadDateLabel(date){return date?date.slice(8,10)+'.'+date.slice(5,7)+'.'+date.slice(0,4):'—';}
+function showUploadForecastDates(parsed) {
+  var el=document.getElementById('forecast-date-info');
+  if(!el||!parsed||!parsed.detay||!parsed.detay.manualDateEntry)return;
+  var detail=parsed.detay,f=detail.forecastDays||{};
+  el.textContent='📅 Veri: '+uploadDateLabel(detail.reportDate)+'  ·  Kapanış: '+uploadDateLabel(detail.closingDate)+
+    '  ·  Forecast: '+f.d+'/'+f.t+' takvim günü';
+}
+function promptUploadDates(parsed) {
+  return new Promise(function(resolve,reject){
+    var bounds=uploadPeriodBounds(parsed.donem),overlay=document.getElementById('upload-date-overlay');
+    if(!bounds||!overlay){reject(Error('Rapor tarihleri seçim ekranı açılamadı.'));return;}
+    var data=document.getElementById('upload-data-date'),close=document.getElementById('upload-close-date');
+    var info=document.getElementById('upload-date-summary'),err=document.getElementById('upload-date-error');
+    var btn=document.getElementById('upload-date-confirm'),cancel=document.getElementById('upload-date-cancel');
+    document.getElementById('upload-date-period').textContent=parsed.donem+
+      ' · '+parsed.bayiCount+' TTM bayisi · Güncel rapor';
+    data.min=close.min=bounds.start;data.max=close.max=bounds.end;
+    data.value=parsed.detay.reportDate||'';
+    close.value=bounds.end;err.textContent='';
+    function update(){
+      try{
+        if(!data.value){info.textContent='Veri tarihini seçerek forecast günlerini belirle.';return;}
+        var v=validateUploadDates(parsed.donem,data.value,close.value);
+        info.textContent=v.elapsed+' gün verisi / '+v.total+' gün kapanış · Forecast katsayısı ×'+
+          (v.total/v.elapsed).toLocaleString('tr-TR',{maximumFractionDigits:2});
+        err.textContent='';
+      }catch(ex){info.textContent='';err.textContent=ex.message;}
+    }
+    function finish(){
+      overlay.hidden=true;
+      data.removeEventListener('input',update);close.removeEventListener('input',update);
+      document.removeEventListener('keydown',onKey);
+      btn.onclick=cancel.onclick=null;
+    }
+    function onKey(e){if(e.key==='Escape'){e.preventDefault();cancel.onclick();}}
+    data.addEventListener('input',update);close.addEventListener('input',update);
+    btn.onclick=function(){
+      try{
+        var dates=validateUploadDates(parsed.donem,data.value,close.value);
+        finish();resolve(dates);
+      }catch(ex){err.textContent=ex.message;}
+    };
+    cancel.onclick=function(){finish();var ex=Error('Tarih seçimi iptal edildi; rapor yüklenmedi.');ex.cancelled=true;reject(ex);};
+    document.addEventListener('keydown',onKey);
+    overlay.hidden=false;update();
+    (data.value?close:data).focus();
+  });
+}
+
 /* ───── DOSYA ───── */
 function wire(boxId, inputId, isPrev) {
   const box = document.getElementById(boxId), inp = document.getElementById(inputId);
@@ -762,6 +852,11 @@ function wire(boxId, inputId, isPrev) {
       try {
         await ensureXLSX();
         const parsed = parseWB(XLSX.read(new Uint8Array(e.target.result), { type: "array" }), {fileName:f.name});
+        // Tarih seçimi işlem tamamlanmadan sorulur; iptal halinde DATA değişmez.
+        if (!isPrev && parsed.partial && parsed.partial.ttmOnly) {
+          var selectedDates=await promptUploadDates(parsed);
+          applyUploadDates(parsed,selectedDates);
+        }
         const _setBoxLabel = (b, name) => {
           const el = b.querySelector(".drop-sub") || b.querySelector(".t2");
           if (el) el.textContent = "✅ " + name;
@@ -792,12 +887,15 @@ function wire(boxId, inputId, isPrev) {
           if(parsed.partial&&!parsed.partial.hasSySheet&&samePeriod&&SYDATA&&SYDATA.sy){
             var derived=parsed.syData.sy;
             parsed.syData.sy=Object.assign({},SYDATA.sy,derived);
-            parsed.syData.calismaGun=SYDATA.calismaGun;
-            parsed.syData.calisilanGun=SYDATA.calisilanGun;
-            if(SYDATA.calismaGun>0&&SYDATA.calisilanGun>0){
+            if(!parsed.detay.manualDateEntry) {
+              parsed.syData.calismaGun=SYDATA.calismaGun;
+              parsed.syData.calisilanGun=SYDATA.calisilanGun;
+            }
+            var useTotal=parsed.syData.calismaGun,useElapsed=parsed.syData.calisilanGun;
+            if(useTotal>0&&useElapsed>0){
               Object.keys(derived).forEach(function(name){
                 Object.values(derived[name]).forEach(function(p){
-                  p.f=p.h>0?Math.round(p.a/p.h*SYDATA.calismaGun/SYDATA.calisilanGun*1000)/10:null;
+                  p.f=p.h>0?Math.round(p.a/p.h*useTotal/useElapsed*1000)/10:null;
                 });
               });
             }
@@ -807,13 +905,17 @@ function wire(boxId, inputId, isPrev) {
           DATA = parsed.data; DONEM = parsed.donem; MATRIX = parsed.matrix; if (parsed.kupa && parsed.kupa.length) KUPA = parsed.kupa; if (parsed.detay && Object.keys(parsed.detay.bayiler).length) { DETAY = parsed.detay; detayKod = null; }
           try { trendCapture(); } catch(e) {} try { if (typeof kupaSnapCapture === 'function') kupaSnapCapture(); } catch(e) {} if (parsed.syData && Object.keys(parsed.syData.sy).length) SYDATA = parsed.syData; box.classList.add("loaded");
           _setBoxLabel(box, f.name);
-          document.getElementById("status").textContent = parsed.partial&&parsed.partial.ttmOnly
+          var dateCaption=parsed.detay&&parsed.detay.manualDateEntry
+            ? " · "+uploadDateLabel(parsed.detay.reportDate)+" → "+uploadDateLabel(parsed.detay.closingDate) : "";
+          document.getElementById("status").textContent = (parsed.partial&&parsed.partial.ttmOnly
             ? "📊 " + parsed.bayiCount + " TTM bayi · " + parsed.donem
-            : "📊 " + parsed.persCount + " personel · " + parsed.bayiCount + " bayi · " + parsed.donem;
+            : "📊 " + parsed.persCount + " personel · " + parsed.bayiCount + " bayi · " + parsed.donem) + dateCaption;
           msg.className = "pmsg ok show";
-          msg.textContent = parsed.partial&&parsed.partial.ttmOnly
+          msg.textContent = (parsed.partial&&parsed.partial.ttmOnly
             ? "✅ " + parsed.bayiCount + " TTM bayi güncellendi · Personel/EDM dosyada yok (mevcut veriler korunur)"
-            : "✅ " + parsed.persCount + " personel + " + parsed.bayiCount + " bayi işlendi";
+            : "✅ " + parsed.persCount + " personel + " + parsed.bayiCount + " bayi işlendi") +
+            (parsed.detay&&parsed.detay.manualDateEntry
+              ? " · Forecast: "+parsed.detay.forecastDays.d+"/"+parsed.detay.forecastDays.t+" gün" : "");
           sy = "Tümü";
           /* Sprint 3: TTM son yükleme zaman damgası */
           try { localStorage.setItem(LOAD_KEY_TTM, new Date().toISOString()); } catch(_e) {}
@@ -821,8 +923,11 @@ function wire(boxId, inputId, isPrev) {
           if (parsed.syData && parsed.syData.calisilanGun && parsed.syData.calismaGun) {
             var _dnEl = document.getElementById('day-now');
             var _dtEl = document.getElementById('day-total');
-            if (_dnEl && _dtEl && !_dnEl.value) { _dnEl.value = parsed.syData.calisilanGun; _dtEl.value = parsed.syData.calismaGun; }
+            if (_dnEl && _dtEl && (parsed.detay.manualDateEntry || !_dnEl.value)) {
+              _dnEl.value = parsed.syData.calisilanGun;_dtEl.value = parsed.syData.calismaGun;
+            }
           }
+          showUploadForecastDates(parsed);
           /* Sprint 19: input değerlerini state'e senkronla */
           if (typeof syncDayInputs === 'function') syncDayInputs();
           /* EDM BUAY yoksa eski EDM'yi sıfırlama veya yanlış sheet'i EDM sayma. */
@@ -850,7 +955,10 @@ function wire(boxId, inputId, isPrev) {
           DATA_HEALTH = { bayiCount: parsed.bayiCount, persCount: parsed.persCount, syCount: parsed.syData ? Object.keys(parsed.syData.sy).length : 0, warnings: parsed.warnings || [], ok: (parsed.warnings || []).length === 0 };
         }
         buildTabs(); render();
-      } catch (err) { msg.className = "pmsg err show"; msg.textContent = "❌ " + err.message; }
+      } catch (err) {
+        msg.className = err.cancelled ? "pmsg show" : "pmsg err show";
+        msg.textContent = (err.cancelled ? "ℹ️ " : "❌ ") + err.message;
+      } finally { if(inp)inp.value=''; }
     };
     rd.readAsArrayBuffer(f);
   };

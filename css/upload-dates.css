@@ -1,0 +1,20 @@
+/* TTM tek sayfalık Excel yükleme — tarih ve kapanış seçimi */
+.upload-date-overlay[hidden]{display:none!important}
+.upload-date-overlay{position:fixed;inset:0;z-index:10000;background:rgba(5,16,49,.62);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.upload-date-dialog{background:#fff;color:#142348;width:min(100%,450px);max-height:calc(100vh - 35px);overflow:auto;border:1px solid #e3eaf6;border-radius:20px;padding:24px;box-shadow:0 24px 75px rgba(0,18,55,.26);box-sizing:border-box}
+.upload-date-heading{font-size:19px;line-height:1.4;font-weight:800;letter-spacing:-.3px}
+.upload-date-description{margin:6px 0 20px;color:#64748b;font-size:13px}
+.upload-date-fields{display:grid;gap:9px}
+.upload-date-fields label{font-weight:750;font-size:13px;margin-top:9px}
+.upload-date-fields label small{font-size:11px;font-weight:400;color:#64748b;display:block;margin-top:4px}
+.upload-date-fields input{width:100%;min-width:0;box-sizing:border-box;border:1px solid #d5e0f1;border-radius:11px;padding:12px;font-size:16px;background:#f8fbff;color:#132950}
+.upload-date-fields input:focus{outline:none;border-color:#118ec7;box-shadow:0 0 0 3px #00a6ee22}
+.upload-date-summary{margin-top:17px;border-radius:10px;background:#eff8ff;padding:12px;color:#164a75;font-size:13px;min-height:18px}
+.upload-date-error{min-height:18px;color:#bd2424;font-size:12px;margin-top:7px}
+.upload-date-actions{display:flex;gap:10px;margin-top:13px}
+.upload-date-actions button{flex:1;min-height:45px;border-radius:12px;font-weight:750;font-size:14px;cursor:pointer;border:1px solid #dce4f1}
+.upload-date-cancel{background:#fff;color:#284161}
+.upload-date-actions .upload-date-confirm{background:linear-gradient(120deg,#0b397c,#008dd3);border:0;color:white}
+.upload-date-forecast{font-size:12px;font-weight:650;color:#125c8b;line-height:1.6}
+.upload-date-forecast:empty{display:none}
+@media(max-width:500px){.upload-date-dialog{padding:20px;border-radius:18px}.upload-date-heading{font-size:17px}}

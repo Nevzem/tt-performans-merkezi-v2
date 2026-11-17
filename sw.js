@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-ttm-only-20261117-v1';
+const CACHE = 'ttpm-ttm-dates-20261117-v1';
 
 const ASSETS = [
   '.',
@@ -13,6 +13,7 @@ const ASSETS = [
   'manifest.webmanifest',
   'js/version.js',
   'css/style.css',
+  'css/upload-dates.css',
   'css/development.css',
   'css/november-campaign.css',
   'css/month-end-report.css',
