@@ -5,7 +5,7 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-zirve-koray-20261116-v1';
+const CACHE = 'ttpm-ttm-only-20261117-v1';
 
 const ASSETS = [
   '.',
