@@ -4,4 +4,4 @@
    Ayarlar > Sürüm kartında görünür; kullanıcı güncellemenin
    cihazına ulaşıp ulaşmadığını buradan doğrular.
    ════════════════════════════════════════════ */
-const APP_BUILD = '2026-11-17 · Sabit Premium Lig Görseli · Aynı Ekran ve PNG';
+const APP_BUILD = '2026-11-17 · Onaylanan Orijinal Lig Tasarımı';
