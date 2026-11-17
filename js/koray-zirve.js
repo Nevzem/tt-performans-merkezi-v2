@@ -113,36 +113,47 @@ function kzTable(pack){
  '<td class="kz-pts">'+kzFmt(r.score,1)+'</td><td class="'+(r.change>0?'kz-rise':r.change<0?'kz-fall':'')+'">'+kzTrend(r.change)+'</td></tr>';
  }).join('')+'</tbody></table></div>';
 }
+/* The exact same premium SVG is shown live AND exported to PNG. */
 function kzPoster(pack){
- var first=pack.rows[0];
- return '<div id="kz-poster" class="kz-poster" data-date="'+kzEsc(pack.date)+'">'+
-  '<div class="kz-p-meta"><span>TTM · KUZEY ANADOLU</span><b>16–30 KASIM 2026</b></div>'+
-  '<div class="kz-p-heading"><small>12 BAYİ · ELEME YOK</small><h1>ZİRVE YARIŞI</h1><p>GÜNLÜK HGO PERFORMANS TABLOSU</p></div>'+
-  '<div class="kz-p-prizes"><div>🏆 '+(pack.final?'ŞAMPİYON':'GÜNCEL LİDER')+'<strong>'+kzEsc(first.name)+'</strong><small>'+kzEsc(first.code)+' · '+kzFmt(first.score,1)+' PUAN</small></div>'+
-  '<div>📅 RAPOR TARİHİ<strong>'+pack.date.slice(-2)+' KASIM</strong><small>16–30 KASIM BİRİKİMLİ</small></div></div>'+
-  '<div class="kz-p-weight"><span>📱 MOBİL <b>%40</b></span><span>🌐 DSL <b>%40</b></span><span>📺 IPTV <b>%10</b></span><span>📡 UYDU <b>%10</b></span></div>'+
-  '<table><thead><tr><th>#</th><th>BAYİ / KOD</th><th>MOBİL<br>HGO</th><th>DSL<br>HGO</th><th>IPTV<br>HGO</th><th>UYDU<br>HGO</th><th>PUAN</th><th>↕</th></tr></thead><tbody>'+
-  pack.rows.map(function(r,i){return '<tr class="'+(i<3?'kz-p-podium':'')+'"><td>'+(i+1)+'</td><td><b>'+kzEsc(r.name)+'</b><small>'+kzEsc(r.code)+'</small></td><td>'+kzPct(r.mobil)+'</td><td>'+kzPct(r.dsl)+'</td><td>'+kzPct(r.iptv)+'</td><td>'+kzPct(r.uydu)+'</td><td><strong>'+kzFmt(r.score,1)+'</strong></td><td>'+kzTrend(r.change)+'</td></tr>';}).join('')+
-  '</tbody></table><div class="kz-p-footer">ELENME YOK · TÜM BAYİLER 30 KASIM’A KADAR YARIŞTA<br>HGO bazlı puan = %40 Mobil + %40 DSL + %10 IPTV + %10 Uydu · Her ürünün puanı %200 HGO ile sınırlıdır.</div></div>';
+ if(typeof window.kzPremiumImageSvg!=='function'){
+  return '<div class="kz-empty">Premium Zirve Yarışı görseli yüklenemedi. Uygulamayı güncelleyin.</div>';
+ }
+ var svg=window.kzPremiumImageSvg(pack),uri='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+ var valid=pack&&pack.rows&&pack.rows.length===KZ_CODES.length&&!pack.missing;
+ return '<div id="kz-poster" class="kz-premium-poster"'+(valid?' data-date="'+kzEsc(pack.date)+'"':'')+'>'+
+  '<img id="kz-poster-image" class="kz-premium-image" alt="TTM Zirve Yarışı, Koray Yeşilördek, 12 bayi, güncel HGO ve sıralama" src="'+uri+'">'+
+  '</div>';
 }
 async function kzDownloadPNG(){
- var node=document.getElementById('kz-poster');
- if(!node){alert('Önce 15 Kasım başlangıç ve güncel raporları yükleyin.');return;}
+ var node=document.getElementById('kz-poster'),img=document.getElementById('kz-poster-image');
+ if(!node||!img||!node.getAttribute('data-date')){
+  alert('Paylaşım için 15 Kasım başlangıç ve güncel kapanış raporları gerekli.');return;
+ }
+ var btn=document.getElementById('kz-share-btn');
+ if(btn){btn.disabled=true;btn.textContent='Görsel hazırlanıyor…';}
  try{
-  await ensureH2C();
-  var canvas=await html2canvas(node,{backgroundColor:'#061e36',scale:2,useCORS:true,
-   scrollX:0,scrollY:0,windowWidth:1050,onclone:function(doc){
-    var holder=doc.getElementById('kz-poster-holder');
-    if(holder){holder.style.position='absolute';holder.style.top='0';holder.style.left='0';}
-   }});
-  canvas.toBlob(function(blob){
-   if(!blob){alert('Görsel oluşturulamadı.');return;}
-   var url=URL.createObjectURL(blob),a=document.createElement('a');
-   a.href=url;a.download='TTM_Zirve_Yarisi_'+node.getAttribute('data-date')+'.png';
-   document.body.appendChild(a);a.click();a.remove();
-   setTimeout(function(){URL.revokeObjectURL(url);},1500);
-  },'image/png');
- }catch(e){alert('PNG oluşturulamadı: '+e.message);}
+  if(img.decode)await img.decode();
+  else if(!img.complete)await new Promise(function(resolve,reject){img.onload=resolve;img.onerror=reject;});
+  // Draw exactly the image currently displayed by the application, at 2× resolution.
+  var canvas=document.createElement('canvas');
+  canvas.width=2048;canvas.height=3072;
+  var ctx=canvas.getContext('2d');
+  if(!ctx)throw Error('Görsel çizim alanı oluşturulamadı.');
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+  ctx.drawImage(img,0,0,canvas.width,canvas.height);
+  var blob=await new Promise(function(resolve){canvas.toBlob(resolve,'image/png');});
+  if(!blob)throw Error('PNG oluşturulamadı.');
+  var fileName='TTM_Zirve_Yarisi_'+node.getAttribute('data-date')+'.png';
+  var file=typeof File!=='undefined'?new File([blob],fileName,{type:'image/png'}):null;
+  if(file&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+   try{await navigator.share({files:[file],title:'TTM Zirve Yarışı Günlük Performans'});return;}
+   catch(e){if(e.name==='AbortError')return;}
+  }
+  var url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=fileName;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url);},1500);
+ }catch(e){alert('Görsel paylaşılamadı: '+e.message);}
+ finally{if(btn){btn.disabled=false;btn.textContent='↗ Paylaş / PNG';}}
 }
 function kzBackup(){
  var data=kzRead(),blob=new Blob([JSON.stringify({version:1,snapshots:data},null,2)],{type:'application/json'});
@@ -173,41 +184,38 @@ async function kzRestore(input){
 function renderKorayZirve(){
  var cards=document.getElementById('cards');if(!cards)return;
  var saved=kzRead(),pack=kzRank(saved),ready=pack.rows.length===KZ_CODES.length&&!pack.missing,
-  leader=ready?pack.rows[0]:null,dates=Object.keys(saved).filter(function(d){return /^2026-11-\d\d$/.test(d);}).sort();
- cards.className='cards single kz-page';cards.style.maxWidth='1200px';
- var html='<section class="kz-shell"><div class="kz-hero"><span>TTM · KORAY YEŞİLÖRDEK</span>'+
-  '<h2>🏆 ZİRVE YARIŞI</h2><p>16–30 Kasım 2026 · 12 bayi · 15 gün · Eleme yok</p>'+
-  '<div class="kz-hero-tag">HER GÜN YENİ BİR ZİRVE FIRSATI</div></div>'+
-  '<div class="kz-stats"><div><small>YARIŞAN BAYİ</small><strong>12</strong></div>'+
-  '<div><small>KAMPANYA DÖNEMİ</small><strong>16–30 KASIM</strong></div>'+
-  '<div><small>MEVCUT LİDER</small><strong>'+(leader?kzEsc(leader.name):'—')+'</strong></div>'+
-  '<div><small>DÖNEM PUANI</small><strong>'+(leader?kzFmt(leader.score,1):'—')+'</strong></div></div>'+
-  '<div class="kz-weights"><div>📱 MOBİL <b>%40</b></div><div>🌐 DSL <b>%40</b></div>'+
-  '<div>📺 IPTV <b>%10</b></div><div>📡 UYDU <b>%10</b></div></div>'+
-  '<div class="kz-title"><div><h3>Genel Performans Sıralaması</h3><p>'+
-   (ready?pack.date+' kapanışı · '+(pack.final?'Kesin sonuç':'Geçici günlük sıralama'):'15 Kasım bazı ve güncel raporlar bekleniyor')+
-  '</p></div><button '+(!ready?'disabled ':'')+'onclick="kzDownloadPNG()">↓ Günlük görsel (PNG)</button></div>';
- if(ready){
-  html+='<div class="kz-medals"><div><small>🥇 1. SIRA</small><strong>'+kzEsc(pack.rows[0].name)+'</strong><span>'+kzFmt(pack.rows[0].score,1)+' PUAN</span></div>'+
-  '<div><small>🥈 2. SIRA</small><strong>'+kzEsc(pack.rows[1].name)+'</strong><span>'+kzFmt(pack.rows[1].score,1)+' PUAN</span></div>'+
-  '<div><small>🥉 3. SIRA</small><strong>'+kzEsc(pack.rows[2].name)+'</strong><span>'+kzFmt(pack.rows[2].score,1)+' PUAN</span></div></div>';
-  html+=kzTable(pack);
-  html+='<div class="kz-result">🏆 '+(pack.final?'KAMPANYA ŞAMPİYONU':'GÜNCEL LİDER')+
-  ' <b>'+kzEsc(leader.name)+'</b><span>'+kzFmt(leader.score,1)+' puan'+(!pack.final?' · geçici':' · kesin')+'</span></div>';
- }else html+='<div class="kz-empty"><strong>Henüz puan hesaplanamıyor</strong><p>'+kzEsc(pack.missing||'Güncel veri bekleniyor.')+'</p>'+
-  '<small>15 Kasım kapanışını baz olarak kaydedin. 16–30 Kasım raporları yüklendikçe 12 bayi sıralanır. Örnek veriden kazanan ilan edilmez.</small></div>';
- html+='<div class="kz-import"><h3>📂 Rapor Yükle ve Güncelle</h3>'+
-  '<p>15 Kasım başlangıç verisini bir kez yükleyin. Sonraki günlerin kapanış raporlarını ekledikçe puanlar otomatik güncellenir. Veriler yalnızca bu cihazda kaydedilir.</p>'+
+  dates=Object.keys(saved).filter(function(d){return /^2026-11-\d\d$/.test(d);}).sort();
+ cards.className='cards single kz-page';
+ cards.style.maxWidth='1180px';
+ var html='<section class="kz-shell kz-shell-premium">'+
+  '<div class="kz-live-toolbar"><div>'+
+   '<h2>⛰️ TTM Zirve Yarışı</h2>'+
+   '<p>Koray Yeşilördek · 16–30 Kasım 2026 · 12 bayi · Eleme yok</p></div>'+
+   '<button id="kz-share-btn" class="kz-share-premium" '+(!ready?'disabled ':'')+
+    'onclick="kzDownloadPNG()">↗ Paylaş / PNG</button>'+
+  '</div>'+
+  '<div class="kz-live-visual">'+kzPoster(pack)+'</div>';
+ if(!ready){
+  html+='<div class="kz-empty"><strong>Canlı şablon hazır · Rapor bekleniyor</strong>'+
+   '<p>'+kzEsc(pack.missing||'Güncel kapanış verisi bulunamadı.')+'</p>'+
+   '<small>15 Kasım kapanışı ve ardından 16–30 Kasım tarihli raporları yüklediğinde gerçek HGO ve sıralamalar görsele otomatik yerleşir. Örnek sonuç gösterilmez.</small></div>';
+ }else{
+  html+='<details class="kz-ranking-details">'+
+   '<summary>📊 Ayrıntılı puan tablosunu aç <span>12 bayi · '+kzEsc(pack.date)+
+    (pack.final?' · Kesin sonuç':' · Geçici sıralama')+'</span></summary>'+
+    kzTable(pack)+'</details>';
+ }
+ html+='<div class="kz-import"><h3>📂 Günlük Rapor Yükle ve Güncelle</h3>'+
+  '<p>15 Kasım kapanışını başlangıç bazı olarak kaydet. 16–30 Kasım kapanış raporları geldikçe tüm 12 bayinin sıralaması güncellenir. Kayıtlar bu cihazda saklanır; Şampiyonlar Ligi verileriyle karışmaz.</p>'+
   '<div class="kz-inputs"><label>Rapor kapanış tarihi <input id="kz-report-date" type="date" min="2026-11-15" max="2026-11-30"></label>'+
   '<label class="kz-upload">Excel dosyası seç<input type="file" accept=".xlsx,.xls" onchange="kzUpload(this)"></label></div>'+
   '<div class="kz-dates"><b>Kaydedilen günler:</b> '+(dates.length?dates.map(function(d){return '<span>'+d.slice(-2)+' Kas</span>';}).join(''):'Henüz veri yok')+'</div>'+
   '<div class="kz-tools"><button onclick="kzBackup()">↓ Verileri yedekle</button>'+
   '<label>↑ Yedeği içe aktar<input type="file" accept=".json" onchange="kzRestore(this)"></label></div>'+
-  '<small class="kz-privacy">Yedek JSON gerçek aktivasyon sayılarını içerir, yalnız yetkili kişilerle paylaşın. PNG görselinde aktivasyon adetleri bulunmaz.</small></div>'+
-  '<div class="kz-rules"><b>PUANLAMA KURALLARI</b>'+
-  '<p>Günlük kümülatif yarış puanı = Mobil HGO × 0,40 + DSL HGO × 0,40 + IPTV HGO × 0,10 + Uydu HGO × 0,10. Her ürünün katkısı en fazla %200 HGO üzerinden hesaplanır. 15 Kasım kapanışı başlangıç bazıdır, puanlara yalnızca 16–30 Kasım net performansı girer. HGO, döneme düşen aylık hedefe göre hesaplanır. Her günün puanı birikimli toplam performansı gösterir; günlük puanlar birbirine eklenmez. 30 Kasım kapanışına kadar tüm 12 bayi yarıştadır. Eşitlikte DSL, Mobil, IPTV, Uydu HGO, ardından bu ürünlerin net satış adetleri ve bayi kodu kullanılır.</p></div>'+
+  '<small class="kz-privacy">Yedek JSON gerçek aktivasyon adetlerini içerir, yalnızca yetkili kişilerle paylaş. PNG görselinde aktivasyon adetleri gösterilmez.</small></div>'+
+  '<div class="kz-rules"><b>🏆 KAMPANYA KURALLARI</b>'+
+  '<p>16–30 Kasım boyunca 12 bayinin tamamı yarışır; <b>eleme yoktur</b>. 15 Kasım kapanışı başlangıç bazı alınır. Dönem HGO\'su, başlangıçtan sonraki yeni aktivasyonun geçen gün sayısına düşen hedefe oranıyla hesaplanır. Puan = Mobil %40 + DSL %40 + IPTV %10 + Uydu TV %10. Her ürünün HGO puanına katkısı en fazla %200 HGO üzerinden değerlendirilir. Günlük puanlar toplanmaz; her gün dönem boyunca oluşan toplam performans tekrar hesaplanır. 30 Kasım kapanışında birinci olan bayi şampiyon olur. Eşitlikte sırasıyla DSL, Mobil, IPTV ve Uydu HGO\'ları, ardından yeni aktivasyon adetleri ve bayi kodu belirleyicidir.</p></div>'+
   (kzNotice?'<div class="kz-notice">'+kzEsc(kzNotice)+'</div>':'')+
   '</section>';
- if(ready)html+='<div id="kz-poster-holder" class="kz-poster-holder">'+kzPoster(pack)+'</div>';
  cards.innerHTML=html;
 }
