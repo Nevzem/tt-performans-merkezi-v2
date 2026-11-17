@@ -63,8 +63,10 @@
   out+=gold?trophy(x+73,1251,1.45):ico(kind,x+74,1252,'#70faff');
   out+=line(x+124,1192,x+124,1309,stroke,1.2,.8);
   out+=txt(x+295,1216,title,21,gold?'#ffe18e':'#5efcfb',900,'middle');
-  out+=txt(x+295,1260,cut(name,24),name.length>19?23:29,'#fff',900,'middle','textLength="'+(name.length>29?298:Math.min(303,Math.max(170,name.length*15)))+'" lengthAdjust="spacingAndGlyphs"');
-  out+=txt(x+295,1299,sub,17,gold?'#ffe08b':'#56fcfa',900,'middle','textLength="'+Math.min(299,Math.max(100,sub.length*10))+'" lengthAdjust="spacingAndGlyphs"');
+  var shortenName=name.length>19?'textLength="296" lengthAdjust="spacingAndGlyphs"':'';
+  var shortenSub=sub.length>29?'textLength="298" lengthAdjust="spacingAndGlyphs"':'';
+  out+=txt(x+295,1260,cut(name,24),name.length>19?23:29,'#fff',900,'middle',shortenName);
+  out+=txt(x+295,1299,sub,17,gold?'#ffe08b':'#56fcfa',900,'middle',shortenSub);
   return out;
  }
  function imageSvg(pack){
