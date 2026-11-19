@@ -476,6 +476,8 @@ function renderDetay() {
     const kalan = Math.max(d.h - d.a, 0);
     const gunluk = (kalanGun && kalanGun>0) ? Math.ceil(kalan/kalanGun) : null;
     const fcv = (f && d.g !== null) ? Math.round(d.g*f.k) : null;
+    // Tahmini kapanış adedi, Forecast ile aynı gün oranından hesaplanır.
+    const tahminiKapanis = (fcv !== null && Number.isFinite(d.a)) ? Math.round(d.a * f.k) : null;
     prows += '<div class="dt-row">' +
       '<div class="dt-pn">' + pn + '</div>' +
       '<div class="dt-cells">' +
@@ -483,6 +485,7 @@ function renderDetay() {
         '<div class="dt-c"><span class="dt-cv">' + d.a.toLocaleString("tr-TR") + '</span><span class="dt-cl">Adet</span></div>' +
         '<div class="dt-c"><span class="dt-cv ' + cls(d.g) + '-t">' + (d.g===null?"—":"%"+d.g.toFixed(1)) + '</span><span class="dt-cl">HGO</span></div>' +
         '<div class="dt-c"><span class="dt-cv accent">' + (fcv===null?"—":"%"+fcv) + '</span><span class="dt-cl">Forecast</span></div>' +
+        '<div class="dt-c dt-est"><span class="dt-cv">' + (tahminiKapanis===null?"—":tahminiKapanis.toLocaleString("tr-TR")) + '</span><span class="dt-cl">Tahmini<br>Kapanış</span></div>' +
         '<div class="dt-c"><span class="dt-cv">' + kalan.toLocaleString("tr-TR") + '</span><span class="dt-cl">Kalan</span></div>' +
         '<div class="dt-c"><span class="dt-cv hot">' + (gunluk===null?"—":gunluk.toLocaleString("tr-TR")) + '</span><span class="dt-cl">Günlük</span></div>' +
       '</div></div>';

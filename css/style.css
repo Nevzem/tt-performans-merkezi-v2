@@ -758,12 +758,22 @@ table.mx td.val .raw { font-size: 9px; font-weight: 600; opacity: 0.6; margin-to
 .dt-row  { padding: 7px 11px; border-bottom: 1px solid var(--hairline); }
 .dt-row:nth-child(even) { background: #FBFCFE; }
 .dt-pn   { font-size: 11px; font-weight: 800; color: var(--navy); margin-bottom: 5px; letter-spacing: 0.2px; }
-.dt-cells { display: flex; gap: 4px; }
-.dt-c    { flex: 1; background: #F7F9FC; border: 1px solid var(--line); border-radius: 6px; padding: 4px 2px; text-align: center; display: flex; flex-direction: column; gap: 1px; }
+.dt-cells { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+.dt-c    { min-width: 0; background: #F7F9FC; border: 1px solid var(--line); border-radius: 6px; padding: 4px 1px; text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 1px; }
 .dt-cv   { font-size: 11px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.1; }
 .dt-cv.g-t { color: var(--green); } .dt-cv.y-t { color: var(--amber); } .dt-cv.r-t { color: var(--crimson); }
 .dt-cv.accent { color: var(--navy-3); } .dt-cv.hot { color: var(--red); }
 .dt-cl   { font-size: 9.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2px; }
+.dt-c.dt-est { background: #EEF4FF; border-color: #D7E3FA; }
+.dt-c.dt-est .dt-cv { color: var(--navy-3); }
+.dt-c.dt-est .dt-cl { font-size: 8.5px; line-height: 1.12; letter-spacing: 0; }
+@media (max-width: 520px) {
+  .dt-row { padding-left: 7px; padding-right: 7px; }
+  .dt-cells { gap: 2px; }
+  .dt-c { padding: 4px 0; }
+  .dt-cl { font-size: 8px; letter-spacing: 0; }
+  .dt-c.dt-est .dt-cl { font-size: 7.7px; }
+}
 .dt-pp   { display: flex; gap: 4px; flex-wrap: wrap; padding: 8px 11px; background: #FAFBFD; border-bottom: 1px solid var(--hairline); }
 .dt-pp .tab { font-size: 10px; padding: 5px 8px; }
 .dt-prow { display: flex; align-items: center; gap: 9px; padding: 6px 11px; border-bottom: 1px solid var(--hairline); }
