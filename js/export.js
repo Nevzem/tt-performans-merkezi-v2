@@ -85,8 +85,9 @@ async function downloadDetayCardPNG() {
     var el = document.getElementById('detay-card');
     if (!el) throw new Error('Detay kartı bulunamadı (#detay-card)');
 
-    /* Paylaşım yerleşimi, geniş ekran yerleşiminden bağımsızdır. */
-    var elW = Math.min(el.offsetWidth || 490, 490);
+    /* Tam içerik yüksekliği (scroll altındaki personel listesi dahil) */
+    var elH = Math.max(el.scrollHeight, el.offsetHeight);
+    var elW = el.offsetWidth || 490;
 
     var res = await createCleanExportClone(el, elW);
     cloneWrapper = res.wrapper;
@@ -106,7 +107,6 @@ async function downloadDetayCardPNG() {
     }
     var fname = 'TT_BayiDetay_' + bayiKey + '_' + donem + '.png';
 
-    var elH = Math.max(res.clone.scrollHeight, res.clone.offsetHeight);
     var canvas = await captureExportImage(res.clone, { height: elH });
     cleanupExportClone(cloneWrapper); cloneWrapper = null;
     _openSharePreview(canvas.toDataURL('image/png'), fname);
