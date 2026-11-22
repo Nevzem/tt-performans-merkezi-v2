@@ -5,14 +5,16 @@
    Böylece autopush sonrası içerik bayat kalmaz, çevrimdışında uygulama açılır.
    ════════════════════════════════════════════ */
 
-const CACHE = 'ttpm-detay-forecast-qty-20261119-v1';
+const CACHE = 'ttpm-premium-pilot-20261122-v1';
 
 const ASSETS = [
   '.',
   'index.html',
   'manifest.webmanifest',
-  'js/version.js',
+  'js/version.js?v=20261122-pilot1',
   'css/style.css',
+  'css/premium-dealer.css?v=20261122-pilot1',
+  'css/premium-home.css?v=20261122-pilot1',
   'css/upload-dates.css',
   'css/development.css',
   'css/november-campaign.css',
@@ -23,11 +25,11 @@ const ASSETS = [
   'css/matrix-v2.css',
   'js/data.js',
   'js/parser.js',
-  'js/render.js',
-  'js/export.js',
-  'js/home.js',
+  'js/render.js?v=20261122-pilot1',
+  'js/export.js?v=20261122-pilot1',
+  'js/home.js?v=20261122-pilot1',
   'js/edm.js',
-  'js/detay.js',
+  'js/detay.js?v=20261122-pilot1',
   'js/history-loader.js',
   'js/history.js',
   'data/history/corrections/strings.json',

@@ -453,17 +453,24 @@ function renderKupa() {
 
 
 /* ───── BAYİ DETAYI ───── */
-function setDetayKod(k) { detayKod = k; render(); }
+function setDetayKod(k) {
+  const restoreFocus = document.activeElement?.id === "tt-dealer-select";
+  detayKod = k; render();
+  if (restoreFocus) document.getElementById("tt-dealer-select")?.focus({preventScroll: true});
+}
 function renderDetay() {
   const D = DETAY;
   const kodlar = Object.keys(D.bayiler);
-  if (!kodlar.length) { document.getElementById("cards").innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted)">Veri yok</div>'; return; }
+  const host = document.getElementById("cards");
+  host.className = "cards single tt-dealer-pilot";
+  host.style.maxWidth = "1120px";
+  if (!kodlar.length) { host.innerHTML = '<div class="tt-dealer-empty">Bu raporda bayi verisi yok.</div>'; return; }
   if (!detayKod || !D.bayiler[detayKod]) detayKod = kodlar[0];
   const bayi = D.bayiler[detayKod];
   const f = fc();
 
   // Bayi seçici (açılır liste)
-  const sel = '<select class="detay-sel" onchange="setDetayKod(this.value)">' +
+  const sel = '<select id="tt-dealer-select" class="detay-sel" onchange="setDetayKod(this.value)">' +
     kodlar.map(k => '<option value="' + k + '"' + (k === detayKod ? " selected" : "") + '>' + D.bayiler[k].b + ' · ' + D.bayiler[k].il + '</option>').join("") + '</select>';
 
   const cls = g => hgo3(g);
@@ -485,7 +492,7 @@ function renderDetay() {
         '<div class="dt-c"><span class="dt-cv">' + d.a.toLocaleString("tr-TR") + '</span><span class="dt-cl">Adet</span></div>' +
         '<div class="dt-c"><span class="dt-cv ' + cls(d.g) + '-t">' + (d.g===null?"—":"%"+d.g.toFixed(1)) + '</span><span class="dt-cl">HGO</span></div>' +
         '<div class="dt-c"><span class="dt-cv accent">' + (fcv===null?"—":"%"+fcv) + '</span><span class="dt-cl">Forecast</span></div>' +
-        '<div class="dt-c dt-est"><span class="dt-cv">' + (tahminiKapanis===null?"—":tahminiKapanis.toLocaleString("tr-TR")) + '</span><span class="dt-cl">Tahmini<br>Kapanış</span></div>' +
+        '<div class="dt-c dt-est"><span class="dt-cv">' + (tahminiKapanis===null?"—":tahminiKapanis.toLocaleString("tr-TR")) + '</span><span class="dt-cl">Tahmini <br>Kapanış</span></div>' +
         '<div class="dt-c"><span class="dt-cv">' + kalan.toLocaleString("tr-TR") + '</span><span class="dt-cl">Kalan</span></div>' +
         '<div class="dt-c"><span class="dt-cv hot">' + (gunluk===null?"—":gunluk.toLocaleString("tr-TR")) + '</span><span class="dt-cl">Günlük</span></div>' +
       '</div></div>';
@@ -512,21 +519,19 @@ function renderDetay() {
       '<div class="dt-pname">' + p.p + '</div>' +
       '<div class="dt-pgrid">' + cells + '</div></div>';
   });
-  plist = phead + plist;
-  const detayProd = "Toplam Mobil";
+  plist = persList.length ? phead + plist : '<div class="tt-dealer-empty">Bu bayi için personel verisi yok.</div>';
+  const mobileHgo = bayi.prods["Toplam Mobil"]?.g;
 
   const sub = "Tüm ürünler · " + (persList.length) + " personel" + (f?" · Forecast "+f.d+"/"+f.t+". gün":"");
-  document.getElementById("cards").className = "cards single";
-  document.getElementById("cards").style.maxWidth = "490px";
-  document.getElementById("cards").innerHTML =
-    '<div style="width:100%;margin-bottom:10px">' + sel + '</div>' +
+  host.innerHTML =
+    '<div class="tt-dealer-toolbar"><div><div class="tt-dealer-kicker">BAYİ ANALİZİ</div><h2>Performans Karnesi</h2></div><div class="tt-dealer-choice"><label for="tt-dealer-select">Bayi seç</label>' + sel + '</div></div>' +
     '<div class="card" id="detay-card">' +
     hdrHTML("🔍", bayi.b, bayi.kod + " · " + bayi.il + (bayi.sy?" · SY: "+bayi.sy.split(" ")[0]:"")) +
     '<div class="sec t"><span>📊 Ürün Performansı</span><span class="cnt">' + sub + '</span></div>' +
-    prows +
+    (prows || '<div class="tt-dealer-empty">Bu bayi için hedef girilmiş ürün yok.</div>') +
     '<div class="sec t" style="margin-top:2px"><span>👥 Personeller</span><span class="cnt">Mobil · DSL · TV · Cihaz HGO</span></div>' +
     plist +
-    ftrHTML([[persList.length, "Personel"], [bayi.prods["Toplam Mobil"].g!==null?"%"+bayi.prods["Toplam Mobil"].g.toFixed(0):"—", "Mobil HGO"], [bayi.il||"—", "İl"]]) +
+    ftrHTML([[persList.length, "Personel"], [Number.isFinite(mobileHgo) ? "%" + mobileHgo.toFixed(0) : "—", "Mobil HGO"], [bayi.il||"—", "İl"]]) +
     '</div>';
 }
 
@@ -687,6 +692,7 @@ function setLayout(l) {
 
 function render() {
   const cards = document.getElementById("cards");
+  if (section !== "detay") cards.classList.remove("tt-dealer-pilot");
   if (section === "matrix") { cards.style.maxWidth = "100%"; renderMatrixV2(); return; }
   if (section === "sy") {
     /* Sprint 24.1 düzeltmesi: EDM kanalında SY sayfası artık gerçekten
