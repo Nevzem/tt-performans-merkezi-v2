@@ -69,7 +69,12 @@ var _BAYI_RANK_PRODS = [
 
 function setHomePersRankProd(k) { _homePersRankProd = k; renderHome(); }
 function setHomeBayiRankProd(k) { _homeBayiRankProd = k; renderHome(); }
-function setHdInsightProd(k)    { _hdInsightProd   = k; renderHome(); }
+function setHdInsightProd(k) {
+  var origin = document.activeElement?.closest('.tt-overview-head, .hd-sec-head');
+  var focusIn = origin?.classList.contains('tt-overview-head') ? '.tt-overview-head' : (origin ? '.hd-sec-head' : '');
+  _hdInsightProd = k; renderHome();
+  if (focusIn) document.querySelector('.pilot-home ' + focusIn + ' .hp-tab-on')?.focus({preventScroll:true});
+}
 
 /* ── SY Filtre Çubuğu (Ana Sayfa) ── */
 function _hdSyFilter() {
@@ -78,7 +83,7 @@ function _hdSyFilter() {
   var activeLabel = _homeSY === 'Tümü' ? 'Tümü'
     : (list.find(function(t) { return t.key === _homeSY; }) || { label: _homeSY }).label;
   return '<div class="hd-sy-filter hd-anim" style="--i:0.5">' +
-    '<span class="hd-sy-label">SY</span>' +
+    '<span class="hd-sy-label">Satış yöneticisi</span>' +
     '<div class="hd-sy-tabs">' +
       '<button class="hd-sy-tab' + (_homeSY === 'Tümü' ? ' hd-sy-on' : '') + '" onclick="setHomeSyFilter(\'Tümü\')">Tümü</button>' +
       list.map(function(t) {
@@ -94,6 +99,7 @@ function _hdSyFilter() {
 function renderHome() {
   var el = document.getElementById('home-dashboard');
   if (!el) return;
+  el.classList.toggle('pilot-home', typeof KANAL === 'undefined' || KANAL !== 'EDM');
   /* EDM kanalı için ayrı render */
   if (typeof KANAL !== 'undefined' && KANAL === 'EDM') {
     if (typeof renderEDMHome === 'function') renderEDMHome(el);
@@ -105,13 +111,52 @@ function renderHome() {
   el.innerHTML = [
     _hdHero(),
     _hdSyFilter(),
-    _hdChips(kpis),
-    _hdDailyTarget(kpis),
+    _hdPilotOverview(kpis),
     _hdScorecard(kpis),
     _hdExecutiveInsights(),
+    _hdChips(kpis),
+    _hdDailyTarget(kpis),
     _hdPersRanking(),
     _hdBayiRanking(),
   ].join('');
+}
+
+/* Seçili ürünü ve saha önceliklerini tek özet alanında göster. */
+function _hdPilotOverview(kpis) {
+  var product = _HP_PRODS.find(function(p) { return p.key === _hdInsightProd; }) || _HP_PRODS[0];
+  var spec = _HD_PRODS.find(function(p) { return p.dataKey === product.detayKey || p.altDataKey === product.detayKey; });
+  var k = spec && kpis.find(function(p) { return p.key === spec.key; });
+  if (!k) k = kpis[0];
+  var detailKnown = k.h > 0;
+  var known = detailKnown || _homeSY === 'Tümü';
+  var metric = function(label, value, extra, cls) {
+    return '<div class="tt-kpi ' + (cls || '') + '"><div class="tt-kpi-label">' + label + '</div>' +
+      '<strong>' + value + '</strong>' + (extra ? '<small>' + extra + '</small>' : '') + '</div>';
+  };
+  var num = function(v) { return Number.isFinite(v) ? v.toLocaleString('tr-TR') : '—'; };
+  var pct = function(v) { return Number.isFinite(v) ? '%' + v.toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : '—'; };
+  var forecastQty = k.f && detailKnown && Number.isFinite(k.a) ? Math.round(k.a * k.f.k) : null;
+  var metrics = [
+    metric('Hedef', num(detailKnown ? k.h : null)),
+    metric('Aktivasyon', num(detailKnown ? k.a : null)),
+    metric('Mevcut HGO', pct(known ? k.hgo : null)),
+    metric('Kalan', num(detailKnown ? k.kalan : null)),
+    metric('Günlük gereken', num(detailKnown ? k.gunluk : null)),
+    metric('Tahmini kapanış', pct(known ? k.fcHgo : null), forecastQty === null ? '' : num(forecastQty) + ' adet', 'tt-kpi-est')
+  ].join('');
+  var recs = _hdFilterBySY((DATA.bayi && DATA.bayi[product.key]) || []);
+  var risk = recs.filter(function(r) { return Number.isFinite(r.g) && r.g < 70; }).slice().sort(function(a,b) { return a.g - b.g; }).slice(0,3);
+  var escapeText = function(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function(ch) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]; }); };
+  var rows = risk.map(function(r) {
+    var m = r.b && r.b.match(/^(\d+)/);
+    var body = '<span>' + escapeText(r.p || r.b) + '<small>' + escapeText(r.il) + '</small></span><strong>' + pct(r.g) + '</strong>';
+    return m ? '<button type="button" class="tt-risk-row" onclick="openDetay(\'bayi\',\'' + m[1] + '\')">' + body + '</button>' : '<div class="tt-risk-row">' + body + '</div>';
+  }).join('');
+  return '<section class="tt-home-overview" aria-label="Seçili ürünün performans özeti">' +
+    '<div class="tt-overview-main"><div class="tt-overview-head"><h2>Performans özeti</h2>' +
+    _hpTabs(product.key, 'setHdInsightProd') + '</div><div class="tt-kpi-grid">' + metrics + '</div></div>' +
+    '<div class="tt-risk-box"><h2>Saha önceliği</h2><p>' + product.label + ' · HGO %70 altında</p>' +
+    (rows || '<div class="tt-risk-empty">' + (recs.length ? 'Eşik altında bayi yok.' : 'Bu seçim için bayi verisi yok.') + '</div>') + '</div></section>';
 }
 
 /* ══════════════════════════════════════════
@@ -343,7 +388,7 @@ function _hpTabs(activeKey, setter, small, prods) {
   return '<div class="hp-tabs hp-tabs-scroll">' +
     list.map(function(p) {
       var on = activeKey === p.key;
-      return '<button class="' + cls + (on ? ' hp-tab-on' : '') + '" ' +
+      return '<button type="button" aria-pressed="' + on + '" class="' + cls + (on ? ' hp-tab-on' : '') + '" ' +
         'onclick="' + setter + '(\'' + p.key + '\')">' + p.label + '</button>';
     }).join('') +
   '</div>';
@@ -478,7 +523,6 @@ function _hdBayiRanking() {
    Sprint 4 — EXECUTIVE HERO
    ══════════════════════════════════════════ */
 function _hdHero() {
-  var today = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
   var loadTs = '';
   try {
     var _ts = (typeof LOAD_KEY_TTM !== 'undefined') ? localStorage.getItem(LOAD_KEY_TTM) : null;
@@ -487,16 +531,9 @@ function _hdHero() {
 
   var kalanGun = gunInfo().kalanGun;
 
-  var dhHtml = '';
-  if (typeof DATA_HEALTH !== 'undefined' && DATA_HEALTH) {
-    var dh = DATA_HEALTH;
-    dhHtml = '<span class="hd-hero-dh ' + (dh.ok ? 'hero-dh-ok' : 'hero-dh-warn') + '">' +
-      (dh.ok ? '✅' : '⚠️') + ' Veri Sağlığı' + (dh.warnings && dh.warnings.length ? ' (' + dh.warnings.length + ')' : '') + '</span>';
-  }
-
   var kalanBlock = kalanGun !== null
     ? '<div class="hd-hero-kalan"><div class="hd-hero-kalan-val">' + kalanGun + '</div><div class="hd-hero-kalan-lbl">Kalan Gün</div></div>'
-    : '<div class="hd-hero-period">' + DONEM + '</div>';
+    : '';
 
   return (
     '<div class="hd-hero hd-anim" style="--i:0">' +
@@ -505,8 +542,8 @@ function _hdHero() {
           '<img class="hd-ph-mark app-logo" src="icons/icon-180.png" alt="TT">' +
           '<div class="hd-hero-ch-badge">TTM</div>' +
           '<div class="hd-hero-titles">' +
-            '<div class="hd-hero-title">Kuzey Anadolu Performans Merkezi</div>' +
-            '<div class="hd-hero-sub">Bayi Satış Kanalı &nbsp;·&nbsp; ' + today + '</div>' +
+            '<h1 class="hd-hero-title">Satışa Genel Bakış</h1>' +
+            '<div class="hd-hero-sub">Kuzey Anadolu · ' + DONEM + '</div>' +
           '</div>' +
         '</div>' +
         '<div class="hd-hero-meta">' +
@@ -520,10 +557,16 @@ function _hdHero() {
 
 function _hdHeroVK(loadTs) {
   var dh   = (typeof DATA_HEALTH !== 'undefined' && DATA_HEALTH) ? DATA_HEALTH : null;
-  var isOk = !dh || dh.ok;
+  var detail = (typeof DETAY !== 'undefined' && DETAY) || {};
+  var stamp = function(v) { return typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v.slice(8) + '.' + v.slice(5,7) + '.' + v.slice(0,4) : ''; };
+  var dataDate = stamp(detail.reportDate);
+  var closeDate = stamp(detail.closingDate);
+  var status = !loadTs && !dh ? 'Örnek veri' : (dh && !dh.ok ? 'Kolon uyarısı' : 'Rapor yüklü');
   return '<div class="hd-vkutu">' +
-    '<div class="hd-vk-status"><span class="hd-vk-dot ' + (isOk ? 'vk-ok' : 'vk-warn') + '"></span>' + (isOk ? 'Güncel Veri' : 'Kolon Uyarısı') + (dh && dh.warnings && dh.warnings.length ? ' (' + dh.warnings.length + ')' : '') + '</div>' +
-    (dh ? '<div class="hd-vk-compact">' + dh.persCount + ' Personel · ' + dh.bayiCount + ' Bayi</div>' : '') +
+    '<div class="hd-vk-status"><span class="hd-vk-dot ' + (dh && !dh.ok ? 'vk-warn' : 'vk-ok') + '"></span>' + status + '</div>' +
+    (dataDate ? '<span class="hd-vk-ts">Veri: ' + dataDate + '</span>' : '') +
+    (closeDate ? '<span class="hd-vk-ts">Kapanış: ' + closeDate + '</span>' : '') +
+    (!dataDate && loadTs ? '<span class="hd-vk-ts">Yükleme: ' + loadTs + '</span>' : '') +
   '</div>';
 }
 

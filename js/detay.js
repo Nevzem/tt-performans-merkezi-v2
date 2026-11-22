@@ -19,11 +19,26 @@ function _ensureDetayDOM() {
 function openDetay(type, id, id2) {
   _ensureDetayDOM();
   var panel = document.getElementById('detay-panel');
+  panel.classList.toggle('tt-dealer-drawer', type === 'bayi');
   panel.innerHTML = _detayHTML(type, id, id2);
   document.getElementById('detay-overlay').classList.add('open');
   panel.classList.add('open');
   document.body.style.overflow = 'hidden';
+  if (type === 'bayi') {
+    _dealerDrawerOpener = document.activeElement;
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-label', 'Bayi detayı');
+    panel.querySelector('.detay-close')?.focus();
+  } else {
+    panel.removeAttribute('role');
+    panel.removeAttribute('aria-label');
+  }
 }
+
+let _dealerDrawerOpener = null;
+document.addEventListener('keydown', function (event) {
+  if (event.key === 'Escape' && document.querySelector('.tt-dealer-drawer.open')) closeDetay();
+});
 
 function closeDetay() {
   var o = document.getElementById('detay-overlay');
@@ -31,6 +46,10 @@ function closeDetay() {
   if (o) o.classList.remove('open');
   if (p) p.classList.remove('open');
   document.body.style.overflow = '';
+  if (p && p.classList.contains('tt-dealer-drawer') && _dealerDrawerOpener?.isConnected) {
+    _dealerDrawerOpener.focus({preventScroll: true});
+  }
+  _dealerDrawerOpener = null;
 }
 
 /* Convenience: home.js chgRow → kod doğrudan geçilir */
@@ -92,7 +111,7 @@ function _detayBayiHTML(kod) {
   var html = '<div class="detay-hdr">' +
     '<div class="detay-hdr-row">' +
       '<div class="detay-hdr-name">' + (det.b || kod) + '</div>' +
-      '<button class="detay-close" onclick="closeDetay()">✕</button>' +
+      '<button type="button" class="detay-close" aria-label="Bayi detayını kapat" onclick="closeDetay()">✕</button>' +
     '</div>' +
     '<div class="detay-hdr-meta">' +
       (det.il  ? '<span>' + det.il + '</span>' : '') +
